@@ -1,0 +1,92 @@
+#ifndef XST_H
+#define XST_H
+
+#include "XSTCommon.h"
+#include "XSTCBinaryReader.h"
+#include "XSTCBinaryReader.h"
+#include "XSTCBinaryWriter.h"
+#include "XSTCConsole.h"
+#include "XSTCCriticalSection.h"
+#include "XSTCDebug.h"
+#include "XSTCEmptyLogger.h"
+#include "XSTCHash.h"
+#include "XSTCIniReader.h"
+#include "XSTCLastError.h"
+#include "XSTCLock.h"
+#include "XSTCLogger.h"
+#include "XSTMath.h"
+#include "XSTCMemoryManager.h"
+#include "XSTCMemoryManagerFactory.h"
+#include "XSTCMutex.h"
+#include "XSTPlatform.h"
+#include "XSTCProfilerLogger.h"
+#include "XSTCQPerfTimer.h"
+#include "XSTCStringUtil.h"
+#include "XSTCRandom.h"
+#include "XSTCResource.h"
+#include "XSTCSimpleProfiler.h"
+#include "XSTCString.h"
+#include "XSTCTextFileReader.h"
+#include "XSTCTextFileWriter.h"
+#include "XSTCTextLogger.h"
+#include "XSTCThreadManager.h"
+#include "XSTCTime.h"
+#include "XSTCTimer.h"
+#include "XSTIAllocator.h"
+#include "XSTIFile.h"
+#include "XSTIFileReader.h"
+#include "XSTILogger.h"
+#include "XSTIMemoryManager.h"
+#include "XSTIObject.h"
+#include "XSTIObservable.h"
+#include "XSTIObserver.h"
+#include "XSTIParameterSubSystem.h"
+#include "XSTISimpleAllocator.h"
+#include "XSTISubSystem.h"
+#include "XSTIThread.h"
+#include "XSTTCConstantArray.h"
+#include "XSTTCDynamicArray.h"
+#include "XSTTCData.h"
+#include "XSTTCMemoryManager.h"
+#include "XSTTCQuadTree.h"
+#include "XSTCMSXML.h"
+#include "XSTCPoint.h"
+/*
+#include "XSTTCResourceGroupManager.h"
+#include "XSTTCResourceLocationManager.h"
+#include "XSTTCResourceManager.h"
+*/
+#include "XSTTCResourceManager.h"
+#include "XSTTCSingleton.h"
+#include "XSTTCSmartPointer.h"
+#include "XSTTCStack.h"
+#include "XSTTIObservable.h"
+#include "XSTCFileSystemLoader.h"
+#include "XSTCVirtualFileSystemLoader.h"
+#include "XSTCFileManager.h"
+#include "XSTCCfgFile.h"
+#include "XSTCLuaApi.h"
+
+#include "XSTMath.h"
+#include "XSTCScript.h"
+#include "XSTTCIterator.h"
+#include "XSTCVector2.h"
+#include "XSTCVector3.h"
+#include "XSTCVector4.h"
+#include "XSTCMatrix3.h"
+#include "XSTCMatrix4.h"
+#include "XSTCQuaternion.h"
+#include "XSTPlatform.h"
+#include "XSTCColor.h"
+#include "XSTCAABB.h"
+
+/*
+define XST_NODLL if include src files
+define XST_DLL_EXPORT if exporting xst to dll
+define XST_STL for using stl - must be defined
+define XST_LOG_CONSOLE for log into the visual studio output console
+define XST_LOG_FILE for log into the file. You must create logger impl based on the XST::ILogger class and set it into the XST::CLogger::Init
+define XST_DEBUG for debug mode of XST
+*/
+
+#endif //XST_H
