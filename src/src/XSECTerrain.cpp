@@ -194,7 +194,7 @@ fclose( pFile );
 
 
 	CTerrain::CTerrain(xst_castring& strName, IInputLayout* pIL, CSceneManager* pSceneMgr) :
-		ITerrain( pIL, true ),
+		ITerrain( pIL, "Terrain", true ),
 		_Render( &CTerrain::_RenderNormal ),
 		m_strName( strName ),
 		m_pVBuffer( xst_null ),

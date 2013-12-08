@@ -14,7 +14,7 @@
 
 #include <stdio.h>
 
-#include "../../../include/XST/lua51/tolua++.h"
+#include "XST/ThirdParty/lua51/tolua++.h"
 
 /* Store at ubox
 	* It stores, creating the corresponding table if needed,

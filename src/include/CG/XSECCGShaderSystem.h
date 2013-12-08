@@ -1,6 +1,8 @@
 #ifndef XSE_CCGSHADER_SYSTEM_H
 #define XSE_CCGSHADER_SYSTEM_H
 
+#if defined(XSE_CG)
+
 #include "XSECommon.h"
 #include "XSEIShaderSystem.h"
 
@@ -85,5 +87,6 @@ namespace XSE
 	};
 
 }//xse
+#endif // XSE_CG
 
 #endif

@@ -12,11 +12,11 @@
 ** enhancements, or modifications.
 */
 
-#include "../../../include/XST/lua51/tolua++.h"
+#include "XST/ThirdParty/lua51/tolua++.h"
 
-#include "../../../include/XST/lua51/lua.h"
-#include "../../../include/XST/lua51/lualib.h"
-#include "../../../include/XST/lua51/lauxlib.h"
+#include "XST/ThirdParty/lua51/lua.h"
+#include "XST/ThirdParty/lua51/lualib.h"
+#include "XST/ThirdParty/lua51/lauxlib.h"
 
 #include <stdio.h>
 #include <stdlib.h>

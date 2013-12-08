@@ -12,7 +12,7 @@
 ** enhancements, or modifications.
 */
 
-#include "../../../include/XST/lua51/tolua++.h"
+#include "XST/ThirdParty/lua51/tolua++.h"
 
 #include <string.h>
 #include <stdlib.h>
