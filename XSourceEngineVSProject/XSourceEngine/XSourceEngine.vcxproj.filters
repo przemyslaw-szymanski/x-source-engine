@@ -51,1422 +51,1437 @@
     <Filter Include="include\XST\ThirdParty\FastDelegate">
       <UniqueIdentifier>{a07c5fdb-e8aa-4559-aaa0-62ef5fe65205}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\XST\ThirdParty\Lua51">
-      <UniqueIdentifier>{506b026c-676a-481f-9016-cbba8d9e286b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\XST\Lua51">
-      <UniqueIdentifier>{9b68e16a-0331-4b66-987a-8fc2269379a0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\XST\zlib">
-      <UniqueIdentifier>{98394aa7-bb19-42d9-ae26-aa13da9c4046}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\GUI">
       <UniqueIdentifier>{401bcc1d-a596-4382-9377-6e65e24cef1f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\XST\ThirdParty">
+      <UniqueIdentifier>{7d8b09df-2528-4d41-8aff-be9cf4f072d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\XST\ThirdParty\Lua51">
+      <UniqueIdentifier>{9b68e16a-0331-4b66-987a-8fc2269379a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\XST\ThirdParty\zlib">
+      <UniqueIdentifier>{98394aa7-bb19-42d9-ae26-aa13da9c4046}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\XST\ThirdParty\lua51">
+      <UniqueIdentifier>{5dadff10-cae4-4ef0-88b4-fa4efecbe2b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\dllmain.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\stdafx.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECBinaryMaterialReader.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECBoundingSphere.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECBoundingVolume.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECCamera.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECDynamicGeometry.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECDynamicGeometryGroup.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECDynamicGeometryObject.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECEngine.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECFixedVertexData.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECFPPCamera.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECFrustum.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECGeometryBatch.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECGeometryBatchGroup.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECImageManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECIndexData.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECLuaMaterialParser.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECLuaMaterialReader.h.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECLuaScript.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECLuaScriptManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECMaterial.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECMaterialManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECMesh.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECMeshManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECMipMapPagingTerrain.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECMipMapTerrainPage.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECMipMapTerrainTile.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECModel.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECModelManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECNoScenePartitionSystem.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECObject.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECOctree.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECOctreeScenePartitionSystem.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECPass.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECRenderArray.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECRenderLayer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECRenderQueue.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECRenderQueueElement.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECRenderSystemFactory.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECResourceFileManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECSceneDebug.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECSceneManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECSceneNode.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECShaderManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECShaderSystemFactory.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECStaticGeometry.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECStaticGeometryGroup.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECStaticGeometryObject.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECTechnique.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECTerrain.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECTerrainSystem.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECTexture.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSECVertexData.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSEDefaultShaders.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSEIPass.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSEIRenderableObject.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSEIRenderWindow.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSEIResourceManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSEITechnique.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSEIViewport.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSEMemoryAllocators.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSEStaticDefinitions.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XSourceEngine.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lapi.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lauxlib.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lbaselib.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lcode.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\ldblib.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\ldebug.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\ldo.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\ldump.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lfunc.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lgc.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\linit.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\liolib.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\llex.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lmathlib.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lmem.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\loadlib.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lobject.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lopcodes.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\loslib.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lparser.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lstate.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lstring.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lstrlib.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\ltable.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\ltablib.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\ltm.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lua.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\luac.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lundump.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lvm.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\lzio.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\print.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\tolua.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\toluabind.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\tolua_event.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\tolua_is.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\tolua_map.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\tolua_push.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\ThirdParty\lua51\tolua_to.c">
-      <Filter>src\XST\Lua51</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\mtrand.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSECPlane.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XST.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTAlgorithm.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCAABB.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCAsmScript.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCBinaryData.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCBinaryFileReader.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCBinaryReader.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCCfgFile.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCColor.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCConsole.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCCriticalSection.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCData.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCDebug.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCEmptyLogger.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCFile.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCFileManager.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCHash.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCIniReader.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCLastError.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCLock.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCLogger.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCLuaApi.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCLuaCall.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCLuaScript.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCLuaScriptManager.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCLuaTable.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCLuaTableManager.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCMath.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCMatrix3.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCMatrix4.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCMemoryManager.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCMSXML.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCMutex.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCPlane.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCPlatform.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCProfilerLogger.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCQPerfTime.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCQuaternion.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCRandom.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCResource.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCScript.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCSimpleProfiler.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCString.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCStringUtil.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCSystemFileLoader.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCTextFileReader.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCTextFileWriter.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCTextLogger.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCThreadManager.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCThreadPool.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCTime.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCTimer.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCToString.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCVirtualFileSystemLoader.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTCZLib.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTIAllocator.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTIFile.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTIFileLoader.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTIFileReader.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTILogger.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTIThread.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTMath.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTMemoryManagerFactory.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTPath.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTPlatform.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\XST\XSTTCOctree.cpp">
-      <Filter>src\XST</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\GUI\XSECButton.cpp">
-      <Filter>src\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\GUI\XSECComponent.cpp">
-      <Filter>src\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\GUI\XSECGUIManager.cpp">
-      <Filter>src\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\GUI\XSECGUIRenderer.cpp">
-      <Filter>src\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\GUI\XSECPanel.cpp">
-      <Filter>src\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\GUI\XSECWindow.cpp">
-      <Filter>src\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\CG\XSECCGPixelShader.cpp">
-      <Filter>src\Impl\CG</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\CG\XSECCGShaderSystem.cpp">
-      <Filter>src\Impl\CG</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\CG\XSECCGVertexShader.cpp">
-      <Filter>src\Impl\CG</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D11\GUI\XSECD3D11GUIRenderer.cpp">
-      <Filter>src\Impl\D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D11\XSECD3D11CGShaderSystem.cpp">
-      <Filter>src\Impl\D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D11\XSECD3D11CGVertexShader.cpp">
-      <Filter>src\Impl\D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D11\XSECD3D11HLSLShaderSystem.cpp">
-      <Filter>src\Impl\D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D11\XSECD3D11IndexBuffer.cpp">
-      <Filter>src\Impl\D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D11\XSECD3D11InputLayout.cpp">
-      <Filter>src\Impl\D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D11\XSECD3D11Pass.cpp">
-      <Filter>src\Impl\D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D11\XSECD3D11PixelShader.cpp">
-      <Filter>src\Impl\D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D11\XSECD3D11RenderSystem.cpp">
-      <Filter>src\Impl\D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D11\XSECD3D11Technique.cpp">
-      <Filter>src\Impl\D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D11\XSECD3D11VertexBuffer.cpp">
-      <Filter>src\Impl\D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D11\XSECD3D11VertexShader.cpp">
-      <Filter>src\Impl\D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D11\XSECD3D11Viewport.cpp">
-      <Filter>src\Impl\D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D11\XSEID3D11ShaderBase.cpp">
-      <Filter>src\Impl\D3D11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D9\XSECD3D9RenderSystem.cpp">
-      <Filter>src\Impl\D3D9</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\D3D9\XSECD3D9Viewport.cpp">
-      <Filter>src\Impl\D3D9</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\DevIL\XSECDevILImage.cpp">
-      <Filter>src\Impl\DevIL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\DevIL\XSECDevILSystem.cpp">
-      <Filter>src\Impl\DevIL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\Platform\Win32\XSECWin32Keyboard.cpp">
-      <Filter>src\Impl\Platform\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\Platform\Win32\XSECWin32Mouse.cpp">
-      <Filter>src\Impl\Platform\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\src\Impl\Platform\Win32\XSECWin32RenderWindow.cpp">
-      <Filter>src\Impl\Platform\Win32</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\src\stdafx.h">
+    <ClInclude Include="..\..\Engine\include\XST\mtrand.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\STL\XSTTCAlignedAllocator.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XST.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTAlgorithm.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCAABB.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCBinaryData.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCBinaryFileReader.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCBinaryReader.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCBinaryWriter.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCCfgFile.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCColor.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCConsole.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCCriticalSection.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCData.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCDebug.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCEmptyLogger.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCFile.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCFileManager.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCFileSystemLoader.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCHash.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCIniReader.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCLastError.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCLock.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCLogger.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCLuaApi.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCLuaCall.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCLuaScript.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCLuaScriptManager.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCLuaTable.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCLuaTableManager.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCMath.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCMatrix3.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCMatrix4.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCMemoryManager.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCMemoryManagerFactory.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCMSXML.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCMutex.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCommon.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCommonInclude.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCommonPreprocesor.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCommonTypes.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCPlane.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCPlatform.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCPoint.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCProfilerLogger.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCQPerfTimer.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCQuaternion.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCRandom.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCResource.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCScript.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCSimpleProfiler.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCString.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCStringUtil.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCTextFileReader.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCTextFileWriter.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCTextLogger.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCThreadManager.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCThreadPool.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCTime.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCTimer.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCToString.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCVector2.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCVector3.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCVector4.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCVirtualFileSystemLoader.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCZlib.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTIAllocator.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTIArchive.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTIFile.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTIFileLoader.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTIFileReader.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTIListenerSystem.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTILogger.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTIMemoryManager.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTIObject.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTIObservable.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTIObserver.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTIParameterSubSystem.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTIResource.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTISimpleAllocator.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTISubSystem.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTIThread.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTMath.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTPath.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTPlatform.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCConstantArray.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCData.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCDynamicArray.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCIterator.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCMemoryManager.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCOctree.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCQuadTree.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCResourceGroupManager.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCResourceLocationManager.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCResourceManager.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCSingleton.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCSmartPointer.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCSmartPtr.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCStack.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTIAllocableObject.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTTIObservable.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTToString.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECBoundingSphere.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECBoundingVolume.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECCamera.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECDynamicGeometry.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECDynamicGeometryGroup.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECDynamicGeometryObject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECEngine.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECFixedVertexData.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECFPPCamera.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECFrustum.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECGeometryBatch.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECGeometryBatchGroup.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECImageManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECIndexData.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECLuaScript.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECLuaScriptManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECMaterial.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECMaterialManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECMesh.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECMeshManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECMipMapPagingTerrain.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECMipMapTerrainPage.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECMipMapTerrainTile.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECModel.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECModelManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECNoScenePartitionSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECObject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECOctreeScenePartitionSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECommon.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECRenderArray.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECRenderQueue.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECRenderQueueElement.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECRenderSystemFactory.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECResourceFileManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECSceneDebug.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECSceneManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECSceneNode.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECShaderManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECStaticGeometry.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECStaticGeometryGroup.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECStaticGeometryObject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECTerrain.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECTerrainSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECTexture.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECTextureManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECVertex.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECVertexData.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEICGShaderSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIImage.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIImageSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIIndexBuffer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIInputLayout.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIKeyboard.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIKeyboardListener.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIMaterialReader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIMouse.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIMouseListener.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIPass.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIPixelShader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIRenderableObject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIRenderLayer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIRenderSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIRenderWindow.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIRenderWindowListener.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIResource.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIResourceLoader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIResourceManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIResourceSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIScenePartitionSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIShader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIShaderSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEITechnique.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEITerrain.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEITerrainSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEITexture.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIVertexBuffer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIVertexShader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIViewport.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEMemoryAllocators.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSERenderSystemCommon.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSETCData.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSourceEngine.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\GUI\XSECButton.h">
+      <Filter>include\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\GUI\XSECComponent.h">
+      <Filter>include\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\GUI\XSECGUIManager.h">
+      <Filter>include\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\GUI\XSECPanel.h">
+      <Filter>include\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\GUI\XSECWindow.h">
+      <Filter>include\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\GUI\XSEGUICommon.h">
+      <Filter>include\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\GUI\XSEIGUIRenderer.h">
+      <Filter>include\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\stdafx.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\XSECBinaryMaterialReader.h">
+    <ClInclude Include="..\..\Engine\targetver.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\XSECFPPCamera.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XSECLuaMaterialParser.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XSECLuaMaterialReader.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XSECNoScenePartitionSystem.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XSECOctree.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XSECOctreeScenePartitionSystem.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XSECPass.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XSECRenderLayer.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XSECShaderSystemFactory.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XSECTechnique.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lapi.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lauxlib.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lcode.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\ldebug.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\ldo.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lfunc.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lgc.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\llex.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\llimits.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lmem.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lobject.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lopcodes.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lparser.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lstate.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lstring.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\ltable.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\ltm.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lua.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lua.hpp">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\luaconf.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lualib.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lundump.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lvm.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\lua51\lzio.h">
-      <Filter>src\XST\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\zlib\zconf.h">
-      <Filter>src\XST\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\ThirdParty\zlib\zlib.h">
-      <Filter>src\XST\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\XST\XSTCAsmScript.h">
-      <Filter>src\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\src\ThirdParty\DevIL\config.h">
+    <ClInclude Include="..\..\Engine\src\ThirdParty\DevIL\config.h">
       <Filter>src\ThirdParty\DevIL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\ThirdParty\DevIL\devil_cpp_wrapper.hpp">
+    <ClInclude Include="..\..\Engine\src\ThirdParty\DevIL\devil_cpp_wrapper.hpp">
       <Filter>src\ThirdParty\DevIL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\ThirdParty\DevIL\devil_internal_exports.h">
+    <ClInclude Include="..\..\Engine\src\ThirdParty\DevIL\devil_internal_exports.h">
       <Filter>src\ThirdParty\DevIL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\ThirdParty\DevIL\il.h">
+    <ClInclude Include="..\..\Engine\src\ThirdParty\DevIL\il.h">
       <Filter>src\ThirdParty\DevIL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\ThirdParty\DevIL\ilu.h">
+    <ClInclude Include="..\..\Engine\src\ThirdParty\DevIL\ilu.h">
       <Filter>src\ThirdParty\DevIL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\ThirdParty\DevIL\ilut.h">
+    <ClInclude Include="..\..\Engine\src\ThirdParty\DevIL\ilut.h">
       <Filter>src\ThirdParty\DevIL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\ThirdParty\DevIL\ilut_config.h">
+    <ClInclude Include="..\..\Engine\src\ThirdParty\DevIL\ilut_config.h">
       <Filter>src\ThirdParty\DevIL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\ThirdParty\DevIL\ilu_region.h">
+    <ClInclude Include="..\..\Engine\src\ThirdParty\DevIL\ilu_region.h">
       <Filter>src\ThirdParty\DevIL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\ThirdParty\DevIL\il_wrap.h">
+    <ClInclude Include="..\..\Engine\src\ThirdParty\DevIL\il_wrap.h">
       <Filter>src\ThirdParty\DevIL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\CG\XSECCGPixelShader.h">
+    <ClInclude Include="..\..\Engine\src\XST\ThirdParty\zlib\zconf.h">
+      <Filter>src\XST\ThirdParty\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\XST\ThirdParty\zlib\zlib.h">
+      <Filter>src\XST\ThirdParty\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\XST\XSTCAsmScript.h">
+      <Filter>src\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\XSECBinaryMaterialReader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\XSECFPPCamera.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\XSECLuaMaterialParser.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\XSECLuaMaterialReader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\XSECNoScenePartitionSystem.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\XSECOctree.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\XSECOctreeScenePartitionSystem.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\XSECPass.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\XSECRenderLayer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\XSECShaderSystemFactory.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\XSECTechnique.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\CG\XSECCGPixelShader.h">
       <Filter>src\Impl\CG</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\CG\XSECCGVertexShader.h">
+    <ClInclude Include="..\..\Engine\src\CG\XSECCGVertexShader.h">
       <Filter>src\Impl\CG</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\GUI\XSECD3D11GUIRenderer.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\GUI\XSECD3D11GUIRenderer.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSECD3D11CGShaderSystem.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11CGShaderSystem.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSECD3D11CGVertexShader.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11CGVertexShader.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSECD3D11HLSLShaderSystem.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11HLSLShaderSystem.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSECD3D11IndexBuffer.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11IndexBuffer.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSECD3D11InputLayout.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11InputLayout.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSECD3D11Pass.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11Pass.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSECD3D11PixelShader.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11PixelShader.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSECD3D11RenderSystem.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11RenderSystem.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSECD3D11Technique.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11RenderSystemPlugin.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSECD3D11VertexBuffer.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11Technique.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSECD3D11VertexShader.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11VertexBuffer.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSECD3D11Viewport.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11VertexShader.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSED3D11Common.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11Viewport.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSED3D11DefaultShaders.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11Common.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSED3D11InputLayouts.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11DefaultShaders.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D11\XSEID3D11ShaderBase.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11InputLayouts.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D9\XSECD3D9RenderSystem.h">
+    <ClInclude Include="..\..\Engine\src\D3D11\XSEID3D11ShaderBase.h">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\D3D9\XSECD3D9RenderSystem.h">
       <Filter>src\Impl\D3D9</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\D3D9\XSECD3D9Viewport.h">
+    <ClInclude Include="..\..\Engine\src\D3D9\XSECD3D9Viewport.h">
       <Filter>src\Impl\D3D9</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\DevIL\XSECDevILImage.h">
+    <ClInclude Include="..\..\Engine\src\DevILSystem\XSECDevILImage.h">
       <Filter>src\Impl\DevIL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\DevIL\XSECDevILSystem.h">
+    <ClInclude Include="..\..\Engine\src\DevILSystem\XSECDevILSystem.h">
       <Filter>src\Impl\DevIL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\Platform\Win32\XSECWin32Keyboard.h">
+    <ClInclude Include="..\..\Engine\src\Win32\XSECWin32Keyboard.h">
       <Filter>src\Impl\Platform\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\Platform\Win32\XSECWin32Mouse.h">
+    <ClInclude Include="..\..\Engine\src\Win32\XSECWin32Mouse.h">
       <Filter>src\Impl\Platform\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\src\Impl\Platform\Win32\XSECWin32RenderWindow.h">
+    <ClInclude Include="..\..\Engine\src\Win32\XSECWin32RenderWindow.h">
       <Filter>src\Impl\Platform\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\mtrand.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XST.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTAlgorithm.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCAABB.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCBinaryData.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCBinaryFileReader.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCBinaryReader.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCBinaryWriter.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCCfgFile.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCColor.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCConsole.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCCriticalSection.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCData.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCDebug.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCEmptyLogger.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCFile.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCFileManager.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCFileSystemLoader.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCHash.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCIniReader.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCLastError.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCLock.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCLogger.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCLuaApi.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCLuaCall.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCLuaScript.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCLuaScriptManager.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCLuaTable.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCLuaTableManager.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCMath.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCMatrix3.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCMatrix4.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCMemoryManager.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCMemoryManagerFactory.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCMSXML.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCMutex.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCommon.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCommonInclude.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCommonPreprocesor.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCommonTypes.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCPlane.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCPlatform.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCPoint.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCProfilerLogger.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCQPerfTimer.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCQuaternion.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCRandom.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCResource.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCScript.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCSimpleProfiler.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCString.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCStringUtil.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCTextFileReader.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCTextFileWriter.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCTextLogger.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCThreadManager.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCThreadPool.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCTime.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCTimer.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCToString.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCVector2.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCVector3.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCVector4.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCVirtualFileSystemLoader.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTCZlib.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTIAllocator.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTIArchive.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTIFile.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTIFileLoader.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTIFileReader.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTIListenerSystem.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTILogger.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTIMemoryManager.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTIObject.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTIObservable.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTIObserver.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTIParameterSubSystem.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTIResource.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTISimpleAllocator.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTISubSystem.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTIThread.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTMath.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTPath.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTPlatform.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTCConstantArray.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTCData.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTCDynamicArray.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTCIterator.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTCMemoryManager.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTCOctree.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTCQuadTree.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTCResourceGroupManager.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTCResourceLocationManager.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTCResourceManager.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTCSingleton.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTCSmartPointer.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTCSmartPtr.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTCStack.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTIAllocableObject.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTTIObservable.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\XSTToString.h">
-      <Filter>include\XST</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\ThirdParty\FastDelegate\FastDelegate.h">
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\FastDelegate\FastDelegate.h">
       <Filter>include\XST\ThirdParty\FastDelegate</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\ThirdParty\lua51\lauxlib.h">
-      <Filter>include\XST\ThirdParty\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\ThirdParty\lua51\lua.h">
-      <Filter>include\XST\ThirdParty\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\ThirdParty\lua51\lua.hpp">
-      <Filter>include\XST\ThirdParty\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\ThirdParty\lua51\luaconf.h">
-      <Filter>include\XST\ThirdParty\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\ThirdParty\lua51\lualib.h">
-      <Filter>include\XST\ThirdParty\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\ThirdParty\lua51\tolua++.h">
-      <Filter>include\XST\ThirdParty\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\ThirdParty\lua51\toluabind.h">
-      <Filter>include\XST\ThirdParty\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XST\ThirdParty\lua51\tolua_event.h">
-      <Filter>include\XST\ThirdParty\Lua51</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECBoundingSphere.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECBoundingVolume.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECCamera.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECDynamicGeometry.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECDynamicGeometryGroup.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECDynamicGeometryObject.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECEngine.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECFixedVertexData.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECFPPCamera.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECFrustum.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECGeometryBatch.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECGeometryBatchGroup.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECImageManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECIndexData.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECLuaScript.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECLuaScriptManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECMaterial.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECMaterialManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECMesh.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECMeshManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECMipMapPagingTerrain.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECMipMapTerrainPage.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECMipMapTerrainTile.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECModel.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECModelManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECNoScenePartitionSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECObject.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECOctreeScenePartitionSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECommon.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECRenderArray.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECRenderQueue.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECRenderQueueElement.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECRenderSystemFactory.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECResourceFileManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECSceneDebug.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECSceneManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECSceneNode.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECShaderManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECStaticGeometry.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECStaticGeometryGroup.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECStaticGeometryObject.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECTerrain.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECTerrainSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECTexture.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECTextureManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECVertex.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSECVertexData.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEICGShaderSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIImage.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIImageSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIIndexBuffer.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIInputLayout.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIKeyboard.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIKeyboardListener.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIMaterialReader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIMouse.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIMouseListener.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIPass.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIPixelShader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIRenderableObject.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIRenderLayer.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIRenderSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIRenderWindow.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIRenderWindowListener.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIResource.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIResourceLoader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIResourceManager.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIResourceSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIScenePartitionSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIShader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIShaderSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEITechnique.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEITerrain.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEITerrainSystem.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEITexture.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIVertexBuffer.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIVertexShader.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEIViewport.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSEMemoryAllocators.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSERenderSystemCommon.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSETCData.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\include\XSourceEngine.h">
-      <Filter>include</Filter>
-    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lapi.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lauxlib.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lcode.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\ldebug.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\ldo.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lfunc.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lgc.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\llex.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\llimits.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lmem.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lobject.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lopcodes.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lparser.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lstate.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lstring.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\ltable.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\ltm.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lua.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lua.hpp">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\luaconf.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lualib.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lundump.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lvm.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\lzio.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\tolua++.h">
+      <Filter>include\XST\ThirdParty\lua51</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Engine\dllmain.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\stdafx.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\mtrand.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSECPlane.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XST.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTAlgorithm.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCAABB.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCAsmScript.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCBinaryData.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCBinaryFileReader.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCBinaryReader.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCCfgFile.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCColor.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCConsole.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCCriticalSection.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCData.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCDebug.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCEmptyLogger.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCFile.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCFileManager.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCHash.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCIniReader.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCLastError.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCLock.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCLogger.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCLuaApi.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCLuaCall.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCLuaScript.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCLuaScriptManager.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCLuaTable.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCLuaTableManager.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCMath.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCMatrix3.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCMatrix4.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCMemoryManager.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCMSXML.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCMutex.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCPlane.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCPlatform.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCProfilerLogger.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCQPerfTime.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCQuaternion.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCRandom.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCResource.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCScript.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCSimpleProfiler.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCString.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCStringUtil.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCSystemFileLoader.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCTextFileReader.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCTextFileWriter.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCTextLogger.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCThreadManager.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCThreadPool.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCTime.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCTimer.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCToString.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCVirtualFileSystemLoader.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCZLib.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTIAllocator.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTIFile.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTIFileLoader.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTIFileReader.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTILogger.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTIThread.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTMath.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTMemoryManagerFactory.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTPath.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTPlatform.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTTCOctree.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECBinaryMaterialReader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECBoundingSphere.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECBoundingVolume.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECCamera.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECDynamicGeometry.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECDynamicGeometryGroup.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECDynamicGeometryObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECEngine.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECFixedVertexData.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECFPPCamera.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECFrustum.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECGeometryBatch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECGeometryBatchGroup.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECImageManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECIndexData.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECLuaMaterialParser.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECLuaMaterialReader.h.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECLuaScript.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECLuaScriptManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECMaterial.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECMaterialManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECMesh.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECMeshManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECMipMapPagingTerrain.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECMipMapTerrainPage.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECMipMapTerrainTile.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECModel.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECModelManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECNoScenePartitionSystem.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECOctree.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECOctreeScenePartitionSystem.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECPass.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECRenderArray.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECRenderLayer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECRenderQueue.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECRenderQueueElement.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECRenderSystemFactory.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECResourceFileManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECSceneDebug.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECSceneManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECSceneNode.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECShaderManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECShaderSystemFactory.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECStaticGeometry.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECStaticGeometryGroup.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECStaticGeometryObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECTechnique.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECTerrain.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECTerrainSystem.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECTexture.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECVertexData.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSEDefaultShaders.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSEIPass.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSEIRenderableObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSEIRenderWindow.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSEIResourceManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSEITechnique.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSEIViewport.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSEMemoryAllocators.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSEStaticDefinitions.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSourceEngine.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\CG\XSECCGPixelShader.cpp">
+      <Filter>src\Impl\CG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\CG\XSECCGShaderSystem.cpp">
+      <Filter>src\Impl\CG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\CG\XSECCGVertexShader.cpp">
+      <Filter>src\Impl\CG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\GUI\XSECD3D11GUIRenderer.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11CGShaderSystem.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11CGVertexShader.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11HLSLShaderSystem.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11IndexBuffer.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11InputLayout.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11Pass.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11PixelShader.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11RenderSystem.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11RenderSystemPlugin.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11Technique.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11VertexBuffer.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11VertexShader.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11Viewport.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSEID3D11ShaderBase.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D9\XSECD3D9RenderSystem.cpp">
+      <Filter>src\Impl\D3D9</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D9\XSECD3D9Viewport.cpp">
+      <Filter>src\Impl\D3D9</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\DevILSystem\XSECDevILImage.cpp">
+      <Filter>src\Impl\DevIL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\DevILSystem\XSECDevILSystem.cpp">
+      <Filter>src\Impl\DevIL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\GUI\XSECButton.cpp">
+      <Filter>src\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\GUI\XSECComponent.cpp">
+      <Filter>src\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\GUI\XSECGUIManager.cpp">
+      <Filter>src\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\GUI\XSECGUIRenderer.cpp">
+      <Filter>src\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\GUI\XSECPanel.cpp">
+      <Filter>src\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\GUI\XSECWindow.cpp">
+      <Filter>src\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\Win32\XSECWin32Keyboard.cpp">
+      <Filter>src\Impl\Platform\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\Win32\XSECWin32Mouse.cpp">
+      <Filter>src\Impl\Platform\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\Win32\XSECWin32RenderWindow.cpp">
+      <Filter>src\Impl\Platform\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lapi.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lauxlib.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lbaselib.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lcode.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\ldblib.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\ldebug.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\ldo.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\ldump.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lfunc.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lgc.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\linit.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\liolib.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\llex.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lmathlib.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lmem.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\loadlib.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lobject.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lopcodes.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\loslib.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lparser.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lstate.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lstring.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lstrlib.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\ltable.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\ltablib.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\ltm.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lua.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\luac.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lundump.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lvm.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lzio.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\print.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\tolua.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\toluabind.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\tolua_event.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\tolua_is.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\tolua_map.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\tolua_push.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\tolua_to.c">
+      <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

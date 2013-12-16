@@ -26,7 +26,7 @@
 #else
 #error "Define XST_STL or XST_STLPORT to use stl"
 #endif//XST_STL
-#include "FastDelegate/FastDelegate.h"
+#include "ThirdParty/FastDelegate/FastDelegate.h"
 
 #include <climits>
 #include <cfloat>

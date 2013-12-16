@@ -1,8 +1,8 @@
 #ifndef XST_CLUA_CALL_H
 #define XST_CLUA_CALL_H
 
-#include "lua51/lua.hpp"
-#include "lua51/tolua++.h"
+#include "ThirdParty/lua51/lua.hpp"
+#include "ThirdParty/lua51/tolua++.h"
 #include "XSTCLogger.h"
 
 //Disable warning that stl container is not exported to dll
