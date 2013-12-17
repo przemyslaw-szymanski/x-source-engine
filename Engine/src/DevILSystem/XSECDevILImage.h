@@ -2,7 +2,7 @@
 #define XSE_CDEVIL_IMAGE_H
 
 #include "XSEIImage.h"
-#include "../DevIL/ilu.h"
+#include "../ThirdParty/DevIL/ilu.h"
 
 namespace XSE
 {

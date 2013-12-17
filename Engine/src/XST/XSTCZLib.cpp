@@ -2,7 +2,7 @@
 #include "../../include/XST/XSTPlatform.h"
 #include "../../include/XST/XSTCommonInclude.h"
 #include "../../include/XST/XSTCLogger.h"
-#include "zlib.h"
+#include "ThirdParty/zlib/zlib.h"
 
 /*ZEXTERN int ZEXPORT compress OF((Bytef *dest,   uLongf *destLen,
                                  const Bytef *source, uLong sourceLen));*/

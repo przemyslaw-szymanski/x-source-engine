@@ -12,8 +12,8 @@
 ** enhancements, or modifications.
 */
 
-#include "XST/lua51/tolua++.h"
-#include "XST/lua51/lauxlib.h"
+#include "tolua++.h"
+#include "lauxlib.h"
 
 #include <stdlib.h>
 #include <string.h>

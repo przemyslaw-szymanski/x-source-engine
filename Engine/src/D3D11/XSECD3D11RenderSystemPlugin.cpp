@@ -1,5 +1,5 @@
 #include "XSECD3D11RenderSystemPlugin.h"
-#if defined (XST_WINDOWS)
+#if defined (XST_WINDOWS) && defined (XSE_DX11)
 
 //#if defined (XST_DEBUG)
 //#	pragma comment( lib, "d3dcompiler.lib" )
