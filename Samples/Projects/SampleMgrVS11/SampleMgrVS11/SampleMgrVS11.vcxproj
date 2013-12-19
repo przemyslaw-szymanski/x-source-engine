@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals" />
+  <PropertyGroup Label="Globals">
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>SampleMgrVS11</RootNamespace>
+    <ProjectGuid>{397012D1-8739-DD86-A7B0-F027DE3CEB3E}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\..\..\src\lib</OutDir>
+    <TargetName>SampleMgr</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\..\..\src\lib</OutDir>
+    <TargetName>SampleMgr</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;XST_STL;NO_EXPORT_SAMPLE;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(QT_HOME)\include;../../../../src/include</AdditionalIncludeDirectories>
+      <MinimalRebuild>false</MinimalRebuild>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>../../../../src/lib;$(QT_HOME)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>XSourceEngined.lib;qtmaind.lib;QtCored4.lib;QtGuid4.lib;QtMultimediad4.lib;QtXmld4.lib;QtNetworkd4.lib;QtScriptd4.lib;Qt3Supportd4.lib;comdlg32.lib;QAxContainerd.lib;QtHelpd4.lib;QtXmlPatternsd4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;XST_STL;NO_EXPORT_SAMPLE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(QTDIR)\include;../../../../src/include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>../../../../src/lib;$(QT_HOME)\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>XSourceEngined.lib;qtmaind.lib;QtCored4.lib;QtGuid4.lib;QtMultimediad4.lib;QtXmld4.lib;QtNetworkd4.lib;QtScriptd4.lib;Qt3Supportd4.lib;comdlg32.lib;QAxContainerd.lib;QtHelpd4.lib;QtXmlPatternsd4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\CustomGeometryLOD\CCustomGeometryLOD.cpp" />
+    <ClCompile Include="..\..\..\CustomGeometry\CCustomGeometry.cpp" />
+    <ClCompile Include="..\..\..\SampleMgr\CSampleMgr.cpp" />
+    <ClCompile Include="..\..\..\SampleMgr\Main.cpp" />
+    <ClCompile Include="..\..\..\SampleMgr\ui\CMainWindow.cpp" />
+    <ClCompile Include="..\..\..\SampleMgr\ui\CMainWindow.h.cpp" />
+    <ClCompile Include="..\..\..\SampleMgr\ui\CRenderWidget.cpp" />
+    <ClCompile Include="..\..\..\SampleMgr\ui\CSampleToolBox.h.cpp" />
+    <ClCompile Include="..\..\..\SimpleSample\CSimpleSample.cpp" />
+    <ClCompile Include="..\..\..\Terrain\CTerrain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\CustomGeometryLOD\CCustomGeometryLOD.h" />
+    <ClInclude Include="..\..\..\CustomGeometry\CCustomGeometry.h" />
+    <ClInclude Include="..\..\..\SampleMgr\CSampleMgr.h" />
+    <ClInclude Include="..\..\..\SampleMgr\IncludeSamples.h" />
+    <ClInclude Include="..\..\..\SampleMgr\ISample.h" />
+    <ClInclude Include="..\..\..\SampleMgr\ui\CMainWindow.h" />
+    <ClInclude Include="..\..\..\SampleMgr\ui\CPerspectiveDlg.h" />
+    <ClInclude Include="..\..\..\SampleMgr\ui\CRenderInfo.h" />
+    <ClInclude Include="..\..\..\SampleMgr\ui\CRenderWidget.h" />
+    <ClInclude Include="..\..\..\SampleMgr\ui\CSampleToolBox.h" />
+    <ClInclude Include="..\..\..\SampleMgr\ui\main.ui.h" />
+    <ClInclude Include="..\..\..\SampleMgr\ui\PerspectiveDlg.ui.h" />
+    <ClInclude Include="..\..\..\SimpleSample\CSimpleSample.h" />
+    <ClInclude Include="..\..\..\Terrain\CTerrain.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
