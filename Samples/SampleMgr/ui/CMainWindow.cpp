@@ -12,7 +12,7 @@
 #include "CRenderWidget.h"
 #include "CRenderInfo.h"
 
-CMainWindow::CMainWindow(QWidget* pParent, Qt::WFlags iFlags) : QMainWindow( pParent, iFlags )
+CMainWindow::CMainWindow(QWidget* pParent) : QWindow( pParent )
 {
 	this->setMinimumSize( 1200, 700 );
 	m_MainWndUi.setupUi( this );

@@ -1,17 +1,17 @@
 #ifndef CMAIN_WINDOW_H
 #define CMAIN_WINDOW_H
 
-#include <QtGui/QMainWindow>
-#include <QtGui/QPushButton.h>
-#include <QtGui/qlistwidget.h>
-#include <QtGui/qlistview.h>
+#include <QtGui/QWindow>
+#include <QtWidgets/QPushButton.h>
+#include <QtWidgets/qlistwidget.h>
+#include <QtWidgets/qlistview.h>
 #include "main.ui.h"
 #include "CSampleToolBox.h"
 
 class CSampleMgr;
 class CRenderWidget;
 
-class CMainWindow : public QMainWindow
+class CMainWindow : public QWindow
 {
 	Q_OBJECT
 
@@ -20,7 +20,7 @@ class CMainWindow : public QMainWindow
 
 	public:
 
-		CMainWindow(QWidget* pParent = NULL, Qt::WFlags iFlags = 0);
+		CMainWindow(QWidget* pParent = NULL);
 		~CMainWindow();
 
 		bool			Init(CSampleMgr* pMgr);

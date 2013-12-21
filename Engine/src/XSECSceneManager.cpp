@@ -15,6 +15,7 @@
 #include "XSEIShaderSystem.h"
 #include "XSECMeshManager.h"
 #include "XSECMaterialManager.h"
+#include "XSEIViewport.h"
 
 namespace XSE
 {
@@ -199,7 +200,8 @@ namespace XSE
 			}
 			break;
 		}
-		
+
+		pCamera->SetAspectRatio( GetRenderSystem()->GetOptions().uiResolutionWidth, GetRenderSystem()->GetOptions().uiResolutionWidth );
 		pCamera->_CreateFrustumMesh();
 		pCamera->ShowFrustumMesh( false );
 
@@ -291,6 +293,11 @@ namespace XSE
 	CSceneManager::CameraIterator CSceneManager::GetCameraIterator()
 	{
 		return CameraIterator( &m_mCameras );
+	}
+
+	CSceneManager::CameraMap& CSceneManager::GetCameras()
+	{
+		return m_mCameras;
 	}
 
 	void CSceneManager::_AddObject(IRenderableObject* pObj)

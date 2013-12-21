@@ -9,8 +9,11 @@ class CSimpleSample : public ISample
 
 		virtual				~CSimpleSample() {}
 
-		const char*			GetName() const
+		const char*			GetName() const override
 							{ return "SimpleSample"; }
+
+		const char*			GetGroupName() const override
+							{ return "Default"; }
 
 		i32					Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd);
 

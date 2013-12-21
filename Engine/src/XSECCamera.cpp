@@ -94,7 +94,7 @@ namespace XSE
 
 		m_fTime = fElapsedTime;
 
-		SetFOV( m_fFOV, m_fNear, m_fFar );
+		//SetFOV( m_fFOV, m_fNear, m_fFar );
 
 		SphericalToCartesian( &m_vecLookAt, m_vecAngles.x - XST_HALF_PI, -m_vecAngles.y, 1.0f );
 		
@@ -117,13 +117,23 @@ namespace XSE
 		SetFOV( fAngle, m_fNear, m_fFar );
 	}
 
-	void CCamera::SetFOV(cf32& fAngle, cf32& fNear, cf32& fFar)
+	void CCamera::SetFOV(cf32& fAngle, cu32& uiScreenWidth, cu32& uiScreenHeight, cf32& fNear, cf32& fFar)
 	{
 		m_fFOV = fAngle;
 		m_fNear = fNear;
 		m_fFar = fFar;
-		m_fAspectRatio = (f32)m_pRS->GetOptions().uiResolutionWidth / (f32)m_pRS->GetOptions().uiResolutionHeight;
+		m_fAspectRatio = (f32) uiScreenWidth / (f32) uiScreenHeight;
 		m_pRS->SetPerspectiveFOV( m_fFOV, m_fAspectRatio, m_fNear, m_fFar );
+	}
+
+	void CCamera::SetFOV(cf32& fAngle, cf32& fNear, cf32& fFar)
+	{
+		SetFOV( fAngle, m_pRS->GetOptions().uiResolutionWidth, m_pRS->GetOptions().uiResolutionHeight, fNear, fFar );
+	}
+
+	void CCamera::SetAspectRatio(cu32& uiScreenWidth, cu32& uiScreenHeight)
+	{
+		SetFOV( m_fFOV, uiScreenWidth, uiScreenHeight, m_fNear, m_fFar );
 	}
 
 	void CCamera::SetNear(cf32& fNear)

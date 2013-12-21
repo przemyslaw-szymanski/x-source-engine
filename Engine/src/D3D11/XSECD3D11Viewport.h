@@ -39,6 +39,10 @@ namespace XSE
 					m_afBGColor[ 3 ] = (f32)m_BGColor.a / UCHAR_MAX;
 				}
 
+				xst_fi
+				const SViewportOptions&	GetOptions() const
+										{ return m_Options; }
+
 			protected:
 
 					i32			_Create(ID3D11Device* pDevice, IDXGISwapChain* pSwapChain, const SViewportOptions& Options);

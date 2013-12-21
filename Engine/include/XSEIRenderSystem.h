@@ -105,7 +105,7 @@ namespace XSE
 			virtual void				SetScale(Mtx4* pMtxOut, cf32& fX, cf32& fY, cf32& fZ) = 0;
 			virtual void				SetScale(Mtx4* pMtxOut, const Vec3& vecScale) = 0;
 			virtual void				SetMatrix(const MATRIX_TYPE& eType, const Mtx4& mtx) = 0;
-			virtual void				ResizeBuffers(cu32& uiWidth, cu32& uiHeight) = 0;
+			virtual i32					ResizeBuffers(cu32& uiWidth, cu32& uiHeight) = 0;
 			virtual IIndexBuffer*		CreateIndexBuffer() = 0;
 			virtual i32					SetIndexBuffer(const IIndexBuffer* pBuff) = 0;
 			virtual i32					CreateShaderSystem(xst_castring& strName) = 0;

@@ -80,12 +80,12 @@ namespace XSE
 
 					bool			CheckCaps();
 
-					SFeatures	GetCaps();
+					SFeatures		GetCaps();
 
 			xst_fi	IRenderSystem*	GetRenderSystem()
 									{ return m_pRenderSystem; }
 
-					CSceneManager*	CreateSceneManager(xst_castring& strName, f32 fSceneSize = 0);
+					CSceneManager*	CreateSceneManager(xst_castring& strName, f32 fSceneSize = 0, bool bSetAsCurrent = false);
 					
 					i32				SetSceneManager(xst_castring& strName);
 					i32				SetSceneManager(CSceneManager* pSceneMgr);
@@ -132,6 +132,8 @@ namespace XSE
 
 			xst_fi	CSceneManager*		GetSceneManager()
 										{ xst_assert( m_pCurrentScene, "(CEngine::GetSceneManager) SceneManager is not set" ); return m_pCurrentScene; }
+
+					i32					SetScreenResolution(u32 uiWidth, u32 uiHeight, u32 uiRefreshRate);
 
 		protected:
 

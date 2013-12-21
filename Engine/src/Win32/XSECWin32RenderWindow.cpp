@@ -431,8 +431,8 @@ namespace XSE
 			this->m_uiWndWidth = uiWidth;
 			this->m_uiWndHeight = uiHeight;
 			SetWindowPos( m_hWnd, HWND_TOP, 0, 0, uiWidth, uiHeight, SWP_NOMOVE | SWP_NOZORDER );
-			if( m_pRenderSystem )
-				this->m_pRenderSystem->ResizeBuffers( uiWidth - 1, uiHeight - 1 );
+			xst_assert( m_pEngine, "(CRenderWindow::_OnWMSize)" );
+			m_pEngine->SetScreenResolution( uiWidth, uiHeight, 0 );
 			UpdateWindow( m_hWnd );
 		}
 
@@ -525,13 +525,6 @@ namespace XSE
 			if( _GetKeyboardListenersResult() > 0 )
 			{
 				return;
-			}
-
-			this->m_uiWndWidth = uiWidth;
-			this->m_uiWndHeight = uiHeight;
-			if( this->m_pRenderSystem )
-			{
-				this->m_pRenderSystem->ResizeBuffers( uiWidth, uiHeight );
 			}
 		}
 

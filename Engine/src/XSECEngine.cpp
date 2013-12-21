@@ -17,6 +17,7 @@
 #include "XSEIShaderSystem.h"
 #include "XSECImageManager.h"
 #include "XSECTerrainSystem.h"
+#include "XSECCamera.h"
 
 #define XSE_LUA_COUNT	256
 
@@ -583,7 +584,7 @@ namespace XSE
 		return m_pRenderSystem;
 	}
 
-	CSceneManager*	CEngine::CreateSceneManager(xst_castring& strName, f32 fSceneSize)
+	CSceneManager*	CEngine::CreateSceneManager(xst_castring& strName, f32 fSceneSize, bool bSetAsCurrent)
 	{
 		xst_assert2( m_pImgMgr );
 		xst_assert2( m_pRenderSystem );
@@ -612,6 +613,11 @@ namespace XSE
 		pScene->SetCamera( pCam );
 
 		pScene->SetTerrainSystem( xst_new CTerrainSystem( pScene, m_pImgMgr, m_pRenderSystem ) );
+
+		if( bSetAsCurrent )
+		{
+			SetSceneManager( pScene );
+		}
 
 		return pScene;
 	}
@@ -658,6 +664,27 @@ namespace XSE
 	void CEngine::Update(cf32& fFrameTime)
 	{
 		m_pCurrentScene->Update( fFrameTime );
+	}
+
+	// OPTIONS
+	i32 CEngine::SetScreenResolution(u32 uiWidth, u32 uiHeight, u32 uiRefreshRate)
+	{
+		if( m_pRenderSystem )
+		{
+			if( XST_FAILED( m_pRenderSystem->ResizeBuffers( uiWidth, uiHeight ) ) )
+			{
+				return RESULT::FAILED;
+			}
+		}
+
+		for( auto& SceneItr : m_mScenes )
+		{
+			for( auto& CamItr : SceneItr.second->GetCameras() )
+			{
+				CamItr.second->SetAspectRatio( uiWidth, uiHeight );
+			}
+		}
+		return RESULT::OK;
 	}
 
 }//xse

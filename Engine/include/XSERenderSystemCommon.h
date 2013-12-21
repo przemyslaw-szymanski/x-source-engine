@@ -378,35 +378,31 @@ namespace XSE
 
 	struct XST_API SViewportOptions
 	{
-		SViewportOptions() :bAntialiasing( false ), bMultisampling( false ), bScissor( false ),
-							eFillMode( FillModes::SOLID ), eCullMode( CullModes::BACK ) {}
+		SViewportOptions() { }
 
-		bool			bAntialiasing;
-		bool			bMultisampling;
-		bool			bScissor;
-		FILL_MODE		eFillMode;
-		CULL_MODE		eCullMode;
+		u32				uiResolutionWidth = 800;
+		u32				uiResolutionHeight = 600;
+		FILL_MODE		eFillMode = FillModes::SOLID;
+		CULL_MODE		eCullMode = CullModes::BACK;
+		bool			bAntialiasing = false;
+		bool			bMultisampling = false;
+		bool			bScissor = false;
 	};
 
 	struct XST_API SRenderSystemOptions : public SViewportOptions
 	{
 
-		SRenderSystemOptions() :	uiResolutionWidth( 800 ), uiResolutionHeight( 600 ), uiRefreshRate( 60 ),
-									bFullScreen( false ), uiBitsPerPixel( 24 ), uiHWND( 0 ), bDebugMode( false ),
-									ulShaderFlags( 0 ), eMinFeatureLevel( ShaderModels::UNKNOWN ), 
-									eMaxFeatureLevel( ShaderModels::UNKNOWN ), bVSync( false ) {}
+		SRenderSystemOptions() {}
 
-		u32				uiResolutionWidth;
-		u32				uiResolutionHeight;
-		u32				uiRefreshRate;
-		u32				uiBitsPerPixel;
-		u32				uiHWND;
-		ul32			ulShaderFlags;
-		SHADER_MODEL	eMinFeatureLevel;
-		SHADER_MODEL	eMaxFeatureLevel;
-		bool			bFullScreen;
-		bool			bDebugMode;
-		bool			bVSync;
+		u32				uiRefreshRate = 60;
+		u32				uiBitsPerPixel = 24;
+		u32				uiHWND = 0;
+		ul32			ulShaderFlags = 0;
+		SHADER_MODEL	eMinFeatureLevel = ShaderModels::UNKNOWN;
+		SHADER_MODEL	eMaxFeatureLevel = ShaderModels::UNKNOWN;
+		bool			bFullScreen = false;
+		bool			bDebugMode = false;
+		bool			bVSync = false;
 	};
 
 	struct XST_API SResolution

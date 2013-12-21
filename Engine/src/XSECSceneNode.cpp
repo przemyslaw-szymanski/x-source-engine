@@ -224,8 +224,6 @@ namespace XSE
 			return XST_FAIL;
 		}
 
-		m_vObjects.push_back( pObject );
-
 		{
 			switch( pObject->GetObjectType() )
 			{
@@ -262,7 +260,7 @@ namespace XSE
 				}
 				break;
 			}
-
+			m_vObjects.push_back( pObject );
 			return XST_OK;
 		}
 		

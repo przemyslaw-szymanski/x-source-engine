@@ -90,6 +90,8 @@ namespace XSE
 
 		CameraIterator	GetCameraIterator();
 
+		CameraMap&		GetCameras();
+
 		IRenderSystem*	GetRenderSystem();
 
 		const	IRenderSystem*	GetRenderSystem() const;

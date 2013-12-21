@@ -97,7 +97,11 @@ namespace XSE
 
 			virtual	void		SetFOV(cf32& fAngle);
 
+			virtual void		SetFOV(cf32& fAngle, cu32& uiScreenWidth, cu32& uiScreenHeight, cf32& fNear, cf32& fFar);
+
 			virtual	void		SetFOV(cf32& fAngle, cf32& fNear, cf32& fFar);
+
+			virtual void		SetAspectRatio(cu32& uiWidth, cu32& uiHeight);
 
 			virtual	void		SetNear(cf32& fNear);
 

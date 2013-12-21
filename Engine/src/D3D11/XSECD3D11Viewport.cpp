@@ -8,7 +8,7 @@ namespace XSE
 	{
 
 		//Matrix for 2D rendering
-		XMMATRIX	g_mtxOrtho;
+		//XMMATRIX	g_mtxOrtho;
 
 		CViewport::CViewport(IRenderSystem* pRS) : 
 			IViewport( pRS ), 
@@ -69,8 +69,8 @@ namespace XSE
 			ID3D11Texture2D* pTexDepthStencil = xst_null;
 			D3D11_TEXTURE2D_DESC descDepth;
 			xst_zero( &descDepth, sizeof( descDepth ) );
-			descDepth.Width = m_pRS->GetOptions().uiResolutionWidth;
-			descDepth.Height = m_pRS->GetOptions().uiResolutionHeight;
+			descDepth.Width = m_Options.uiResolutionWidth;
+			descDepth.Height = m_Options.uiResolutionHeight;
 			descDepth.MipLevels = 1;
 			descDepth.ArraySize = 1;
 			descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -184,14 +184,14 @@ namespace XSE
 			m_pRS->m_pDeviceContext->OMSetDepthStencilState( m_apDSStates[ 0 ], 1 );
 			m_pRS->m_pDeviceContext->RSSetState( m_pD3DRState );
 
-			m_D3DViewport.Width = (f32)m_pRS->GetOptions().uiResolutionWidth;
-			m_D3DViewport.Height = (f32)m_pRS->GetOptions().uiResolutionHeight;
+			m_D3DViewport.Width = (f32) m_Options.uiResolutionWidth;
+			m_D3DViewport.Height = (f32) m_Options.uiResolutionHeight;
 			m_D3DViewport.MinDepth = 0;
 			m_D3DViewport.MaxDepth = 1;
 			m_D3DViewport.TopLeftX = 0;
 			m_D3DViewport.TopLeftY = 0;
 
-			g_mtxOrtho = XMMatrixOrthographicLH( m_D3DViewport.Width, m_D3DViewport.Height, 0.01f, 1000.0f );
+			//g_mtxOrtho = XMMatrixOrthographicLH( m_D3DViewport.Width, m_D3DViewport.Height, 0.01f, 1000.0f );
 
 			this->m_bViewportCreated = true;
 			return RESULT::OK;

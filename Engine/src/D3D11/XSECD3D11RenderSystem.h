@@ -33,6 +33,7 @@ namespace XSE
 			friend class CHLSLShaderSystem;
 			friend class CCGShaderSystem;
 			friend class CHLSLShaderSystem;
+			friend class CRenderThread;
 
 			typedef xst_map< ul32, CInputLayout* >	ILMap;
 
@@ -185,7 +186,7 @@ namespace XSE
 						void				GetMatrix(const MATRIX_TYPE& eMtx, Mtx4* pMtxOut) const;
 				const	XMMATRIX*			GetMatrix(const MATRIX_TYPE& eMtx) const;
 
-						void				ResizeBuffers(cu32& uiWidth, cu32& uiHeight);
+						i32					ResizeBuffers(cu32& uiWidth, cu32& uiHeight);
 
 						IIndexBuffer*		CreateIndexBuffer();
 
@@ -221,6 +222,8 @@ namespace XSE
 
 						void		_UnloadLibraries();
 						i32			_LoadLibraries();
+
+						i32			_InitInThread();
 
 						ul32		_GetShaderFlags();
 						ul32		_GetShaderFlags(cul32& ulFlags);

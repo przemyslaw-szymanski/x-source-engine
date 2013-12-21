@@ -71,7 +71,7 @@ namespace XSE
 						void				SetRotationY(cf32& fAngle) {};
 						void				SetRotationZ(cf32& fAngle) {};
 						void				SetRotation(cf32& fAngle, const Vec3& vecAxis) {};
-						void				ResizeBuffers(cu32& uiWidth, cu32& uiHeight) {}
+						i32					ResizeBuffers( cu32& uiWidth, cu32& uiHeight ) { return 0; }
 
 						void				SetTranslationX(cf32& fOffset) {};
 						void				SetTranslationY(cf32& fOffset) {};

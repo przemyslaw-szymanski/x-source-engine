@@ -352,9 +352,39 @@ namespace XSE
 			}
 
 			m_pCurrentShaderSystem = GetShaderSystem( );
+			return RESULT::OK;
+		}
 
-			
+		i32 CRenderSystem::ResizeBuffers( cu32 &uiWidth, cu32 &uiHeight )
+		{
+			//Do not resize to the same values
+			if( ( m_Options.uiResolutionWidth == uiWidth && m_Options.uiResolutionHeight == uiHeight ) )
+				return RESULT::OK;
+			//Relase current render target view
+			m_pViewport->_Destroy();
+			//Remember old values
+			u32 uiOldWidth = m_Options.uiResolutionWidth;
+			u32 uiOldHeight = m_Options.uiResolutionHeight;
+			m_Options.uiResolutionWidth = uiWidth;
+			m_Options.uiResolutionHeight = uiHeight;
 
+			ul32 ulFlags = 0;
+			if( m_Options.bFullScreen )
+			{
+				ulFlags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+			}
+
+			m_pSwapChain->ResizeBuffers( 1, uiWidth, uiHeight, DXGI_FORMAT_R8G8B8A8_UNORM, ulFlags );
+
+			//Create new rendertarget view
+			if( XST_FAILED( m_pViewport->_Create( m_pDevice, m_pSwapChain, m_Options ) ) )
+			{
+				m_Options.uiResolutionWidth = uiOldWidth;
+				m_Options.uiResolutionHeight = uiOldHeight;
+				return RESULT::FAILED;
+			}
+
+			SetViewport( m_pViewport, false );
 			return RESULT::OK;
 		}
 
@@ -1027,24 +1057,6 @@ namespace XSE
 		{
 			//Update constant buffer
 			m_pCurrentShaderSystem->UpdateObjectInputs();
-		}
-
-		void CRenderSystem::ResizeBuffers(cu32 &uiWidth, cu32 &uiHeight)
-		{
-			//Relase current render target view
-			m_pViewport->_Destroy();
-			//Create new rendertarget view
-			m_pViewport->_Create( m_pDevice, m_pSwapChain, m_Options );
-
-			ul32 ulFlags = 0;
-			if( m_Options.bFullScreen )
-			{
-				ulFlags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-			}
-
-			m_pSwapChain->ResizeBuffers( 1, uiWidth, uiHeight, DXGI_FORMAT_R8G8B8A8_UNORM, ulFlags ); 		
-			
-			SetViewport( m_pViewport, false );
 		}
 
 		IIndexBuffer* CRenderSystem::CreateIndexBuffer()

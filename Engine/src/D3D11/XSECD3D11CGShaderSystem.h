@@ -7,7 +7,7 @@
 
 
 #if defined (XST_WINDOWS)
-#include "CG/cgD3D11.h"
+#include <CG/cgD3D11.h>
 namespace XSE
 {
 	namespace D3D11

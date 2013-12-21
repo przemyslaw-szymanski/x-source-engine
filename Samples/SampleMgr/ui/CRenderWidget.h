@@ -1,8 +1,8 @@
 #ifndef CRENDER_WIDGET_H
 #define CRENDER_WIDGET_H
 
-#include <QtGui\QWidget>
-#include <QtGui\QLabel>
+#include <QWidget>
+#include <QLabel>
 
 class CSampleMgr;
 class CRenderInfo;
@@ -40,7 +40,7 @@ class CRenderWidget : public QWidget
 
 	protected:
 
-		CSampleMgr*	m_pSampleMgr;
+		CSampleMgr*	m_pSampleMgr = 0;
 };
 
 #endif

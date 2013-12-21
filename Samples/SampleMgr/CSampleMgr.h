@@ -66,10 +66,10 @@ class CSampleMgr
 
 	protected:
 
-		XSE::CEngine*		m_pEngine;
+		XSE::CEngine*		m_pEngine = xst_null;
 		SampleMap			m_mSamples;
-		ISample*			m_pCurrSample;
-		XSE::IRenderWindow*	m_pRenderWnd;
+		ISample*			m_pCurrSample = xst_null;
+		XSE::IRenderWindow*	m_pRenderWnd = xst_null;
 };
 
 #endif //CSAMPLE_MGR_H

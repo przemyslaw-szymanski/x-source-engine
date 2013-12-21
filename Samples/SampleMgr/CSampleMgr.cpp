@@ -1,8 +1,7 @@
 #include "CSampleMgr.h"
-#include "ui\CRenderInfo.h"
 #include "IncludeSamples.h"
 
-CSampleMgr::CSampleMgr() : m_pCurrSample( NULL )
+CSampleMgr::CSampleMgr()
 {
 }
 
@@ -67,6 +66,8 @@ i32 CSampleMgr::InitEngine(u32 uiWindowHandle)
 		return XST_FAIL;
 	}
 
+	m_pEngine->SetScreenResolution( 650, 500, 0 );
+
 	return XST_OK;
 }
 
@@ -98,8 +99,8 @@ bool CSampleMgr::RegisterSample(pfnCreateSample Create, pfnDestroySample Destroy
 void CSampleMgr::RegisterSamples()
 {
 	RegisterSample( &CreateCSimpleSample, &DestroyCSimpleSample );
-	RegisterSample( &CreateCCustomGeometry, &DestroyCCustomGeometry );
-	RegisterSample( &CreateCCustomGeometryLOD, &DestroyCCustomGeometryLOD );
+	//RegisterSample( &CreateCCustomGeometry, &DestroyCCustomGeometry );
+	//RegisterSample( &CreateCCustomGeometryLOD, &DestroyCCustomGeometryLOD );
 	RegisterSample( &CreateCTerrain, &DestroyCTerrain );
 }
 

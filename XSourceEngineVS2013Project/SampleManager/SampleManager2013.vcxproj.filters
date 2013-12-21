@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Samples">
+      <UniqueIdentifier>{9186173d-c834-4b37-ba47-29ee88f4ea48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Samples\SimpleSample">
+      <UniqueIdentifier>{df732ca7-7a8b-46e4-ab01-523926af3315}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Samples\CustomGeometry">
+      <UniqueIdentifier>{8ab47ad0-3f9c-4af0-a89b-cf3a77fd6d84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{0bd6f765-3612-486a-a7a5-e9d1f6fa3fa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Samples\CustomGeometryLOD">
+      <UniqueIdentifier>{7ae882b2-4e97-4029-9013-09b1bc08e8ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Samples\Terrain">
+      <UniqueIdentifier>{35bd76c9-ece0-453b-a77c-607927f44b1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Samples\EmptyProject">
+      <UniqueIdentifier>{1c434eef-78fb-4470-aa06-b5de2c633056}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\moc">
+      <UniqueIdentifier>{7c24415f-3dd0-4a26-b195-f9d7f5c69ad2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui\scripts">
+      <UniqueIdentifier>{7f226871-4592-4e01-ba8f-d430343e4f65}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Samples\Terrain\CTerrain.cpp">
+      <Filter>Samples\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Samples\SampleMgr\CSampleMgr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\CMainWindow.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\main.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Samples\SimpleSample\CSimpleSample.cpp">
+      <Filter>Samples\SimpleSample</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\moc_CMainWindow.cpp">
+      <Filter>ui\moc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Samples\SampleMgr\ui\CRenderWidget.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Samples\Terrain\CTerrain.h">
+      <Filter>Samples\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Samples\SampleMgr\IncludeSamples.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Samples\SampleMgr\ISample.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Samples\SampleMgr\CSampleMgr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Samples\SampleMgr\Qt\SampleManager\CMainWindow.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Samples\SimpleSample\CSimpleSample.h">
+      <Filter>Samples\SimpleSample</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Samples\SampleMgr\ui\CRenderWidget.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Samples\SampleMgr\Qt\SampleManager\ui_cmainwindow.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Samples\SampleMgr\Qt\SampleManager\cmainwindow.ui">
+      <Filter>ui\scripts</Filter>
+    </None>
+  </ItemGroup>
+</Project>

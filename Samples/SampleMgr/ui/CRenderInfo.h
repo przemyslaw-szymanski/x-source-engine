@@ -1,6 +1,6 @@
 #ifndef CRENDER_INFO_H
 #define CRENDER_INFO_H
-
+/*
 #include <QtGui\QLabel>
 #include <QtCore\qmap.h>
 #include <QtGui\QWidget>
@@ -117,5 +117,5 @@ class CRenderInfo
 		QString		m_strBackground;
 		QWidget*	m_pParent;
 };
-
+*/
 #endif
