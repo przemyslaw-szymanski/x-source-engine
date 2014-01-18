@@ -35,7 +35,7 @@ namespace XSE
 							IInputLayout* pIL = m_pSystem->m_pInputLayout;
 
 							//MeshPtr pMesh = m_pSystem->m_pSceneMgr->GetModelManager()->GetMeshManager()->CreateMesh( ssName.str(), pIL, BasicShapes::LINE_BOX, &Options );
-							//pMesh->SetVisible( false );
+							//pMesh->SetVisible( true );
 							//m_pSystem->m_pOctModel->AddMesh( pMesh, true );
 						#endif //XSE_RENDER_DEBUG
 					}
@@ -55,6 +55,7 @@ namespace XSE
 		m_strSceneNodeName = m_pSceneMgr->GetName() + "/xse_octree_model";
 		m_pOctModel = m_pSceneMgr->GetModelManager()->CreateModel( m_strSceneNodeName, m_pSceneMgr->GetName() );
 		m_pOctModel->SetMaterial( m_pSceneMgr->GetModelManager()->GetMeshManager()->GetMaterialManager()->GetMaterial( CMaterialManager::DEFAULT_MAT_COLOR, DEFAULT_GROUP ) );
+		m_pOctModel->SetVisible( false );
 	}
 
 	COctreeScenePartitionSystem::~COctreeScenePartitionSystem()
@@ -99,7 +100,7 @@ namespace XSE
 		m_vOctNodes.clear();
 		CCamera* pCam = m_pSceneMgr->GetComputeCamera();
 
-		CBoundingSphere CamSphere( 100, pCam->GetPosition() );
+		CBoundingSphere CamSphere( pCam->GetViewDistance(), pCam->GetPosition() );
 		
 		_OctFrustumCull( m_pOctree, pCam );
 		_OctRangeCull( CamSphere );
@@ -171,6 +172,7 @@ namespace XSE
 		{
 			pObj = vObjs[ o ];
 			//If this object is disabled for other reason
+			// TODO: Cache miss here
 			if( pObj->GetObjectDisableReason() != ODR::NOT_DISABLED && pObj->GetObjectDisableReason() != ODR::FRUSTUM_CULLING )
 				continue; //skip it
 

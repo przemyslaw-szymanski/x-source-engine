@@ -338,7 +338,7 @@ namespace XST
 					return Vec2( x + _vecRight.x, y + _vecRight.y );
 				}
 
-				xst_fi void AddEq(const Vec2& _vecRight)
+				xst_fi void AddAssign(const Vec2& _vecRight)
 				{
 					x += _vecRight.x; y += _vecRight.y;
 				}
@@ -348,7 +348,7 @@ namespace XST
 					return Vec2( x - _vecRight.x, y - _vecRight.y);
 				}
 
-				xst_fi void SubEq(const Vec2& _vecRight)
+				xst_fi void SubAssign(const Vec2& _vecRight)
 				{
 					x -= _vecRight.x; y -= _vecRight.y;
 				}
@@ -358,7 +358,7 @@ namespace XST
 					return Vec2( x * _vecRight.x, y * _vecRight.y );
 				}
 
-				xst_fi void  MulEq(const Vec2& _vecRight)
+				xst_fi void  MulAssign(const Vec2& _vecRight)
 				{
 					x *= _vecRight.x; y *= _vecRight.y;
 				}
@@ -368,29 +368,53 @@ namespace XST
 					return Vec2( x / _vecRight.x, y / _vecRight.y );
 				}
 
-				xst_fi void DivEq(const Vec2& _vecRight)
+				xst_fi void DivAssign(const Vec2& _vecRight)
 				{
 					x /= _vecRight.x; y /= _vecRight.y;
 				}
 
-				xst_fi void AddEq(const f32& _fScalar)
+				xst_fi void AddAssign(const f32& _fScalar)
 				{
 					x += _fScalar; y += _fScalar;
 				}
 
-				xst_fi void SubEq(const f32& _fScalar)
+				xst_fi void SubAssign(const f32& _fScalar)
 				{
 					x -= _fScalar; y -= _fScalar;
 				}
 
-				xst_fi void MulEq(const f32& _fScalar)
+				xst_fi void MulAssign(const f32& _fScalar)
 				{
 					x *= _fScalar; y *= _fScalar;
 				}
 
-				xst_fi void DivEq(const f32& _fScalar)
+				xst_fi void DivAssign(const f32& _fScalar)
 				{
 					x /= _fScalar; y /= _fScalar;
+				}
+
+				xst_fi void Add(const Vec2& vecLeft, const Vec2& vecRight)
+				{
+					x = vecLeft.x + vecRight.x;
+					y = vecLeft.y + vecRight.y;
+				}
+
+				xst_fi void Sub(const Vec2& vecLeft, const Vec2& vecRight)
+				{
+					x = vecLeft.x - vecRight.x;
+					y = vecLeft.y - vecRight.y;
+				}
+
+				xst_fi void Mul(const Vec2& vecLeft, const Vec2& vecRight)
+				{
+					x = vecLeft.x * vecRight.x;
+					y = vecLeft.y * vecRight.y;
+				}
+
+				xst_fi void Div(const Vec2& vecLeft, const Vec2& vecRight)
+				{
+					x = vecLeft.x / vecRight.x;
+					y = vecLeft.y / vecRight.y;
 				}
 
 				xst_fi f32 Length() const

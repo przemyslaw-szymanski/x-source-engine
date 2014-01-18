@@ -257,6 +257,13 @@ namespace XST
 					return Vec3( x + fScalar, y + fScalar, z + fScalar );
 				}
 
+				xst_fi void Add(const Vec3& vecLeft, const Vec3& vecRight)
+				{
+					x = vecLeft.x + vecRight.x;
+					y = vecLeft.y + vecRight.y;
+					z = vecLeft.z + vecRight.z;
+				}
+
 				xst_fi void AddAssign(const Vec3& _vecRight)
 				{
 					x += _vecRight.x; y += _vecRight.y; z += _vecRight.z;
@@ -270,6 +277,13 @@ namespace XST
 				xst_fi Vec3 Sub(const f32& fScalar) const
 				{
 					return Vec3( x - fScalar, y - fScalar, z - fScalar );
+				}
+
+				xst_fi void Sub(const Vec3& vecLeft, const Vec3& vecRight)
+				{
+					x = vecLeft.x - vecRight.x;
+					y = vecLeft.y - vecRight.y;
+					z = vecLeft.z - vecRight.z;
 				}
 
 				xst_fi void SubAssign(const Vec3& _vecRight)
@@ -287,6 +301,13 @@ namespace XST
 					return Vec3( x * fScalar, y * fScalar, z * fScalar );
 				}
 
+				xst_fi void Mul(const Vec3& vecLeft, const Vec3& vecRight)
+				{
+					x = vecLeft.x * vecRight.x;
+					y = vecLeft.y * vecRight.y;
+					z = vecLeft.z * vecRight.z;
+				}
+
 				xst_fi void  MulAssign(const Vec3& _vecRight)
 				{
 					x *= _vecRight.x; y *= _vecRight.y; z *= _vecRight.z;
@@ -300,6 +321,13 @@ namespace XST
 				xst_fi Vec3 Div(const f32& fScalar) const 
 				{
 					return Vec3( x / fScalar, y / fScalar, z / fScalar );
+				}
+
+				xst_fi void Div(const Vec3& vecLeft, const Vec3& vecRight)
+				{
+					x = vecLeft.x / vecRight.x;
+					y = vecLeft.y / vecRight.y;
+					z = vecLeft.z / vecRight.z;
 				}
 
 				xst_fi void DivAssign(const Vec3& _vecRight)

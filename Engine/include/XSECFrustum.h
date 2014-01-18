@@ -3,6 +3,7 @@
 
 #include "XSECommon.h"
 #include "XST/XSTCPlane.h"
+#include "XSECBoundingVolume.h"
 
 namespace XSE
 {
@@ -61,10 +62,32 @@ namespace XSE
 			xst_fi	const Vec3&		SetDirection() const
 									{ return m_vecDirection; }
 
+			xst_fi	bool			SphereTest( const CBoundingSphere& Sphere ) const
+									{ return SphereTest( Sphere.vecCenter, Sphere.fRadius ); }
+
+					bool			SphereTest(const Vec4& vecCenter, cf32& fRadius) const;
+
+					bool			PointTest(const Vec3& vecPoint) const;
+					bool			PointTest(const Vec4& vecPoint) const;
+
+					bool			AABBTest(const XST::CAABB& AABB) const;
+
+					void			CreateFromMatrix(const Mtx4& mtxProjection);
+
+					void			Transform(const Mtx4& mtxInvView);
+
 		public:
 
-			Vec3	m_vecPosition;
-			Vec3	m_vecDirection;
+			Vec4			m_vecPosition;
+			Vec3			m_vecDirection;
+			Quaternion		m_quatOrientation;
+			CBoundingSphere	m_BoundingSphere;
+			f32				m_fRightSlope;
+			f32				m_fLeftSlope;
+			f32				m_fTopSlope;
+			f32				m_fBottomSlope;
+			f32				m_fNear;
+			f32				m_fFar;
 
 			union
 			{

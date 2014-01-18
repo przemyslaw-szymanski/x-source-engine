@@ -51,11 +51,11 @@ namespace XSE
 
 				/*struct SMatrixBuffer
 				{
-					XMMATRIX	mtxWorld;
-					XMMATRIX	mtxView;
-					XMMATRIX	mtxProj;
-					XMMATRIX	mtxViewProj;
-					XMMATRIX	mtxWorldViewProj;
+					DirectX::XMMATRIX	mtxWorld;
+					DirectX::XMMATRIX	mtxView;
+					DirectX::XMMATRIX	mtxProj;
+					DirectX::XMMATRIX	mtxViewProj;
+					DirectX::XMMATRIX	mtxWorldViewProj;
 				};*/
 
 				
@@ -182,9 +182,9 @@ namespace XSE
 						void				SetScale(Mtx4* pMtxOut, const Vec3& vecScale)
 											{ SetScale( pMtxOut, vecScale.x, vecScale.y, vecScale.z ); }
 
-						void				GetMatrix(const MATRIX_TYPE& eMtx, XMMATRIX* pMtxOut) const;
+						void				GetMatrix(const MATRIX_TYPE& eMtx, DirectX::XMMATRIX* pMtxOut) const;
 						void				GetMatrix(const MATRIX_TYPE& eMtx, Mtx4* pMtxOut) const;
-				const	XMMATRIX*			GetMatrix(const MATRIX_TYPE& eMtx) const;
+				const	DirectX::XMMATRIX*	GetMatrix(const MATRIX_TYPE& eMtx) const;
 
 						i32					ResizeBuffers(cu32& uiWidth, cu32& uiHeight);
 
@@ -200,6 +200,10 @@ namespace XSE
 						IShaderSystem*		GetShaderSystem(cul32& ulId);
 						IShaderSystem*		GetShaderSystem() const
 											{ return m_pCurrentShaderSystem; }
+
+						CFrustum			CreateViewFrustum() const;
+
+						void				UpdateViewFrustum(CFrustum* pFrustum) const;
 
 						void*				GetDevice() { return m_pDevice; }
 						void*				GetDeviceContext() { return m_pDeviceContext; }

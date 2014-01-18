@@ -66,8 +66,6 @@ i32 CSampleMgr::InitEngine(u32 uiWindowHandle)
 		return XST_FAIL;
 	}
 
-	m_pEngine->SetScreenResolution( 650, 500, 0 );
-
 	return XST_OK;
 }
 

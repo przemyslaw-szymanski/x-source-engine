@@ -476,6 +476,39 @@ namespace XST
 					Mul( mtxLeft, mtxRight, &mtxRet );
 					return mtxRet;
 				}
+
+				xst_i void VectorTransform(Vec4* pvecOut, const Vec4& vecVector) const
+				{
+#if defined(XST_SSE2)
+					// Splat x,y,z and w
+					Vec4 vTempX = XST_SSE_PERMUTE_PS( vecVector.v,_MM_SHUFFLE(0,0,0,0) );
+					Vec4 vTempY = XST_SSE_PERMUTE_PS( vecVector.v,_MM_SHUFFLE(1,1,1,1) );
+					Vec4 vTempZ = XST_SSE_PERMUTE_PS( vecVector.v,_MM_SHUFFLE(2,2,2,2) );
+					Vec4 vTempW = XST_SSE_PERMUTE_PS( vecVector.v,_MM_SHUFFLE(3,3,3,3) );
+					// Mul by the matrix
+					vTempX = _mm_mul_ps(vTempX, r[0]);
+					vTempY = _mm_mul_ps(vTempY, r[1]);
+					vTempZ = _mm_mul_ps(vTempZ, r[2]);
+					vTempW = _mm_mul_ps(vTempW, r[3]);
+					// Add them all together
+					vTempX = _mm_add_ps(vTempX,vTempY);
+					vTempZ = _mm_add_ps(vTempZ,vTempW);
+					vTempX = _mm_add_ps(vTempX,vTempZ);
+					pvecOut->v = vTempX.v;
+#else // XST_SSE2
+					pvecOut->x = ( m[0][0]*pvecOut->m128_f32[0])+( m[1][0]*pvecOut->m128_f32[1])+( m[2][0]*pvecOut->m128_f32[2])+( m[3][0]*pvecOut->m128_f32[3]);
+					pvecOut->y = ( m[0][1]*pvecOut->m128_f32[0])+( m[1][1]*pvecOut->m128_f32[1])+( m[2][1]*pvecOut->m128_f32[2])+( m[3][1]*pvecOut->m128_f32[3]);
+					pvecOut->z = ( m[0][2]*pvecOut->m128_f32[0])+( m[1][2]*pvecOut->m128_f32[1])+( m[2][2]*pvecOut->m128_f32[2])+( m[3][2]*pvecOut->m128_f32[3]);
+					pvecOut->w = ( m[0][3]*pvecOut->m128_f32[0])+( m[1][3]*pvecOut->m128_f32[1])+( m[2][3]*pvecOut->m128_f32[2])+( m[3][3]*pvecOut->m128_f32[3]);			
+#endif
+				}
+
+				xst_fi Vec4 VectorTransformRet(const Vec4& vecVector) const
+				{
+					Vec4 vecRet;
+					VectorTransform( &vecRet, vecVector );
+					return vecRet;
+				}
 			
 		};
 

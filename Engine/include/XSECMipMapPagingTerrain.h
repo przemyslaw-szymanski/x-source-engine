@@ -3,6 +3,9 @@
 
 #include "XSEITerrain.h"
 #include "XSECMipMapTerrainPage.h"
+#if defined( XSE_RENDERER_DEBUG )
+#	include "XSECModel.h"
+#endif // XSE_RENDERER_DEBUG
 
 namespace XSE
 {
@@ -214,6 +217,11 @@ namespace XSE
 			PageVec			m_vPages;
 			IBVec			m_vIndexBuffers;
 			CPoint			m_TileCount;
+#if defined( XSE_RENDERER_DEBUG )
+			ModelPtr		m_pBoundingSphereModel; // Used for each tile
+			ModelPtr		m_pAABBModel; // Used for each tile
+			bool			m_bBoundingObjectsCreated = false;
+#endif // XSE_RENDERER_DEBUG
 			bool			m_bTileLocked;
 	};
 

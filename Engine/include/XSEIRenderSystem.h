@@ -6,6 +6,7 @@
 #include "XSEIShaderSystem.h"
 #include "XSEIShader.h"
 #include "XSECVertexData.h"
+#include "XSECFrustum.h"
 
 namespace XSE
 {
@@ -120,6 +121,10 @@ namespace XSE
 
 			virtual	void				Enable2DRendering() = 0;
 			virtual	void				Enable3DRendering() = 0;
+
+			virtual CFrustum			CreateViewFrustum() const = 0;
+
+			virtual void				UpdateViewFrustum(CFrustum* pFrustumOut) const = 0;
 
 			virtual void				UpdateVertexBuffer(IVertexBuffer* pVB, cul32& ulStartVertex, cul32& ulVertexCount, const CVertexData& DstData) = 0;
 

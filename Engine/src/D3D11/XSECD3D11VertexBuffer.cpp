@@ -67,7 +67,7 @@ namespace XSE
 			{
 				case TopologyTypes::UNDEFINED: m_eD3DTopologyType = D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED; break;
 				case TopologyTypes::LINE_LIST: m_eD3DTopologyType = D3D11_PRIMITIVE_TOPOLOGY_LINELIST; break;
-				case TopologyTypes::LINES_TRIP: m_eD3DTopologyType = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP; break;
+				case TopologyTypes::LINE_STRIP: m_eD3DTopologyType = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP; break;
 				case TopologyTypes::POINT_LIST: m_eD3DTopologyType = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST; break;
 				case TopologyTypes::TRIANGLE_LIST: m_eD3DTopologyType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST; break;
 				case TopologyTypes::TRIANGLE_STRIP: m_eD3DTopologyType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP; break;

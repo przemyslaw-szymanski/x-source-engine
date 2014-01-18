@@ -86,6 +86,7 @@ class SAMPLE_API ISample : public XSE::IKeyboardListener, public XSE::IMouseList
 			m_pViewCam->SetLookAt( XSE::Vec3( 0, 0, 0 ) );
 
 			m_pMoveCam = m_pViewCam;
+			m_pMoveCam->SetSpeed( m_fCamMoveSpeed, m_fCamRotateSpeed, m_fCamRotateSpeed );
 
 			SetSceneManager( m_pSceneMgr );
 			pEngine->SetSceneManager( m_pSceneMgr );
@@ -148,6 +149,8 @@ class SAMPLE_API ISample : public XSE::IKeyboardListener, public XSE::IMouseList
 		XSE::CCamera*			m_pViewCam;
 		XSE::CCamera*			m_pDbgCam;
 		XSE::CCamera*			m_pMoveCam;
+		float					m_fCamRotateSpeed = 0.01f;
+		float					m_fCamMoveSpeed = 0.00001f;
 };
 
 #define SAMPLE_EXPORT_FUNC(_ClassName) \

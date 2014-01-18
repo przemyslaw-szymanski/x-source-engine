@@ -29,6 +29,8 @@ QT_BEGIN_NAMESPACE
 class Ui_CMainWindow
 {
 public:
+    QAction *ActionSolid;
+    QAction *ActionWireframe;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout_2;
     QHBoxLayout *horizontalLayout;
@@ -39,6 +41,7 @@ public:
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuRender;
+    QMenu *menuMode;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -47,6 +50,12 @@ public:
         if (CMainWindow->objectName().isEmpty())
             CMainWindow->setObjectName(QStringLiteral("CMainWindow"));
         CMainWindow->resize(1006, 616);
+        ActionSolid = new QAction(CMainWindow);
+        ActionSolid->setObjectName(QStringLiteral("ActionSolid"));
+        ActionSolid->setCheckable(true);
+        ActionWireframe = new QAction(CMainWindow);
+        ActionWireframe->setObjectName(QStringLiteral("ActionWireframe"));
+        ActionWireframe->setCheckable(true);
         centralWidget = new QWidget(CMainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         horizontalLayout_2 = new QHBoxLayout(centralWidget);
@@ -89,6 +98,8 @@ public:
         menuFile->setObjectName(QStringLiteral("menuFile"));
         menuRender = new QMenu(menuBar);
         menuRender->setObjectName(QStringLiteral("menuRender"));
+        menuMode = new QMenu(menuRender);
+        menuMode->setObjectName(QStringLiteral("menuMode"));
         CMainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(CMainWindow);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -99,6 +110,9 @@ public:
 
         menuBar->addAction(menuFile->menuAction());
         menuBar->addAction(menuRender->menuAction());
+        menuRender->addAction(menuMode->menuAction());
+        menuMode->addAction(ActionSolid);
+        menuMode->addAction(ActionWireframe);
 
         retranslateUi(CMainWindow);
 
@@ -108,10 +122,13 @@ public:
     void retranslateUi(QMainWindow *CMainWindow)
     {
         CMainWindow->setWindowTitle(QApplication::translate("CMainWindow", "CMainWindow", 0));
+        ActionSolid->setText(QApplication::translate("CMainWindow", "Solid", 0));
+        ActionWireframe->setText(QApplication::translate("CMainWindow", "Wireframe", 0));
         QTreeWidgetItem *___qtreewidgetitem = SampleTree->headerItem();
         ___qtreewidgetitem->setText(0, QApplication::translate("CMainWindow", "Sample", 0));
         menuFile->setTitle(QApplication::translate("CMainWindow", "File", 0));
         menuRender->setTitle(QApplication::translate("CMainWindow", "Render", 0));
+        menuMode->setTitle(QApplication::translate("CMainWindow", "Mode", 0));
     } // retranslateUi
 
 };

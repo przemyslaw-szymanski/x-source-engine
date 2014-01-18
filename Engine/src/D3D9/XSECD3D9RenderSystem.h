@@ -99,6 +99,10 @@ namespace XSE
 
 						const SRSDiagnostics&		GetDiagnostics() const { return SRSDiagnostics(); }
 
+						CFrustum			CreateViewFrustum() const { return CFrustum(); }
+
+						void				UpdateViewFrustum(CFrustum* pFrustum) const {}
+
 						void				DrawIndexed(cu32& uiIndexCount, cu32& uiStartIndex, ci32& iBeginVertex) {}
 						void				SetTopology(TOPOLOGY_TYPE eType) {}
 

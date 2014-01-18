@@ -131,6 +131,8 @@ namespace XSE
 			this->m_pSceneNode->ReorganizeObject( this );
 			if( bSetModelMaterial )
 				pMesh->SetMaterial( this->m_pMaterial );
+			if( pMesh->IsVisible() )
+				pMesh->SetVisible( this->IsVisible() );
 			return m_vMeshes.size() - 1; 
 		}
 

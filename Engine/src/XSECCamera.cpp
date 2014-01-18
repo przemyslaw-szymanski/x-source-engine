@@ -18,30 +18,33 @@ namespace XSE
 		pvecOut->z = -fR * fCp * fSy;
 	}
 
-	CCamera::CCamera(CSceneManager* pSceneMgr, xst_castring& strName, ul32 ulHandle) :
-		CObject( OT::CAMERA, strName.c_str() ), 
+	void CalcFrustumVertices(Vec3 avecVertices[ 8 ], const CCamera* pCamera);
+
+	CCamera::CCamera( CSceneManager* pSceneMgr, xst_castring& strName, ul32 ulHandle ) :
+		CObject( OT::CAMERA, strName.c_str() ),
 		m_pSceneMgr( pSceneMgr ),
-		m_pRS( pSceneMgr->GetRenderSystem() ), 
-		m_vecLookAt( 0.0f, 0.0f, 0.1f ), 
+		m_pRS( pSceneMgr->GetRenderSystem() ),
+		m_vecLookAt( 0.0f, 0.0f, 0.1f ),
 		m_vecAngles( Vec2::ZERO ),
 		m_vecCameraDistance( Vec3::ZERO ),
 		m_vecRight( Vec3::X ),
 		m_vecUp( Vec3::Y ),
-		m_vecUpAxis( Vec3::Y ), 
+		m_vecUpAxis( Vec3::Y ),
 		m_strName( strName ),
 		m_ulObjHandle( ulHandle ),
 		m_vecCamDirection( 1 ),
 		m_vecCamPosition( 1 ),
 		m_fFOV( XST::Math::DegreesToRadians( 45.0f ) ),
 		m_fNear( 0.1f ),
-		m_fFar( 100.0f ),
+		m_fFar( 1000.0f ),
 		m_fAspectRatio( 1.33333f ),
 		m_fTime( 1.0f ),
+		m_fViewDistance( 500.0f ),
 		m_fMoveSpeed( 200.0f ), m_fHorizontalSpeed( 10.0f ), m_fVerticalSpeed( 10.0f ),
 		m_bRightCalc( false ), m_bUpCalc( false ),
 		m_bCompute( true )
 	{
-	
+		m_quatOrientation = Quaternion::IDENTITY;
 	}
 
 	CCamera::~CCamera()
@@ -88,13 +91,46 @@ namespace XSE
 		return m_mtxViewProj;
 	}
 
+	void CCamera::Rotate(const Quaternion& quatRotation)
+	{
+		Quaternion quatNorm = quatRotation;
+		quatNorm.Normalize();
+		m_quatOrientation = quatNorm * m_quatOrientation;
+	}
+
+	void CCamera::Rotate(const Vec3& vecAxis, cf32& fAngle)
+	{
+		Quaternion Q;
+		Q.FromAngleAxis( fAngle, vecAxis );
+		Rotate( Q );
+	}
+
+	void CCamera::SetAngleY(cf32& fAngle) // yaw
+	{
+		m_vecAngles.y = std::min( std::max( -XST_HALF_PI + 1e-3f, fAngle ), XST_HALF_PI - 1e-3f );
+		//m_vecRotationAxis.y = 1;
+		Vec3 vecYAxis = m_quatOrientation * Vec3::Y;
+		Rotate( vecYAxis, fAngle );
+	}
+
+	void CCamera::SetAngleX(cf32& fAngle) // pitch
+	{
+		m_vecAngles.x = _NormalizeAngle( fAngle );
+		//m_vecRotationAxis = 1;
+		Vec3 vecXAxis = m_quatOrientation * Vec3::X;
+		Rotate( vecXAxis, fAngle );
+	}
+
+#include <DirectXCollision.h>
+	DirectX::BoundingFrustum g_Frust;
+
 	void CCamera::Update(cf32& fElapsedTime)
 	{
 		xst_assert( m_pRS, "" );
 
 		m_fTime = fElapsedTime;
 
-		//SetFOV( m_fFOV, m_fNear, m_fFar );
+		m_pRS->SetPerspectiveFOV( m_fFOV, m_fAspectRatio, m_fNear, m_fFar );
 
 		SphericalToCartesian( &m_vecLookAt, m_vecAngles.x - XST_HALF_PI, -m_vecAngles.y, 1.0f );
 		
@@ -104,12 +140,14 @@ namespace XSE
 
 		m_pRS->GetMatrix( MatrixTypes::VIEW_PROJ, &m_mtxViewProj );
 		m_pRS->GetMatrix( MatrixTypes::VIEW, &m_mtxView );
+		m_pRS->GetMatrix( MatrixTypes::PROJECTION, &m_mtxProjection );
 		
 		CalcRight();
 		CalcUp();
 
 		_CreateViewFrustum( m_mtxViewProj );
 		_UpdateVolumeMesh();
+		//m_vecRotationAxis = Vec3::ZERO;
 	}
 
 	void CCamera::SetFOV(cf32& fAngle)
@@ -123,7 +161,7 @@ namespace XSE
 		m_fNear = fNear;
 		m_fFar = fFar;
 		m_fAspectRatio = (f32) uiScreenWidth / (f32) uiScreenHeight;
-		m_pRS->SetPerspectiveFOV( m_fFOV, m_fAspectRatio, m_fNear, m_fFar );
+		//m_pRS->SetPerspectiveFOV( m_fFOV, m_fAspectRatio, m_fNear, m_fFar );
 	}
 
 	void CCamera::SetFOV(cf32& fAngle, cf32& fNear, cf32& fFar)
@@ -173,91 +211,94 @@ namespace XSE
 
 	void CCamera::_CreateViewFrustum(const Mtx4& mtxViewProj)
 	{
-		m_Frustum.LeftPlane.vecPlane.x = mtxViewProj.m[ 0 ][ 3 ] + mtxViewProj.m[ 0 ][ 0 ];
+		/*m_Frustum.LeftPlane.vecPlane.x = mtxViewProj.m[ 0 ][ 3 ] + mtxViewProj.m[ 0 ][ 0 ];
 		m_Frustum.LeftPlane.vecPlane.y = mtxViewProj.m[ 1 ][ 3 ] + mtxViewProj.m[ 1 ][ 0 ];
 		m_Frustum.LeftPlane.vecPlane.z = mtxViewProj.m[ 2 ][ 3 ] + mtxViewProj.m[ 2 ][ 0 ];
 		m_Frustum.LeftPlane.vecPlane.w = mtxViewProj.m[ 3 ][ 3 ] + mtxViewProj.m[ 3 ][ 0 ];
-		m_Frustum.LeftPlane.Normalize();
+		//m_Frustum.LeftPlane.Normalize();
 
 		m_Frustum.RightPlane.vecPlane.x = mtxViewProj.m[ 0 ][ 3 ] - mtxViewProj.m[ 0 ][ 0 ];
 		m_Frustum.RightPlane.vecPlane.y = mtxViewProj.m[ 1 ][ 3 ] - mtxViewProj.m[ 1 ][ 0 ];
 		m_Frustum.RightPlane.vecPlane.z = mtxViewProj.m[ 2 ][ 3 ] - mtxViewProj.m[ 2 ][ 0 ];
 		m_Frustum.RightPlane.vecPlane.w = mtxViewProj.m[ 3 ][ 3 ] - mtxViewProj.m[ 3 ][ 0 ];
-		m_Frustum.RightPlane.Normalize();
+		//m_Frustum.RightPlane.Normalize();
 
 		m_Frustum.TopPlane.vecPlane.x = mtxViewProj.m[ 0 ][ 3 ] - mtxViewProj.m[ 0 ][ 1 ];
 		m_Frustum.TopPlane.vecPlane.y = mtxViewProj.m[ 1 ][ 3 ] - mtxViewProj.m[ 1 ][ 1 ];
 		m_Frustum.TopPlane.vecPlane.z = mtxViewProj.m[ 2 ][ 3 ] - mtxViewProj.m[ 2 ][ 1 ];
 		m_Frustum.TopPlane.vecPlane.w = mtxViewProj.m[ 3 ][ 3 ] - mtxViewProj.m[ 3 ][ 1 ];
-		m_Frustum.TopPlane.Normalize();
+		//m_Frustum.TopPlane.Normalize();
 
 		m_Frustum.BottomPlane.vecPlane.x = mtxViewProj.m[ 0 ][ 3 ] + mtxViewProj.m[ 0 ][ 1 ];
 		m_Frustum.BottomPlane.vecPlane.y = mtxViewProj.m[ 1 ][ 3 ] + mtxViewProj.m[ 1 ][ 1 ];
 		m_Frustum.BottomPlane.vecPlane.z = mtxViewProj.m[ 2 ][ 3 ] + mtxViewProj.m[ 2 ][ 1 ];
 		m_Frustum.BottomPlane.vecPlane.w = mtxViewProj.m[ 3 ][ 3 ] + mtxViewProj.m[ 3 ][ 1 ];
-		m_Frustum.BottomPlane.Normalize();
+		//m_Frustum.BottomPlane.Normalize();
 
 		m_Frustum.NearPlane.vecPlane.x = mtxViewProj.m[ 0 ][ 2 ];
 		m_Frustum.NearPlane.vecPlane.y = mtxViewProj.m[ 1 ][ 2 ];
 		m_Frustum.NearPlane.vecPlane.z = mtxViewProj.m[ 2 ][ 2 ];
 		m_Frustum.NearPlane.vecPlane.w = mtxViewProj.m[ 3 ][ 2 ];
-		m_Frustum.NearPlane.Normalize();
+		//m_Frustum.NearPlane.Normalize();
 
 		m_Frustum.FarPlane.vecPlane.x = mtxViewProj.m[ 0 ][ 3 ] - mtxViewProj.m[ 0 ][ 2 ];
 		m_Frustum.FarPlane.vecPlane.y = mtxViewProj.m[ 1 ][ 3 ] - mtxViewProj.m[ 1 ][ 2 ];
 		m_Frustum.FarPlane.vecPlane.z = mtxViewProj.m[ 2 ][ 3 ] - mtxViewProj.m[ 2 ][ 2 ];
 		m_Frustum.FarPlane.vecPlane.w = mtxViewProj.m[ 3 ][ 3 ] - mtxViewProj.m[ 3 ][ 2 ];
-		m_Frustum.FarPlane.Normalize();
+		//m_Frustum.FarPlane.Normalize();
+
+		for( u32 i = 6; i-- > 0; )
+		{
+			m_Frustum.aPlanes[ i ].Normalize();
+		}*/
+
+		if( !m_bCompute )
+			return;
+
+		m_Frustum.CreateFromMatrix( m_mtxProjection );
+		Mtx4 mtxIV;
+		Mtx4::Inverse( m_mtxView, &mtxIV );
+		m_Frustum.Transform( mtxIV );
+		
+		
+
+		DirectX::XMMATRIX mtxProj, mtxInvView, mtxView;
+		xst_memcpy( mtxProj.r, sizeof( DirectX::XMMATRIX ), &m_mtxProjection.r, sizeof( DirectX::XMMATRIX ) );
+		xst_memcpy( mtxView.r, sizeof( DirectX::XMMATRIX ), &m_mtxView.r, sizeof( DirectX::XMMATRIX ) );
+		DirectX::BoundingFrustum::CreateFromMatrix( g_Frust, mtxProj );
+		DirectX::XMVECTOR Det;
+		mtxInvView = DirectX::XMMatrixInverse( &Det, mtxView );
+		//DirectX::BoundingFrustum::Transform( g_Frust, mtxInvView );
+		g_Frust.Transform( g_Frust, mtxInvView );
+		//g_Frust.Transform( g_Frust, 1,  )
+		int i;
+	}
+
+	f32 DistancePointToPlane( const Vec3& vecPoint, const Vec4& vecPlane )
+	{
+		return ( vecPlane.x * vecPoint.x + vecPlane.y * vecPoint.y + vecPlane.z * vecPoint.z + vecPlane.w ) / XST::Math::Sqrt( vecPlane.x * vecPlane.x + vecPlane.y * vecPlane.y + vecPlane.z * vecPlane.z );
 	}
 
 	bool CCamera::IsSphereInFrustum(const Vec4& vecSpherePosition, cf32& fSphereRadius) const
 	{
-		for(u32 i = 6; i --> 0;)
+		if( !m_bCompute )
+			return true;
+		/*for( int i = 0; i < 6; ++i )
 		{
-			f32 f = m_Frustum.aPlanes[ i ].DotCoord( vecSpherePosition );
-			if( f + fSphereRadius < 0.0f )
-			{
+			f32 fDot = m_Frustum.aPlanes[ i ].DotCoord( vecSpherePosition );
+			if( fDot  < -fSphereRadius )
 				return false;
-			}
 		}
-
-		/*f32 f = m_Frustum.FarPlane.DotCoord( vecSpherePosition );
-		if( f + fSphereRadius < 0.0f )
-		{
-			return false;
-		}
-
-		f = m_Frustum.NearPlane.DotCoord( vecSpherePosition );
-		if( f + fSphereRadius < 0.0f )
-		{
-			return false;
-		}
-
-		f = m_Frustum.LeftPlane.DotCoord( vecSpherePosition );
-		if( f + fSphereRadius < 0.0f )
-		{
-			return false;
-		}
-
-		f = m_Frustum.RightPlane.DotCoord( vecSpherePosition );
-		if( f + fSphereRadius < 0.0f )
-		{
-			return false;
-		}
-
-		f = m_Frustum.TopPlane.DotCoord( vecSpherePosition );
-		if( f + fSphereRadius < 0.0f )
-		{
-			return false;
-		}
-
-		f = m_Frustum.BottomPlane.DotCoord( vecSpherePosition );
-		if( f + fSphereRadius < 0.0f )
-		{
-			return false;
-		}*/
-
-		return true;
+		return true;*/
+		//bool bResult1 = m_Frustum.SphereTest( vecSpherePosition, fSphereRadius );
+		
+		DirectX::BoundingSphere Sphere;
+		Sphere.Center.x = vecSpherePosition.x;
+		Sphere.Center.y = vecSpherePosition.y;
+		Sphere.Center.z = vecSpherePosition.z;
+		Sphere.Radius = fSphereRadius;
+		return g_Frust.Intersects( Sphere );
+		//return true;
 	}
 
 	bool CCamera::IsAABBInFrustum(const XST::CAABB& AABB) const
@@ -410,144 +451,62 @@ namespace XSE
 			return XST_OK; //ok it is only for observing
 
 		CVertexData& VData = m_pVolumeMesh->GetVertexBuffer()->GetVertexData();
-		CPlane FarPlane = m_Frustum.FarPlane;
-		CPlane NearPlane = m_Frustum.NearPlane;
 
-		const Vec3& Position = this->m_vecCamPosition;
-		const Vec3& Forward = this->m_vecCamDirection;
-		const Vec3& Right = this->m_vecRight;
-		const Vec3& Up = this->m_vecUp;
-		Vec4 aVecs[ 8 ];
+		Vec3 avecVertices[ 8 ];
+		CalcFrustumVertices( avecVertices, this );
 
-		/*f32 fFar = this->m_fFar;
-		f32 fNear = this->m_fNear;
-		f32 yFac = tanf(this->m_fFOV * XST_PI / 360.0f);
-		f32 xFac = yFac*this->m_fAspectRatio;
+		VData.SetPosition( LEFT_UP_FAR, avecVertices[ LEFT_UP_FAR ] );
+		VData.SetPosition( RIGHT_UP_FAR, avecVertices[ RIGHT_UP_FAR ] );
+		VData.SetPosition( LEFT_DOWN_FAR, avecVertices[ LEFT_DOWN_FAR ] );
+		VData.SetPosition( RIGHT_DOWN_FAR, avecVertices[ RIGHT_DOWN_FAR ] );
 
-		Vec3 vecFarLeftTop = Position + Forward*fFar - Right*fFar*xFac*fFar + Up*yFac*fFar;
-        Vec3 vecFarRightTop = Position + Forward*fFar + Right*fFar*xFac*fFar + Up*yFac*fFar;
-        Vec3 vecFarLeftBottom = Position + Forward*fFar - Right*fFar*xFac*fFar - Up*yFac*fFar;
-        Vec3 vecFarRightBottom = Position + Forward*fFar + Right*fFar*xFac*fFar - Up*yFac*fFar;
-		
-		Vec3 vecNearLeftTop = Position + Forward*fNear - Right*fNear*xFac*fNear + Up*yFac*fNear;
-		Vec3 vecNearRightTop = Position + Forward*fNear + Right*fNear*xFac*fNear + Up*yFac*fNear;
-		Vec3 vecNearLeftBottom = Position + Forward*fNear - Right*fNear*xFac*fNear - Up*yFac*fNear;		
-		Vec3 vecNearRightBottom = Position + Forward*fNear + Right*fNear*xFac*fNear - Up*yFac*fNear;*/
-
-		/*vecNearLeftBottom = Vec3( -1, -1, -1 );
-		vecNearRightBottom = Vec3( 1, -1, -1 );
-		vecNearLeftTop = Vec3( -1, 1, -1 );
-		vecNearRightTop = Vec3( 1, 1, -1 );
-
-		vecFarLeftBottom = Vec3( -1, -1, 1 );
-		vecFarRightBottom = Vec3( 1, -1, 1 );
-		vecFarLeftTop = Vec3( -1, 1, 1 );
-		vecFarRightTop = Vec3( 1, 1, 1 );*/
-
-		//Mtx4 mtxInvViewProj, mtxInvViewProj2;
-		//Mtx4::Inverse( m_mtxViewProj, &mtxInvViewProj2 );
-		//Mtx4 mtxProj;
-		//GetMatrix( MatrixTypes::INVERTED_VIEW_PROJ, &mtxInvViewProj );
-		GetMatrix( MatrixTypes::PROJECTION, &m_mtxProjection );
-		Mtx4 mtxWorld, mtxWorldViewProj;
-		GetMatrix( MatrixTypes::WORLD, &mtxWorld );
-		GetMatrix( MatrixTypes::VIEW, &m_mtxView );
-		GetMatrix( MatrixTypes::PROJECTION, &m_mtxProjection );
-		Mtx4 mtxWorldView = Mtx4::Mul( mtxWorld, m_mtxView );
-		Mtx4 mtxProjWorldView = Mtx4::Mul( m_mtxProjection, mtxWorldView );
-		mtxWorldViewProj = Mtx4::Mul( Mtx4::Mul( mtxWorld, m_mtxView ), m_mtxProjection );
-		Mtx4 mtxInvProjWorldView = /*Mtx4::Inverse*/( mtxWorldViewProj ); 
-		//Mtx4 mtxInvProjWorldView = Mtx4::Inverse( mtxProjWorldView );
-
-		//vecNearLeftBottom = Mul( mtxInvViewProj,	Vec4( -1, -1, -1, 1 ) );
-		//vecNearRightBottom = Mul( mtxInvViewProj,	Vec4( -1, -1, -1, 1 ) );
-		//vecNearLeftTop = Mul( mtxInvViewProj,		Vec4( -1, -1, -1, 1 ) );
-		//vecNearRightTop = Mul( mtxInvViewProj,		Vec4( -1, -1, -1, 1 ) );
-
-		//vecFarLeftBottom = Mul( mtxInvViewProj,		Vec4( -1, -1, 1, 1 ) );
-		//vecFarRightBottom = Mul( mtxInvViewProj,	Vec4( -1, -1, 1, 1 ) );
-		//vecFarLeftTop = Mul( mtxInvViewProj,		Vec4( -1, -1, 1, 1 ) );
-		//vecFarRightTop = Mul( mtxInvViewProj,		Vec4( -1, -1, 1, 1 ) );
-
-		f32 yNear = 2* tanf( this->m_fFOV / 2 ) * this->m_fNear; //(tan (this->m_fFOV / 2 * 0.017453292519943295769236907684886f)) * this->m_fNear;
-		f32 xNear = yNear * this->m_fAspectRatio;
-		f32 yFar = ( yNear / this->m_fNear ) * this->m_fFar;
-		f32 xFar = yFar * this->m_fAspectRatio;
-		f32 fNear = this->m_fNear;
-		f32 fFar = this->m_fFar;
-
-		//Near
-		aVecs[ RIGHT_UP_NEAR ] = Vec4( xNear, yNear, fNear, 1 );
-		aVecs[ RIGHT_DOWN_NEAR ] = Vec4( xNear, -yNear, fNear, 1 );
-		aVecs[ LEFT_DOWN_NEAR ] = Vec4( -xNear, -yNear, fNear, 1);
-		aVecs[ LEFT_UP_NEAR ] = Vec4( -xNear, yNear, fNear, 1 );
-		//Far
-		aVecs[ RIGHT_UP_FAR ] = Vec4( xFar, yFar, fFar, 1 );
-		aVecs[ RIGHT_DOWN_FAR ] = Vec4( xFar, -yFar, fFar, 1 );
-		aVecs[ LEFT_DOWN_FAR ] = Vec4( -xFar, -yFar, fFar, 1 );
-		aVecs[ LEFT_UP_FAR ] = Vec4( -xFar, yFar, fFar, 1 );
-
-		//Near
-		//aVecs[ RIGHT_UP_NEAR ] = Vec4( 1, 1, 0, 1 );
-		//aVecs[ RIGHT_DOWN_NEAR ] = Vec4( 1, -1, 0, 1 );
-		//aVecs[ LEFT_DOWN_NEAR ] = Vec4( -1, -1, 0, 1 );
-		//aVecs[ LEFT_UP_NEAR ] = Vec4( -1, 1, 0, 1 );
-		////Far
-		//aVecs[ RIGHT_UP_FAR ] = Vec4( 1, 1, 1, 1 );
-		//aVecs[ RIGHT_DOWN_FAR ] = Vec4( 1, -1, 1, 1 );
-		//aVecs[ LEFT_DOWN_FAR ] = Vec4( -1, -1, 1, 1 );
-		//aVecs[ LEFT_UP_FAR ] = Vec4( -1, 1, 1, 1 );
-
-		//Near
-		//aVecs[ RIGHT_UP_NEAR ] = Mul( mtxInvProjWorldView, aVecs[ RIGHT_UP_NEAR ] );
-		//aVecs[ RIGHT_DOWN_NEAR ] = Mul( mtxInvProjWorldView, aVecs[ RIGHT_DOWN_NEAR ] );
-		//aVecs[ LEFT_DOWN_NEAR ] = Mul( mtxInvProjWorldView, aVecs[ LEFT_DOWN_NEAR ] );
-		//aVecs[ LEFT_UP_NEAR ] = Mul( mtxInvProjWorldView, aVecs[ LEFT_UP_NEAR ] );
-		////Far
-		//aVecs[ RIGHT_UP_FAR ] = Mul( mtxInvProjWorldView, aVecs[ RIGHT_UP_FAR ] );
-		//aVecs[ RIGHT_DOWN_FAR ] = Mul( mtxInvProjWorldView, aVecs[ RIGHT_DOWN_FAR ] );
-		//aVecs[ LEFT_DOWN_FAR ] = Mul( mtxInvProjWorldView, aVecs[ LEFT_DOWN_FAR ] );
-		//aVecs[ LEFT_UP_FAR ] = Mul( mtxInvProjWorldView, aVecs[ LEFT_UP_FAR ] );
-
-		for(u32 i = 0; i < 8; ++i)
-		{
-			//aVecs[ i ] = Mul( mtxInvProjWorldView, aVecs[ i ] );
-			f32 fScale = 1.0f / aVecs[ i ].w;
-			//aVecs[ i ] *= 10;
-		}
-
-		//Back
-		VData.SetPosition( LEFT_DOWN_NEAR, aVecs[ LEFT_DOWN_NEAR ] );
-		VData.SetPosition( LEFT_UP_NEAR, aVecs[ LEFT_UP_NEAR ] );
-		VData.SetPosition( RIGHT_UP_NEAR, aVecs[ RIGHT_UP_NEAR ] );
-		VData.SetPosition( RIGHT_DOWN_NEAR, aVecs[ RIGHT_DOWN_NEAR ] );
-
-		//Front
-		VData.SetPosition( LEFT_DOWN_FAR, aVecs[ LEFT_DOWN_FAR ] );
-		VData.SetPosition( LEFT_UP_FAR, aVecs[ LEFT_UP_FAR ] );
-		VData.SetPosition( RIGHT_UP_FAR, aVecs[ RIGHT_UP_FAR ] );
-		VData.SetPosition( RIGHT_DOWN_FAR, aVecs[ RIGHT_DOWN_FAR ] );
+		VData.SetPosition( LEFT_UP_NEAR, avecVertices[ LEFT_UP_NEAR ] );
+		VData.SetPosition( RIGHT_UP_NEAR, avecVertices[ RIGHT_UP_NEAR ] );
+		VData.SetPosition( LEFT_DOWN_NEAR, avecVertices[ LEFT_DOWN_NEAR ] );
+		VData.SetPosition( RIGHT_DOWN_NEAR, avecVertices[ RIGHT_DOWN_NEAR ] );
 
 		m_pVolumeMesh->GetVertexBuffer()->Update();
-		//m_pVolumeMesh->SetPosition( this->GetPosition() );
-		
-		for(u32 i = 0; i < m_pVolumeMesh->GetIndexBuffer()->GetIndexCount() / 2; i += 2)
-		{
-			xst_stringstream ss;
-			Vec3 vecPos1, vecPos2;
-			u32 uiID;
-
-			uiID = m_pVolumeMesh->GetIndexBuffer()->GetIndexData().GetIndex( i );
-			VData.GetPosition( uiID, &vecPos1 );
-
-			uiID = m_pVolumeMesh->GetIndexBuffer()->GetIndexData().GetIndex( i + 1 );
-			VData.GetPosition( uiID, &vecPos2 );
-
-			ss << vecPos1 << "; " << vecPos2;
-			//XST::CDebug::PrintDebugLN( ss.str() );
-		}
 
 		return XST_OK;
+	}
+
+	void CalcFrustumVertices(Vec3 avecVertices[ 8 ], const CCamera* pCamera)
+	{
+		const Vec3& Position = pCamera->GetPosition();
+		const Vec3& Forward = pCamera->GetDirection();
+		const Vec3& Right = pCamera->GetRight();
+		const Vec3& Up = pCamera->GetUp();
+
+		cf32 fTanPrecalc = 2.0f * tanf( pCamera->GetFov() * 0.5f );
+		cf32 fHnear = fTanPrecalc * pCamera->GetNear();
+		cf32 fWnear = fHnear * pCamera->GetAspectRatio();
+		cf32 fHfar = fTanPrecalc * pCamera->GetFar();
+		cf32 fWfar = fHfar * pCamera->GetAspectRatio( );
+		const Vec3 fc = Position + Forward * pCamera->GetFar( );
+		const Vec3 UpHFarPrecalc( Up * fHfar * 0.5f );
+		const Vec3 RightWFarPrecalc( Right * fWfar * 0.5f );
+		const Vec3 ftl = fc + (UpHFarPrecalc) -( RightWFarPrecalc );
+		const Vec3 ftr = fc + (UpHFarPrecalc) +( RightWFarPrecalc );
+		const Vec3 fbl = fc - (UpHFarPrecalc) -( RightWFarPrecalc );
+		const Vec3 fbr = fc - (UpHFarPrecalc) +( RightWFarPrecalc );
+
+		const Vec3 nc = Position + Forward * pCamera->GetNear();
+		const Vec3 UpHNearPrecalc( Up * fHnear / 2.0f );
+		const Vec3 RightWNearPrecalc( Right * fWnear / 2.0f );
+		const Vec3 ntl = nc + (UpHNearPrecalc) -( RightWNearPrecalc );
+		const Vec3 ntr = nc + (UpHNearPrecalc) +( RightWNearPrecalc );
+		const Vec3 nbl = nc - (UpHNearPrecalc) -( RightWNearPrecalc );
+		const Vec3 nbr = nc - (UpHNearPrecalc) +( RightWNearPrecalc );
+
+		avecVertices[ LEFT_UP_FAR ] = (ftl);
+		avecVertices[ RIGHT_UP_FAR ] = (ftr);
+		avecVertices[ LEFT_DOWN_FAR ] = ( fbl );
+		avecVertices[ RIGHT_DOWN_FAR ] = ( fbr );
+
+		avecVertices[ LEFT_UP_NEAR ] = ( ntl );
+		avecVertices[ RIGHT_UP_NEAR ] = ( ntr );
+		avecVertices[ LEFT_DOWN_NEAR ] = ( nbl );
+		avecVertices[ RIGHT_DOWN_NEAR ] = ( nbr );
 	}
 
 }//xse

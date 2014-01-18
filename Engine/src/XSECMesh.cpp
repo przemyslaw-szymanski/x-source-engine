@@ -70,8 +70,10 @@ namespace XSE
 			if( m_vLODs.empty() )
 			{
 				//m_vLODs.push_back( xst_new SMeshLOD() );
-				m_vLODs.push_back( SMeshLOD() );
+				/*m_vLODs.push_back( SMeshLOD() );
 				m_pCurrentLOD = &m_vLODs[ 0 ];
+				m_pCurrentLOD->byID = 0;*/
+				m_pCurrentLOD = &AddLOD();
 			}
 
 			if( m_vLODs[ 0 ].pVertexBuffer == xst_null )

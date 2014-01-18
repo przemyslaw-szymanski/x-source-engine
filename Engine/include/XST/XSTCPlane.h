@@ -2,6 +2,7 @@
 #define XST_CPLANE_H
 
 #include "XSTCVector4.h"
+//#include "XSE"
 
 namespace XST
 {
@@ -22,7 +23,7 @@ namespace XST
 			xst_fi	void	Normalize()
 							{ 
 								f32 fLen = Math::CVector3::Length( vecPlane ); 
-								if( fLen ) fLen = 1.0f / fLen;
+								if( fLen > 1e-08 ) fLen = 1.0f / fLen;
 								vecPlane *= fLen;
 							}
 

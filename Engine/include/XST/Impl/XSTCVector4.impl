@@ -1,0 +1,15 @@
+
+xst_fi f32 CVector4::Dot(const Vec4& V1, const Vec4& V2)
+{
+#if defined( XST_SSE2 )
+	Vec4 vTemp2 = V2;
+    Vec4 vTemp = _mm_mul_ps(V1.v,vTemp2.v);
+    vTemp2 = _mm_shuffle_ps(vTemp2.v,vTemp.v,_MM_SHUFFLE(1,0,0,0)); // Copy X to the Z position and Y to the W position
+    vTemp2 = _mm_add_ps(vTemp2.v,vTemp.v);          // Add Z = X+Z; W = Y+W;
+    vTemp = _mm_shuffle_ps(vTemp.v,vTemp2.v,_MM_SHUFFLE(0,3,0,0));  // Copy W to the Z position
+    vTemp = _mm_add_ps(vTemp.v,vTemp2.v);           // Add Z and W together
+    return XST_SSE_PERMUTE_PS(vTemp.v,_MM_SHUFFLE(2,2,2,2)).m128_f32[ 0 ];    // Splat Z and return
+#else
+	return V1.x * V2.x + V1.y * V2.y + V1.z * V2.z + V1.w * V2.w;
+#endif
+}

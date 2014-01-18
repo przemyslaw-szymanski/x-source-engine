@@ -19,10 +19,10 @@ namespace XSE
 
 				struct SVSOncePerFrame
 				{
-					XMMATRIX	mtxWorld;
-					XMMATRIX	mtxView;
-					XMMATRIX	mtxProj;
-					XMMATRIX	mtxViewProj;
+					DirectX::XMMATRIX	mtxWorld;
+					DirectX::XMMATRIX	mtxView;
+					DirectX::XMMATRIX	mtxProj;
+					DirectX::XMMATRIX	mtxViewProj;
 					Vec2		vecScreenSize;
 				};
 
@@ -33,13 +33,13 @@ namespace XSE
 
 				struct SVSOncePerObject
 				{
-					XMMATRIX	mtxWorld;
-					XMMATRIX	mtxWorldViewProj;
+					DirectX::XMMATRIX	mtxWorld;
+					DirectX::XMMATRIX	mtxWorldViewProj;
 				};
 
 				struct SPSOncePerObject
 				{
-					XMMATRIX	mtxTemp;
+					DirectX::XMMATRIX	mtxTemp;
 				};
 
 				enum CONSTANT_BUFFERS

@@ -18,6 +18,10 @@ class CTerrain : public ISample
 
 		void				Destroy();
 
+		void				OnUpdate();
+
+		void				OnKeyPressEvent( int iKey );
+
 	protected:
 
 		XSE::IRenderWindow*	m_pWnd;

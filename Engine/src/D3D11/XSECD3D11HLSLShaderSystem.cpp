@@ -269,7 +269,7 @@ namespace XSE
 		void CHLSLShaderSystem::UpdateObjectInputs()
 		{
 			//Get object input data
-			XMMATRIX mtxView, mtxProj;
+			DirectX::XMMATRIX mtxView, mtxProj;
 			m_pRS->GetMatrix( MatrixTypes::WORLD,	&g_VSOncePerObj.mtxWorld );
 			m_pRS->GetMatrix( MatrixTypes::PROJECTION,	&mtxProj );
 			m_pRS->GetMatrix( MatrixTypes::VIEW,	&mtxView );

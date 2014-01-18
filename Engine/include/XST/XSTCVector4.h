@@ -26,7 +26,7 @@ namespace XST
 
 				static const CVector4	ZERO;
 				static const CVector4	UNIT;
-				static const CVector4	SIGN_MASK; //1 << 31
+				static const CVector4	SIGN_MASK; // 1 << 31
 				static const CVector4	X;
 				static const CVector4	Y;
 				static const CVector4	Z;
@@ -35,11 +35,14 @@ namespace XST
 				static const CVector4	NEGATIVE_Y;
 				static const CVector4	NEGATIVE_Z;
 				static const CVector4	NEGATIVE_W;
+				static const CVector4	INF; // infinity
+				static const CVector4	NOT_A_NUMBER;
 
 			public:
 
 				xst_fi CVector4() {}
 				xst_fi CVector4(const Vec4& _vec) : x( _vec.x ), y( _vec.y ), z( _vec.z ), w( _vec.w ) {}
+				xst_fi CVector4(Vec4&& _vec) { x = _vec.x; y = _vec.y; z = _vec.z; w = _vec.w; }
 				xst_fi CVector4(const CVector3& _vec) : x( _vec.x ), y( _vec.y ), z( _vec.z ), w( 0.0f ) {}
 				xst_fi CVector4(const CVector2& _vec) : x( _vec.x ), y( _vec.y ), z( 0.0f ), w( 0.0f ) {}
 				xst_fi CVector4(const CVector3& _vec, cf32& fW) : x( _vec.x ), y( _vec.y ), z( _vec.z ), w( fW ) {}
@@ -198,16 +201,19 @@ namespace XST
 					return Vec2( x, y );
 				}
 
-				xst_fi const Vec4& Set(const Vec4& _vecRight)
+				xst_fi void Set(const Vec4& _vecRight)
 				{
 					x = _vecRight.x; y = _vecRight.y; z = _vecRight.z; w = _vecRight.w;
-					return (*this);
 				}
 
-				xst_fi const Vec4& Set(const f32& _fX, const f32& _fY, const f32& _fZ, cf32& _fW)
+				xst_fi void Set(cf32& fValue)
+				{
+					x = fValue; y = fValue; z = fValue; w = fValue;
+				}
+
+				xst_fi void Set(const f32& _fX, const f32& _fY, const f32& _fZ, cf32& _fW)
 				{
 					x = _fX; y = _fY; z = _fZ; w = _fW;
-					return (*this);
 				}
 
 				xst_fi const u32 GetSize() const
@@ -220,7 +226,7 @@ namespace XST
 					return Vec4( x + _vecRight.x, y + _vecRight.y, z + _vecRight.z, w + _vecRight.w );
 				}
 
-				xst_fi void AddEq(const Vec4& _vecRight)
+				xst_fi void AddAssign(const Vec4& _vecRight)
 				{
 					x += _vecRight.x; y += _vecRight.y; z += _vecRight.z; w += _vecRight.w;
 				}
@@ -230,7 +236,7 @@ namespace XST
 					return Vec4( x - _vecRight.x, y - _vecRight.y, z - _vecRight.z, w - _vecRight.w );
 				}
 
-				xst_fi void SubEq(const Vec4& _vecRight)
+				xst_fi void SubAssign(const Vec4& _vecRight)
 				{
 					x -= _vecRight.x; y -= _vecRight.y; z -= _vecRight.z; w -= _vecRight.w;
 				}
@@ -240,7 +246,7 @@ namespace XST
 					return Vec4( x * _vecRight.x, y * _vecRight.y, z * _vecRight.z, w * _vecRight.w );
 				}
 
-				xst_fi void  MulEq(const Vec4& _vecRight)
+				xst_fi void  MulAssign(const Vec4& _vecRight)
 				{
 					x *= _vecRight.x; y *= _vecRight.y; z *= _vecRight.z; w *= _vecRight.w;
 				}
@@ -250,29 +256,61 @@ namespace XST
 					return Vec4( x / _vecRight.x, y / _vecRight.y, z / _vecRight.z, w / _vecRight.w );
 				}
 
-				xst_fi void DivEq(const Vec4& _vecRight)
+				xst_fi void DivAssign(const Vec4& _vecRight)
 				{
 					x /= _vecRight.x; y /= _vecRight.y; z /= _vecRight.z; w /= _vecRight.w;
 				}
 
-				xst_fi void AddEq(const f32& _fScalar)
+				xst_fi void AddAssign(const f32& _fScalar)
 				{
 					x += _fScalar; y += _fScalar; z += _fScalar; w += _fScalar;
 				}
 
-				xst_fi void SubEq(const f32& _fScalar)
+				xst_fi void SubAssign(const f32& _fScalar)
 				{
 					x -= _fScalar; y -= _fScalar; z -= _fScalar; w -= _fScalar;
 				}
 
-				xst_fi void MulEq(const f32& _fScalar)
+				xst_fi void MulAssign(const f32& _fScalar)
 				{
 					x *= _fScalar; y *= _fScalar; z *= _fScalar; w *= _fScalar;
 				}
 
-				xst_fi void DivEq(const f32& _fScalar)
+				xst_fi void DivAssign(const f32& _fScalar)
 				{
 					x /= _fScalar; y /= _fScalar; z /= _fScalar; w /= _fScalar;
+				}
+
+				xst_fi void Add(const Vec4& vecLeft, const Vec4& vecRight)
+				{
+					x = vecLeft.x + vecRight.x;
+					y = vecLeft.y + vecRight.y;
+					z = vecLeft.z + vecRight.z;
+					w = vecLeft.w + vecRight.w;
+				}
+
+				xst_fi void Sub(const Vec4& vecLeft, const Vec4& vecRight)
+				{
+					x = vecLeft.x - vecRight.x;
+					y = vecLeft.y - vecRight.y;
+					z = vecLeft.z - vecRight.z;
+					w = vecLeft.w - vecRight.w;
+				}
+
+				xst_fi void Div(const Vec4& vecLeft, const Vec4& vecRight)
+				{
+					x = vecLeft.x / vecRight.x;
+					y = vecLeft.y / vecRight.y;
+					z = vecLeft.z / vecRight.z;
+					w = vecLeft.w / vecRight.w;
+				}
+
+				xst_fi void Mul(const Vec4& vecLeft, const Vec4& vecRight)
+				{
+					x = vecLeft.x * vecRight.x;
+					y = vecLeft.y * vecRight.y;
+					z = vecLeft.z * vecRight.z;
+					w = vecLeft.w * vecRight.w;
 				}
 
 				xst_fi f32 Length() const
@@ -297,6 +335,33 @@ namespace XST
 
 				xst_fi f32 Normalize()
 				{
+#if defined( XST_SSE2 )
+					Vec4 vLengthSq = _mm_mul_ps(v,v);
+					Vec4 vTemp = XST_SSE_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(2,1,2,1));
+					vLengthSq = _mm_add_ss(vLengthSq,vTemp);
+					vTemp = XST_SSE_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,1,1,1));
+					vLengthSq = _mm_add_ss(vLengthSq,vTemp);
+					vLengthSq = XST_SSE_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(0,0,0,0));
+					// Prepare for the division
+					Vec4 vResult = _mm_sqrt_ps(vLengthSq);
+					// Create zero with a single instruction
+					Vec4 vZeroMask = _mm_setzero_ps();
+					// Test for a divide by zero (Must be FP to detect -0.0)
+					vZeroMask = _mm_cmpneq_ps(vZeroMask,vResult);
+					// Failsafe on zero (Or epsilon) length planes
+					// If the length is infinity, set the elements to zero
+					vLengthSq = _mm_cmpneq_ps(vLengthSq, Vec4::INF );
+					// Divide to perform the normalization
+					vResult = _mm_div_ps(v,vResult);
+					// Any that are infinity, set to zero
+					vResult = _mm_and_ps(vResult,vZeroMask);
+					// Select qnan or result based on infinite length
+					Vec4 vTemp1 = _mm_andnot_ps(vLengthSq, Vec4::NOT_A_NUMBER );
+					Vec4 vTemp2 = _mm_and_ps(vResult,vLengthSq);
+					vResult = _mm_or_ps(vTemp1,vTemp2);
+					v = vResult.v;
+					return vLengthSq.x;
+#else
 					f32 fLen = Length();
 					if( fLen > 1e-08 )
 					{
@@ -308,6 +373,7 @@ namespace XST
 					}
 
 					return fLen;
+#endif
 				}
 
 				xst_fi f32 Dot(const Vec4& RightVec) const
@@ -323,9 +389,122 @@ namespace XST
 									( w + VecRight.w ) * 0.5f);
 				}
 
-				Vec4		Abs() const;
-				void		Abs();
-				static Vec4 Abs(const Vec4& vecOther);
+				/*xst_fi void Transform(const Mtx4& mtxProj)
+				{
+					VectorTransform( this, *this, mtxProj );
+				}*/
+
+				xst_fi void Reciprocal(const Vec4& vecOther)
+				{
+					VectorReciprocal( this, vecOther );
+				}
+
+				xst_fi static void VectorReciprocal(Vec4* pvecOut, const Vec4& vecOther)
+				{
+#if defined( XST_SSE2)
+					pvecOut->v = _mm_div_ps( Vec4::UNIT.v, vecOther.v );
+#else
+					pvecOut->x = 1.f / vecOther.x;
+					pvecOut->y = 1.f / vecOther.y;
+					pvecOut->z = 1.f / vecOther.z;
+					pvecOut->w = 1.f / vecOther.w;
+#endif // XST_SSE2
+				}
+
+				xst_fi static Vec4 VectorReciprocalRet(const Vec4& vecOther)
+				{
+					Vec4 vecRet;
+					VectorReciprocal( &vecRet, vecOther );
+					return vecRet;
+				}
+
+				template<u8 _COMPONENT_>
+				xst_fi static void VectorSplat(Vec4* pvecOut, const Vec4& vecOther)
+				{
+#if defined(XST_SSE2)
+					pvecOut->v = XST_SSE_PERMUTE_PS( vecOther.v, _MM_SHUFFLE( _COMPONENT_, _COMPONENT_, _COMPONENT_, _COMPONENT_ ) );
+#else
+					pvecOut->Set( vecOther.x );
+#endif // XST_SSE2
+				}
+
+				template<u8 _COMPONENT_>
+				xst_fi static Vec4 VectorSplatRet(const Vec4& vecOther)
+				{
+					Vec4 vecRet;
+					VectorSplat< _COMPONENT_ >( &vecRet, vecOther );
+					return vecRet;
+				}
+
+				xst_fi static void VectorSplatX(Vec4* pvecOut, const Vec4& vecOther)
+				{
+#if defined(XST_SSE2)
+					pvecOut->v = XST_SSE_PERMUTE_PS( vecOther.v, _MM_SHUFFLE( 0, 0, 0, 0 ) );
+#else
+					pvecOut->Set( vecOther.x );
+#endif // XST_SSE2
+				}
+
+				xst_fi static void VectorSplatY(Vec4* pvecOut, const Vec4& vecOther)
+				{
+#if defined(XST_SSE2)
+					pvecOut->v = XST_SSE_PERMUTE_PS( vecOther.v, _MM_SHUFFLE( 1, 1, 1, 1 ) );
+#else
+					pvecOut->Set( vecOther.y );
+#endif // XST_SSE2
+				}
+
+				xst_fi static void VectorSplatZ(Vec4* pvecOut, const Vec4& vecOther)
+				{
+#if defined(XST_SSE2)
+					pvecOut->v = XST_SSE_PERMUTE_PS( vecOther.v, _MM_SHUFFLE( 2, 2, 2, 2 ) );
+#else
+					pvecOut->Set( vecOther.z );
+#endif // XST_SSE2
+				}
+
+				xst_fi static void VectorSplatW(Vec4* pvecOut, const Vec4& vecOther)
+				{
+#if defined(XST_SSE2)
+					pvecOut->v = XST_SSE_PERMUTE_PS( vecOther.v, _MM_SHUFFLE( 3, 3, 3, 3 ) );
+#else
+					pvecOut->Set( vecOther.w );
+#endif // XST_SSE2
+				}
+
+				xst_fi static Vec4 VectorSplatXRet(const Vec4& vecOther)
+				{
+					Vec4 vecRet;
+					VectorSplatX( &vecRet, vecOther );
+					return vecRet;
+				}
+
+				xst_fi static Vec4 VectorSplatYRet(const Vec4& vecOther)
+				{
+					Vec4 vecRet;
+					VectorSplatY( &vecRet, vecOther );
+					return vecRet;
+				}
+
+				xst_fi static Vec4 VectorSplatZRet(const Vec4& vecOther)
+				{
+					Vec4 vecRet;
+					VectorSplatZ( &vecRet, vecOther );
+					return vecRet;
+				}
+
+				xst_fi static Vec4 VectorSplatWRet(const Vec4& vecOther)
+				{
+					Vec4 vecRet;
+					VectorSplatW( &vecRet, vecOther );
+					return vecRet;
+				}
+
+				Vec4				Abs() const;
+				void				Abs();
+				static Vec4			Abs(const Vec4& vecOther);
+				xst_fi static f32	Dot(const Vec4& vecLeft, const Vec4& vecRight);
+				//static void Transform(Vec4* pvecOut, const Vec4& vecVector, const Mtx4& mtxProj);
 			
 		};
 
@@ -335,740 +514,11 @@ namespace XST
 			return o;
 		}
 
+#include "Impl/XSTCVector4.impl"
+
 	}//math
 
-//		//Vector4 class
-//		class XST_ALIGN(16) CVector4SSE
-//		{
-//
-//			public:
-//
-//				CVector4SSE() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
-//				CVector4SSE(const Vec4SSE& _vec) : xyzw(_vec.xyzw), w(0.0f) {}
-//				CVector4SSE(const f32& _fValue) : x(_fValue), y(_fValue), z(_fValue), w(0.0f) {}
-//				CVector4SSE(const f32& _fX, const f32& _fY, const f32& _fZ) : x(_fX), y(_fY), z(_fZ), w(0.0f) {}
-//				CVector4SSE(const m128& _xyzw) : xyzw(_xyzw), w(0.0f) {}
-//				CVector4SSE(const f32 _afValues[3]) : xyzw(*(m128*)_afValues), w(0.0f) {}
-//
-//				~CVector4SSE() {}
-//
-//				xst_fi bool operator==(const Vec4SSE& _vecRight)
-//				{
-//					return x == _vecRight.x && y == _vecRight.y && z == _vecRight.z;
-//				}
-//
-//				xst_fi bool operator>(const Vec4SSE& _vecRight)
-//				{
-//					return x > _vecRight.x && y > _vecRight.y && z > _vecRight.z;
-//				}
-//
-//				xst_fi bool operator>=(const Vec4SSE& _vecRight)
-//				{
-//					return x >= _vecRight.x && y >= _vecRight.y && z >= _vecRight.z;
-//				}
-//
-//				xst_fi bool operator<(const Vec4SSE& _vecRight)
-//				{
-//					return x < _vecRight.x && y < _vecRight.y && z < _vecRight.z;
-//				}
-//
-//				xst_fi bool operator<=(const Vec4SSE& _vecRight)
-//				{
-//					return x <= _vecRight.x && y <= _vecRight.y && z <= _vecRight.z;
-//				}
-//
-//				xst_fi bool operator!=(const Vec4SSE& _vecRight)
-//				{
-//					return x != _vecRight.x && y != _vecRight.y && z != _vecRight.z;
-//				}
-//
-//				xst_fi Vec4SSE operator+(const Vec4SSE& _vecRight)
-//				{
-//					//return Vec4cAdd( this, _vecRight );
-//					return AddSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi void operator+=(const Vec4SSE& _vecRight)
-//				{
-//					//x += _vecRight.x; y += _vecRight.y; z += _vecRight.z;
-//					//Vec4AddEq( this, _vecRight );
-//					AddEqSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi Vec4SSE operator-(const Vec4SSE& _vecRight)
-//				{
-//					//return Vec4cSub( this, _vecRight );
-//					return SubSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi void operator-=(const Vec4SSE& _vecRight)
-//				{
-//					//x -= _vecRight.x; y -= _vecRight.y; z -= _vecRight.z;
-//					//Vec4SubEq( this, _vecRight );
-//					SubEqSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi Vec4SSE operator*(const Vec4SSE& _vecRight)
-//				{
-//					//return Vec4cMul( this, _vecRight );
-//					return MulSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi void operator*=(const Vec4SSE& _vecRight)
-//				{
-//					//x *= _vecRight.x; y *= _vecRight.y; z *= _vecRight.z;
-//					//Vec4MulEq( this, _vecRight );
-//					MulEqSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi Vec4SSE operator/(const Vec4SSE& _vecRight)
-//				{
-//					return DivSSE2( (*this), _vecRight );
-//				}
-//
-//				xst_fi void operator/=(const Vec4SSE& _vecRight)
-//				{
-//					//x /= _vecRight.x; y /= _vecRight.y; z /= _vecRight.z;
-//					//Vec4DivEq( this, _vecRight );
-//					DivEqSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi bool Eq(const Vec4SSE& _vecRight)
-//				{
-//					return x == _vecRight.x && y == _vecRight.y && z == _vecRight.z;
-//				}
-//
-//				xst_fi bool Gt(const Vec4SSE& _vecRight)
-//				{
-//					return x > _vecRight.x && y > _vecRight.y && z > _vecRight.z;
-//				}
-//
-//				xst_fi bool Ge(const Vec4SSE& _vecRight)
-//				{
-//					return x >= _vecRight.x && y >= _vecRight.y && z >= _vecRight.z;
-//				}
-//
-//				xst_fi bool Lt(const Vec4SSE& _vecRight)
-//				{
-//					return x < _vecRight.x && y < _vecRight.y && z < _vecRight.z;
-//				}
-//
-//				xst_fi bool Le(const Vec4SSE& _vecRight)
-//				{
-//					return x <= _vecRight.x && y <= _vecRight.y && z <= _vecRight.z;
-//				}
-//
-//				xst_fi bool Ne(const Vec4SSE& _vecRight)
-//				{
-//					return x != _vecRight.x && y != _vecRight.y && z != _vecRight.z;
-//				}
-//
-//				xst_fi const Vec4SSE& operator=(const Vec4SSE& _vecRight)
-//				{
-//					x = _vecRight.x; y = _vecRight.y; z = _vecRight.z;
-//					return (*this);
-//				}
-//
-//				xst_fi const Vec4SSE& Set(const Vec4SSE& _vecRight)
-//				{
-//					x = _vecRight.x; y = _vecRight.y; z = _vecRight.z;
-//					return (*this);
-//				}
-//
-//				xst_fi const Vec4SSE& Set(const f32& _fX, const f32& _fY, const f32& _fZ)
-//				{
-//					x = _fX; y = _fY; z = _fZ;
-//					return (*this);
-//				}
-//
-//				xst_fi const f32* ToArray() const
-//				{
-//					static f32 afArray[] = { x, y, z, w };
-//					return afArray;
-//				}
-//
-//				xst_fi const u32 GetSize() const
-//				{
-//					return 3;
-//				}
-//
-//				xst_fi Vec4SSE Add(const Vec4SSE& _vecRight)
-//				{
-//					//return Vec4cAdd( this, _vecRight );
-//					return AddSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi void AddEq(const Vec4SSE& _vecRight)
-//				{
-//					x += _vecRight.x; y += _vecRight.y; z += _vecRight.z;
-//				}
-//
-//				xst_fi Vec4SSE Sub(const Vec4SSE& _vecRight)
-//				{
-//					//return Vec4cSub( this, _vecRight );
-//					return SubSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi void SubEq(const Vec4SSE& _vecRight)
-//				{
-//					//x -= _vecRight.x; y -= _vecRight.y; z -= _vecRight.z;
-//					//Vec4SubEq( this, _vecRight );
-//					SubEqSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi Vec4SSE Mul(const Vec4SSE& _vecRight)
-//				{
-//					//return Vec4SSE(x * _vecRight.x, y * _vecRight.y, z * _vecRight.z);
-//					//return Vec4cMul( this, _vecRight );
-//					return MulSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi void  MulEq(const Vec4SSE& _vecRight)
-//				{
-//					//x *= _vecRight.x; y *= _vecRight.y; z *= _vecRight.z;
-//					//Vec4MulEq( this, _vecRight );
-//					MulEqSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi Vec4SSE Div(const Vec4SSE& _vecRight)
-//				{
-//					//return Vec4cDiv( this, _vecRight );
-//					return DivSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi void DivEq(const Vec4SSE& _vecRight)
-//				{
-//					//x /= _vecRight.x; y /= _vecRight.y; z /= _vecRight.z;
-//					//Vec4DivEq( this, _vecRight );
-//					DivEqSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi void AddEq(const f32& _fScalar)
-//				{
-//					//Vec4AddEqS( this, _fScalar);
-//					AddEqSSE2( this, _fScalar );
-//				}
-//
-//				xst_fi void SubEq(const f32& _fScalar)
-//				{
-//					//Vec4SubEqS( this, _fScalar);
-//					SubEqSSE2( this, _fScalar );
-//				}
-//
-//				xst_fi void MulEq(const f32& _fScalar)
-//				{
-//					//Vec4MulEqS( this, _fScalar);
-//					MulEqSSE2( this, _fScalar );
-//				}
-//
-//				xst_fi void DivEq(const f32& _fScalar)
-//				{
-//					//Vec4DivEqS( this, _fScalar);
-//					DivEqSSE2( this, _fScalar );
-//				}
-//
-//				xst_fi f32 Length()
-//				{
-//					//return Math::Vec4cLength(this);
-//					return LengthSSE2( this );
-//				}
-//
-//				xst_fi f32 Dot(const Vec4SSE& _vecRight)
-//				{
-//					//return Vec4cDot( this, _vecRight );
-//					return DotSSE2( this, _vecRight );
-//				}
-//
-//				xst_fi const Vec4SSE& Normalize()
-//				{
-//					const f32 fLen = Length();
-//					x /= fLen; y /= fLen; z /= fLen;
-//					return (*this);
-//				}
-//
-//			public:
-//
-//				union
-//				{
-//					XST_ALIGN(16) struct
-//					{
-//						f32 x;
-//						f32 y;
-//						f32 z;
-//						f32 w;
-//					};
-//
-//					XST_ALIGN(16) m128 xyzw;
-//				};
-//		};
-//
-//		//FUNCTION DEFINITIONS
-//
-//		static xst_i f32 Length(const Vec4& _vec)
-//		{
-//			return sqrtf(_vec.x * _vec.x + _vec.y * _vec.y + _vec.z * _vec.z);
-//		}
-//
-//		static xst_i f32 Dot(const Vec4& _vecLeft, const Vec4& _vecRight)
-//		{
-//			return ( _vecLeft.x * _vecRight.x + _vecLeft.y * _vecRight.y + _vecLeft.z * _vecRight.z );
-//		}
-//
-//		static xst_i Vec4 Normalize(const Vec4& _vec)
-//		{
-//			const f32 fLen = Length(_vec);
-//			return Vec4(_vec.x / fLen, _vec.y / fLen, _vec.z / fLen, _vec.w / fLen);
-//		}
-//
-//		static xst_i Vec4 Normalize(const Vec4& _vec, const f32& _fVecLen)
-//		{
-//			xst_assert(_fVecLen != 0, "(XST::Math::Normalize) _fVecLen is 0.");
-//			return Vec4(_vec.x / _fVecLen, _vec.y / _fVecLen, _vec.z / _fVecLen, _vec.w / _fVecLen);
-//		}
-//
-//		xst_fi Vec4 Mul(const Vec4& _vecLeft, const Vec4& _vecRight)
-//		{
-//			//return *(Vec4*)&_mm_mul_ps(*(__m128*)&_vecLeft, *(__m128*)&_vecRight);
-//			//return Vec4( _mm_mul_ps(_vecLeft.xyzw, _vecRight.xyzw) );
-//			return Vec4( _vecLeft.x * _vecRight.x, _vecLeft.y * _vecRight.y, _vecLeft.z * _vecRight.z, _vecLeft.w * _vecRight.w );
-//		}
-//
-//		//SOFTWARE
-//		xst_fi Vec4 MulRef(const Vec4& _vecLeft, const Vec4& _vecRight)
-//		{
-//			return Vec4(_vecLeft.x * _vecRight.x, _vecLeft.y * _vecRight.y, _vecLeft.z * _vecRight.z, _vecLeft.w * _vecRight.w);
-//		}
-//
-//		xst_fi Vec4 AddRef(const Vec4& _vecLeft, const Vec4& _vecRight)
-//		{
-//			return Vec4(_vecLeft.x + _vecRight.x, _vecLeft.y + _vecRight.y, _vecLeft.z + _vecRight.z, _vecLeft.w + _vecRight.w);
-//		}
-//
-//		xst_fi Vec4 SubRef(const Vec4& _vecLeft, const Vec4& _vecRight)
-//		{
-//			return Vec4(_vecLeft.x - _vecRight.x, _vecLeft.y - _vecRight.y, _vecLeft.z - _vecRight.z, _vecLeft.w - _vecRight.w);
-//		}
-//
-//		xst_fi Vec4 DivRef(const Vec4& _vecLeft, const Vec4& _vecRight)
-//		{
-//			return Vec4(_vecLeft.x / _vecRight.x, _vecLeft.y / _vecRight.y, _vecLeft.z / _vecRight.z, _vecLeft.w / _vecRight.w);
-//		}
-//
-//		xst_fi Vec4 MulRef(const Vec4& _vecLeft, const f32& _fScalar)
-//		{
-//			return Vec4(_vecLeft.x * _fScalar, _vecLeft.y * _fScalar, _vecLeft.z * _fScalar, _vecLeft.w * _fScalar);
-//		}
-//
-//		xst_fi Vec4 AddRef(const Vec4& _vecLeft, const f32& _fScalar)
-//		{
-//			return Vec4(_vecLeft.x + _fScalar, _vecLeft.y + _fScalar, _vecLeft.z + _fScalar, _vecLeft.w + _fScalar);
-//		}
-//
-//		xst_fi Vec4 SubRef(const Vec4& _vecLeft, const f32& _fScalar)
-//		{
-//			return Vec4(_vecLeft.x - _fScalar, _vecLeft.y - _fScalar, _vecLeft.z - _fScalar, _vecLeft.w - _fScalar);
-//		}
-//
-//		xst_fi Vec4 DivRef(const Vec4& _vecLeft, const f32& _fScalar)
-//		{
-//			return Vec4(_vecLeft.x / _fScalar, _vecLeft.y / _fScalar, _vecLeft.z / _fScalar, _vecLeft.w / _fScalar);
-//		}
-//
-//		xst_fi Vec4 NormalizeRef(const Vec4& _vecLeft)
-//		{
-//			const f32 fLen = LengthRef( _vecLeft );
-//			return Vec4( _vecLeft.x / fLen, _vecLeft.y / fLen, _vecLeft.z / fLen, _vecLeft.w / fLen );
-//		}
-//
-//		//SOFTWARE (for class use)
-//
-//		xst_fi Vec4 MulRef(const Vec4* _vecLeft, const Vec4& _vecRight)
-//		{
-//			return Vec4(_vecLeft->x * _vecRight.x, _vecLeft->y * _vecRight.y, _vecLeft->z * _vecRight.z, _vecLeft->w * _vecRight.w);
-//		}
-//
-//		xst_fi Vec4 AddRef(const Vec4* _vecLeft, const Vec4& _vecRight)
-//		{
-//			return Vec4(_vecLeft->x + _vecRight.x, _vecLeft->y + _vecRight.y, _vecLeft->z + _vecRight.z, _vecLeft->w + _vecRight.w);
-//		}
-//
-//		xst_fi Vec4 SubRef(const Vec4* _vecLeft, const Vec4& _vecRight)
-//		{
-//			return Vec4(_vecLeft->x - _vecRight.x, _vecLeft->y - _vecRight.y, _vecLeft->z - _vecRight.z, _vecLeft->w - _vecRight.w);
-//		}
-//
-//		xst_fi Vec4 DivRef(const Vec4* _vecLeft, const Vec4& _vecRight)
-//		{
-//			return Vec4(_vecLeft->x / _vecRight.x, _vecLeft->y / _vecRight.y, _vecLeft->z / _vecRight.z, _vecLeft->w / _vecRight.w);
-//		}
-//
-//		xst_fi Vec4 MulRef(const Vec4* _vecLeft, const f32& _fScalar)
-//		{
-//			return Vec4(_vecLeft->x * _fScalar, _vecLeft->y * _fScalar, _vecLeft->z * _fScalar);
-//		}
-//
-//		xst_fi Vec4 AddRef(const Vec4* _vecLeft, const f32& _fScalar)
-//		{
-//			return Vec4(_vecLeft->x + _fScalar, _vecLeft->y + _fScalar, _vecLeft->z + _fScalar);
-//		}
-//
-//		xst_fi Vec4 SubRef(const Vec4* _vecLeft, const f32& _fScalar)
-//		{
-//			return Vec4(_vecLeft->x - _fScalar, _vecLeft->y - _fScalar, _vecLeft->z - _fScalar);
-//		}
-//
-//		xst_fi Vec4 DivRef(const Vec4* _vecLeft, const f32& _fScalar)
-//		{
-//			return Vec4(_vecLeft->x / _fScalar, _vecLeft->y / _fScalar, _vecLeft->z / _fScalar);
-//		}
-//
-//
-//		xst_fi Vec4 SqrtRef(const Vec4& _vecLeft)
-//		{
-//			return Vec4( sqrtf(_vecLeft.x), sqrtf(_vecLeft.y), sqrtf(_vecLeft.z) );
-//		}
-//
-//		xst_fi Vec4 SqrtRef(const Vec4* _vecLeft)
-//		{
-//			return Vec4( sqrtf(_vecLeft->x), sqrtf(_vecLeft->y), sqrtf(_vecLeft->z) );
-//		}
-//		xst_fi f32 DotRef(const Vec4& _vecLeft, const Vec4& _vecRight)
-//		{
-//			/*
-//			0135FB2E  mov         eax,dword ptr [_vecLeft]
-//			0135FB31  fld         dword ptr [eax]
-//			0135FB33  mov         ecx,dword ptr [_vecRight]
-//			0135FB36  fmul        dword ptr [ecx]
-//			0135FB38  mov         edx,dword ptr [_vecLeft]
-//			0135FB3B  fld         dword ptr [edx+4]
-//			0135FB3E  mov         eax,dword ptr [_vecRight]
-//			0135FB41  fmul        dword ptr [eax+4]
-//			0135FB44  faddp       st(1),st
-//			0135FB46  mov         ecx,dword ptr [_vecLeft]
-//			0135FB49  fld         dword ptr [ecx+8]
-//			0135FB4C  mov         edx,dword ptr [_vecRight]
-//			0135FB4F  fmul        dword ptr [edx+8]
-//			0135FB52  faddp       st(1),st
-//			0135FB54  fstp        dword ptr [ebp-0C4h]
-//			0135FB5A  fld         dword ptr [ebp-0C4h]
-//			*/
-//			return _vecLeft.x * _vecRight.x + _vecLeft.y * _vecRight.y + _vecLeft.z * _vecRight.z;
-//		}
-//
-//		xst_fi f32 DotRef(const Vec4* _vecLeft, const Vec4& _vecRight)
-//		{
-//			return _vecLeft->x * _vecRight.x + _vecLeft->y * _vecRight.y + _vecLeft->z * _vecRight.z;
-//		}
-//
-//		xst_fi void AddEqRef(Vec4* _vecLeft, const Vec4& _vecRight)
-//		{
-//			_vecLeft->x += _vecRight.x; _vecLeft->y += _vecRight.y; _vecLeft->z += _vecRight.z;
-//		}
-//
-//		xst_fi void SubEqRef(Vec4* _vecLeft, const Vec4& _vecRight)
-//		{
-//			_vecLeft->x -= _vecRight.x; _vecLeft->y -= _vecRight.y; _vecLeft->z -= _vecRight.z;
-//		}
-//
-//		xst_fi void MulEqRef(Vec4* _vecLeft, const Vec4& _vecRight)
-//		{
-//			_vecLeft->x *= _vecRight.x; _vecLeft->y *= _vecRight.y; _vecLeft->z *= _vecRight.z;
-//		}
-//
-//		xst_fi void DivEqRef(Vec4* _vecLeft, const Vec4& _vecRight)
-//		{
-//			_vecLeft->x /= _vecRight.x; _vecLeft->y /= _vecRight.y; _vecLeft->z /= _vecRight.z;
-//		}
-//
-//		xst_fi void AddEqRef(Vec4* _vecLeft, const f32& _fScalar)
-//		{
-//			_vecLeft->x += _fScalar; _vecLeft->y += _fScalar; _vecLeft->z += _fScalar;
-//		}
-//
-//		xst_fi void SubEqRef(Vec4* _vecLeft, const f32& _fScalar)
-//		{
-//			_vecLeft->x -= _fScalar; _vecLeft->y -= _fScalar; _vecLeft->z -= _fScalar;
-//		}
-//
-//		xst_fi void MulEqRef(Vec4* _vecLeft, const f32& _fScalar)
-//		{
-//			_vecLeft->x *= _fScalar; _vecLeft->y *= _fScalar; _vecLeft->z *= _fScalar;
-//		}
-//
-//		xst_fi void DivEqRef(Vec4* _vecLeft, const f32& _fScalar)
-//		{
-//			_vecLeft->x /= _fScalar; _vecLeft->y /= _fScalar; _vecLeft->z /= _fScalar;
-//		}
-//
-//		xst_fi f32 LengthRef(const Vec4& _vecLeft)
-//		{
-//			return sqrtf( _vecLeft.x * _vecLeft.x + _vecLeft.y * _vecLeft.y + _vecLeft.z * _vecLeft.z );
-//		}
-//
-//		xst_fi f32 LengthRef(const Vec4* _vecLeft)
-//		{
-//			return sqrtf( _vecLeft->x * _vecLeft->x + _vecLeft->y * _vecLeft->y + _vecLeft->z * _vecLeft->z );
-//		}
-//
-//		xst_fi Vec4 NormalizeRef(const Vec4* _vecLeft)
-//		{
-//			const f32 fLen = LengthRef( _vecLeft );
-//			return Vec4( _vecLeft->x / fLen, _vecLeft->y / fLen, _vecLeft->z / fLen );
-//		}
-//
-//
-////#if defined (XST_SSE)
-//		//SSE2
-//		xst_fi Vec4SSE MulSSE2(const Vec4SSE& _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			return _mm_mul_ps(_vecLeft.xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec4SSE AddSSE2(const Vec4SSE& _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			return _mm_add_ps(_vecLeft.xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec4SSE SubSSE2(const Vec4SSE& _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			return _mm_sub_ps(_vecLeft.xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec4SSE DivSSE2(const Vec4SSE& _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			return _mm_div_ps(_vecLeft.xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec4SSE MulSSE2(const Vec4SSE& _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_mul_ps( _vecLeft.xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec4SSE AddSSE2(const Vec4SSE& _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_add_ps( _vecLeft.xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec4SSE SubSSE2(const Vec4SSE& _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_sub_ps( _vecLeft.xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec4SSE DivSSE2(const Vec4SSE& _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_div_ps( _vecLeft.xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec4SSE SqrtSSE2(const Vec4SSE& _vec)
-//		{
-//			return _mm_sqrt_ps( _vec.xyzw );
-//		}
-//
-//		xst_i f32 DotSSE2(const Vec4SSE& _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			/*
-//			013673AA  mov         eax,dword ptr [ebx+0Ch]
-//			013673AD  movaps      xmm0,xmmword ptr [eax]
-//			013673B0  mov         ecx,dword ptr [ebx+8]
-//			013673B3  movaps      xmm1,xmmword ptr [ecx]
-//			013673B6  mulps       xmm1,xmm0
-//			013673B9  movaps      xmmword ptr [ebp-180h],xmm1
-//			013673C0  movaps      xmm0,xmmword ptr [ebp-180h]
-//			013673C7  movaps      xmmword ptr [ebp-20h],xmm0
-//			*/
-//			xst_m128 r1 = _mm_mul_ps( _vecLeft.xyzw , _vecRight.xyzw );
-//			/*
-//			013673CB  movaps      xmm0,xmmword ptr [ebp-20h]
-//			013673CF  movaps      xmm1,xmmword ptr [ebp-20h]
-//			013673D3  movhlps     xmm1,xmm0
-//			013673D6  movaps      xmmword ptr [ebp-160h],xmm1
-//			013673DD  movaps      xmm0,xmmword ptr [ebp-160h]
-//			013673E4  movaps      xmm1,xmmword ptr [ebp-20h]
-//			013673E8  addps       xmm1,xmm0
-//			013673EB  movaps      xmmword ptr [ebp-140h],xmm1
-//			013673F2  movaps      xmm0,xmmword ptr [ebp-140h]
-//			013673F9  movaps      xmmword ptr [ebp-20h],xmm0
-//			*/
-//			r1 = _mm_add_ps( r1, _mm_movehl_ps(r1, r1));
-//			/*
-//			013673FD  movaps      xmm0,xmmword ptr [ebp-20h]
-//			01367401  movaps      xmm1,xmmword ptr [ebp-20h]
-//			01367405  shufps      xmm1,xmm0,0E5h
-//			01367409  movaps      xmmword ptr [ebp-120h],xmm1
-//			01367410  movaps      xmm0,xmmword ptr [ebp-120h]
-//			01367417  movaps      xmm1,xmmword ptr [ebp-20h]
-//			0136741B  addps       xmm1,xmm0
-//			0136741E  movaps      xmmword ptr [ebp-100h],xmm1
-//			01367425  movaps      xmm0,xmmword ptr [ebp-100h]
-//			0136742C  movaps      xmmword ptr [ebp-20h],xmm0
-//			*/
-//			r1 = _mm_add_ps( r1, _mm_shuffle_ps(r1, r1, _MM_SHUFFLE(3, 2, 1, 1)));
-//			//f32 fResult;
-//			//_mm_store_ss( &fResult, r1 ); // zapisz 1 float
-//			//return fResult;
-//			return r1.m128_f32[0];
-//		}
-//
-//		xst_fi f32 LengthSSE2(const Vec4SSE& _vecLeft)
-//		{
-//			xst_m128 r1 = _mm_mul_ps( _vecLeft.xyzw , _vecLeft.xyzw );
-//			r1 = _mm_add_ps( r1, _mm_movehl_ps(r1, r1));
-//			r1 = _mm_add_ps( r1, _mm_shuffle_ps(r1, r1, _MM_SHUFFLE(3, 2, 1, 1)));
-//			r1 = _mm_sqrt_ps( r1 );
-//			//f32 fResult;
-//			//_mm_store_ss( &fResult, r1 ); // zapisz 1 float
-//			//return fResult;
-//			return r1.m128_f32[0];
-//		}
-//
-//		xst_fi Vec4SSE NormalizeSSE2(const Vec4SSE& _vecLeft)
-//		{
-//			//_vecLeft->xyzw / LengthSSE2(_vecLeft)
-//
-//			//Calc vector length
-//			m128 l = _mm_mul_ps( _vecLeft.xyzw , _vecLeft.xyzw );
-//			l = _mm_add_ps( l, _mm_movehl_ps(l, l));
-//			l = _mm_add_ps( l, _mm_shuffle_ps(l, l, _MM_SHUFFLE(3, 2, 1, 1)));
-//			l = _mm_sqrt_ps( l );
-//
-//			return _mm_div_ps( _vecLeft.xyzw, l );
-//		}
-//
-//		//SSE2 (for class use)
-//		xst_fi Vec4SSE MulSSE2(const Vec4SSE* _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			return _mm_mul_ps(_vecLeft->xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec4SSE AddSSE2(const Vec4SSE* _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			return _mm_add_ps(_vecLeft->xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec4SSE SubSSE2(const Vec4SSE* _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			return _mm_sub_ps(_vecLeft->xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec4SSE DivSSE2(const Vec4SSE* _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			return _mm_div_ps(_vecLeft->xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec4SSE MulSSE2(const Vec4SSE* _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_mul_ps( _vecLeft->xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec4SSE AddSSE2(const Vec4SSE* _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_add_ps( _vecLeft->xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec4SSE SubSSE2(const Vec4SSE* _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_sub_ps( _vecLeft->xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec4SSE DivSSE2(const Vec4SSE* _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_div_ps( _vecLeft->xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec4SSE SqrtSSE2(const Vec4SSE* _vec)
-//		{
-//			return _mm_sqrt_ps( _vec->xyzw );
-//		}
-//
-//		xst_fi f32 DotSSE2(const Vec4SSE* _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			m128 r1 = _mm_mul_ps( _vecLeft->xyzw , _vecRight.xyzw );
-//			r1 = _mm_add_ps( r1, _mm_movehl_ps(r1, r1));
-//			r1 = _mm_add_ps( r1, _mm_shuffle_ps(r1, r1, _MM_SHUFFLE(3, 2, 1, 1)));
-//			f32 fResult;
-//			_mm_store_ss( &fResult, r1 ); // zapisz 1 float
-//			return fResult;
-//		}
-//
-//		xst_fi void AddEqSSE2(Vec4SSE* _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			_vecLeft->xyzw = _mm_add_ps( _vecLeft->xyzw, _vecRight.xyzw );
-//		}
-//
-//		xst_fi void SubEqSSE2(Vec4SSE* _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			_vecLeft->xyzw = _mm_sub_ps( _vecLeft->xyzw, _vecRight.xyzw );
-//		}
-//
-//		xst_fi void MulEqSSE2(Vec4SSE* _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			_vecLeft->xyzw = _mm_mul_ps( _vecLeft->xyzw, _vecRight.xyzw );
-//		}
-//
-//		xst_fi void DivEqSSE2(Vec4SSE* _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			_vecLeft->xyzw = _mm_div_ps( _vecLeft->xyzw, _vecRight.xyzw );
-//		}
-//
-//		xst_fi void AddEqSSE2(Vec4SSE* _vecLeft, const f32& _fScalar)
-//		{
-//			_vecLeft->xyzw = _mm_add_ps( _vecLeft->xyzw, _mm_load1_ps( &_fScalar ) );
-//		}
-//
-//		xst_fi void SubEqSSE2(Vec4SSE* _vecLeft, const f32& _fScalar)
-//		{
-//			_vecLeft->xyzw = _mm_sub_ps( _vecLeft->xyzw, _mm_load1_ps( &_fScalar ) );
-//		}
-//
-//		xst_fi void MulEqSSE2(Vec4SSE* _vecLeft, const f32& _fScalar)
-//		{
-//			_vecLeft->xyzw = _mm_mul_ps( _vecLeft->xyzw, _mm_load1_ps( &_fScalar ) );
-//		}
-//
-//		xst_fi void DivEqSSE2(Vec4SSE* _vecLeft, const f32& _fScalar)
-//		{
-//			_vecLeft->xyzw = _mm_div_ps( _vecLeft->xyzw, _mm_load1_ps( &_fScalar ) );
-//		}
-//
-//		xst_fi f32 LengthSSE2(const Vec4SSE* _vecLeft)
-//		{
-//			//return sqrtf( _vecLeft->x * _vecLeft->x + _vecLeft->y * _vecLeft->y + _vecLeft->z * _vecLeft->z );
-//			m128 r1 = _mm_mul_ps( _vecLeft->xyzw , _vecLeft->xyzw );
-//			//r1 = _mm_add_ps( r1, _mm_movehl_ps(r1, r1) );
-//			//r1 = _mm_add_ps( r1, _mm_shuffle_ps(r1, r1, _MM_SHUFFLE(3, 2, 1, 1)) );
-//			r1 = _mm_sqrt_ps( r1 );
-//			f32 fResult;
-//			_mm_store_ss( &fResult, r1 ); // zapisz 1 float
-//			return fResult;
-//		}
-//
-//		xst_fi Vec4SSE NormalizeSSE2(const Vec4SSE* _vecLeft)
-//		{
-//			//_vecLeft->xyzw / LengthSSE2(_vecLeft)
-//
-//			//Calc vector length
-//			m128 l = _mm_mul_ps( _vecLeft->xyzw , _vecLeft->xyzw );
-//			l = _mm_add_ps( l, _mm_movehl_ps(l, l));
-//			l = _mm_add_ps( l, _mm_shuffle_ps(l, l, _MM_SHUFFLE(3, 2, 1, 1)));
-//			l = _mm_sqrt_ps( l );
-//
-//			return _mm_div_ps( _vecLeft->xyzw, l );
-//		}
-//
-//		//SSE4
-//		xst_fi f32	DotSSE4(const Vec4SSE& _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			return xst_m128( _mm_dp_ps( _vecLeft.xyzw, _vecRight.xyzw, 0x55 ) ).m128_f32[0];
-//		}
-//
-//		//SSE4 (class)
-//		xst_fi f32	DotSSE4(const Vec4SSE* _vecLeft, const Vec4SSE& _vecRight)
-//		{
-//			return xst_m128( _mm_dp_ps( _vecLeft->xyzw, _vecRight.xyzw, 0x55 ) ).m128_f32[0];
-//		}
 
-
-	//}//math
 }//xst
 
 #endif

@@ -15,6 +15,7 @@ namespace XSE
 	i32 CreateBox(CMesh* pMesh, IInputLayout* pIL, const SLineBoxOptions& Options);
 	i32 CreatePlane(CMesh* pMesh, IInputLayout* pIL, const SPlaneOptions& Opts);
 	i32 CreateRect2D(CMesh* pMesh, IInputLayout* pIL, const SRect2DOptions& Opts);
+	i32 CreateCircle( CMesh* pMesh, IInputLayout* pIL, const SCircleOptions& Opts );
 
 	ch8 g_astrName[ 128 ];
 	xst_astring g_strName;
@@ -125,7 +126,7 @@ namespace XSE
 		{ XSTSimpleProfiler2( "clone mesh: set data" );
 		Resources::CMesh* pNewMesh = (Resources::CMesh*)pNewRes.GetPointer();
 		
-		if( !bFullClone )
+		//if( bFullClone )
 		{
 			for(int i = 0; i < pSrcMesh->m_vLODs.size(); ++i)
 			{
@@ -155,6 +156,11 @@ namespace XSE
 				NewLOD.ulEndVertexId = pCurrLOD->ulEndVertexId;
 			}
 		}
+		/*else
+		{
+			SMeshLOD& LOD = pNewMesh->AddLOD();
+
+		}*/
 
 		pNewMesh->m_ulCloneId = ulID;
 		pNewMesh->m_bIsCloned = true;
@@ -243,6 +249,19 @@ namespace XSE
 				if( pShapeOptions != xst_null ) 
 					Options = *(SLineBoxOptions*)pShapeOptions;
 				if( XST_FAILED( CreateBox( pMesh.GetPointer(), pIL, Options ) ) )
+				{
+					DestroyMesh( pMesh, strGroupName );
+					pMesh = xst_null;
+				}
+			}
+			break;
+
+			case BasicShapes::CIRCLE:
+			{
+				SCircleOptions Options;
+				if( pShapeOptions != xst_null )
+					Options = *(SCircleOptions*)pShapeOptions;
+				if( XST_FAILED( CreateCircle( pMesh.GetPointer(), pIL, Options ) ) )
 				{
 					DestroyMesh( pMesh, strGroupName );
 					pMesh = xst_null;
@@ -387,6 +406,50 @@ namespace XSE
 		//Set default material
 		pMesh->SetMaterial( m_pMatMgr->GetDefaultMaterial() );
 		return pMesh;
+	}
+
+	i32 CreateCircle( CMesh* pMesh, IInputLayout* pIL, const SCircleOptions& Options )
+	{
+		xst_vector< Vec3 > vPoints;
+		f32 fAngle = 0.0f;
+		for( u32 i = 0; i <= 360; i += Options.uStep )
+		{
+			fAngle = XST::Math::DegreesToRadians( i );
+			vPoints.push_back( Vec3( XST::Math::Cos( fAngle ) * Options.fRadius, XST::Math::Sin( fAngle ) * Options.fRadius, 0.0f ) );
+		}
+
+		bool bIsNormal = pIL->IsNormal();
+		ul32 ulVertCount = vPoints.size();
+		VertexBufferPtr pVB = pMesh->CreateVertexBuffer();
+
+		pVB->SetTopologyType( TopologyTypes::LINE_STRIP );
+		pVB->SetUsage( BufferUsages::DEFAULT );
+		pVB->SetVertexCount( ulVertCount );
+		pVB->SetInputLayout( pIL );
+
+		if( XST_FAILED( pVB->Lock() ) )
+		{
+			return XST_FAIL;
+		}
+
+		CVertexData& Data = pVB->GetVertexData();
+
+		ul32 vs = pIL->GetVertexSize();
+
+		for( u32 i = 0; i < vPoints.size(); ++i )
+		{
+			if( pIL->IsPosition() )
+			{
+				Data.SetPosition( i, vPoints[ i ] + Options.vecPos );
+			}
+		}
+
+		if( XST_FAILED( pVB->Unlock() ) || XST_FAILED( pVB->Create() ) )
+		{
+			return XST_FAIL;
+		}
+
+		return XST_OK;
 	}
 
 	i32 CreateBox(CMesh* pMesh, IInputLayout* pIL, const SBoxOptions& Options)

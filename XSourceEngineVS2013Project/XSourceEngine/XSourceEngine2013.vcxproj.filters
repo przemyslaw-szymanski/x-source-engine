@@ -66,6 +66,9 @@
     <Filter Include="include\XST\ThirdParty\lua51">
       <UniqueIdentifier>{5dadff10-cae4-4ef0-88b4-fa4efecbe2b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\XST\Impl">
+      <UniqueIdentifier>{20559051-2a1d-4998-bca0-529b6082efd3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine\include\XST\mtrand.h">
@@ -875,6 +878,7 @@
     <ClInclude Include="..\..\Engine\include\XST\ThirdParty\lua51\tolua++.h">
       <Filter>include\XST\ThirdParty\lua51</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\Impl\XSTCQuaternion.impl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine\dllmain.cpp">

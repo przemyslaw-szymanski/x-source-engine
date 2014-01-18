@@ -5,6 +5,7 @@ namespace XST
 	namespace Math
 	{
 		const CQuaternion CQuaternion::ZERO( 0.0f, 0.0f, 0.0f, 0.0f );
+		const CQuaternion CQuaternion::IDENTITY( 0.0f, 0.0f, 0.0f, 1.0f );
 
 		CQuaternion operator* (f32 fScalar, const CQuaternion& rkQ)
 		{
@@ -101,6 +102,16 @@ namespace XST
 			pvecZAxis->x = kRot[0][2];
 			pvecZAxis->y = kRot[1][2];
 			pvecZAxis->z = kRot[2][2];
+		}
+
+		void CQuaternion::FromAngleAxis(cf32& fRadianAngle, const Vec3& vecAxis)
+		{
+			cf32 fHalfAngle = fRadianAngle * 0.5f;
+			cf32 fSin = XST::Math::Sin( fHalfAngle );
+			w = XST::Math::Cos( fHalfAngle );
+			x = fSin * vecAxis.x;
+			y = fSin * vecAxis.y;
+			z = fSin * vecAxis.z;
 		}
 
 		CQuaternion CQuaternion::Inverse () const
@@ -291,8 +302,11 @@ namespace XST
 		f32 CQuaternion::Normalize(void)
 		{
 			f32 len = Norm();
-			f32 factor = 1.0f / Math::Sqrt(len);
-			Set( *this * factor );
+			if( len > 0.0f )
+			{
+				f32 factor = 1.0f / Math::Sqrt( len );
+				Set( *this * factor );
+			}
 			return len;
 		}
 	

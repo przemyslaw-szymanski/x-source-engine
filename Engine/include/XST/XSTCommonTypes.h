@@ -55,6 +55,17 @@ namespace XST
 		typedef const i16			ci16;
 		typedef const i32			ci32;
 
+#if defined( XST_VISUAL_STUDIO )
+		typedef __int64				i64;
+		typedef unsigned __int64	u64;
+#elif defined( XST_GCC )
+		typedef int64_t				i64;
+		typedef uint64_t			u64;
+#endif
+
+		typedef const i64			ci64;
+		typedef const u64			cu64;
+
 		#define XST_MIN_I8		 SCHAR_MIN
 		#define XST_MIN_U8		 0
 		#define XST_MIN_I16		 SHRT_MIN
@@ -210,10 +221,23 @@ namespace XST
 		#define XST_TOSTRING(_type) #_type
 		#define XST_ADD(_left, _right) _left##_right
 
+		/*typedef union XST_ALIGN(16) _xst_m128 
+		{
+			 f32	m128_f32[4];
+			 u64	m128_u64[2];
+			 i8     m128_i8[16];
+			 i16    m128_i16[8];
+			 i32    m128_i32[4];
+			 i64    m128_i64[2];
+			 u8		m128_u8[16];
+			 u16	m128_u16[8];
+			 u32	m128_u32[4];
+		 } xst_m128;*/
+
 		#define xst_i					inline
 		#if defined XST_VISUAL_STUDIO //if visual studio
 		#	define xst_fi				__forceinline
-		#	define XST_ALIGN(_bytes)	__declspec( align( _bytes ) )
+		#	define XST_ALIGN(_size)		__declspec( align( _size ) )
 		#	define XST_FUNCTION			__FUNCTION__
 			typedef	__m128				m128;
 		#elif defined XST_GCC
@@ -224,6 +248,7 @@ namespace XST
 			typedef __m128              m128;
 		#endif
 
+/*
 		union XST_ALIGN( 16 ) _xst_m128
 		{
             m128    xyzw;
@@ -239,20 +264,8 @@ namespace XST
             operator f32() const { return x; }
 
 		};
-
-		union XST_ALIGN( 16 ) xst_m128
-		{
-			f32	m128_f32[4];
-			struct
-			{
-				f32	x, y, z, w;
-			};
-
-			xst_fi void operator=(const xst_m128& Left)
-			{
-				x = Left.x; y = Left.y; z = Left.z; w = Left.w;
-			}
-		};
+*/
+		
 
 		#if defined (_UNICODE) || (UNICODE)
 		#	define XST_TEXT(_text)	L##_text

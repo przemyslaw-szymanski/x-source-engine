@@ -485,6 +485,13 @@
     <ClCompile Include="..\..\Engine\src\XST\XSTTCOctree.cpp" />
     <ClCompile Include="..\..\Engine\stdafx.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Engine\include\XST\Impl\XSTCQuaternion.impl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <FileType>Document</FileType>
+    </ClInclude>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{00FC135B-F3C8-421C-BB1A-76F861A49C6F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

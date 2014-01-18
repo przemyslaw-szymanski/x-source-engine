@@ -1,0 +1,44 @@
+
+xst_fi void CQuaternion::Conjugate()
+{
+	Conjugate( this );
+}
+
+xst_fi	void CQuaternion::Conjugate(CQuaternion* pquatOut)
+{
+	Conjugate( pquatOut, *pquatOut );
+}
+
+xst_fi	CQuaternion	CQuaternion::ConjugateRet(const CQuaternion& quatQuaternion)
+{
+	CQuaternion quatRet;
+	Conjugate( &quatRet, quatQuaternion );
+	return quatRet;
+}
+
+xst_fi	void CQuaternion::Conjugate( CQuaternion* pquatOut, const CQuaternion& quatQuaternion )
+{
+#if defined( XST_SSE2 )
+	static const CQuaternion NegativeOne3( -1.0f, -1.0f, -1.0f, 1.0f );
+	pquatOut->v = _mm_mul_ps( quatQuaternion.v, NegativeOne3.v );
+#else
+	pquatOut->x = -quatQuaternion.x;
+	pquatOut->y = -quatQuaternion.y;
+	pquatOut->z = -quatQuaternion.z;
+#endif // XST_SSE2	
+}
+
+xst_fi	void CQuaternion::Mul(CQuaternion* pquatOut, const CQuaternion& Q1, const CQuaternion& Q2)
+{
+	pquatOut->x = (Q2.a[3] * Q1.a[0]) + (Q2.a[0] * Q1.a[3]) + (Q2.a[1] * Q1.a[2]) - (Q2.a[2] * Q1.a[1]);
+    pquatOut->y = (Q2.a[3] * Q1.a[1]) - (Q2.a[0] * Q1.a[2]) + (Q2.a[1] * Q1.a[3]) + (Q2.a[2] * Q1.a[0]);
+    pquatOut->z = (Q2.a[3] * Q1.a[2]) + (Q2.a[0] * Q1.a[1]) - (Q2.a[1] * Q1.a[0]) + (Q2.a[2] * Q1.a[3]);
+    pquatOut->w = (Q2.a[3] * Q1.a[3]) - (Q2.a[0] * Q1.a[0]) - (Q2.a[1] * Q1.a[1]) - (Q2.a[2] * Q1.a[2]);
+}
+
+xst_fi	CQuaternion	CQuaternion::MulRet(const CQuaternion& quatLeft, const CQuaternion& quatRight)
+{
+	CQuaternion quatRet;
+	Mul( &quatRet, quatLeft, quatRight );
+	return quatRet;
+}

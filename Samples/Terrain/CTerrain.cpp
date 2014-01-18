@@ -108,21 +108,23 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	}
 	f32 fTime = Timer.GetQPerfElapsedTime();
 
-	this->CreateSceneManager( pEngine, 500 );
+	this->CreateSceneManager( pEngine, 1250 );
 	//this->m_pSceneMgr->GetCurrentCamera()->SetPosition( 0, 5, -10 );
 	//this->m_pSceneMgr->GetCurrentCamera()->SetMoveSpeed( 1 );
 	this->m_pViewCam->SetAngleX( 0.397f );
 	this->m_pViewCam->SetAngleY( 0.580f );
 	this->m_pViewCam->SetPosition( -18, 101, -56 );
+	this->m_pViewCam->SetSpeed( 40, 1.1f, 1.1f );
 
-	this->m_pDbgCam->SetPosition( 0, 0, 0 );
-	this->m_pDbgCam->SetAngleX( 45 );
-	this->m_pDbgCam->SetFar( 100 );
+	this->m_pDbgCam->SetPosition( 0, 101, 0 );
+	//this->m_pDbgCam->SetAngleX( 0.397f );
+	//this->m_pDbgCam->SetAngleY( 0.580f );
+	this->m_pDbgCam->SetFOV( XST::DegreesToRadians( 30 ), 0.1f, 100.0f );
+	this->m_pDbgCam->ShowFrustumMesh( true );
 
-	this->m_pDbgCam->ShowFrustumMesh( false );
 	//this->m_pMoveCam = this->m_pDbgCam;
-	this->m_pMoveCam->SetMoveSpeed( 400 );
-	this->m_pSceneMgr->SetCamera( this->m_pViewCam );
+
+	//this->m_pSceneMgr->SetCamera( this->m_pViewCam );
 
 	XSE::CSceneManager::CameraIterator Itr = m_pSceneMgr->GetCameraIterator();
 	while( Itr.HasMoreElements() )
@@ -132,12 +134,12 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	}
 
 	XSE::STerrainOptions Options;
-	Options.Size = XSE::CPoint( 100, 100 );
+	Options.Size = XSE::CPoint( 1000, 1000 );
 	u32 uiCount = 11;
 	Options.PageCount = XSE::CPoint( 1, 1 );
 	Options.vHeightmaps.push_back( "heightmap04.jpg" );
-	Options.PageVertexCount = XSE::CPoint( 1025 );
-	Options.TileVertexCount = XSE::CPoint( 33 );
+	Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
+	Options.TileVertexCount = XSE::CPoint( 16 * 2 + 1 );
 	Options.uiLODCount = 2;
 	Options.bColor = true;
 	Options.bBinormal = Options.bNormal = Options.bTangent = Options.bTexCoord = false;
@@ -146,7 +148,26 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 		XSTSimpleProfiler2( "CreateTerrain");
 	XSE::ITerrain* pTerrain = this->m_pSceneMgr->CreateTerrain( "Terrain", Options );
 	}
-	return XST_OK;
+	return XSE::RESULT::OK;
+}
+
+void CTerrain::OnUpdate()
+{
+	XSE::IKeyboard* pKeyboard = m_pRenderWindow->GetKeyboard( );
+	if( pKeyboard->IsKeyPressed( XSE::KeyCodes::CAPITAL_Z ) )
+	{
+		this->m_pDbgCam->RotateX( -0.1 );
+	}
+	else if( pKeyboard->IsKeyPressed( XSE::KeyCodes::CAPITAL_X ) )
+	{
+		this->m_pDbgCam->RotateX( 0.1 );
+	}
+	this->m_pDbgCam->Update(0);
+}
+
+void CTerrain::OnKeyPressEvent( int iKey )
+{
+
 }
 
 i32 CTerrain::Run()

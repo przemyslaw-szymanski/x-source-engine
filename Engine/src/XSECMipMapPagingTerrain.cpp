@@ -6,6 +6,7 @@
 #include "XSECSceneManager.h"
 #include "XSECRenderQueueElement.h"
 #include "XSECMeshManager.h"
+#include "XSECModelManager.h"
 #include "XSECSceneNode.h"
 #include "XSECImageManager.h"
 
@@ -313,7 +314,6 @@ namespace XSE
 		//int iBaseNameLen = xst_sprintf( strTileName, 32, "%s_", strTerrName.c_str() );
 		//int iTmpLen = 0;
 
-
 		for(i32 y = 0; y < m_TileCount.y; ++y)
 		{
 			for(i32 x = 0; x < m_TileCount.x; ++x)
@@ -405,6 +405,19 @@ namespace XSE
 		//If tile count is more than page count, set tile data from main page (center) to tiles
 		//Choose next pages to set rest of the tiles
 
+#if defined( XSE_RENDERER_DEBUG )
+		CMeshManager* pMeshMgr = CMeshManager::GetSingletonPtr();
+		CModelManager* pModelMgr = CModelManager::GetSingletonPtr();
+		if( !m_bBoundingObjectsCreated )
+		{
+			m_pBoundingSphereModel = CModelManager::GetSingletonPtr( )->CreateModel( "Terrain/BoundingSphere", "Debug" );
+			m_pAABBModel = CModelManager::GetSingletonPtr( )->CreateModel( "Terrain/AABB", "Debug" );
+			CSceneNode* pNode = m_pSceneMgr->CreateNode( "Terrain/BoundingObjects" );
+			pNode->AddObject( m_pBoundingSphereModel );
+			pNode->AddObject( m_pAABBModel );
+		}
+#endif // XSE_RENDERER_DEBUG
+
 		u32 uiCurrTileID = 0;
 		PageVec::iterator PageItr;
 		xst_stl_foreach( PageItr, m_vPages )
@@ -412,20 +425,39 @@ namespace XSE
 			//const CMipMapTerrainPage::VertexDataVec& vVertexDataBuffer = (*PageItr)->GetVertexDataBuffer();
 			const CMipMapTerrainPage::VertexDataArray& vVertexDataBuffer = (*PageItr)->GetVertexDataBuffer();
 			CVertexData* pCurrVertexData;
+			CMipMapTerrainTile* pCurrTile;
 
 			for(u32 i = 0; i < vVertexDataBuffer.size(); ++i)
 			{
+				pCurrTile = m_vTiles[ uiCurrTileID ];
 				pCurrVertexData = vVertexDataBuffer[ i ].pData;
-				if( XST_FAILED( m_vTiles[ uiCurrTileID ]->SetVertexData( *pCurrVertexData ) ) )
+				if( XST_FAILED( pCurrTile->SetVertexData( *pCurrVertexData ) ) )
 				{
 					return XST_OK;
 				}
 				
-				m_vTiles[ uiCurrTileID ]->SetBoundingVolume( vVertexDataBuffer[ i ].Volume );
+				pCurrTile->SetBoundingVolume( vVertexDataBuffer[ i ].Volume );
+
+#if defined( XSE_RENDERER_DEBUG )
+				if( !m_bBoundingObjectsCreated )
+				{
+					SCircleOptions SphereOptions;
+					const CBoundingVolume& Volume = pCurrTile->GetMesh( )->GetObjectBoundingVolume( );
+					SphereOptions.fRadius = Volume.GetSphere().fRadius;
+					SphereOptions.vecPos = Volume.GetSphere().vecCenter;
+					SphereOptions.uStep = 20;
+					MeshPtr pSphereMesh = pMeshMgr->CreateMesh( pCurrTile->GetMesh()->GetResourceName() + "/BoundingSphere", ILEs::POSITION | ILEs::COLOR, XSE::BasicShapes::CIRCLE, &SphereOptions, "Debug" );
+					m_pBoundingSphereModel->AddMesh( pSphereMesh );
+				}
+#endif // XSE_RENDERER_DEBUG
 
 				++uiCurrTileID;
 			}
 		}
+
+#if defined( XSE_RENDERER_DEBUG )
+		m_bBoundingObjectsCreated = true;
+#endif // XSE_RENDERER_DEBUG
 
 		return XST_OK;
 	}

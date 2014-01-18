@@ -13,7 +13,8 @@
 
 #include <d3d11.h>
 #include <d3dx11.h>
-#include <xnamath.h>
+//#include <xnamath.h>
+#include <DirectXCollision.h>
 
 namespace XSE
 {
@@ -40,26 +41,26 @@ namespace XSE
 
 		struct SMatrixBuffer
 		{
-			XMMATRIX	mtxWorld;
-			XMMATRIX	mtxView;
-			XMMATRIX	mtxProjection;
+			DirectX::XMMATRIX	mtxWorld;
+			DirectX::XMMATRIX	mtxView;
+			DirectX::XMMATRIX	mtxProjection;
 		};
 
 	}//d3d11
 
-	xst_fi XMVECTOR	VecToXMVec(const Vec2& vec)
+	xst_fi DirectX::XMVECTOR	VecToXMVec( const Vec2& vec )
 	{
-		return XMVectorSet( vec.x, vec.y, 0.0f, 0.0f );
+		return DirectX::XMVectorSet( vec.x, vec.y, 0.0f, 0.0f );
 	}
 
-	xst_fi XMVECTOR	VecToXMVec(const Vec3& vec)
+	xst_fi DirectX::XMVECTOR	VecToXMVec( const Vec3& vec )
 	{
-		return XMVectorSet( vec.x, vec.y, vec.z, 0.0f );
+		return DirectX::XMVectorSet( vec.x, vec.y, vec.z, 0.0f );
 	}
 
-	xst_fi XMVECTOR	VecToXMVec(const Vec4& vec)
+	xst_fi DirectX::XMVECTOR	VecToXMVec( const Vec4& vec )
 	{
-		return XMVectorSet( vec.x, vec.y, vec.z, vec.w );
+		return DirectX::XMVectorSet( vec.x, vec.y, vec.z, vec.w );
 	}
 
 }//xse

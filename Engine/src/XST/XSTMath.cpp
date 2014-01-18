@@ -6,7 +6,8 @@ namespace XST
 {
 	namespace Math
 	{
-
+		const u32 SELECT_0          = 0x00000000;
+		const u32 SELECT_1          = 0xFFFFFFFF;
 		const CVector2 CVector2::ZERO = CVector2( 0, 0 );
 		const CVector2 CVector2::X = CVector2( 1, 0);
 		const CVector2 CVector2::Y = CVector2( 0, 1 );
@@ -36,6 +37,8 @@ namespace XST
 		const CVector4 CVector4::NEGATIVE_W = CVector4( 0, 0, 0, -1 );
 		const CVector4 CVector4::SIGN_MASK( -0.f ); // 1 << 31
 		const CVector4 CVector4::UNIT( 1.0f, 1.0f, 1.0f, 1.0f );
+		const CVector4 CVector4::INF( 0x7F800000, 0x7F800000, 0x7F800000, 0x7F800000 );
+		const CVector4 CVector4::NOT_A_NUMBER( 0x7FC00000, 0x7FC00000, 0x7FC00000, 0x7FC00000 );
 
 		const CPoint CPoint::ZERO = CPoint( 0, 0 );
 		const CPoint CPoint::X = CPoint( 1, 0);
@@ -152,7 +155,33 @@ namespace XST
 			v = _mm_andnot_ps( SIGN_MASK.v, v );
 #endif
 		}
-
+		/*
+		void CVector4::Transform(Vec4* pvecOut, const Vec4& vecVector, const Mtx4& mtxProj)
+		{
+#if defined(XST_SSE2)
+			// Splat x,y,z and w
+			Vec4 vTempX = XST_SSE_PERMUTE_PS( vecVector.v,_MM_SHUFFLE(0,0,0,0));
+			Vec4 vTempY = XST_SSE_PERMUTE_PS( vecVector.v,_MM_SHUFFLE(1,1,1,1));
+			Vec4 vTempZ = XST_SSE_PERMUTE_PS( vecVector.v,_MM_SHUFFLE(2,2,2,2));
+			Vec4 vTempW = XST_SSE_PERMUTE_PS( vecVector.v,_MM_SHUFFLE(3,3,3,3));
+			// Mul by the matrix
+			vTempX = _mm_mul_ps(vTempX,mtxProj.r[0]);
+			vTempY = _mm_mul_ps(vTempY,mtxProj.r[1]);
+			vTempZ = _mm_mul_ps(vTempZ,mtxProj.r[2]);
+			vTempW = _mm_mul_ps(vTempW,mtxProj.r[3]);
+			// Add them all together
+			vTempX = _mm_add_ps(vTempX,vTempY);
+			vTempZ = _mm_add_ps(vTempZ,vTempW);
+			vTempX = _mm_add_ps(vTempX,vTempZ);
+			pvecOut->v = vTempX.v;
+#else // XST_SSE2
+			pvecOut->x = (mtxProj.m[0][0]*pvecOut->m128_f32[0])+(mtxProj.m[1][0]*pvecOut->m128_f32[1])+(mtxProj.m[2][0]*pvecOut->m128_f32[2])+(mtxProj.m[3][0]*pvecOut->m128_f32[3]);
+			pvecOut->y = (mtxProj.m[0][1]*pvecOut->m128_f32[0])+(mtxProj.m[1][1]*pvecOut->m128_f32[1])+(mtxProj.m[2][1]*pvecOut->m128_f32[2])+(mtxProj.m[3][1]*pvecOut->m128_f32[3]);
+			pvecOut->z = (mtxProj.m[0][2]*pvecOut->m128_f32[0])+(mtxProj.m[1][2]*pvecOut->m128_f32[1])+(mtxProj.m[2][2]*pvecOut->m128_f32[2])+(mtxProj.m[3][2]*pvecOut->m128_f32[3]);
+			pvecOut->w = (mtxProj.m[0][3]*pvecOut->m128_f32[0])+(mtxProj.m[1][3]*pvecOut->m128_f32[1])+(mtxProj.m[2][3]*pvecOut->m128_f32[2])+(mtxProj.m[3][3]*pvecOut->m128_f32[3]);			
+#endif
+		}
+		*/
 		f32 Sqrt(cf32& fValue)
 		{
 	#if defined( XST_NOT_USING_SSE )
@@ -195,257 +224,5 @@ namespace XST
 	}//Math
 }//xst
 
-
-
-
-////#if defined (XST_SSE)
-//		//SSE2
-//		xst_fi Vec3 MulSSE2(const Vec3& _vecLeft, const Vec3& _vecRight)
-//		{
-//			return _mm_mul_ps(_vecLeft.xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec3 AddSSE2(const Vec3& _vecLeft, const Vec3& _vecRight)
-//		{
-//			return _mm_add_ps(_vecLeft.xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec3 SubSSE2(const Vec3& _vecLeft, const Vec3& _vecRight)
-//		{
-//			return _mm_sub_ps(_vecLeft.xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec3 DivSSE2(const Vec3& _vecLeft, const Vec3& _vecRight)
-//		{
-//			return _mm_div_ps(_vecLeft.xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec3 MulSSE2(const Vec3& _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_mul_ps( _vecLeft.xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec3 AddSSE2(const Vec3& _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_add_ps( _vecLeft.xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec3 SubSSE2(const Vec3& _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_sub_ps( _vecLeft.xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec3 DivSSE2(const Vec3& _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_div_ps( _vecLeft.xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec3 SqrtSSE2(const Vec3& _vec)
-//		{
-//			return _mm_sqrt_ps( _vec.xyzw );
-//		}
-//
-//		xst_i f32 DotSSE2(const Vec3& _vecLeft, const Vec3& _vecRight)
-//		{
-//			/*
-//			013673AA  mov         eax,dword ptr [ebx+0Ch]
-//			013673AD  movaps      xmm0,xmmword ptr [eax]
-//			013673B0  mov         ecx,dword ptr [ebx+8]
-//			013673B3  movaps      xmm1,xmmword ptr [ecx]
-//			013673B6  mulps       xmm1,xmm0
-//			013673B9  movaps      xmmword ptr [ebp-180h],xmm1
-//			013673C0  movaps      xmm0,xmmword ptr [ebp-180h]
-//			013673C7  movaps      xmmword ptr [ebp-20h],xmm0
-//			*/
-//			xst_m128 r1 = _mm_mul_ps( _vecLeft.xyzw , _vecRight.xyzw );
-//			/*
-//			013673CB  movaps      xmm0,xmmword ptr [ebp-20h]
-//			013673CF  movaps      xmm1,xmmword ptr [ebp-20h]
-//			013673D3  movhlps     xmm1,xmm0
-//			013673D6  movaps      xmmword ptr [ebp-160h],xmm1
-//			013673DD  movaps      xmm0,xmmword ptr [ebp-160h]
-//			013673E4  movaps      xmm1,xmmword ptr [ebp-20h]
-//			013673E8  addps       xmm1,xmm0
-//			013673EB  movaps      xmmword ptr [ebp-140h],xmm1
-//			013673F2  movaps      xmm0,xmmword ptr [ebp-140h]
-//			013673F9  movaps      xmmword ptr [ebp-20h],xmm0
-//			*/
-//			r1 = _mm_add_ps( r1, _mm_movehl_ps(r1, r1));
-//			/*
-//			013673FD  movaps      xmm0,xmmword ptr [ebp-20h]
-//			01367401  movaps      xmm1,xmmword ptr [ebp-20h]
-//			01367405  shufps      xmm1,xmm0,0E5h
-//			01367409  movaps      xmmword ptr [ebp-120h],xmm1
-//			01367410  movaps      xmm0,xmmword ptr [ebp-120h]
-//			01367417  movaps      xmm1,xmmword ptr [ebp-20h]
-//			0136741B  addps       xmm1,xmm0
-//			0136741E  movaps      xmmword ptr [ebp-100h],xmm1
-//			01367425  movaps      xmm0,xmmword ptr [ebp-100h]
-//			0136742C  movaps      xmmword ptr [ebp-20h],xmm0
-//			*/
-//			r1 = _mm_add_ps( r1, _mm_shuffle_ps(r1, r1, _MM_SHUFFLE(3, 2, 1, 1)));
-//			//f32 fResult;
-//			//_mm_store_ss( &fResult, r1 ); // zapisz 1 float
-//			//return fResult;
-//			return r1.m128_f32[0];
-//		}
-//
-//		xst_fi f32 LengthSSE2(const Vec3& _vecLeft)
-//		{
-//			xst_m128 r1 = _mm_mul_ps( _vecLeft.xyzw , _vecLeft.xyzw );
-//			r1 = _mm_add_ps( r1, _mm_movehl_ps(r1, r1));
-//			r1 = _mm_add_ps( r1, _mm_shuffle_ps(r1, r1, _MM_SHUFFLE(3, 2, 1, 1)));
-//			r1 = _mm_sqrt_ps( r1 );
-//			//f32 fResult;
-//			//_mm_store_ss( &fResult, r1 ); // zapisz 1 float
-//			//return fResult;
-//			return r1.m128_f32[0];
-//		}
-//
-//		xst_fi Vec3 NormalizeSSE2(const Vec3& _vecLeft)
-//		{
-//			//_vecLeft->xyzw / LengthSSE2(_vecLeft)
-//
-//			//Calc vector length
-//			m128 l = _mm_mul_ps( _vecLeft.xyzw , _vecLeft.xyzw );
-//			l = _mm_add_ps( l, _mm_movehl_ps(l, l));
-//			l = _mm_add_ps( l, _mm_shuffle_ps(l, l, _MM_SHUFFLE(3, 2, 1, 1)));
-//			l = _mm_sqrt_ps( l );
-//
-//			return _mm_div_ps( _vecLeft.xyzw, l );
-//		}
-//
-//		//SSE2 (for class use)
-//		xst_fi Vec3 MulSSE2(const Vec3* _vecLeft, const Vec3& _vecRight)
-//		{
-//			return _mm_mul_ps(_vecLeft->xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec3 AddSSE2(const Vec3* _vecLeft, const Vec3& _vecRight)
-//		{
-//			return _mm_add_ps(_vecLeft->xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec3 SubSSE2(const Vec3* _vecLeft, const Vec3& _vecRight)
-//		{
-//			return _mm_sub_ps(_vecLeft->xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec3 DivSSE2(const Vec3* _vecLeft, const Vec3& _vecRight)
-//		{
-//			return _mm_div_ps(_vecLeft->xyzw, _vecRight.xyzw);
-//		}
-//
-//		xst_fi Vec3 MulSSE2(const Vec3* _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_mul_ps( _vecLeft->xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec3 AddSSE2(const Vec3* _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_add_ps( _vecLeft->xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec3 SubSSE2(const Vec3* _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_sub_ps( _vecLeft->xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec3 DivSSE2(const Vec3* _vecLeft, const f32& _fScalar)
-//		{
-//			return _mm_div_ps( _vecLeft->xyzw, _mm_load1_ps(&_fScalar) );
-//		}
-//
-//		xst_fi Vec3 SqrtSSE2(const Vec3* _vec)
-//		{
-//			return _mm_sqrt_ps( _vec->xyzw );
-//		}
-//
-//		xst_fi f32 DotSSE2(const Vec3* _vecLeft, const Vec3& _vecRight)
-//		{
-//			m128 r1 = _mm_mul_ps( _vecLeft->xyzw , _vecRight.xyzw );
-//			r1 = _mm_add_ps( r1, _mm_movehl_ps(r1, r1));
-//			r1 = _mm_add_ps( r1, _mm_shuffle_ps(r1, r1, _MM_SHUFFLE(3, 2, 1, 1)));
-//			f32 fResult;
-//			_mm_store_ss( &fResult, r1 ); // zapisz 1 float
-//			return fResult;
-//		}
-//
-//		xst_fi void AddEqSSE2(Vec3* _vecLeft, const Vec3& _vecRight)
-//		{
-//			_vecLeft->xyzw = _mm_add_ps( _vecLeft->xyzw, _vecRight.xyzw );
-//		}
-//
-//		xst_fi void SubEqSSE2(Vec3* _vecLeft, const Vec3& _vecRight)
-//		{
-//			_vecLeft->xyzw = _mm_sub_ps( _vecLeft->xyzw, _vecRight.xyzw );
-//		}
-//
-//		xst_fi void MulEqSSE2(Vec3* _vecLeft, const Vec3& _vecRight)
-//		{
-//			_vecLeft->xyzw = _mm_mul_ps( _vecLeft->xyzw, _vecRight.xyzw );
-//		}
-//
-//		xst_fi void DivEqSSE2(Vec3* _vecLeft, const Vec3& _vecRight)
-//		{
-//			_vecLeft->xyzw = _mm_div_ps( _vecLeft->xyzw, _vecRight.xyzw );
-//		}
-//
-//		xst_fi void AddEqSSE2(Vec3* _vecLeft, const f32& _fScalar)
-//		{
-//			_vecLeft->xyzw = _mm_add_ps( _vecLeft->xyzw, _mm_load1_ps( &_fScalar ) );
-//		}
-//
-//		xst_fi void SubEqSSE2(Vec3* _vecLeft, const f32& _fScalar)
-//		{
-//			_vecLeft->xyzw = _mm_sub_ps( _vecLeft->xyzw, _mm_load1_ps( &_fScalar ) );
-//		}
-//
-//		xst_fi void MulEqSSE2(Vec3* _vecLeft, const f32& _fScalar)
-//		{
-//			_vecLeft->xyzw = _mm_mul_ps( _vecLeft->xyzw, _mm_load1_ps( &_fScalar ) );
-//		}
-//
-//		xst_fi void DivEqSSE2(Vec3* _vecLeft, const f32& _fScalar)
-//		{
-//			_vecLeft->xyzw = _mm_div_ps( _vecLeft->xyzw, _mm_load1_ps( &_fScalar ) );
-//		}
-//
-//		xst_fi f32 LengthSSE2(const Vec3* _vecLeft)
-//		{
-//			//return sqrtf( _vecLeft->x * _vecLeft->x + _vecLeft->y * _vecLeft->y + _vecLeft->z * _vecLeft->z );
-//			m128 r1 = _mm_mul_ps( _vecLeft->xyzw , _vecLeft->xyzw );
-//			//r1 = _mm_add_ps( r1, _mm_movehl_ps(r1, r1) );
-//			//r1 = _mm_add_ps( r1, _mm_shuffle_ps(r1, r1, _MM_SHUFFLE(3, 2, 1, 1)) );
-//			r1 = _mm_sqrt_ps( r1 );
-//			f32 fResult;
-//			_mm_store_ss( &fResult, r1 ); // zapisz 1 float
-//			return fResult;
-//		}
-//
-//		xst_fi Vec3 NormalizeSSE2(const Vec3* _vecLeft)
-//		{
-//			//_vecLeft->xyzw / LengthSSE2(_vecLeft)
-//
-//			//Calc vector length
-//			m128 l = _mm_mul_ps( _vecLeft->xyzw , _vecLeft->xyzw );
-//			l = _mm_add_ps( l, _mm_movehl_ps(l, l));
-//			l = _mm_add_ps( l, _mm_shuffle_ps(l, l, _MM_SHUFFLE(3, 2, 1, 1)));
-//			l = _mm_sqrt_ps( l );
-//
-//			return _mm_div_ps( _vecLeft->xyzw, l );
-//		}
-//
-//		//SSE4
-//		xst_fi f32	DotSSE4(const Vec3& _vecLeft, const Vec3& _vecRight)
-//		{
-//			return xst_m128( _mm_dp_ps( _vecLeft.xyzw, _vecRight.xyzw, 0x55 ) ).m128_f32[0];
-//		}
-//
-//		//SSE4 (class)
-//		xst_fi f32	DotSSE4(const Vec3* _vecLeft, const Vec3& _vecRight)
-//		{
-//			return xst_m128( _mm_dp_ps( _vecLeft->xyzw, _vecRight.xyzw, 0x55 ) ).m128_f32[0];
-//		}
 
 //#endif //XST_SS

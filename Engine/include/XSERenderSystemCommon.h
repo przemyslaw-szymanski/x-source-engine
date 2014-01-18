@@ -14,7 +14,7 @@ namespace XSE
 			UNDEFINED	= 0,
 			POINT_LIST,
 			LINE_LIST,
-			LINES_TRIP,
+			LINE_STRIP,
 			TRIANGLE_LIST,
 			TRIANGLE_STRIP,
 			_ENUM_COUNT
@@ -289,7 +289,7 @@ namespace XSE
 		ul32			ulMaxRenderTargets;
 	};
 
-	struct BasicShapes
+	/*struct BasicShapes
 	{
 		enum BASIC_SHAPE
 		{
@@ -297,10 +297,21 @@ namespace XSE
 			LINE_BOX,
 			PLANE,
 			RECT_2D,
+			CIRCLE,
 			_ENUM_COUNT
 		};
 	};
-	typedef BasicShapes::BASIC_SHAPE	BASIC_SHAPE;
+	typedef BasicShapes::BASIC_SHAPE	BASIC_SHAPE;*/
+	enum class BasicShapes : u8
+	{
+		BOX = 1,
+		LINE_BOX,
+		PLANE,
+		RECT_2D,
+		CIRCLE,
+		_ENUM_COUNT
+	};
+	typedef BasicShapes	BASIC_SHAPE;
 
 	struct SBasicShapeOptions
 	{
@@ -320,6 +331,14 @@ namespace XSE
 	struct SLineBoxOptions : SBoxOptions
 	{
 
+	};
+
+	struct SCircleOptions : SBasicShapeOptions
+	{
+		SCircleOptions() {}
+
+		f32		fRadius	= 1.0f;
+		u8		uStep = 1;
 	};
 
 	struct SPlaneOptions : SBasicShapeOptions

@@ -9,6 +9,8 @@
 #include "XSECD3D11CGShaderSystem.h"
 #include "XSECD3D11HLSLShaderSystem.h"
 
+//#include <DirectXCollision.h>
+
 #if defined (XST_WINDOWS)
 
 //Typedef for function pointer
@@ -38,7 +40,11 @@
 	(_mtxXMPtr)->r[ 0 ] = _mtx.r[ 0 ]; \
 	(_mtxXMPtr)->r[ 1 ] = _mtx.r[ 1 ]; \
 	(_mtxXMPtr)->r[ 2 ] = _mtx.r[ 2 ]; \
-	(_mtxXMPtr)->r[ 3 ] = _mtx.r[ 3 ];
+	( _mtxXMPtr )->r[ 3 ] = _mtx.r[ 3 ];
+
+#define XSE_XMVEC4_TO_XST_VEC4(_xstVec, _xmVec) { (_xstVec.x) = (_xmVec.m128_f32[0]); (_xstVec.y) = (_xmVec.m128_f32[1]); (_xstVec.z) = (_xmVec.m128_f32[2]); (_xstVec.w) = (_xmVec.m128_f32[3]); }
+#define XSE_XMVEC3_TO_XST_VEC3(_xstVec, _xmVec) { (_xstVec.x) = (_xmVec.x); (_xstVec.y) = (_xmVec.y); (_xstVec.z) = (_xmVec.z);  }
+#define XSE_VEC4_TO_XMVEC(_xmVec, _xstVec) xst_memcpy( _xmVec.m_f )
 
 #if defined (XST_VISUAL_STUDIO)
 #	pragma warning( push )
@@ -49,6 +55,8 @@ namespace XSE
 {
 	namespace D3D11
 	{
+		using namespace DirectX;
+
 		SRSDiagnostics g_Diagnostics;
 
 		using namespace XSE::Resources;
@@ -117,7 +125,7 @@ namespace XSE
 			m_aFormats[ RSFormats::UNKNOWN ]					= DXGI_FORMAT_UNKNOWN;
 
 			m_aeTopologies[ TopologyTypes::LINE_LIST ]			= D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
-			m_aeTopologies[ TopologyTypes::LINES_TRIP ]			= D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
+			m_aeTopologies[ TopologyTypes::LINE_STRIP ]			= D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
 			m_aeTopologies[ TopologyTypes::POINT_LIST ]			= D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
 			m_aeTopologies[ TopologyTypes::TRIANGLE_LIST ]		= D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 			m_aeTopologies[ TopologyTypes::TRIANGLE_STRIP ]		= D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
@@ -131,6 +139,8 @@ namespace XSE
 			m_aeCullModes[ CullModes::NONE ]					= D3D11_CULL_NONE;
 
 			this->SetFeatureLevel( ShaderModels::SM_2_0, ShaderModels::SM_5_0 );
+
+
 
 			xst_zero( &m_Current, sizeof( SCurrent ) );
 			xst_zero( &g_Diagnostics, sizeof( SRSDiagnostics ) );
@@ -506,6 +516,85 @@ namespace XSE
 			m_pViewport->SetBackgroundColor( Color );
 			m_pViewport->Clear();
 			return RESULT::OK;
+		}
+
+		CFrustum CRenderSystem::CreateViewFrustum() const
+		{
+			CFrustum Frustum;
+			/*DirectX::BoundingFrustum XMFrustum;
+			Frustum.m_fBottomSlope = XMFrustum.BottomSlope;
+			Frustum.m_fFar = XMFrustum.Far;
+			Frustum.m_fLeftSlope = XMFrustum.LeftSlope;
+			Frustum.m_fNear = XMFrustum.Near;
+			Frustum.m_fRightSlope = XMFrustum.RightSlope;
+			Frustum.m_fTopSlope = XMFrustum.TopSlope;
+			Frustum.m_quatOrientation*/
+			UpdateViewFrustum( &Frustum );
+			return Frustum;
+		}
+
+		void CRenderSystem::UpdateViewFrustum(CFrustum* pFrustum) const
+		{
+			static const Vec4 HomogenousPoints[ 6 ] =
+			{
+				{ 1.0f, 0.0f, 1.0f, 1.0f }, // right
+				{ -1.0f, 0.0f, 1.0f, 1.0f }, // left
+				{ 0.0f, 1.0f, 1.0f, 1.0f }, // top
+				{ 0.0f, -1.0f, 1.0f, 1.0f }, // bottom
+
+				{ 0.0f, 0.0f, 0.0f, 1.0f }, // near
+				{ 0.0f, 0.0f, 1.0f, 1.0f }, // far
+			};
+
+			DirectX::XMVECTOR vecDet; // determinant
+			DirectX::XMMATRIX mtxInverse = DirectX::XMMatrixInverse( &vecDet, g_aMatrices[ MatrixTypes::PROJECTION ] );
+			DirectX::XMVECTOR avecPoints[ 6 ]; // frustum corners in world space
+
+			for( u32 i = 0; i < 6; ++i )
+			{
+				avecPoints[ i ] = DirectX::XMVector4Transform( HomogenousPoints[ i ], mtxInverse );
+			}
+
+			for( u32 i = 0; i < 4; ++i )
+			{
+				avecPoints[ i ] = avecPoints[ i ] * DirectX::XMVectorReciprocal( DirectX::XMVectorSplatZ( avecPoints[ i ] ) );
+			}
+
+			avecPoints[ 4 ] = avecPoints[ 4 ] * DirectX::XMVectorReciprocal( DirectX::XMVectorSplatW( avecPoints[ 4 ] ) );
+			avecPoints[ 5 ] = avecPoints[ 5 ] * DirectX::XMVectorReciprocal( DirectX::XMVectorSplatW( avecPoints[ 5 ] ) );
+
+			pFrustum->m_fRightSlope = DirectX::XMVectorGetX( avecPoints[ 0 ] );
+			pFrustum->m_fLeftSlope = DirectX::XMVectorGetX( avecPoints[ 1 ] );
+			pFrustum->m_fTopSlope = DirectX::XMVectorGetX( avecPoints[ 2 ] );
+			pFrustum->m_fBottomSlope = DirectX::XMVectorGetX( avecPoints[ 3 ] );
+			pFrustum->m_fNear = DirectX::XMVectorGetZ( avecPoints[ 4 ] );
+			pFrustum->m_fFar = DirectX::XMVectorGetZ( avecPoints[ 5 ] );
+
+
+			//Build the frustum planes
+			XMVECTOR Zero = XMVectorZero( );
+
+			// Build the frustum planes.
+			XMVECTOR Planes[ 6 ];
+			Planes[ 0 ] = XMVectorSet( 0.0f, 0.0f, -1.0f, pFrustum->m_fNear );
+			Planes[ 1 ] = XMVectorSet( 0.0f, 0.0f, 1.0f, -pFrustum->m_fFar );
+			Planes[ 2 ] = XMVectorSet( 1.0f, 0.0f, -pFrustum->m_fRightSlope, 0.0f );
+			Planes[ 3 ] = XMVectorSet( -1.0f, 0.0f, pFrustum->m_fLeftSlope, 0.0f );
+			Planes[ 4 ] = XMVectorSet( 0.0f, 1.0f, -pFrustum->m_fTopSlope, 0.0f );
+			Planes[ 5 ] = XMVectorSet( 0.0f, -1.0f, pFrustum->m_fBottomSlope, 0.0f );
+
+			// Normalize the planes so we can compare to the sphere radius.
+			Planes[ 2 ] = XMVector3Normalize( Planes[ 2 ] );
+			Planes[ 3 ] = XMVector3Normalize( Planes[ 3 ] );
+			Planes[ 4 ] = XMVector3Normalize( Planes[ 4 ] );
+			Planes[ 5 ] = XMVector3Normalize( Planes[ 5 ] );
+
+			XSE_XMVEC4_TO_XST_VEC4( pFrustum->RightPlane.vecPlane, Planes[ 2 ] );
+			XSE_XMVEC4_TO_XST_VEC4( pFrustum->LeftPlane.vecPlane, Planes[ 3 ] );
+			XSE_XMVEC4_TO_XST_VEC4( pFrustum->TopPlane.vecPlane, Planes[ 4 ] );
+			XSE_XMVEC4_TO_XST_VEC4( pFrustum->BottomPlane.vecPlane, Planes[ 5 ] );
+			XSE_XMVEC4_TO_XST_VEC4( pFrustum->FarPlane.vecPlane, Planes[ 1 ] );
+			XSE_XMVEC4_TO_XST_VEC4( pFrustum->NearPlane.vecPlane, Planes[ 0 ] );
 		}
 
 		IViewport* CRenderSystem::CreateViewport(cu32& uiWidth, cu32& uiHeight)

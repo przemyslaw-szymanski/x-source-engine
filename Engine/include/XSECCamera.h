@@ -41,6 +41,10 @@ namespace XSE
 			xst_fi const Vec3&	GetPosition() const
 								{ return this->m_vecCamPosition; }
 
+			virtual
+			xst_fi	f32			GetViewDistance() const
+								{ return m_fViewDistance; }
+
 			virtual	const Vec3&	Move(cf32& fDistance, const Vec3& vecDirection)
 								{ return Move( vecDirection * fDistance ); }
 
@@ -49,13 +53,12 @@ namespace XSE
 
 			virtual const Vec3& Move(cf32& fX, cf32& fY, cf32& fZ);
 
-			virtual
-			xst_fi	void		SetAngleY(cf32& fAngle) 
-								{ m_vecAngles.y = std::min( std::max( -XST_HALF_PI + 1e-3f, fAngle ), XST_HALF_PI - 1e-3f ); }
+			virtual void		Rotate(const Vec3& vecAxis, cf32& fAngle);
+			virtual void		Rotate(const Quaternion& quatRotation);
 
-			virtual
-			xst_fi	void		SetAngleX(cf32& fAngle) 
-								{ m_vecAngles.x = _NormalizeAngle( fAngle ); }
+			virtual	void		SetAngleY(cf32& fAngle);
+
+			virtual void		SetAngleX(cf32& fAngle);
 
 			virtual
 			xst_fi	void		RotateX(cf32& fAngle)
@@ -66,7 +69,7 @@ namespace XSE
 								{ SetAngleY( m_vecAngles.y + fAngle * m_fVerticalSpeed * m_fTime ); }
 
 			virtual
-			xst_fi	const Vec2&	GetRotationAngles() const
+			xst_fi	const Vec3&	GetRotationAngles() const
 								{ return m_vecAngles; }
 
 			virtual
@@ -124,6 +127,10 @@ namespace XSE
 			virtual
 			xst_fi	f32			GetFar() const
 								{ return m_fFar; }
+
+			virtual
+			xst_fi	f32			GetFov() const
+								{ return m_fFOV; }
 
 			virtual
 			xst_fi	f32			GetAspectRatio() const
@@ -197,7 +204,8 @@ namespace XSE
 			Vec3			m_vecRight; //camera right vector
 			Vec3			m_vecUp; //real camera up vector, not the up view from look at
 			//direction, right, and camera up vectors create the camera space
-			Vec2			m_vecAngles; //angle x and y for the camera
+			Vec3			m_vecAngles; //angle x and y for the camera
+			Vec3			m_vecRotationAxis; 
 			Vec3			m_vecCameraDistance; //distance from the following point
 			Vec3			m_vecCamDirection;
 			Vec3			m_vecCamPosition;
@@ -216,6 +224,7 @@ namespace XSE
 			f32				m_fMoveSpeed;
 			f32				m_fHorizontalSpeed;
 			f32				m_fVerticalSpeed;
+			f32				m_fViewDistance;
 			CSceneManager*	m_pSceneMgr;
 			Resources::CMesh*	m_pVolumeMesh; //for debug
 			bool			m_bRightCalc;

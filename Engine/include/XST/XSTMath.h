@@ -32,6 +32,9 @@ namespace XST
 		class CRadian;
 		class CDegree;
 
+		// SIMD
+		#define XST_SSE_PERMUTE_PS( v, c ) _mm_shuffle_ps( v, v, c )
+
 		class XST_API CRadian
 		{
 		public:
@@ -299,6 +302,7 @@ namespace XST
 		{
 			return Math::DegreesToRadians( fValue );
 		}
+
 
 	}//Math
 
