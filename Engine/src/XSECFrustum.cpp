@@ -335,6 +335,25 @@ xst_fi Vec4    VectorInsert(const Vec4& VD, const Vec4& VS)
     return VectorSelect( VD, VectorRotateLeft<VSLeftRotateElements>(VS), Control );
 }
 
+xst_fi void Vector4Dot(Vec4* pOut, const Vec4& V1, const Vec4& V2)
+{
+#if defined(_XM_NO_INTRINSICS_)
+    pOut->v.m128_f32[0] =
+    pOut->v.m128_f32[1] =
+    pOut->v.m128_f32[2] =
+    pOut->v.m128_f32[3] = V1.m128_f32[0] * V2.m128_f32[0] + V1.m128_f32[1] * V2.m128_f32[1] + V1.m128_f32[2] * V2.m128_f32[2] + V1.m128_f32[3] * V2.m128_f32[3];
+#elif defined(XST_SSE2)
+    m128 vTemp2 = V2.v;
+    m128 vTemp = _mm_mul_ps(V1.v,vTemp2);
+    vTemp2 = _mm_shuffle_ps(vTemp2,vTemp,_MM_SHUFFLE(1,0,0,0)); // Copy X to the Z position and Y to the W position
+    vTemp2 = _mm_add_ps(vTemp2,vTemp);          // Add Z = X+Z; W = Y+W;
+    vTemp = _mm_shuffle_ps(vTemp,vTemp2,_MM_SHUFFLE(0,3,0,0));  // Copy W to the Z position
+    vTemp = _mm_add_ps(vTemp,vTemp2);           // Add Z and W together
+    pOut->v = XST_SSE_PERMUTE_PS(vTemp,_MM_SHUFFLE(2,2,2,2));    // Splat Z and return
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
 xst_fi Vec4  Vector4Dot(const Vec4& V1, const Vec4& V2)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -356,6 +375,81 @@ xst_fi Vec4  Vector4Dot(const Vec4& V1, const Vec4& V2)
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
+
+xst_fi void VectorOrInt(Vec4* pOut, const Vec4& V1,const Vec4& V2)
+	{
+#if defined( XST_SSE2 )
+		__m128i V = _mm_or_si128( _mm_castps_si128( V1.v ), _mm_castps_si128( V2.v ) );
+		pOut->v = _mm_castsi128_ps( V );
+#else
+Vec4 Result;
+Result.m128_u32[ 0 ] = V1.m128_u32[ 0 ] | V2.m128_u32[ 0 ];
+Result.m128_u32[ 1 ] = V1.m128_u32[ 1 ] | V2.m128_u32[ 1 ];
+Result.m128_u32[ 2 ] = V1.m128_u32[ 2 ] | V2.m128_u32[ 2 ];
+Result.m128_u32[ 3 ] = V1.m128_u32[ 3 ] | V2.m128_u32[ 3 ];
+return Result;
+
+#endif // _XM_VMX128_INTRINSICS_
+	}
+
+xst_fi void VectorAndInt(Vec4* pOut, const Vec4& V1,const Vec4& V2)
+{
+#if defined(_XM_NO_INTRINSICS_)
+
+    Vec4 Result;
+    Result.m128_u32[0] = V1.m128_u32[0] & V2.m128_u32[0];
+    Result.m128_u32[1] = V1.m128_u32[1] & V2.m128_u32[1];
+    Result.m128_u32[2] = V1.m128_u32[2] & V2.m128_u32[2];
+    Result.m128_u32[3] = V1.m128_u32[3] & V2.m128_u32[3];
+    return Result;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vandq_u32(V1,V2);
+#elif defined(XST_SSE2)
+    pOut->v = _mm_and_ps(V1.v,V2.v);
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+xst_fi void VectorGreater(Vec4* pOut, const Vec4& V1, const Vec4& V2)
+{
+#if defined(_XM_NO_INTRINSICS_)
+
+    Vec4 Control;
+    Control.m128_u32[0] = (V1.m128_f32[0] > V2.m128_f32[0]) ? 0xFFFFFFFF : 0;
+    Control.m128_u32[1] = (V1.m128_f32[1] > V2.m128_f32[1]) ? 0xFFFFFFFF : 0;
+    Control.m128_u32[2] = (V1.m128_f32[2] > V2.m128_f32[2]) ? 0xFFFFFFFF : 0;
+    Control.m128_u32[3] = (V1.m128_f32[3] > V2.m128_f32[3]) ? 0xFFFFFFFF : 0;
+    return Control;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vcgtq_f32( V1, V2 );
+#elif defined(XST_SSE2)
+    pOut->v = _mm_cmpgt_ps( V1.v, V2.v );
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+xst_fi void VectorLessOrEqual(Vec4* pOut, const Vec4& V1, const Vec4& V2)
+{
+#if defined(_XM_NO_INTRINSICS_)
+
+    Vec4 Control;
+    Control.m128_u32[0] = (V1.m128_f32[0] <= V2.m128_f32[0]) ? 0xFFFFFFFF : 0;
+    Control.m128_u32[1] = (V1.m128_f32[1] <= V2.m128_f32[1]) ? 0xFFFFFFFF : 0;
+    Control.m128_u32[2] = (V1.m128_f32[2] <= V2.m128_f32[2]) ? 0xFFFFFFFF : 0;
+    Control.m128_u32[3] = (V1.m128_f32[3] <= V2.m128_f32[3]) ? 0xFFFFFFFF : 0;
+    return Control;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vcleq_f32( V1, V2 );
+#elif defined(XST_SSE2)
+    pOut->v = _mm_cmple_ps( V1.v, V2.v );
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+
 xst_fi Vec4  VectorOrInt(const Vec4& V1,const Vec4& V2)
 	{
 #if defined( XST_SSE2 )
@@ -447,6 +541,8 @@ const u32 XSE_SSE_CRMASK_CR6TRUE    = 0x00000080;
 const u32 XSE_SSE_CRMASK_CR6FALSE   = 0x00000020;
 xst_fi bool ComparisonAllTrue(u32 CR) { return (((CR) & XSE_SSE_CRMASK_CR6TRUE) == XSE_SSE_CRMASK_CR6TRUE); }
 static const Vec4 TRUE_INT = VectorTrueInt();
+
+
 
 xst_fi u32  Vector4EqualIntR(const Vec4& V1, const Vec4& V2)
 {
@@ -625,6 +721,22 @@ xst_fi Vec4  Vector3Cross(const Vec4& V1, const Vec4& V2)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
+xst_fi void VectorLess(Vec4* pOut, const Vec4& V1, const Vec4& V2)
+{
+#if defined(_XM_NO_INTRINSICS_)
+
+    Vec4 Control;
+    Control.m128_u32[0] = (V1.m128_f32[0] < V2.m128_f32[0]) ? 0xFFFFFFFF : 0;
+    Control.m128_u32[1] = (V1.m128_f32[1] < V2.m128_f32[1]) ? 0xFFFFFFFF : 0;
+    Control.m128_u32[2] = (V1.m128_f32[2] < V2.m128_f32[2]) ? 0xFFFFFFFF : 0;
+    Control.m128_u32[3] = (V1.m128_f32[3] < V2.m128_f32[3]) ? 0xFFFFFFFF : 0;
+    return Control;
+#elif defined(XST_SSE2)
+    pOut->v = _mm_cmplt_ps( V1.v, V2.v );
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
 xst_fi Vec4  VectorLess(const Vec4& V1, const Vec4& V2)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -701,37 +813,44 @@ xst_fi Vec4  PointOnLineSegmentNearestPoint(const Vec4& S1, const Vec4& S2, cons
 		vCenter = VectorInsert<0, 0, 0, 0, 1>( vCenter, Vec4::UNIT );
 
 		// Check against each plane of the frustum.
-		Vec4 Outside = VectorFalseInt();
+		/*Vec4 Outside = VectorFalseInt();
 		Vec4 InsideAll = VectorTrueInt();
-		Vec4 CenterInsideAll = VectorTrueInt();
+		Vec4 CenterInsideAll = VectorTrueInt();*/
+		Vec4 Outside = FALSE_INT;
+		Vec4 CenterInsideAll = TRUE_INT;
+		Vec4 InsideAll = TRUE_INT;
 
 		Vec4 Dist[6];
+		Vec4 vecTmp;
 
 		for( size_t i = 0; i < 6; ++i )
 		{
-			Dist[i] = Vec4::Dot( vCenter, aPlanes[i].vecPlane );
+			Vector4Dot( &Dist[ i ], vCenter, aPlanes[ i ].vecPlane );
 
 			// Outside the plane?
-			Outside = VectorOrInt( Outside, VectorGreater( Dist[i], vRadius ) );
+			VectorGreater( &vecTmp, Dist[ i ], vRadius );
+			VectorOrInt( &Outside, Outside, vecTmp );
 
 			// Fully inside the plane?
-			InsideAll = VectorAndInt( InsideAll, VectorLessOrEqual( Dist[i], -vRadius ) );
+			VectorLessOrEqual( &vecTmp, Dist[ i ], -vRadius );
+			VectorAndInt( &InsideAll, InsideAll, vecTmp );
 
 			// Check if the center is inside the plane.
-			CenterInsideAll = VectorAndInt( CenterInsideAll, VectorLessOrEqual( Dist[i], Vec4::ZERO ) );
+			VectorLessOrEqual( &vecTmp, Dist[ i ], Vec4::ZERO );
+			VectorAndInt( &CenterInsideAll, CenterInsideAll, vecTmp );
 		}
 
 		// If the sphere is outside any of the planes it is outside. 
-		if ( Vector4EqualInt( Outside, VectorTrueInt() ) )
+		if( Vector4EqualInt( Outside, TRUE_INT ) )
 			return false;
 
 		// If the sphere is inside all planes it is fully inside.
-		if ( Vector4EqualInt( InsideAll, VectorTrueInt() ) )
+		if( Vector4EqualInt( InsideAll, TRUE_INT ) )
 			return true;
 
 		// If the center of the sphere is inside all planes and the sphere intersects 
 		// one or more planes then it must intersect.
-		if ( Vector4EqualInt( CenterInsideAll, VectorTrueInt() ) )
+		if( Vector4EqualInt( CenterInsideAll, TRUE_INT ) )
 			return true;
 
 		// The sphere may be outside the frustum or intersecting the frustum.
@@ -749,36 +868,44 @@ xst_fi Vec4  PointOnLineSegmentNearestPoint(const Vec4& S1, const Vec4& S2, cons
 			{ 0, 1, 2, 3 }
 		};  // 5
 
-		Vec4 Intersects = VectorFalseInt();
+		Vec4 Intersects = FALSE_INT;
+		Vec4 InsideFace;
+		Vec4 Point, vecTmp2;
 
 		// Check to see if the nearest feature is one of the planes.
 		for( size_t i = 0; i < 6; ++i )
 		{
 			// Find the nearest point on the plane to the center of the sphere.
-			Vec4 Point = vCenter - (aPlanes[i].vecPlane * Dist[i]);
+			//Vec4 Point = vCenter - (aPlanes[i].vecPlane * Dist[i]);
+			vecTmp.Mul( aPlanes[ i ].vecPlane, Dist[ i ] );
+			Point.Sub( vCenter, vecTmp );
 
 			// Set w of the point to one.
 			Point = VectorInsert<0, 0, 0, 0, 1>( Point, Vec4::UNIT );
         
 			// If the point is inside the face (inside the adjacent planes) then
 			// this plane is the nearest feature.
-			Vec4 InsideFace = VectorTrueInt();
+			InsideFace = TRUE_INT;
         
 			for ( size_t j = 0; j < 4; j++ )
 			{
 				size_t plane_index = adjacent_faces[i][j];
 
-				InsideFace = VectorAndInt( InsideFace,
-							   VectorLessOrEqual( Vec4::Dot( Point, aPlanes[plane_index].vecPlane ), Vec4::ZERO ) );
+				//InsideFace = VectorAndInt( InsideFace, VectorLessOrEqual( Vec4::Dot( Point, aPlanes[plane_index].vecPlane ), Vec4::ZERO ) );
+				Vector4Dot( &vecTmp2, Point, aPlanes[plane_index].vecPlane );
+				VectorLessOrEqual( &vecTmp, vecTmp2, Vec4::ZERO );
+				VectorAndInt( &InsideFace, InsideFace, vecTmp );
 			}
      
 			// Since we have already checked distance from the plane we know that the
 			// sphere must intersect if this plane is the nearest feature.
-			Intersects = VectorOrInt( Intersects, 
-										VectorAndInt( VectorGreater( Dist[i], Vec4::ZERO ), InsideFace ) );
+			//Intersects = VectorOrInt( Intersects, VectorAndInt( VectorGreater( Dist[i], Vec4::ZERO ), InsideFace ) );
+			VectorGreater( &vecTmp, Dist[ i ], Vec4::ZERO );
+			VectorAndInt( &vecTmp2, vecTmp, InsideFace );
+			VectorOrInt( &Intersects, Intersects, vecTmp2 );
 		}
 
-		if ( Vector4EqualInt( Intersects, VectorTrueInt() ) )
+		if ( Vector4EqualInt( Intersects, TRUE_INT ) )
 			return true;
 
 		// The Edges are:
@@ -789,7 +916,9 @@ xst_fi Vec4  PointOnLineSegmentNearestPoint(const Vec4& S1, const Vec4& S2, cons
 			{ 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 },
 		}; // Near to far
 
-		Vec4 RadiusSq = vRadius * vRadius;
+		//Vec4 RadiusSq = vRadius * vRadius;
+		Vec4 RadiusSq;
+		RadiusSq.Mul( vRadius, vRadius );
 
 		// Check to see if the nearest feature is one of the edges (or corners).
 		for( size_t i = 0; i < 12; ++i )
@@ -799,18 +928,24 @@ xst_fi Vec4  PointOnLineSegmentNearestPoint(const Vec4& S1, const Vec4& S2, cons
 
 			// Find the nearest point on the edge to the center of the sphere.
 			// The corners of the frustum are included as the endpoints of the edges.
-			Vec4 Point = PointOnLineSegmentNearestPoint( m_aCorners[ei0], m_aCorners[ei1], vCenter );
+			//Vec4 Point = PointOnLineSegmentNearestPoint( m_aCorners[ei0], m_aCorners[ei1], vCenter );
+			PointOnLineSegmentNearestPoint( &Point, m_aCorners[ ei0 ], m_aCorners[ ei1 ], vCenter );
 
-			Vec4 Delta = vCenter - Point;
+			//Vec4 Delta = vCenter - Point;
+			vecTmp.Sub( vCenter, Point ); // calculate delta
 
-			Vec4 DistSq = Vec4::Dot( Delta, Delta );
+			//Vec4 DistSq = Vec4::Dot( Delta, Delta );
+			Vec4 DistSq;
+			Vector4Dot( &DistSq, vecTmp, vecTmp );
 
 			// If the distance to the center of the sphere to the point is less than 
 			// the radius of the sphere then it must intersect.
-			Intersects = VectorOrInt( Intersects, VectorLessOrEqual( DistSq, RadiusSq ) );
+			//Intersects = VectorOrInt( Intersects, VectorLessOrEqual( DistSq, RadiusSq ) );
+			VectorLessOrEqual( &vecTmp2, DistSq, RadiusSq );
+			VectorOrInt( &Intersects, Intersects, vecTmp2 );
 		}
 
-		if ( Vector4EqualInt( Intersects, VectorTrueInt() ) )
+		if ( Vector4EqualInt( Intersects, TRUE_INT ) )
 			return true;
 
 		// The sphere must be outside the frustum.
