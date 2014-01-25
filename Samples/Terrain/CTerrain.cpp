@@ -116,7 +116,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	this->m_pViewCam->SetPosition( -18, 101, -56 );
 	this->m_pViewCam->SetSpeed( 40, 1.1f, 1.1f );
 
-	this->m_pDbgCam->SetPosition( 0, 101, 0 );
+	this->m_pDbgCam->SetPosition( 0, 100, 110 );
 	//this->m_pDbgCam->SetAngleX( 0.397f );
 	//this->m_pDbgCam->SetAngleY( 0.580f );
 	this->m_pDbgCam->SetFOV( XST::DegreesToRadians( 30 ), 0.1f, 100.0f );
@@ -161,6 +161,14 @@ void CTerrain::OnUpdate()
 	else if( pKeyboard->IsKeyPressed( XSE::KeyCodes::CAPITAL_X ) )
 	{
 		this->m_pDbgCam->RotateX( 0.1 );
+	}
+	else if( pKeyboard->IsKeyPressed( XSE::KeyCodes::CAPITAL_R ) )
+	{
+		this->m_pDbgCam->Move( 0.5f, this->m_pDbgCam->GetDirection() );
+	}
+	else if( pKeyboard->IsKeyPressed( XSE::KeyCodes::CAPITAL_F ) )
+	{
+		this->m_pDbgCam->Move( -0.5f, this->m_pDbgCam->GetDirection() );
 	}
 	this->m_pDbgCam->Update(0);
 }

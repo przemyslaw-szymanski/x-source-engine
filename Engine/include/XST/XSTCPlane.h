@@ -8,7 +8,7 @@ namespace XST
 {
 	using namespace Types;
 
-	class CPlane
+	class XST_ALIGN( 16 ) CPlane
 	{
 		public:
 

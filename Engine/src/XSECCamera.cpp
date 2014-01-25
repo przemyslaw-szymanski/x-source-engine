@@ -290,14 +290,16 @@ namespace XSE
 				return false;
 		}
 		return true;*/
-		//bool bResult1 = m_Frustum.SphereTest( vecSpherePosition, fSphereRadius );
-		
+		return 
+			m_Frustum.SphereTest( vecSpherePosition, fSphereRadius );
+
 		DirectX::BoundingSphere Sphere;
 		Sphere.Center.x = vecSpherePosition.x;
 		Sphere.Center.y = vecSpherePosition.y;
 		Sphere.Center.z = vecSpherePosition.z;
 		Sphere.Radius = fSphereRadius;
-		return g_Frust.Intersects( Sphere );
+		//return 
+			//g_Frust.Intersects( Sphere );
 		//return true;
 	}
 

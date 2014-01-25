@@ -11,11 +11,11 @@ namespace XST
 		class XST_ALIGN(16) CVector4;
 		typedef XST_ALIGN(16) CVector4 Vec4;
 
-		class XST_API XST_ALIGN( 16 ) CVector4
+		class XST_API CVector4
 		{
 			public:
 
-				union
+				union XST_ALIGN( 16 )
 				{
 					struct	{ f32 x, y, z, w; };
 					f32		a[ 4 ];

@@ -23,7 +23,7 @@ namespace XSE
 
 	typedef FrustumPlanes::PLANE	FRUSTUM_PLANE;
 
-	class CFrustum
+	class XST_API CFrustum
 	{
 		public:
 
@@ -88,8 +88,9 @@ namespace XSE
 			f32				m_fBottomSlope;
 			f32				m_fNear;
 			f32				m_fFar;
+			Vec4			m_aCorners[ 8 ];
 
-			union
+			union XST_ALIGN( 128 ) 
 			{
 				struct
 				{

@@ -19,8 +19,8 @@ xst_fi	CQuaternion	CQuaternion::ConjugateRet(const CQuaternion& quatQuaternion)
 xst_fi	void CQuaternion::Conjugate( CQuaternion* pquatOut, const CQuaternion& quatQuaternion )
 {
 #if defined( XST_SSE2 )
-	static const CQuaternion NegativeOne3( -1.0f, -1.0f, -1.0f, 1.0f );
-	pquatOut->v = _mm_mul_ps( quatQuaternion.v, NegativeOne3.v );
+	static const m128 NegativeOne3 = { -1.0f, -1.0f, -1.0f, 1.0f };
+	pquatOut->v = _mm_mul_ps( quatQuaternion.v, NegativeOne3 );
 #else
 	pquatOut->x = -quatQuaternion.x;
 	pquatOut->y = -quatQuaternion.y;
