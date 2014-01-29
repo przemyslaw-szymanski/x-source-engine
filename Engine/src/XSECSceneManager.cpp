@@ -276,6 +276,8 @@ namespace XSE
 			m_pComputeCamera->_SetCompute( true );
 		}
 
+		pCamera->Init();
+
 		return XST_OK;
 	}
 
@@ -543,6 +545,16 @@ namespace XSE
 
 		m_vTerrains.push_back( pTerrain );
 		return pTerrain;
+	}
+
+	void CSceneManager::SetViewFrustumCullType(const VIEW_FRUSTUM_CULL_TEST_TYPE& eType)
+	{
+		this->m_pScenePartitionSystem->SetViewFrustumCullTestType( eType );
+	}
+
+	VIEW_FRUSTUM_CULL_TEST_TYPE	CSceneManager::GetViewFrustumCullType() const
+	{
+		return this->m_pScenePartitionSystem->GetViewFrustumCullTestType();
 	}
 
 }//xse

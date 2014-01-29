@@ -435,6 +435,9 @@ namespace XST
 				Vec3		Abs() const;
 				void		Abs();
 				static Vec3 Abs(const Vec3& vecOther);
+				static xst_fi
+				f32			Dot(const Vec3& vecLeft, const Vec3& vecRight)
+							{ return vecLeft.x * vecRight.x + vecLeft.y * vecRight.y + vecLeft.z * vecRight.z; }
 		};
 
 		static xst_fi xst_ostream& operator<<(xst_ostream& o, const Vec3& right)

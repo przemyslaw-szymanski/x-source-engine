@@ -115,6 +115,12 @@ namespace XSE
 
 			XSE::CBoundingSphere	CalcBoundingSphere() const;
 
+			xst_fi	void			IsVisible(bool bIs)
+									{ m_bIsVisible = bIs; }
+
+			xst_fi	bool			IsVisible() const
+									{ return m_bIsVisible; }
+
 		protected:
 
 									COctree(f32 fSize, const Vec3& vecMinCorner, cu8& byCurrDepth, COctree* pParent);
@@ -141,12 +147,13 @@ namespace XSE
 
 			COctree*			m_apChildren[ 8 ];
 			COctree*			m_apNeighbours[ 4 ];
-			COctree*			m_pParent;
+			COctree*			m_pParent = xst_null;
 			Vec3				m_vecMinCorner;
-			f32					m_fSize;
-			IOctreeListener*	m_pListener;
+			f32					m_fSize = 0.0f;
+			IOctreeListener*	m_pListener = xst_null;
 			ObjectVector		m_vObjects;
-			u8					m_byCurrDepth;
+			u8					m_byCurrDepth = 0;
+			bool				m_bIsVisible = true; // Indicates if this node is visible by the culling system
 	};
 }//xse
 

@@ -180,3 +180,9 @@ void CSampleMgr::RenderSolid()
 void CSampleMgr::ResetCamera()
 {
 }
+
+void CSampleMgr::SetFrustumCullType(XSE::VIEW_FRUSTUM_CULL_TEST_TYPE eType)
+{
+	if( m_pEngine && m_pEngine->GetSceneManager() )
+		m_pEngine->GetSceneManager()->SetViewFrustumCullType( eType );
+}

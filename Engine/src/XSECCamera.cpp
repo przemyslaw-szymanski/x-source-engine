@@ -39,7 +39,7 @@ namespace XSE
 		m_fFar( 1000.0f ),
 		m_fAspectRatio( 1.33333f ),
 		m_fTime( 1.0f ),
-		m_fViewDistance( 500.0f ),
+		m_fViewDistance( 1000.0f ),
 		m_fMoveSpeed( 200.0f ), m_fHorizontalSpeed( 10.0f ), m_fVerticalSpeed( 10.0f ),
 		m_bRightCalc( false ), m_bUpCalc( false ),
 		m_bCompute( true )
@@ -51,6 +51,13 @@ namespace XSE
 	{
 	}
 
+	i32 CCamera::Init()
+	{
+		// Just update the perspective matrix. FOV angle, near, far, etc should be set earlier
+		m_pRS->SetPerspectiveFOV( m_fFOV, m_fAspectRatio, m_fNear, m_fFar );
+		m_pRS->GetMatrix( MatrixTypes::PROJECTION, &m_mtxProjection );
+		return XST_OK;
+	}
 
 	const Vec3& CCamera::Move(cf32& fX, cf32& fY, cf32& fZ)
 	{
@@ -130,7 +137,7 @@ namespace XSE
 
 		m_fTime = fElapsedTime;
 
-		m_pRS->SetPerspectiveFOV( m_fFOV, m_fAspectRatio, m_fNear, m_fFar );
+		//m_pRS->SetPerspectiveFOV( m_fFOV, m_fAspectRatio, m_fNear, m_fFar );
 
 		SphericalToCartesian( &m_vecLookAt, m_vecAngles.x - XST_HALF_PI, -m_vecAngles.y, 1.0f );
 		
@@ -140,7 +147,6 @@ namespace XSE
 
 		m_pRS->GetMatrix( MatrixTypes::VIEW_PROJ, &m_mtxViewProj );
 		m_pRS->GetMatrix( MatrixTypes::VIEW, &m_mtxView );
-		m_pRS->GetMatrix( MatrixTypes::PROJECTION, &m_mtxProjection );
 		
 		CalcRight();
 		CalcUp();
@@ -161,7 +167,6 @@ namespace XSE
 		m_fNear = fNear;
 		m_fFar = fFar;
 		m_fAspectRatio = (f32) uiScreenWidth / (f32) uiScreenHeight;
-		//m_pRS->SetPerspectiveFOV( m_fFOV, m_fAspectRatio, m_fNear, m_fFar );
 	}
 
 	void CCamera::SetFOV(cf32& fAngle, cf32& fNear, cf32& fFar)
@@ -211,47 +216,6 @@ namespace XSE
 
 	void CCamera::_CreateViewFrustum(const Mtx4& mtxViewProj)
 	{
-		/*m_Frustum.LeftPlane.vecPlane.x = mtxViewProj.m[ 0 ][ 3 ] + mtxViewProj.m[ 0 ][ 0 ];
-		m_Frustum.LeftPlane.vecPlane.y = mtxViewProj.m[ 1 ][ 3 ] + mtxViewProj.m[ 1 ][ 0 ];
-		m_Frustum.LeftPlane.vecPlane.z = mtxViewProj.m[ 2 ][ 3 ] + mtxViewProj.m[ 2 ][ 0 ];
-		m_Frustum.LeftPlane.vecPlane.w = mtxViewProj.m[ 3 ][ 3 ] + mtxViewProj.m[ 3 ][ 0 ];
-		//m_Frustum.LeftPlane.Normalize();
-
-		m_Frustum.RightPlane.vecPlane.x = mtxViewProj.m[ 0 ][ 3 ] - mtxViewProj.m[ 0 ][ 0 ];
-		m_Frustum.RightPlane.vecPlane.y = mtxViewProj.m[ 1 ][ 3 ] - mtxViewProj.m[ 1 ][ 0 ];
-		m_Frustum.RightPlane.vecPlane.z = mtxViewProj.m[ 2 ][ 3 ] - mtxViewProj.m[ 2 ][ 0 ];
-		m_Frustum.RightPlane.vecPlane.w = mtxViewProj.m[ 3 ][ 3 ] - mtxViewProj.m[ 3 ][ 0 ];
-		//m_Frustum.RightPlane.Normalize();
-
-		m_Frustum.TopPlane.vecPlane.x = mtxViewProj.m[ 0 ][ 3 ] - mtxViewProj.m[ 0 ][ 1 ];
-		m_Frustum.TopPlane.vecPlane.y = mtxViewProj.m[ 1 ][ 3 ] - mtxViewProj.m[ 1 ][ 1 ];
-		m_Frustum.TopPlane.vecPlane.z = mtxViewProj.m[ 2 ][ 3 ] - mtxViewProj.m[ 2 ][ 1 ];
-		m_Frustum.TopPlane.vecPlane.w = mtxViewProj.m[ 3 ][ 3 ] - mtxViewProj.m[ 3 ][ 1 ];
-		//m_Frustum.TopPlane.Normalize();
-
-		m_Frustum.BottomPlane.vecPlane.x = mtxViewProj.m[ 0 ][ 3 ] + mtxViewProj.m[ 0 ][ 1 ];
-		m_Frustum.BottomPlane.vecPlane.y = mtxViewProj.m[ 1 ][ 3 ] + mtxViewProj.m[ 1 ][ 1 ];
-		m_Frustum.BottomPlane.vecPlane.z = mtxViewProj.m[ 2 ][ 3 ] + mtxViewProj.m[ 2 ][ 1 ];
-		m_Frustum.BottomPlane.vecPlane.w = mtxViewProj.m[ 3 ][ 3 ] + mtxViewProj.m[ 3 ][ 1 ];
-		//m_Frustum.BottomPlane.Normalize();
-
-		m_Frustum.NearPlane.vecPlane.x = mtxViewProj.m[ 0 ][ 2 ];
-		m_Frustum.NearPlane.vecPlane.y = mtxViewProj.m[ 1 ][ 2 ];
-		m_Frustum.NearPlane.vecPlane.z = mtxViewProj.m[ 2 ][ 2 ];
-		m_Frustum.NearPlane.vecPlane.w = mtxViewProj.m[ 3 ][ 2 ];
-		//m_Frustum.NearPlane.Normalize();
-
-		m_Frustum.FarPlane.vecPlane.x = mtxViewProj.m[ 0 ][ 3 ] - mtxViewProj.m[ 0 ][ 2 ];
-		m_Frustum.FarPlane.vecPlane.y = mtxViewProj.m[ 1 ][ 3 ] - mtxViewProj.m[ 1 ][ 2 ];
-		m_Frustum.FarPlane.vecPlane.z = mtxViewProj.m[ 2 ][ 3 ] - mtxViewProj.m[ 2 ][ 2 ];
-		m_Frustum.FarPlane.vecPlane.w = mtxViewProj.m[ 3 ][ 3 ] - mtxViewProj.m[ 3 ][ 2 ];
-		//m_Frustum.FarPlane.Normalize();
-
-		for( u32 i = 6; i-- > 0; )
-		{
-			m_Frustum.aPlanes[ i ].Normalize();
-		}*/
-
 		if( !m_bCompute )
 			return;
 
@@ -260,53 +224,49 @@ namespace XSE
 		Mtx4::Inverse( m_mtxView, &mtxIV );
 		m_Frustum.Transform( mtxIV );
 		
-		
-
-		DirectX::XMMATRIX mtxProj, mtxInvView, mtxView;
+		/*DirectX::XMMATRIX mtxProj, mtxInvView, mtxView;
 		xst_memcpy( mtxProj.r, sizeof( DirectX::XMMATRIX ), &m_mtxProjection.r, sizeof( DirectX::XMMATRIX ) );
 		xst_memcpy( mtxView.r, sizeof( DirectX::XMMATRIX ), &m_mtxView.r, sizeof( DirectX::XMMATRIX ) );
 		DirectX::BoundingFrustum::CreateFromMatrix( g_Frust, mtxProj );
 		DirectX::XMVECTOR Det;
 		mtxInvView = DirectX::XMMatrixInverse( &Det, mtxView );
-		//DirectX::BoundingFrustum::Transform( g_Frust, mtxInvView );
-		g_Frust.Transform( g_Frust, mtxInvView );
-		//g_Frust.Transform( g_Frust, 1,  )
-		int i;
-	}
-
-	f32 DistancePointToPlane( const Vec3& vecPoint, const Vec4& vecPlane )
-	{
-		return ( vecPlane.x * vecPoint.x + vecPlane.y * vecPoint.y + vecPlane.z * vecPoint.z + vecPlane.w ) / XST::Math::Sqrt( vecPlane.x * vecPlane.x + vecPlane.y * vecPlane.y + vecPlane.z * vecPlane.z );
+		g_Frust.Transform( g_Frust, mtxInvView );*/
 	}
 
 	bool CCamera::IsSphereInFrustum(const Vec4& vecSpherePosition, cf32& fSphereRadius) const
 	{
 		if( !m_bCompute )
 			return true;
-		/*for( int i = 0; i < 6; ++i )
-		{
-			f32 fDot = m_Frustum.aPlanes[ i ].DotCoord( vecSpherePosition );
-			if( fDot  < -fSphereRadius )
-				return false;
-		}
-		return true;*/
-		return 
-			m_Frustum.SphereTest( vecSpherePosition, fSphereRadius );
-
-		DirectX::BoundingSphere Sphere;
+		// Do a simple sphere-sphere test
+		f32 fDist = m_Frustum.m_BoundingSphere.vecCenter.Distance( vecSpherePosition );
+		if( fDist >= m_Frustum.m_BoundingSphere.fRadius + fSphereRadius )
+			return false;
+		return m_Frustum.SphereTest( vecSpherePosition, fSphereRadius );
+		/*DirectX::BoundingSphere Sphere;
 		Sphere.Center.x = vecSpherePosition.x;
 		Sphere.Center.y = vecSpherePosition.y;
 		Sphere.Center.z = vecSpherePosition.z;
 		Sphere.Radius = fSphereRadius;
-		//return 
-			//g_Frust.Intersects( Sphere );
+		return g_Frust.Intersects( Sphere );*/
 		//return true;
 	}
 
 	bool CCamera::IsAABBInFrustum(const XST::CAABB& AABB) const
 	{
-		//implement
-		return false;
+		if( !m_bCompute )
+			return true;
+		return m_Frustum.AABBTest( AABB );
+		/*DirectX::BoundingBox Box;
+		Vec3 vecCenter = AABB.CalcCenter();
+		Vec3 vecSize = AABB.CalcSize() * 0.5f;
+		Box.Center.x = vecCenter.x;
+		Box.Center.y = vecCenter.y;
+		Box.Center.z = vecCenter.z;
+		Box.Extents.x = vecSize.x;
+		Box.Extents.y = vecSize.y;
+		Box.Extents.z = vecSize.z;
+		return g_Frust.Intersects( Box );
+		return true;*/
 	}
 
 	/*f32 CCamera::_NormalizeAngle(f32 fAngle)

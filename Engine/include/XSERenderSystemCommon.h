@@ -362,7 +362,7 @@ namespace XSE
 	struct SRSDiagnostics
 	{
 		ul64	ulDrawCallCount;
-		ul64	ulDrawIndexedCallCount;
+		ul64	ulIndexedDrawCallCount;
 		ul64	ulSetPixelShaderCount;
 		ul64	ulSetVertexShaderCount;
 		ul64	ulSetGeometryShaderCount;

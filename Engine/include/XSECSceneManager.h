@@ -42,8 +42,8 @@ namespace XSE
 
 	public:
 
-		CSceneManager(xst_castring& strName, CModelManager* pModelMgr, f32 fSize = 0);
-		virtual					~CSceneManager();
+						CSceneManager(xst_castring& strName, CModelManager* pModelMgr, f32 fSize = 0);
+		virtual			~CSceneManager();
 
 		i32				Init();
 
@@ -74,6 +74,10 @@ namespace XSE
 		void			RemoveCameras();
 
 		void			DestroyCameras();
+
+		void			SetViewFrustumCullType(const VIEW_FRUSTUM_CULL_TEST_TYPE& eType);
+
+		VIEW_FRUSTUM_CULL_TEST_TYPE	GetViewFrustumCullType() const;
 
 		i32				AddCamera(CCamera* pCamera);
 

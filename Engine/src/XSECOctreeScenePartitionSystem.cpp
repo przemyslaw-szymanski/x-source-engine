@@ -11,6 +11,11 @@
 
 namespace XSE
 {
+	void NoCullTest(const CCamera*, const CBoundingVolume&, OBJECT_DISABLE_REASON*);
+	void SphereCullTest(const CCamera*, const CBoundingVolume&, OBJECT_DISABLE_REASON*);
+	void AABBCullTest(const CCamera*, const CBoundingVolume&, OBJECT_DISABLE_REASON*);
+	void SphereAABBCullTest(const CCamera*, const CBoundingVolume&, OBJECT_DISABLE_REASON*);
+
 	class COctreeListener : public IOctreeListener
 	{
 		friend class COctreeScenePartitionSystem;
@@ -50,6 +55,7 @@ namespace XSE
 		m_byMaxOctreeDepth( 5 ),
 		m_pOctree( xst_null )
 	{
+		SetViewFrustumCullTestType( ViewFrustumCullTypes::SPHERE );
 		m_pOctListener = xst_new COctreeListener( this );
 		m_pInputLayout = m_pSceneMgr->GetRenderSystem()->GetInputLayout( ILEs::POSITION | ILEs::COLOR );
 		m_strSceneNodeName = m_pSceneMgr->GetName() + "/xse_octree_model";
@@ -103,7 +109,7 @@ namespace XSE
 		CBoundingSphere CamSphere( pCam->GetViewDistance(), pCam->GetPosition() );
 		
 		_OctFrustumCull( m_pOctree, pCam );
-		_OctRangeCull( CamSphere );
+		//_OctRangeCull( CamSphere );
 	}
 			
 	void COctreeScenePartitionSystem::AddObject(CObject* pObj)
@@ -156,7 +162,16 @@ namespace XSE
 		if( pNode == xst_null )
 			return;
 
-		if( !pCamera->IsSphereInFrustum( pNode->CalcBoundingSphere() ) )
+		// Check the bounding sphere
+		// TODO: cache miss here. Calculate bounding volume based only on the node level and its position
+		CBoundingVolume Volume = pNode->CalcBoundingVolume();
+		if( !pCamera->IsSphereInFrustum( Volume.GetSphere() ) )
+		{
+			DisableOctNode( pNode, ODR::FRUSTUM_CULLING );
+			return;
+		}
+
+		if( !pCamera->IsAABBInFrustum( Volume.GetAABB() ) )
 		{
 			DisableOctNode( pNode, ODR::FRUSTUM_CULLING );
 			return;
@@ -167,6 +182,7 @@ namespace XSE
 		//Check node children
 		CObject* pObj;
 		COctree::ObjectVector& vObjs = pNode->GetObjects();
+		OBJECT_DISABLE_REASON eDisableReason;
 
 		for(u32 o = vObjs.size(); o --> 0;)
 		{
@@ -176,16 +192,22 @@ namespace XSE
 			if( pObj->GetObjectDisableReason() != ODR::NOT_DISABLED && pObj->GetObjectDisableReason() != ODR::FRUSTUM_CULLING )
 				continue; //skip it
 
-			const CBoundingSphere& ObjSphere = pObj->GetObjectBoundingVolume().GetSphere();
+			//const CBoundingSphere& ObjSphere = pObj->GetObjectBoundingVolume().GetSphere();
+			const CBoundingVolume& Volume = pObj->GetObjectBoundingVolume();
 
-			if( !pCamera->IsSphereInFrustum( ObjSphere ) )
+			eDisableReason = ODR::FRUSTUM_CULLING;
+			/*if( pCamera->IsSphereInFrustum( Volume.GetSphere() ) )
 			{
-				pObj->DisableObject( ODR::FRUSTUM_CULLING );
-			}
-			else
-			{
-				pObj->DisableObject( ODR::NOT_DISABLED );
-			}
+				eDisableReason = ODR::NOT_DISABLED;
+				if( !pCamera->IsAABBInFrustum( Volume.GetAABB() ) )
+				{
+					eDisableReason = ODR::FRUSTUM_CULLING;
+				}
+			}*/
+			// Function pointer should not be so slow in this case
+			m_CullTest( pCamera, Volume, &eDisableReason );
+
+			pObj->DisableObject( eDisableReason );
 		}
 
 		COctree** apChildren = pNode->GetChildren();
@@ -308,5 +330,53 @@ namespace XSE
 		_OctRangeCull( apChildren[ 5 ], CamSphere );
 		_OctRangeCull( apChildren[ 6 ], CamSphere );
 		_OctRangeCull( apChildren[ 7 ], CamSphere );
+	}
+
+	void COctreeScenePartitionSystem::SetViewFrustumCullTestType(const VIEW_FRUSTUM_CULL_TEST_TYPE& eType)
+	{
+		IScenePartitionSystem::m_eViewFrustumCullType = eType;
+		switch( eType )
+		{
+			case ViewFrustumCullTypes::NONE:
+				m_CullTest = &NoCullTest;
+			break;
+			case ViewFrustumCullTypes::AABB:
+				m_CullTest = &AABBCullTest;
+			break;
+			case ViewFrustumCullTypes::SPHERE:
+				m_CullTest = &SphereCullTest;
+			break;
+			case ViewFrustumCullTypes::SPHERE_AABB:
+				m_CullTest = &SphereAABBCullTest;
+			break;
+		}
+	}
+
+	// Locals
+	void NoCullTest(const CCamera*, const CBoundingVolume&, OBJECT_DISABLE_REASON* peOut)
+	{
+		*peOut = ObjectDisableReasons::NOT_DISABLED;
+	}
+
+	void SphereCullTest(const CCamera* pCam, const CBoundingVolume& Vol, OBJECT_DISABLE_REASON* peReasonOut)
+	{
+		*peReasonOut = ( pCam->IsSphereInFrustum( Vol.GetSphere() ) )? ObjectDisableReasons::NOT_DISABLED : ObjectDisableReasons::FRUSTUM_CULLING;
+	}
+
+	void AABBCullTest(const CCamera* pCam, const CBoundingVolume& Vol, OBJECT_DISABLE_REASON* peReasonOut)
+	{
+		*peReasonOut = ( pCam->IsAABBInFrustum( Vol.GetAABB() ) )? ObjectDisableReasons::NOT_DISABLED : ObjectDisableReasons::FRUSTUM_CULLING;
+	}
+
+	void SphereAABBCullTest(const CCamera* pCam, const CBoundingVolume& Vol, OBJECT_DISABLE_REASON* peReasonOut)
+	{
+		if( pCam->IsSphereInFrustum( Vol.GetSphere() ) )
+		{
+			*peReasonOut = ObjectDisableReasons::NOT_DISABLED;
+			if( !pCam->IsAABBInFrustum( Vol.GetAABB() ) )
+			{
+				*peReasonOut = ObjectDisableReasons::FRUSTUM_CULLING;
+			}
+		}
 	}
 }

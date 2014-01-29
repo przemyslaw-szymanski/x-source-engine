@@ -185,7 +185,7 @@ namespace XSE
 
 		i32 CRenderSystem::_LoadLibraries()
 		{
-			#if defined (XST_ENGINE_DEBUG)
+			#if defined (XSE_RENDERER_DEBUG)
 				m_ahDlls[ D3DX11 ] = XST::Platform::LoadLibrary( "D3DX11d_43.dll" );
 			#else
 				m_ahDlls[ D3DX11 ] = XST::Platform::LoadLibrary( "D3DX11d_43.dll" );
@@ -503,7 +503,7 @@ namespace XSE
 		//EACH FRAME
 		i32 CRenderSystem::EndRender()
 		{
-#if defined (XST_ENGINE_DEBUG)
+#if defined (XSE_RENDERER_DEBUG)
 			xst_memcpy( &m_Diagnostics, sizeof( SRSDiagnostics ), &g_Diagnostics, sizeof( SRSDiagnostics ) );
 			xst_zero( &g_Diagnostics, sizeof( SRSDiagnostics ) );
 #endif
@@ -698,7 +698,7 @@ namespace XSE
 			u32 uiStrides = ulVertexSize;
 			u32 uiOffsets = 0;
 			m_pDeviceContext->IASetVertexBuffers( 0, 1, &pBuff->m_pD3DBuffer, &uiStrides, &uiOffsets );
-#if defined (XST_ENGINE_DEBUG)
+#if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulSetVertexBufferCount;
 #endif
 			return XST_OK;
@@ -722,7 +722,7 @@ namespace XSE
 			u32 uiStrides = pIL->GetVertexSize();
 			u32 uiOffsets = 0;
 			m_pDeviceContext->IASetVertexBuffers( 0, 1, &pBuff->m_pD3DBuffer, &uiStrides, &uiOffsets );
-#if defined (XST_ENGINE_DEBUG)
+#if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulSetVertexBufferCount;
 #endif
 			return XST_OK;
@@ -738,7 +738,7 @@ namespace XSE
 			}
 			m_Current.pInputLayout = pILayout;
 			m_pDeviceContext->IASetInputLayout( pILayout->m_pD3DInputLayout );
-#if defined (XST_ENGINE_DEBUG)
+#if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulSetInputLayoutCount;
 #endif
 			return XST_OK;
@@ -753,7 +753,7 @@ namespace XSE
 				return XST_OK;
 			}
 			m_Current.pVertexShader = pShader;
-#if defined (XST_ENGINE_DEBUG)
+#if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulSetVertexShaderCount;
 #endif
 			return pShader->m_pShaderSystem->SetVertexShader( pVS );
@@ -768,7 +768,7 @@ namespace XSE
 				return XST_OK;
 			}
 			m_Current.pPixelShader = pShader;
-#if defined (XST_ENGINE_DEBUG)
+#if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulSetPixelShaderCount;
 #endif
 			return pShader->m_pShaderSystem->SetPixelShader( pPS );
@@ -792,7 +792,7 @@ namespace XSE
 			u32 uiStrides = pIL->GetVertexSize();
 			u32 uiOffsets = 0;
 			m_pDeviceContext->IASetVertexBuffers( 0, 1, &pBuff->m_pD3DBuffer, &uiStrides, &uiOffsets );
-#if defined (XST_ENGINE_DEBUG)
+#if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulSetVertexBufferCount;
 #endif
 			return XST_OK;
@@ -808,7 +808,7 @@ namespace XSE
 			}
 			m_Current.pInputLayout = pILayout;
 			m_pDeviceContext->IASetInputLayout( pILayout->m_pD3DInputLayout );
-#if defined (XST_ENGINE_DEBUG)
+#if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulSetInputLayoutCount;
 #endif
 			return XST_OK;
@@ -823,7 +823,7 @@ namespace XSE
 				return XST_OK;
 			}
 			m_Current.pVertexShader = pShader;
-#if defined (XST_ENGINE_DEBUG)
+#if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulSetVertexShaderCount;
 #endif
 			return pShader->m_pShaderSystem->SetVertexShader( pVS );
@@ -838,7 +838,7 @@ namespace XSE
 				return XST_OK;
 			}
 			m_Current.pPixelShader = pShader;
-#if defined (XST_ENGINE_DEBUG)
+#if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulSetPixelShaderCount;
 #endif
 			return pShader->m_pShaderSystem->SetPixelShader( pPS );
@@ -851,7 +851,7 @@ namespace XSE
 			m_Current.pIndexBuffer = pIB;
 			xst_assert( pIB->m_pD3DIndexBuffer, "(CRenderSystem::SetIndexBuffer)" );
 			m_pDeviceContext->IASetIndexBuffer( pIB->m_pD3DIndexBuffer, pIB->m_eD3DDataFormat, 0 );
-#if defined (XST_ENGINE_DEBUG)
+#if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulSetIndexBufferCount;
 #endif
 			return XST_OK;
@@ -868,7 +868,7 @@ namespace XSE
 			m_Current.pIndexBuffer = pIB;
 			xst_assert( pIB->m_pD3DIndexBuffer, "(CRenderSystem::SetIndexBuffer)" );
 			m_pDeviceContext->IASetIndexBuffer( pIB->m_pD3DIndexBuffer, pIB->m_eD3DDataFormat, 0 );
-#if defined (XST_ENGINE_DEBUG)
+#if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulSetIndexBufferCount;
 #endif
 			return XST_OK;
@@ -882,7 +882,7 @@ namespace XSE
 			cul32 u = pVB->GetVertexCount();
 			m_pDeviceContext->Draw( u, 0 );
 
-#if defined (XST_ENGINE_DEBUG)
+#if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulDrawCallCount;
 #endif
 			return XST_OK;
@@ -899,8 +899,8 @@ namespace XSE
 			cul32 u = pIB->GetIndexCount();
 			m_pDeviceContext->DrawIndexed( u, 0, 0 );
 
-#if defined (XST_ENGINE_DEBUG)
-			++g_Diagnostics.ulDrawIndexedCallCount;
+#if defined (XSE_RENDERER_DEBUG)
+			++g_Diagnostics.ulIndexedDrawCallCount;
 #endif
 			return XST_OK;
 		}

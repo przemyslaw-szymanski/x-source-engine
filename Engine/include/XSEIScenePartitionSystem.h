@@ -63,6 +63,13 @@ namespace XSE
 
 			virtual void			SkipProcess() {}
 
+			virtual void			SetViewFrustumCullTestType(const VIEW_FRUSTUM_CULL_TEST_TYPE& eType) 
+									{ m_eViewFrustumCullType = ViewFrustumCullTypes::NONE; };
+
+			virtual xst_fi
+			VIEW_FRUSTUM_CULL_TEST_TYPE	GetViewFrustumCullTestType() const
+										{ return m_eViewFrustumCullType; }
+
 		protected:
 
 
@@ -70,7 +77,7 @@ namespace XSE
 
 			CSceneManager*	m_pSceneMgr;
 			ObjectVector	m_vObjects;
-			
+			VIEW_FRUSTUM_CULL_TEST_TYPE	m_eViewFrustumCullType;
 	};
 
 }//xse

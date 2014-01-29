@@ -15,6 +15,7 @@ namespace XSE
 		friend class COctreeListener;
 
 		typedef xst_vector< COctree* >	OctreeVec;
+		typedef void ( *pfnCullTest )(const CCamera*, const CBoundingVolume&, OBJECT_DISABLE_REASON*);
 
 		public:
 									
@@ -35,6 +36,8 @@ namespace XSE
 
 					void			SkipProcess();
 
+					void			SetViewFrustumCullTestType(const VIEW_FRUSTUM_CULL_TEST_TYPE& eType);
+
 		protected:
 
 					void			_OctRangeCull(COctree* pNode, const CBoundingSphere& CamSphere);
@@ -44,12 +47,13 @@ namespace XSE
 
 		protected:
 
-			ModelPtr			m_pOctModel;
-			IInputLayout*		m_pInputLayout;
-			COctree*			m_pOctree;
-			COctreeListener*	m_pOctListener;
 			xst_astring			m_strSceneNodeName;
 			OctreeVec			m_vOctNodes;
+			ModelPtr			m_pOctModel;
+			IInputLayout*		m_pInputLayout = xst_null;
+			COctree*			m_pOctree = xst_null;
+			COctreeListener*	m_pOctListener = xst_null;
+			pfnCullTest			m_CullTest = xst_null;
 			u8					m_byMaxOctreeDepth;
 			bool				m_bProcessingStopped;
 			bool				m_bProcessSkipped;

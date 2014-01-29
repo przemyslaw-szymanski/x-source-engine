@@ -56,6 +56,56 @@ namespace XSE
 	#endif // _XM_VMX128_INTRINSICS_
 	}
 
+	xst_fi void Vector3Normalize(Vec4* pOut, const Vec4& V)
+	{
+	#if defined(_XM_NO_INTRINSICS_)
+		float fLength;
+		Vec4 vResult;
+
+		vResult = XMVector3Length( V );
+		fLength = vResult.m128_f32[0];
+
+		// Prevent divide by zero
+		if (fLength > 0) {
+			fLength = 1.0f/fLength;
+		}
+    
+		vResult.m128_f32[0] = V.m128_f32[0]*fLength;
+		vResult.m128_f32[1] = V.m128_f32[1]*fLength;
+		vResult.m128_f32[2] = V.m128_f32[2]*fLength;
+		vResult.m128_f32[3] = V.m128_f32[3]*fLength;
+		pOut->v = vResult;
+	#elif defined(XST_SSE2)
+		// Perform the dot product on x,y and z only
+		m128 v = V.v;
+		m128 vLengthSq = _mm_mul_ps(v,v);
+		m128 vTemp = XST_SSE_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(2,1,2,1));
+		vLengthSq = _mm_add_ss(vLengthSq,vTemp);
+		vTemp = XST_SSE_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,1,1,1));
+		vLengthSq = _mm_add_ss(vLengthSq,vTemp);
+		vLengthSq = XST_SSE_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(0,0,0,0));
+		// Prepare for the division
+		m128 vResult = _mm_sqrt_ps(vLengthSq);
+		// Create zero with a single instruction
+		m128 vZeroMask = _mm_setzero_ps();
+		// Test for a divide by zero (Must be FP to detect -0.0)
+		vZeroMask = _mm_cmpneq_ps(vZeroMask,vResult);
+		// Failsafe on zero (Or epsilon) length planes
+		// If the length is infinity, set the elements to zero
+		vLengthSq = _mm_cmpneq_ps(vLengthSq,Vec4::INF);
+		// Divide to perform the normalization
+		vResult = _mm_div_ps(V,vResult);
+		// Any that are infinity, set to zero
+		vResult = _mm_and_ps(vResult,vZeroMask);
+		// Select qnan or result based on infinite length
+		m128 vTemp1 = _mm_andnot_ps(vLengthSq,Vec4::NOT_A_NUMBER);
+		m128 vTemp2 = _mm_and_ps(vResult,vLengthSq);
+		vResult = _mm_or_ps(vTemp1,vTemp2);
+		pOut->v = vResult;
+	#else // _XM_VMX128_INTRINSICS_
+	#endif // _XM_VMX128_INTRINSICS_
+	}
+
 	xst_fi Vec4 VectorReplicatePtr
 	(
 		const float *pValue
@@ -133,10 +183,14 @@ namespace XSE
 		aPlanes[5].vecPlane.Set( 0.0f, -1.0f, m_fBottomSlope, 0.0f );
 
 		// Normalize the planes so we can compare to the sphere radius.
-		aPlanes[ 2 ].vecPlane = Vector3Normalize( aPlanes[ 2 ].vecPlane );
+		/*aPlanes[ 2 ].vecPlane = Vector3Normalize( aPlanes[ 2 ].vecPlane );
 		aPlanes[ 3 ].vecPlane = Vector3Normalize( aPlanes[ 3 ].vecPlane );
 		aPlanes[ 4 ].vecPlane = Vector3Normalize( aPlanes[ 4 ].vecPlane );
-		aPlanes[ 5 ].vecPlane = Vector3Normalize( aPlanes[ 5 ].vecPlane );
+		aPlanes[ 5 ].vecPlane = Vector3Normalize( aPlanes[ 5 ].vecPlane );*/
+		Vector3Normalize( &aPlanes[ 2 ].vecPlane, aPlanes[ 2 ].vecPlane );
+		Vector3Normalize( &aPlanes[ 3 ].vecPlane, aPlanes[ 3 ].vecPlane );
+		Vector3Normalize( &aPlanes[ 4 ].vecPlane, aPlanes[ 4 ].vecPlane );
+		Vector3Normalize( &aPlanes[ 5 ].vecPlane, aPlanes[ 5 ].vecPlane );
 
 		// Build furstum corners
 		Vec4 vRightTop = Vec4( m_fRightSlope, m_fTopSlope, 1.0f, 0.0f );
@@ -155,6 +209,13 @@ namespace XSE
 		m_aCorners[5] = vRightBottom * vFar;
 		m_aCorners[6] = vLeftTop * vFar;
 		m_aCorners[7] = vLeftBottom * vFar;
+
+		//m_BoundingSphere.fRadius = m_aCorners[ 4 ].Distance( m_aCorners[ 3 ] ) * 0.5f;
+		f32 fDist = m_fFar - m_fNear;
+		Vec3 vecHalf( 0, 0, m_fNear + fDist * 0.5f );
+		Vec3 vecFarCorner( m_aCorners[ 4 ].x - m_aCorners[ 6 ].x, m_aCorners[ 4 ].y - m_aCorners[ 5 ].y, fDist );
+		Vec3 vecDiff( vecHalf - vecFarCorner );
+		m_BoundingSphere.fRadius = vecDiff.Length();
 	}
 
 xst_fi Vec4  VectorSwizzle
@@ -168,6 +229,48 @@ xst_fi Vec4  VectorSwizzle
 {
     assert( (E0 < 4) && (E1 < 4) && (E2 < 4) && (E3 < 4) );
     return Vec4( V.a[ E0 ], V.a[ E1 ], V.a[ E2 ], V.a[ E3 ] );
+}
+
+xst_fi void VectorMax(Vec4* pVecOut, const Vec4& V1, const Vec4& V2)
+{
+#if defined(_XM_NO_INTRINSICS_)
+
+    Vec4 Result;
+    Result.m128_f32[0] = (V1.m128_f32[0] > V2.m128_f32[0]) ? V1.m128_f32[0] : V2.m128_f32[0];
+    Result.m128_f32[1] = (V1.m128_f32[1] > V2.m128_f32[1]) ? V1.m128_f32[1] : V2.m128_f32[1];
+    Result.m128_f32[2] = (V1.m128_f32[2] > V2.m128_f32[2]) ? V1.m128_f32[2] : V2.m128_f32[2];
+    Result.m128_f32[3] = (V1.m128_f32[3] > V2.m128_f32[3]) ? V1.m128_f32[3] : V2.m128_f32[3];
+    return Result;
+#elif defined(XST_SSE2)
+    pVecOut->v = _mm_max_ps( V1.v, V2.v );
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+xst_fi Vec4 VectorMax(const Vec4& V1, const Vec4& V2)
+{
+	Vec4 vecRet;
+	VectorMax( &vecRet, V1, V2 );
+	return vecRet;
+}
+
+xst_fi void VectorMin(Vec4* pOut, const Vec4& V1, const Vec4& V2)
+{
+#if defined(_XM_NO_INTRINSICS_)
+
+    XMVECTOR Result;
+    Result.vector4_f32[0] = (V1.vector4_f32[0] < V2.vector4_f32[0]) ? V1.vector4_f32[0] : V2.vector4_f32[0];
+    Result.vector4_f32[1] = (V1.vector4_f32[1] < V2.vector4_f32[1]) ? V1.vector4_f32[1] : V2.vector4_f32[1];
+    Result.vector4_f32[2] = (V1.vector4_f32[2] < V2.vector4_f32[2]) ? V1.vector4_f32[2] : V2.vector4_f32[2];
+    Result.vector4_f32[3] = (V1.vector4_f32[3] < V2.vector4_f32[3]) ? V1.vector4_f32[3] : V2.vector4_f32[3];
+    return Result;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vminq_f32( V1, V2 );
+#elif defined( XST_SSE2 )
+    pOut->v = _mm_min_ps( V1.v, V2.v );
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
 }
 
 xst_fi Vec4 VectorSelect(const Vec4& V1,const Vec4& V2, const Vec4& Control)
@@ -209,8 +312,40 @@ xst_fi void VectorSelect(_VEC4_OR_QUAT_* pOut, const Vec4& V1,const Vec4& V2, co
 #endif // _XM_VMX128_INTRINSICS_
 }
 
+xst_fi Vec4 VectorFalseInt()
+{
+#if defined(_XM_NO_INTRINSICS_)
+    Vec4 vResult = {0.0f,0.0f,0.0f,0.0f};
+    return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_n_u32(0);
+#elif defined(XST_SSE2)
+    return _mm_setzero_ps();
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+xst_fi Vec4  VectorTrueInt()
+{
+#if defined(_XM_NO_INTRINSICS_)
+    XMVECTORU32 vResult = {0xFFFFFFFFU,0xFFFFFFFFU,0xFFFFFFFFU,0xFFFFFFFFU};
+    return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_n_s32(-1);
+#elif defined(XST_SSE2)
+    __m128i V = _mm_set1_epi32(-1);
+    return _mm_castsi128_ps(V);
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+static const Vec4 FALSE_INT = VectorFalseInt();
+
 const u32 XSE_SELECT_0          = 0x00000000;
 const u32 XSE_SELECT_1          = 0xFFFFFFFF;
+const u32 XSE_SSE_CRMASK_CR6TRUE    = 0x00000080;
+const u32 XSE_SSE_CRMASK_CR6FALSE   = 0x00000020;
+xst_fi bool ComparisonAllTrue(u32 CR) { return (((CR) & XSE_SSE_CRMASK_CR6TRUE) == XSE_SSE_CRMASK_CR6TRUE); }
+static const Vec4 TRUE_INT = VectorTrueInt();
 
 XST_ALIGN(16) struct VectorI32
 {
@@ -228,7 +363,14 @@ XST_ALIGN(16) struct VectorI32
 };
 
 static const VectorI32 SEL_1110 = { XSE_SELECT_1, XSE_SELECT_1, XSE_SELECT_1, XSE_SELECT_0 };
+static const VectorI32 SEL_1000 = { XSE_SELECT_1, XSE_SELECT_0, XSE_SELECT_0, XSE_SELECT_0 };
+static const VectorI32 SEL_0100 = { XSE_SELECT_0, XSE_SELECT_1, XSE_SELECT_0, XSE_SELECT_0 };
+static const VectorI32 SEL_0010 = { XSE_SELECT_0, XSE_SELECT_0, XSE_SELECT_1, XSE_SELECT_0 };
+static const VectorI32 MASK3	= { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 };
 static const Vec4 SELECT_1110( SEL_1110 );
+static const Vec4 SELECT_X( SEL_1000 );
+static const Vec4 SELECT_Y( SEL_0100 );
+static const Vec4 SELECT_Z( SEL_0010 );
 
 xst_fi Quaternion   Vector3InverseRotate(const Vec4& V, const Quaternion& RotationQuaternion)
 {
@@ -243,12 +385,12 @@ xst_fi void QuaternionMultiply(_VEC4_OR_QUAT_* pOut, const _VEC4_OR_QUAT_& Q1, c
 
 xst_fi void Vector3InverseRotate(Vec4* pVecOut, const Vec4& V, const Quaternion& RotationQuaternion)
 {
-	Quaternion A, Result, Q;
+	Quaternion A, Result, Q, Ret;
 	VectorSelect( &A, SELECT_1110, V, SELECT_1110 );
 	QuaternionMultiply( &Result, RotationQuaternion, A );
 	Quaternion::Conjugate( &Q, RotationQuaternion );
-	QuaternionMultiply( &A, Result, Q );
-	pVecOut->v = A.v;
+	QuaternionMultiply( &Ret, Result, Q );
+	pVecOut->v = Ret.v;
 }
 
 template<u32 SwizzleX, u32 SwizzleY, u32 SwizzleZ, u32 SwizzleW>
@@ -523,27 +665,6 @@ xst_fi Vec4  VectorLessOrEqual(const Vec4& V1, const Vec4& V2)
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-xst_fi Vec4  VectorTrueInt()
-{
-#if defined(_XM_NO_INTRINSICS_)
-    XMVECTORU32 vResult = {0xFFFFFFFFU,0xFFFFFFFFU,0xFFFFFFFFU,0xFFFFFFFFU};
-    return vResult;
-#elif defined(_XM_ARM_NEON_INTRINSICS_)
-    return vdupq_n_s32(-1);
-#elif defined(XST_SSE2)
-    __m128i V = _mm_set1_epi32(-1);
-    return _mm_castsi128_ps(V);
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
-}
-
-const u32 XSE_SSE_CRMASK_CR6TRUE    = 0x00000080;
-const u32 XSE_SSE_CRMASK_CR6FALSE   = 0x00000020;
-xst_fi bool ComparisonAllTrue(u32 CR) { return (((CR) & XSE_SSE_CRMASK_CR6TRUE) == XSE_SSE_CRMASK_CR6TRUE); }
-static const Vec4 TRUE_INT = VectorTrueInt();
-
-
-
 xst_fi u32  Vector4EqualIntR(const Vec4& V1, const Vec4& V2)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -592,21 +713,6 @@ xst_fi bool  Vector4EqualInt(const Vec4& V1, const Vec4& V2)
 #endif
 }
 
-xst_fi Vec4 VectorFalseInt()
-{
-#if defined(_XM_NO_INTRINSICS_)
-    Vec4 vResult = {0.0f,0.0f,0.0f,0.0f};
-    return vResult;
-#elif defined(_XM_ARM_NEON_INTRINSICS_)
-    return vdupq_n_u32(0);
-#elif defined(XST_SSE2)
-    return _mm_setzero_ps();
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
-}
-
-static const Vec4 FALSE_INT = VectorFalseInt();
-
 xst_fi m128 VectorFalseInt2()
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -633,8 +739,6 @@ xst_fi m128 VectorReplicatePtr2(const float *pValue)
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
-
-static const Vec4 MASK3( 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 );
 
 xst_fi Vec4  Vector3Dot(const Vec4& V1, const Vec4& V2)
 {
@@ -671,7 +775,9 @@ xst_fi void  Vector3Dot(Vec4* pVecOut, const Vec4& V1, const Vec4& V2)
 	pVecOut->Set( fValue );
 #elif defined(XST_SSE2)
     // Perform the dot product
-    m128 vDot = _mm_mul_ps(V1.v,V2.v);
+	const m128 v1 = V1.v;
+	const m128 v2 = V2.v;
+    m128 vDot = _mm_mul_ps(v1,v2);
     // x=Dot.m128_f32[1], y=Dot.m128_f32[2]
     m128 vTemp = XST_SSE_PERMUTE_PS(vDot,_MM_SHUFFLE(2,1,2,1));
     // Result.m128_f32[0] = x+y
@@ -687,6 +793,39 @@ xst_fi void  Vector3Dot(Vec4* pVecOut, const Vec4& V1, const Vec4& V2)
 }
 
 //------------------------------------------------------------------------------
+
+xst_fi void Vector3Cross(Vec4* pOut, const Vec4& V1, const Vec4& V2)
+{
+    // [ V1.y*V2.z - V1.z*V2.y, V1.z*V2.x - V1.x*V2.z, V1.x*V2.y - V1.y*V2.x ]
+
+#if defined(_XM_NO_INTRINSICS_)
+    Vec4 vResult = {
+        (V1.m128_f32[1] * V2.m128_f32[2]) - (V1.m128_f32[2] * V2.m128_f32[1]),
+        (V1.m128_f32[2] * V2.m128_f32[0]) - (V1.m128_f32[0] * V2.m128_f32[2]),
+        (V1.m128_f32[0] * V2.m128_f32[1]) - (V1.m128_f32[1] * V2.m128_f32[0]),
+        0.0f
+    };
+    return vResult;
+#elif defined(XST_SSE2)
+    // y1,z1,x1,w1
+    m128 vTemp1 = XST_SSE_PERMUTE_PS(V1.v,_MM_SHUFFLE(3,0,2,1));
+    // z2,x2,y2,w2
+    m128 vTemp2 = XST_SSE_PERMUTE_PS(V2.v,_MM_SHUFFLE(3,1,0,2));
+    // Perform the left operation
+    m128 vResult = _mm_mul_ps(vTemp1,vTemp2);
+    // z1,x1,y1,w1
+    vTemp1 = XST_SSE_PERMUTE_PS(vTemp1,_MM_SHUFFLE(3,0,2,1));
+    // y2,z2,x2,w2
+    vTemp2 = XST_SSE_PERMUTE_PS(vTemp2,_MM_SHUFFLE(3,1,0,2));
+    // Perform the right operation
+    vTemp1 = _mm_mul_ps(vTemp1,vTemp2);
+    // Subract the right from left, and return answer
+    vResult = _mm_sub_ps(vResult,vTemp1);
+    // Set w to zero
+    pOut->v = _mm_and_ps(vResult,MASK3.v);
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
 
 xst_fi Vec4  Vector3Cross(const Vec4& V1, const Vec4& V2)
 {
@@ -716,7 +855,7 @@ xst_fi Vec4  Vector3Cross(const Vec4& V1, const Vec4& V2)
     // Subract the right from left, and return answer
     vResult = _mm_sub_ps(vResult,vTemp1);
     // Set w to zero
-    return _mm_and_ps(vResult,MASK3);
+    return _mm_and_ps(vResult,MASK3.v);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -773,6 +912,85 @@ xst_fi void PointOnLineSegmentNearestPoint(Vec4* pVecOut, const Vec4& S1, const 
     VectorSelect( pVecOut, Point, S2, SelectS2 );
 }
 
+xst_i void MatrixRotationQuaternion(Mtx4* pOut, const Quaternion& Quaternion)
+{
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32 Constant1110 = {1.0f, 1.0f, 1.0f, 0.0f};
+
+    XMVECTOR Q0 = XMVectorAdd(Quaternion, Quaternion);
+    XMVECTOR Q1 = XMVectorMultiply(Quaternion, Q0);
+
+    XMVECTOR V0 = XMVectorPermute<XM_PERMUTE_0Y, XM_PERMUTE_0X, XM_PERMUTE_0X, XM_PERMUTE_1W>(Q1, Constant1110.v);
+    XMVECTOR V1 = XMVectorPermute<XM_PERMUTE_0Z, XM_PERMUTE_0Z, XM_PERMUTE_0Y, XM_PERMUTE_1W>(Q1, Constant1110.v);
+    XMVECTOR R0 = XMVectorSubtract(Constant1110, V0);
+    R0 = XMVectorSubtract(R0, V1);
+
+    V0 = XMVectorSwizzle<XM_SWIZZLE_X, XM_SWIZZLE_X, XM_SWIZZLE_Y, XM_SWIZZLE_W>(Quaternion);
+    V1 = XMVectorSwizzle<XM_SWIZZLE_Z, XM_SWIZZLE_Y, XM_SWIZZLE_Z, XM_SWIZZLE_W>(Q0);
+    V0 = XMVectorMultiply(V0, V1);
+
+    V1 = XMVectorSplatW(Quaternion);
+    XMVECTOR V2 = XMVectorSwizzle<XM_SWIZZLE_Y, XM_SWIZZLE_Z, XM_SWIZZLE_X, XM_SWIZZLE_W>(Q0);
+    V1 = XMVectorMultiply(V1, V2);
+
+    XMVECTOR R1 = XMVectorAdd(V0, V1);
+    XMVECTOR R2 = XMVectorSubtract(V0, V1);
+
+    V0 = XMVectorPermute<XM_PERMUTE_0Y, XM_PERMUTE_1X, XM_PERMUTE_1Y, XM_PERMUTE_0Z>(R1, R2);
+    V1 = XMVectorPermute<XM_PERMUTE_0X, XM_PERMUTE_1Z, XM_PERMUTE_0X, XM_PERMUTE_1Z>(R1, R2);
+
+    XMMATRIX M;
+    M.r[0] = XMVectorPermute<XM_PERMUTE_0X, XM_PERMUTE_1X, XM_PERMUTE_1Y, XM_PERMUTE_0W>(R0, V0);
+    M.r[1] = XMVectorPermute<XM_PERMUTE_1Z, XM_PERMUTE_0Y, XM_PERMUTE_1W, XM_PERMUTE_0W>(R0, V0);
+    M.r[2] = XMVectorPermute<XM_PERMUTE_1X, XM_PERMUTE_1Y, XM_PERMUTE_0Z, XM_PERMUTE_0W>(R0, V1);
+    M.r[3] = g_XMIdentityR3.v;
+    return M;
+
+#elif defined( XST_SSE2 )
+    static const m128  Constant1110 = {1.0f, 1.0f, 1.0f, 0.0f};
+
+    m128 Q0 = _mm_add_ps(Quaternion.v, Quaternion.v);
+    m128 Q1 = _mm_mul_ps(Quaternion.v ,Q0);
+
+    m128 V0 = XST_SSE_PERMUTE_PS(Q1,_MM_SHUFFLE(3,0,0,1));
+    V0 = _mm_and_ps(V0,MASK3.v);
+    m128 V1 = XST_SSE_PERMUTE_PS(Q1,_MM_SHUFFLE(3,1,2,2));
+    V1 = _mm_and_ps(V1,MASK3.v);
+    m128 R0 = _mm_sub_ps(Constant1110,V0);
+    R0 = _mm_sub_ps(R0, V1);
+
+    V0 = XST_SSE_PERMUTE_PS(Quaternion.v,_MM_SHUFFLE(3,1,0,0));
+    V1 = XST_SSE_PERMUTE_PS(Q0,_MM_SHUFFLE(3,2,1,2));
+    V0 = _mm_mul_ps(V0, V1);
+
+    V1 = XST_SSE_PERMUTE_PS(Quaternion.v,_MM_SHUFFLE(3,3,3,3));
+    m128 V2 = XST_SSE_PERMUTE_PS(Q0,_MM_SHUFFLE(3,0,2,1));
+    V1 = _mm_mul_ps(V1, V2);
+
+    m128 R1 = _mm_add_ps(V0, V1);
+    m128 R2 = _mm_sub_ps(V0, V1);
+
+    V0 = _mm_shuffle_ps(R1,R2,_MM_SHUFFLE(1,0,2,1));
+    V0 = XST_SSE_PERMUTE_PS(V0,_MM_SHUFFLE(1,3,2,0));
+    V1 = _mm_shuffle_ps(R1,R2,_MM_SHUFFLE(2,2,0,0));
+    V1 = XST_SSE_PERMUTE_PS(V1,_MM_SHUFFLE(2,0,2,0));
+
+    Q1 = _mm_shuffle_ps(R0,V0,_MM_SHUFFLE(1,0,3,0));
+    Q1 = XST_SSE_PERMUTE_PS(Q1,_MM_SHUFFLE(1,3,2,0));
+
+    pOut->r[0] = Q1;
+
+    Q1 = _mm_shuffle_ps(R0,V0,_MM_SHUFFLE(3,2,3,1));
+    Q1 = XST_SSE_PERMUTE_PS(Q1,_MM_SHUFFLE(1,3,0,2));
+    pOut->r[1] = Q1;
+
+    Q1 = _mm_shuffle_ps(V1,R0,_MM_SHUFFLE(3,2,1,0));
+    pOut->r[2] = Q1;
+    pOut->r[3] = Quaternion::IDENTITY;
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
 
 xst_fi Vec4  PointOnLineSegmentNearestPoint(const Vec4& S1, const Vec4& S2, const Vec4& P)
 {
@@ -962,9 +1180,281 @@ xst_fi Vec4  PointOnLineSegmentNearestPoint(const Vec4& S1, const Vec4& S2, cons
 		return false;
 	}
 
+	const u32 CRMASK_CR6FALSE   = 0x00000020;
+	xst_fi bool ComparisonAnyTrue(u32 CR) { return (((CR) & CRMASK_CR6FALSE) != CRMASK_CR6FALSE); }
+	const u32 SWIZZLE_X         = 0;
+	const u32 SWIZZLE_Y         = 1;
+	const u32 SWIZZLE_Z         = 2;
+	const u32 SWIZZLE_W         = 3;
+
+xst_fi bool Vector3AnyTrue(const Vec4& V)
+{
+    // Duplicate the fourth element from the first element.
+    Vec4 C = VectorSwizzle< SWIZZLE_X, SWIZZLE_Y, SWIZZLE_Z, SWIZZLE_X>(V);
+    return ComparisonAnyTrue( Vector4EqualIntR( C, TRUE_INT ) );
+}
+
 	bool CFrustum::AABBTest(const XST::CAABB& AABB) const
 	{
-		return false;
+		/*static const XMVECTORI32 SelectY =
+		{
+			XM_SELECT_0, XM_SELECT_1, XM_SELECT_0, XM_SELECT_0
+		};
+		static const XMVECTORI32 SelectZ =
+		{
+			XM_SELECT_0, XM_SELECT_0, XM_SELECT_1, XM_SELECT_0
+		};*/
+
+		//XMVECTOR Zero = XMVectorZero();
+
+		// Load origin and orientation of the frustum.
+		Vec4 vecTmp1, vecTmp2, vecTmp3;
+		Quaternion quatTmp;
+		Vec4 vOrigin = m_vecPosition;
+		//Vec4 FrustumOrientation = XMLoadFloat4( &Orientation );
+		Quaternion FrustumOrientation = m_quatOrientation;
+
+		//assert( DirectX::Internal::XMQuaternionIsUnit( FrustumOrientation ) );
+
+		// Load the box.
+		/*Vec4 Center = XMLoadFloat3( &box.Center );
+		Vec4 Extents = XMLoadFloat3( &box.Extents );
+		Vec4 BoxOrientation = XMLoadFloat4( &box.Orientation );*/
+		Vec4 Center = AABB.CalcCenter();
+		Vec4 Extends = AABB.CalcSize() * 0.5f;
+		Quaternion BoxOrientation( 0.0f, 0.0f, 0.0f, 1.0f );
+
+		//assert( DirectX::Internal::XMQuaternionIsUnit( BoxOrientation ) );
+
+		// Transform the oriented box into the space of the frustum in order to 
+		// minimize the number of transforms we have to do.
+		//Center = XMVector3InverseRotate( Center - vOrigin, FrustumOrientation );
+		vecTmp1.Sub( Center, vOrigin );
+		Vector3InverseRotate( &Center, vecTmp1, FrustumOrientation );
+		//BoxOrientation = XMQuaternionMultiply( BoxOrientation, XMQuaternionConjugate( FrustumOrientation ) );
+		Quaternion::Conjugate( &quatTmp, FrustumOrientation );
+		QuaternionMultiply( &BoxOrientation, BoxOrientation, quatTmp );
+
+		// Set w of the center to one so we can dot4 with the plane.
+		//Center = XMVectorInsert<0, 0, 0, 0, 1>( Center, XMVectorSplatOne() );
+		Center = VectorInsert<0, 0, 0, 0, 1>( Center, Vec4::UNIT );
+
+		// Build the 3x3 rotation matrix that defines the box axes.
+		//XMMATRIX R = XMMatrixRotationQuaternion( BoxOrientation );
+		Mtx4 R;
+		MatrixRotationQuaternion( &R, BoxOrientation );
+		Vec4 vecR[ 3 ];
+		vecR[ 0 ].v = R.r[ 0 ];
+		vecR[ 1 ].v = R.r[ 1 ];
+		vecR[ 2 ].v = R.r[ 2 ];
+
+		// Check against each plane of the frustum.
+		/*Vec4 Outside = XMVectorFalseInt();
+		Vec4 InsideAll = XMVectorTrueInt();
+		Vec4 CenterInsideAll = XMVectorTrueInt();*/
+		Vec4 Outside = FALSE_INT;
+		Vec4 InsideAll = TRUE_INT;
+		Vec4 CenterInsideAll = TRUE_INT;
+
+		for( size_t i = 0; i < 6; ++i )
+		{
+			// Compute the distance to the center of the box.
+			//Vec4 Dist = XMVector4Dot( Center, Planes[i] );
+			Vec4 Dist, Radius;
+			Vector4Dot( &Dist, Center, this->aPlanes[ i ].vecPlane );
+
+			// Project the axes of the box onto the normal of the plane.  Half the
+			// length of the projection (sometime called the "radius") is equal to
+			// h(u) * abs(n dot b(u))) + h(v) * abs(n dot b(v)) + h(w) * abs(n dot b(w))
+			// where h(i) are extents of the box, n is the plane normal, and b(i) are the 
+			// axes of the box.
+			//Vec4 Radius = XMVector3Dot( Planes[i], R.r[0] );
+			Vector3Dot( &Radius, aPlanes[ i ].vecPlane, vecR[ 0 ] );
+			//Radius = XMVectorSelect( Radius, XMVector3Dot( Planes[i], R.r[1] ), SelectY );
+			Vector3Dot( &vecTmp1, aPlanes[ i ].vecPlane, vecR[ 1 ] );
+			VectorSelect( &Radius, Radius, vecTmp1, SELECT_Y );
+			//Radius = XMVectorSelect( Radius, XMVector3Dot( Planes[i], R.r[2] ), SelectZ );
+			Vector3Dot( &vecTmp1, aPlanes[ i ].vecPlane, vecR[ 2 ] );
+			VectorSelect( &Radius, Radius, vecTmp1, SELECT_Z );
+			//Radius = XMVector3Dot( Extents, XMVectorAbs( Radius ) );
+			Vec4::Abs( &vecTmp1, Radius );
+			Vector3Dot( &Radius, Extends, vecTmp1 );
+
+			// Outside the plane?
+			//Outside = XMVectorOrInt( Outside, XMVectorGreater( Dist, Radius ) );
+			VectorGreater( &vecTmp1, Dist, Radius );
+			VectorOrInt( &Outside, Outside, vecTmp1 );
+
+			// Fully inside the plane?
+			//InsideAll = XMVectorAndInt( InsideAll, XMVectorLessOrEqual( Dist, -Radius ) );
+			VectorLessOrEqual( &vecTmp1, Dist, -Radius );
+			VectorAndInt( &InsideAll, InsideAll, vecTmp1 );
+
+			// Check if the center is inside the plane.
+			//CenterInsideAll = XMVectorAndInt( CenterInsideAll, XMVectorLessOrEqual( Dist, Zero ) );
+			VectorLessOrEqual( &vecTmp1, Dist, Vec4::ZERO );
+			VectorAndInt( &CenterInsideAll, CenterInsideAll, vecTmp1 );
+		}
+
+		// If the box is outside any of the planes it is outside. 
+		//if ( XMVector4EqualInt( Outside, XMVectorTrueInt() ) )
+		if( Vector4EqualInt( Outside, TRUE_INT ) )
+			return false;
+
+		// If the box is inside all planes it is fully inside.
+		//if ( XMVector4EqualInt( InsideAll, XMVectorTrueInt() ) )
+		if( Vector4EqualInt( InsideAll, TRUE_INT ) )
+			return true;
+
+		// If the center of the box is inside all planes and the box intersects 
+		// one or more planes then it must intersect.
+		//if ( XMVector4EqualInt( CenterInsideAll, XMVectorTrueInt() ) )
+		if( Vector4EqualInt( CenterInsideAll, TRUE_INT ) )
+			return true;
+
+		Vec4 FrustumMin, FrustumMax;
+		// Test against box axes (3)
+		{
+			// Find the min/max values of the projection of the frustum onto each axis.
+
+			//FrustumMin = XMVector3Dot( Corners[0], R.r[0] );
+			vecTmp1.v = R.r[ 0 ];
+			Vector3Dot( &FrustumMin, m_aCorners[ 0 ], vecTmp1 );
+			vecTmp1.v = R.r[ 1 ];
+			//FrustumMin = XMVectorSelect( FrustumMin, XMVector3Dot( Corners[0], R.r[1] ), SelectY );
+			Vector3Dot( &vecTmp2, m_aCorners[ 0 ], vecTmp1 );
+			VectorSelect( &FrustumMin, FrustumMin, vecTmp2, SELECT_Y );
+			//FrustumMin = XMVectorSelect( FrustumMin, XMVector3Dot( Corners[0], R.r[2] ), SelectZ );
+			vecTmp1.v = R.r[ 2 ];
+			Vector3Dot( &vecTmp2, m_aCorners[ 0 ], vecTmp1 );
+			VectorSelect( &FrustumMin, FrustumMin, vecTmp2, SELECT_Z );
+			FrustumMax = FrustumMin;
+
+			for( size_t i = 1; i < 8; ++i ) // for each bounding box corner
+			{
+				//Vec4 Temp = XMVector3Dot( Corners[i], R.r[0] );
+				vecTmp1.v = R.r[ 0 ];
+				Vector3Dot( &vecTmp3, m_aCorners[ i ], vecTmp1 );
+				//Temp = XMVectorSelect( Temp, XMVector3Dot( Corners[i], R.r[1] ), SelectY );
+				vecTmp1.v = R.r[ 1 ];
+				Vector3Dot( &vecTmp2, m_aCorners[ i ], vecTmp1 );
+				VectorSelect( &vecTmp3, vecTmp3, vecTmp2, SELECT_Y );
+				//Temp = XMVectorSelect( Temp, XMVector3Dot( Corners[i], R.r[2] ), SelectZ );
+				vecTmp1.v = R.r[ 2 ];
+				Vector3Dot( &vecTmp2, m_aCorners[ i ], vecTmp1 );
+				VectorSelect( &vecTmp3, vecTmp3, vecTmp2, SELECT_Z );
+
+				//FrustumMin = XMVectorMin( FrustumMin, Temp );
+				VectorMin( &FrustumMin, FrustumMin, vecTmp3 );
+				//FrustumMax = VectorMax( FrustumMax, Temp );
+				VectorMax( &FrustumMax, FrustumMax, vecTmp3 );
+			}
+
+			// Project the center of the box onto the axes.
+			//Vec4 BoxDist = XMVector3Dot( Center, R.r[0] );
+			Vec4 BoxDist;
+			vecTmp1.v = R.r[ 0 ];
+			Vector3Dot( &BoxDist, Center, vecTmp1 );
+			//BoxDist = XMVectorSelect( BoxDist, XMVector3Dot( Center, R.r[1] ), SelectY );
+			vecTmp1.v = R.r[ 1 ];
+			Vector3Dot( &vecTmp2, Center, vecTmp1 );
+			VectorSelect( &BoxDist, BoxDist, vecTmp2, SELECT_Y );
+			//BoxDist = XMVectorSelect( BoxDist, XMVector3Dot( Center, R.r[2] ), SelectZ );
+			vecTmp1.v = R.r[ 2 ];
+			Vector3Dot( &vecTmp2, Center, vecTmp1 );
+			VectorSelect( &BoxDist, BoxDist, vecTmp2, SELECT_Z );
+
+			// The projection of the box onto the axis is just its Center and Extents.
+			// if (min > box_max || max < box_min) reject;
+			//Vec4 Result = XMVectorOrInt( XMVectorGreater( FrustumMin, BoxDist + Extents ),XMVectorLess( FrustumMax, BoxDist - Extents ) );
+			Vec4 Result;
+			vecTmp2.Add( BoxDist, Extends );
+			VectorGreater( &vecTmp1, FrustumMin, vecTmp2 );
+			vecTmp2.Sub( BoxDist, Extends );
+			VectorLess( &vecTmp3, FrustumMax, vecTmp2 );
+			VectorOrInt( &Result, vecTmp1, vecTmp3 );
+
+			if( Vector3AnyTrue( Result ) )
+				return false;
+		}
+
+		// Test against edge/edge axes (3*6).
+		Vec4 FrustumEdgeAxis[6];
+
+		const Vec4 vRightTop( m_fRightSlope, m_fTopSlope, 1.0f, 0.0f );
+		const Vec4 vRightBottom( m_fRightSlope, m_fBottomSlope, 1.0f, 0.0f );
+		const Vec4 vLeftTop( m_fLeftSlope, m_fTopSlope, 1.0f, 0.0f );
+		const Vec4 vLeftBottom( m_fLeftSlope, m_fBottomSlope, 1.0f, 0.0f );
+		FrustumEdgeAxis[0] = vRightTop;
+		FrustumEdgeAxis[1] = vRightBottom;
+		FrustumEdgeAxis[2] = vLeftTop;
+		FrustumEdgeAxis[3] = vLeftBottom;
+		FrustumEdgeAxis[4] = vRightTop - vLeftTop;
+		FrustumEdgeAxis[5] = vLeftBottom - vLeftTop;
+
+		Vec4 Axis;
+
+		for( size_t i = 0; i < 3; ++i )
+		{
+			for( size_t j = 0; j < 6; j++ )
+			{
+				// Compute the axis we are going to test.
+				//Vec4 Axis = XMVector3Cross( R.r[i], FrustumEdgeAxis[j] );
+				Vector3Cross( &Axis, vecR[ i ], FrustumEdgeAxis[ j ] );
+
+				// Find the min/max values of the projection of the frustum onto the axis.
+				//Vec4 FrustumMin, FrustumMax;
+
+				//FrustumMin = FrustumMax = XMVector3Dot( Axis, Corners[0] );
+				Vector3Dot( &FrustumMin, Axis, m_aCorners[ 0 ] );
+				FrustumMax = FrustumMin;
+
+				for( size_t k = 1; k < 8; k++ ) // for each corner
+				{
+					//Vec4 Temp = XMVector3Dot( Axis, Corners[k] );
+					Vector3Dot( &vecTmp1, Axis, m_aCorners[ k ] );
+					//FrustumMin = XMVectorMin( FrustumMin, Temp );
+					VectorMin( &FrustumMin, FrustumMin, vecTmp1 );
+					//FrustumMax = XMVectorMax( FrustumMax, Temp );
+					VectorMax( &FrustumMax, FrustumMax, vecTmp1 );
+				}
+
+				// Project the center of the box onto the axis.
+				//Vec4 Dist = XMVector3Dot( Center, Axis );
+				Vec4 Dist, Radius;
+				Vector3Dot( &Dist, Center, Axis );
+
+				// Project the axes of the box onto the axis to find the "radius" of the box.
+				//Vec4 Radius = XMVector3Dot( Axis, R.r[0] );
+				Vector3Dot( &Radius, Axis, vecR[ 0 ] );
+				//Radius = XMVectorSelect( Radius, XMVector3Dot( Axis, R.r[1] ), SelectY );
+				Vector3Dot( &vecTmp1, Axis, vecR[ 1 ] );
+				VectorSelect( &Radius, Radius, vecTmp1, SELECT_Y );
+				//Radius = XMVectorSelect( Radius, XMVector3Dot( Axis, R.r[2] ), SelectZ );
+				Vector3Dot( &vecTmp1, Axis, vecR[ 2 ] );
+				VectorSelect( &Radius, Radius, vecTmp1, SELECT_Z );
+				//Radius = XMVector3Dot( Extents, XMVectorAbs( Radius ) );
+				Vec4::Abs( &vecTmp1, Radius );
+				Vector3Dot( &Radius, Extends, vecTmp1 );
+
+				// if (center > max + radius || center < min - radius) reject;
+				//Outside = XMVectorOrInt( Outside, XMVectorGreater( Dist, FrustumMax + Radius ) );
+				vecTmp1.Add( FrustumMax, Radius );
+				VectorGreater( &vecTmp2, Dist, vecTmp1 );
+				VectorOrInt( &Outside, Outside, vecTmp2 );
+				//Outside = XMVectorOrInt( Outside, XMVectorLess( Dist, FrustumMin - Radius ) );
+				vecTmp1.Sub( FrustumMin, Radius );
+				VectorLess( &vecTmp2, Dist, vecTmp1 );
+				VectorOrInt( &Outside, Outside, vecTmp2 );
+			}
+		}
+
+		//if ( XMVector4EqualInt( Outside, XMVectorTrueInt() ) )
+		if( Vector4EqualInt( Outside, TRUE_INT ) )
+			return false;
+
+    // If we did not find a separating plane then the box must intersect the frustum.
+		return true;
 	}
 
 	static const Vec4 IDENTITY_R3( 0.0f, 0.0f, 0.0f, 1.0f );
@@ -1174,15 +1664,15 @@ xst_fi void QuaternionMultiply(_VEC4_OR_QUAT_* pOut, const _VEC4_OR_QUAT_& Q1, c
     m128 Q2Y = Q2.v;
     m128 Q2Z = Q2.v;
     m128 vResult = Q2.v;
-	m128 Q1Shuffle = Q1.v;
+	m128 Q1v = Q1.v;
     // Splat with one instruction
     vResult = XST_SSE_PERMUTE_PS(vResult,_MM_SHUFFLE(3,3,3,3));
     Q2X = XST_SSE_PERMUTE_PS(Q2X,_MM_SHUFFLE(0,0,0,0));
     Q2Y = XST_SSE_PERMUTE_PS(Q2Y,_MM_SHUFFLE(1,1,1,1));
     Q2Z = XST_SSE_PERMUTE_PS(Q2Z,_MM_SHUFFLE(2,2,2,2));
     // Retire Q1 and perform Q1*Q2W
-    vResult = _mm_mul_ps(vResult,Q1Shuffle);
-    
+    vResult = _mm_mul_ps(vResult,Q1);
+    m128 Q1Shuffle = Q1.v;
     // Shuffle the copies of Q1
     Q1Shuffle = XST_SSE_PERMUTE_PS(Q1Shuffle,_MM_SHUFFLE(0,1,2,3));
     // Mul by Q1WZYX
@@ -1201,8 +1691,8 @@ xst_fi void QuaternionMultiply(_VEC4_OR_QUAT_* pOut, const _VEC4_OR_QUAT_& Q1, c
     // Flip the signs on x and w
     Q2Z = _mm_mul_ps(Q2Z,ControlYXWZ);
     Q2Y = _mm_add_ps(Q2Y,Q2Z);
-    pOut->v = _mm_add_ps(vResult,Q2Y);
-    //pOut->v = vResult;
+    vResult = _mm_add_ps(vResult,Q2Y);
+	pOut->v = vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -1286,28 +1776,8 @@ xst_fi void StoreFloat4
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-xst_fi void VectorMax(Vec4* pVecOut, const Vec4& V1, const Vec4& V2)
-{
-#if defined(_XM_NO_INTRINSICS_)
 
-    Vec4 Result;
-    Result.m128_f32[0] = (V1.m128_f32[0] > V2.m128_f32[0]) ? V1.m128_f32[0] : V2.m128_f32[0];
-    Result.m128_f32[1] = (V1.m128_f32[1] > V2.m128_f32[1]) ? V1.m128_f32[1] : V2.m128_f32[1];
-    Result.m128_f32[2] = (V1.m128_f32[2] > V2.m128_f32[2]) ? V1.m128_f32[2] : V2.m128_f32[2];
-    Result.m128_f32[3] = (V1.m128_f32[3] > V2.m128_f32[3]) ? V1.m128_f32[3] : V2.m128_f32[3];
-    return Result;
-#elif defined(XST_SSE2)
-    pVecOut->v = _mm_max_ps( V1.v, V2.v );
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
-}
 
-xst_fi Vec4 VectorMax(const Vec4& V1, const Vec4& V2)
-{
-	Vec4 vecRet;
-	VectorMax( &vecRet, V1, V2 );
-	return vecRet;
-}
 
 	void  CFrustum::Transform(const Mtx4& M)
 	{
@@ -1353,6 +1823,11 @@ xst_fi Vec4 VectorMax(const Vec4& V1, const Vec4& V2)
 
 		m_fNear *= Scale;
 		m_fFar *= Scale;
+
+		m_vecDirection = m_quatOrientation * Vec3::Z;
+		f32 fRadius = m_fFar - m_fNear;
+		Vec3 vecSphereCenter = m_vecPosition +  (m_vecDirection * ( fRadius * 0.5f ) ) + m_fNear;
+		m_BoundingSphere.vecCenter = vecSphereCenter;
 	}
 
 } // XSE

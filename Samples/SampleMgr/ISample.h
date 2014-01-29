@@ -73,13 +73,17 @@ class SAMPLE_API ISample : public XSE::IKeyboardListener, public XSE::IMouseList
 			m_pSceneMgr = pEngine->CreateSceneManager( this->GetName(), fSceneSize );
 			m_pViewCam = m_pSceneMgr->CreateCamera( xst_astring( this->GetName() ) + "/view" );
 			m_pDbgCam = m_pSceneMgr->CreateCamera( xst_astring( this->GetName() ) + "/dbg" );
-			
-			m_pSceneMgr->SetCamera( m_pViewCam, false, true );
-			m_pSceneMgr->SetCamera( m_pDbgCam, true, false );
-
 			m_pDbgCam->SetFOV( XST::Math::DegreesToRadians( 45 ), 0.1f, 1000.0f );
 			m_pDbgCam->SetPosition( 0.0f, 0.0f, 0.0f );
 			m_pDbgCam->SetLookAt( XSE::Vec3( 0, 0, 0 ) );
+			
+			m_pSceneMgr->SetCamera( m_pViewCam, true, true );
+
+			if( m_bDbgCamEnabled )
+			{
+				m_pSceneMgr->SetCamera( m_pViewCam, false, true );
+				m_pSceneMgr->SetCamera( m_pDbgCam, true, false );
+			}
 
 			m_pViewCam->SetFOV( XST::Math::DegreesToRadians( 45 ), 0.1f, 1000.0f );
 			m_pViewCam->SetPosition( 0.0f, 0.0f, 0.0f );
@@ -91,6 +95,22 @@ class SAMPLE_API ISample : public XSE::IKeyboardListener, public XSE::IMouseList
 			SetSceneManager( m_pSceneMgr );
 			pEngine->SetSceneManager( m_pSceneMgr );
 			return m_pSceneMgr;
+		}
+
+		virtual void				EnableDbgCamera(bool bEnable)
+		{
+			assert( m_pSceneMgr );
+			m_bDbgCamEnabled = bEnable;
+			if( bEnable )
+			{
+				m_pSceneMgr->SetCamera( m_pViewCam, false, true );
+				m_pSceneMgr->SetCamera( m_pDbgCam, true, false );
+			}
+			else
+			{
+				m_pSceneMgr->SetCamera( m_pViewCam, true, true );
+				m_pSceneMgr->SetCamera( m_pDbgCam, false, false );
+			}
 		}
 
 		virtual void				OnKeyPressEvent(int iKey) { return; }
@@ -144,13 +164,14 @@ class SAMPLE_API ISample : public XSE::IKeyboardListener, public XSE::IMouseList
 
 	protected:
 
-		XSE::CSceneManager*		m_pSceneMgr;
-		XSE::IRenderWindow*		m_pRenderWindow;
-		XSE::CCamera*			m_pViewCam;
-		XSE::CCamera*			m_pDbgCam;
-		XSE::CCamera*			m_pMoveCam;
+		XSE::CSceneManager*		m_pSceneMgr = xst_null;
+		XSE::IRenderWindow*		m_pRenderWindow = xst_null;
+		XSE::CCamera*			m_pViewCam = xst_null;
+		XSE::CCamera*			m_pDbgCam = xst_null;
+		XSE::CCamera*			m_pMoveCam = xst_null;
 		float					m_fCamRotateSpeed = 0.01f;
 		float					m_fCamMoveSpeed = 0.00001f;
+		bool					m_bDbgCamEnabled = false;
 };
 
 #define SAMPLE_EXPORT_FUNC(_ClassName) \

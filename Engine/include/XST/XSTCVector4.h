@@ -376,11 +376,6 @@ namespace XST
 #endif
 				}
 
-				xst_fi f32 Dot(const Vec4& RightVec) const
-				{
-					return x * RightVec.x + y * RightVec.y + z * RightVec.z + w * RightVec.w;
-				}
-
 				xst_fi Vec4 MidPoint(const Vec4& VecRight) const
 				{
 					return Vec4(	( x + VecRight.x ) * 0.5f, 
@@ -500,12 +495,18 @@ namespace XST
 					return vecRet;
 				}
 
-				Vec4				Abs() const;
-				void				Abs();
-				static Vec4			Abs(const Vec4& vecOther);
-				xst_fi static f32	Dot(const Vec4& vecLeft, const Vec4& vecRight);
-				//static void Transform(Vec4* pvecOut, const Vec4& vecVector, const Mtx4& mtxProj);
-			
+				xst_fi Vec4			Abs() const
+									{ return Abs( *this ); }
+
+				xst_fi void			Abs()
+									{ Abs( this, *this ); }
+
+				xst_fi	f32			Dot(const Vec4& vecRight) const
+									{ return Dot( *this, vecRight ); }
+
+				xst_fi static Vec4	Abs(const Vec4& vecOther);
+				xst_fi static void	Abs(Vec4* pOut, const Vec4& vecOther);
+				xst_fi static f32	Dot(const Vec4& vecLeft, const Vec4& vecRight);			
 		};
 
 		static xst_fi xst_ostream& operator<<(xst_ostream& o, const Vec4& right)

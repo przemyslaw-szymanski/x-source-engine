@@ -18,6 +18,8 @@ namespace XSE
 								CCamera(CSceneManager* pSceneMgr, xst_castring& strName, ul32 ulHandle);
 			virtual				~CCamera();
 
+			virtual	i32			Init();
+
 			xst_fi	
 			CSceneManager*		GetSceneManager() const
 								{ return m_pSceneMgr; }
@@ -59,6 +61,10 @@ namespace XSE
 			virtual	void		SetAngleY(cf32& fAngle);
 
 			virtual void		SetAngleX(cf32& fAngle);
+
+			virtual xst_fi
+			const Vec3&			GetAngles() const
+								{ return m_vecAngles; }
 
 			virtual
 			xst_fi	void		RotateX(cf32& fAngle)
@@ -179,6 +185,10 @@ namespace XSE
 					void		ShowFrustumMesh(bool bShow);
 
 					bool		IsFrustumMeshVisible() const;
+
+			xst_fi	
+			const	CFrustum&	GetFrustum() const
+								{ return m_Frustum; }
 
 		protected:
 

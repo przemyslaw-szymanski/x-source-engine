@@ -82,9 +82,9 @@ namespace XST
 			xst_fi	Vec4		CalcSize() const
 								{ return Vec4::Abs( vecMax - vecMin ); }
 
-					Vec3		CalcNearestCorner(const Vec3& vecPos);
+					Vec3		CalcNearestCorner(const Vec3& vecPos) const;
 
-					void		CalcCorners(Vec3* aCornersOut);
+					void		CalcCorners(Vec3* aCornersOut) const;
 
 			xst_fi	bool		IsZero() const
 								{ return ( vecMax - vecMin ) == Vec3::ZERO; }

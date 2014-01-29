@@ -32,7 +32,7 @@ namespace XST
 		vecMax.z = vecCornerPos.z + vecSize.z;
 	}
 
-	Vec3 CAABB::CalcNearestCorner(const Vec3& vecPos)
+	Vec3 CAABB::CalcNearestCorner(const Vec3& vecPos) const
 	{
 		if( vecPos > vecMax ) return vecMax;
 		if( vecPos < vecMin ) return vecMin;
@@ -70,7 +70,7 @@ namespace XST
 		return vecCorner;
 	}
 
-	void CAABB::CalcCorners(Vec3* aCornersOut)
+	void CAABB::CalcCorners(Vec3* aCornersOut) const
 	{
 		aCornersOut[ Corners::LEFT_BOTTOM_BACK ]	= Vec3( vecMin.x, vecMin.y, vecMin.z );
 		aCornersOut[ Corners::LEFT_BOTTOM_FRONT ]	= Vec3( vecMin.x, vecMin.y, vecMax.z );

@@ -406,6 +406,7 @@ namespace XSE
 		//Choose next pages to set rest of the tiles
 
 #if defined( XSE_RENDERER_DEBUG )
+		m_bBoundingObjectsCreated = true;
 		CMeshManager* pMeshMgr = CMeshManager::GetSingletonPtr();
 		CModelManager* pModelMgr = CModelManager::GetSingletonPtr();
 		if( !m_bBoundingObjectsCreated )
@@ -415,6 +416,7 @@ namespace XSE
 			CSceneNode* pNode = m_pSceneMgr->CreateNode( "Terrain/BoundingObjects" );
 			pNode->AddObject( m_pBoundingSphereModel );
 			pNode->AddObject( m_pAABBModel );
+			m_pBoundingSphereModel->SetVisible( false );
 		}
 #endif // XSE_RENDERER_DEBUG
 

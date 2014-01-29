@@ -303,6 +303,19 @@ namespace XSE
 	};
 	typedef FPPCameraProperties::PROPERTY	FPP_CAM_PROPERTY;
 
+	enum class ViewFrustumCullTypes
+	{
+		NONE,
+		SPHERE,
+		AABB,
+		SPHERE_AABB,
+		RANGE,
+		RANGE_SPHERE,
+		RANGE_AABB,
+		RANGE_SPHERE_AABB
+	};
+	typedef ViewFrustumCullTypes VIEW_FRUSTUM_CULL_TEST_TYPE;
+
 }//xse
 
 #endif

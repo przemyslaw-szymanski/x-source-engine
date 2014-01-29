@@ -64,6 +64,8 @@ class CSampleMgr
 
 		void				RenderSolid();
 
+		void				SetFrustumCullType(XSE::VIEW_FRUSTUM_CULL_TEST_TYPE eType);
+
 	protected:
 
 		XSE::CEngine*		m_pEngine = xst_null;

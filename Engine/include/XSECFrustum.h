@@ -53,7 +53,7 @@ namespace XSE
 			xst_fi	void			SetPosition(const Vec3& vecPos)
 									{ m_vecPosition = vecPos; }
 
-			xst_fi	const Vec3&		SetPosition() const
+			xst_fi	const Vec4&		GetPosition() const
 									{ return m_vecPosition; }
 
 			xst_fi	void			SetDirection(const Vec3& vecDir)
