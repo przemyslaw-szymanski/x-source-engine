@@ -6,40 +6,21 @@
 
 namespace XSE
 {
+	class IObjectListener;
+
 	class XST_API CObject : public virtual XST::IObject
 	{
 		friend class CSceneManager;
 		friend class CSceneDebug;
+		friend class IObjectListener;
 
 		public:
 
-										CObject(ul32 ulType, lpcastr strDbgName) : 
-											m_ulObjType( ulType ), m_vecPosition( Vec3::ZERO ), m_vecDirection( Vec3::Z ), 
-											m_uiObjDisableReason( ODR::NOT_DISABLED ), m_vecScale( 1.0f ), m_quatOrientation( Quat::ZERO ) 
-										{
-											XST_SET_DBG_NAME( this, strDbgName );
-											#if defined( XSE_SCENE_DEBUG)
-												m_pAABBMesh = xst_null;
-												m_bDbgObject = false;
-											#endif //XSE_SCENE_DEBUG
-										}
+										CObject(ul32 ulType, lpcastr strDbgName);
 
-										CObject(ul32 ulType, ul32 ulHandle, lpcastr strDbgName) : m_ulObjType( ulType ), m_vecPosition( Vec3::ZERO ), m_vecDirection( Vec3::ZERO ), m_uiObjDisableReason( ODR::NOT_DISABLED ) 
-										{
-											XST_SET_DBG_NAME( this, strDbgName );
-											#if defined( XSE_SCENE_DEBUG)
-												m_pAABBMesh = xst_null;
-												m_bDbgObject = false;
-											#endif //XSE_SCENE_DEBUG
-										}
+										CObject(ul32 ulType, ul32 ulHandle, lpcastr strDbgName);
 
-			virtual						~CObject() 
-										{
-											#if defined( XSE_SCENE_DEBUG)
-												m_pAABBMesh = xst_null;
-												m_bDbgObject = false;
-											#endif //XSE_SCENE_DEBUG
-										}
+			virtual						~CObject();
 
 			virtual	void				Update()
 										{ return;}
@@ -143,6 +124,12 @@ namespace XSE
 			virtual	void				SetObjectDirty(bool bDirty)
 										{ m_bObjDirty = bDirty; }
 
+			virtual void				SetObjectDistanceToCamera(cf32& fDist);
+
+			virtual xst_fi
+			f32							GetObjectDistanceToCamera() const
+										{ return m_fObjDistToCamera; }
+
 			virtual xst_fi
 			bool						IsObjectDirty() const
 										{ return m_bObjDirty; }
@@ -150,6 +137,14 @@ namespace XSE
 			virtual	void				VisibleAABB(bool bVisible);
 
 			virtual	bool				IsAABBVisibled() const;
+
+			virtual void				SetObjectListener(IObjectListener* pListener);
+
+			virtual void				RemoveObjectListener();
+
+			virtual xst_fi
+			IObjectListener*			GetObjectListener() const
+										{ return m_pObjListener; }
 
 			xst_fi	Resources::CMesh*	GetAABBMesh() const
 										{
@@ -178,20 +173,34 @@ namespace XSE
 		protected:
 
 			CBoundingVolume		m_ObjBoundingVolume;
-			Vec3				m_vecPosition; //translate
-			Vec3				m_vecDirection; 
-			Vec3				m_vecScale;
-			Quat				m_quatOrientation;
+			Quat				m_quatOrientation = Quat::IDENTITY;
+			Vec3				m_vecPosition = Vec3::ZERO; //translate
+			Vec3				m_vecDirection = Vec3::Z; 
+			Vec3				m_vecScale = Vec3::UNIT;
 			ul32				m_ulObjType;
-			u32					m_uiObjDisableReason;
-			bool				m_bObjDirty;
+			u32					m_uiObjDisableReason = ODR::NOT_DISABLED;
+			f32					m_fObjDistToCamera = -1.0f; // object distance to camera
+			IObjectListener*	m_pObjListener = xst_null;
+			bool				m_bObjDirty = false;
 #if defined( XSE_SCENE_DEBUG )
-			Resources::CMesh*	m_pAABBMesh;
-			bool				m_bDbgObject;
+			Resources::CMesh*	m_pAABBMesh = xst_null;
+			bool				m_bDbgObject = false;
 #endif
 	};
 
 	typedef XST::TCObjectSmartPointer< CObject >	ObjectPtr;
+
+	class IObjectListener
+	{
+		public:
+
+							IObjectListener() {}
+		virtual				~IObjectListener() {}
+
+		virtual void		OnObjectUpdate(CObject*) {}
+		virtual void		OnObjectMove(CObject*) {}
+		virtual void		OnObjectSetDistanceToCamera(CObject*) {}
+	};
 
 }//xse
 

@@ -12,8 +12,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Samples\SampleMgr\CSampleMgr.cpp" />
+    <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\cdebugdialog.cpp" />
     <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\CMainWindow.cpp" />
     <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\main.cpp" />
+    <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\moc_cdebugdialog.cpp" />
     <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\moc_CMainWindow.cpp" />
     <ClCompile Include="..\..\Samples\SampleMgr\ui\CRenderWidget.cpp" />
     <ClCompile Include="..\..\Samples\SimpleSample\CSimpleSample.cpp" />
@@ -23,7 +25,9 @@
     <ClInclude Include="..\..\Samples\SampleMgr\CSampleMgr.h" />
     <ClInclude Include="..\..\Samples\SampleMgr\IncludeSamples.h" />
     <ClInclude Include="..\..\Samples\SampleMgr\ISample.h" />
+    <ClInclude Include="..\..\Samples\SampleMgr\Qt\SampleManager\cdebugdialog.h" />
     <ClInclude Include="..\..\Samples\SampleMgr\Qt\SampleManager\CMainWindow.h" />
+    <ClInclude Include="..\..\Samples\SampleMgr\Qt\SampleManager\ui_cdebugdialog.h" />
     <ClInclude Include="..\..\Samples\SampleMgr\Qt\SampleManager\ui_cmainwindow.h" />
     <ClInclude Include="..\..\Samples\SampleMgr\ui\CRenderWidget.h" />
     <ClInclude Include="..\..\Samples\SimpleSample\CSimpleSample.h" />

@@ -26,8 +26,11 @@ CONFIG(release, debug|release) {
 
 
 SOURCES += main.cpp\
-        CMainWindow.cpp
+        CMainWindow.cpp \
+    cdebugdialog.cpp
 
-HEADERS  += CMainWindow.h
+HEADERS  += CMainWindow.h \
+    cdebugdialog.h
 
-FORMS    += cmainwindow.ui
+FORMS    += cmainwindow.ui \
+    cdebugdialog.ui

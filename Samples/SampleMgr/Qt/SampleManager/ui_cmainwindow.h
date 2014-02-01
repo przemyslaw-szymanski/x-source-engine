@@ -31,6 +31,11 @@ class Ui_CMainWindow
 public:
     QAction *ActionSolid;
     QAction *ActionWireframe;
+    QAction *ActionDebugWindow;
+    QAction *ActionCullNone;
+    QAction *ActionCullSphere;
+    QAction *ActionCullAABB;
+    QAction *ActionCullSphereAABB;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout_2;
     QHBoxLayout *horizontalLayout;
@@ -38,12 +43,14 @@ public:
     QWidget *RenderWidget;
     QVBoxLayout *verticalLayout;
     QVBoxLayout *Layout;
+    QToolBar *mainToolBar;
+    QStatusBar *statusBar;
     QMenuBar *menuBar;
     QMenu *menuFile;
     QMenu *menuRender;
     QMenu *menuMode;
-    QToolBar *mainToolBar;
-    QStatusBar *statusBar;
+    QMenu *menuView_Frustum_Culling;
+    QMenu *menuView;
 
     void setupUi(QMainWindow *CMainWindow)
     {
@@ -53,9 +60,24 @@ public:
         ActionSolid = new QAction(CMainWindow);
         ActionSolid->setObjectName(QStringLiteral("ActionSolid"));
         ActionSolid->setCheckable(true);
+        ActionSolid->setChecked(true);
         ActionWireframe = new QAction(CMainWindow);
         ActionWireframe->setObjectName(QStringLiteral("ActionWireframe"));
         ActionWireframe->setCheckable(true);
+        ActionDebugWindow = new QAction(CMainWindow);
+        ActionDebugWindow->setObjectName(QStringLiteral("ActionDebugWindow"));
+        ActionCullNone = new QAction(CMainWindow);
+        ActionCullNone->setObjectName(QStringLiteral("ActionCullNone"));
+        ActionCullNone->setCheckable(true);
+        ActionCullSphere = new QAction(CMainWindow);
+        ActionCullSphere->setObjectName(QStringLiteral("ActionCullSphere"));
+        ActionCullSphere->setCheckable(true);
+        ActionCullAABB = new QAction(CMainWindow);
+        ActionCullAABB->setObjectName(QStringLiteral("ActionCullAABB"));
+        ActionCullAABB->setCheckable(true);
+        ActionCullSphereAABB = new QAction(CMainWindow);
+        ActionCullSphereAABB->setObjectName(QStringLiteral("ActionCullSphereAABB"));
+        ActionCullSphereAABB->setCheckable(true);
         centralWidget = new QWidget(CMainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         horizontalLayout_2 = new QHBoxLayout(centralWidget);
@@ -91,6 +113,12 @@ public:
         horizontalLayout_2->addLayout(horizontalLayout);
 
         CMainWindow->setCentralWidget(centralWidget);
+        mainToolBar = new QToolBar(CMainWindow);
+        mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
+        CMainWindow->addToolBar(Qt::TopToolBarArea, mainToolBar);
+        statusBar = new QStatusBar(CMainWindow);
+        statusBar->setObjectName(QStringLiteral("statusBar"));
+        CMainWindow->setStatusBar(statusBar);
         menuBar = new QMenuBar(CMainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 1006, 21));
@@ -100,19 +128,24 @@ public:
         menuRender->setObjectName(QStringLiteral("menuRender"));
         menuMode = new QMenu(menuRender);
         menuMode->setObjectName(QStringLiteral("menuMode"));
+        menuView_Frustum_Culling = new QMenu(menuRender);
+        menuView_Frustum_Culling->setObjectName(QStringLiteral("menuView_Frustum_Culling"));
+        menuView = new QMenu(menuBar);
+        menuView->setObjectName(QStringLiteral("menuView"));
         CMainWindow->setMenuBar(menuBar);
-        mainToolBar = new QToolBar(CMainWindow);
-        mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
-        CMainWindow->addToolBar(Qt::TopToolBarArea, mainToolBar);
-        statusBar = new QStatusBar(CMainWindow);
-        statusBar->setObjectName(QStringLiteral("statusBar"));
-        CMainWindow->setStatusBar(statusBar);
 
         menuBar->addAction(menuFile->menuAction());
         menuBar->addAction(menuRender->menuAction());
+        menuBar->addAction(menuView->menuAction());
         menuRender->addAction(menuMode->menuAction());
+        menuRender->addAction(menuView_Frustum_Culling->menuAction());
         menuMode->addAction(ActionSolid);
         menuMode->addAction(ActionWireframe);
+        menuView_Frustum_Culling->addAction(ActionCullNone);
+        menuView_Frustum_Culling->addAction(ActionCullSphere);
+        menuView_Frustum_Culling->addAction(ActionCullAABB);
+        menuView_Frustum_Culling->addAction(ActionCullSphereAABB);
+        menuView->addAction(ActionDebugWindow);
 
         retranslateUi(CMainWindow);
 
@@ -124,11 +157,18 @@ public:
         CMainWindow->setWindowTitle(QApplication::translate("CMainWindow", "CMainWindow", 0));
         ActionSolid->setText(QApplication::translate("CMainWindow", "Solid", 0));
         ActionWireframe->setText(QApplication::translate("CMainWindow", "Wireframe", 0));
+        ActionDebugWindow->setText(QApplication::translate("CMainWindow", "Debug Window", 0));
+        ActionCullNone->setText(QApplication::translate("CMainWindow", "None", 0));
+        ActionCullSphere->setText(QApplication::translate("CMainWindow", "Sphere", 0));
+        ActionCullAABB->setText(QApplication::translate("CMainWindow", "AABB", 0));
+        ActionCullSphereAABB->setText(QApplication::translate("CMainWindow", "Sphere And AABB", 0));
         QTreeWidgetItem *___qtreewidgetitem = SampleTree->headerItem();
         ___qtreewidgetitem->setText(0, QApplication::translate("CMainWindow", "Sample", 0));
         menuFile->setTitle(QApplication::translate("CMainWindow", "File", 0));
         menuRender->setTitle(QApplication::translate("CMainWindow", "Render", 0));
         menuMode->setTitle(QApplication::translate("CMainWindow", "Mode", 0));
+        menuView_Frustum_Culling->setTitle(QApplication::translate("CMainWindow", "View Frustum Culling", 0));
+        menuView->setTitle(QApplication::translate("CMainWindow", "View", 0));
     } // retranslateUi
 
 };

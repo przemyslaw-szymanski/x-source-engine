@@ -63,6 +63,12 @@
     <ClCompile Include="..\..\Samples\SampleMgr\ui\CRenderWidget.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\cdebugdialog.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\moc_cdebugdialog.cpp">
+      <Filter>ui\moc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Samples\Terrain\CTerrain.h">
@@ -87,6 +93,12 @@
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Samples\SampleMgr\Qt\SampleManager\ui_cmainwindow.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Samples\SampleMgr\Qt\SampleManager\ui_cdebugdialog.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Samples\SampleMgr\Qt\SampleManager\cdebugdialog.h">
       <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>

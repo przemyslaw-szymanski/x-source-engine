@@ -2,6 +2,8 @@
 #include "../CSampleMgr.h"
 #include <QtGui\qevent.h>
 #include "CRenderInfo.h"
+#include "../Qt/SampleManager/CMainWindow.h"
+#include "../Qt/SampleManager/CDebugDialog.h"
 #include <qlayout.h>
 
 XSE::SMouseEvent g_Event;
@@ -48,17 +50,9 @@ void CRenderWidget::paintEvent(QPaintEvent *pEvent)
 		m_pSampleMgr->RenderSample();
 		if( m_pSampleMgr->GetEngine()->GetSceneManager() != xst_null )
 		{
-			//m_pSampleMgr->GetEngine()->GetSceneManager()->GetCurrentCamera()->SetAspectRatio( pEvent->rect().width(), pEvent->rect().height() );
-			char buff[ 100 ];
 			XSE::CCamera* pCam = m_pSampleMgr->GetEngine()->GetSceneManager()->GetCurrentCamera();
-			/*xst_sprintf( buff, 100, "%.3f, %.3f, %.3f", pCam->GetPosition().x, pCam->GetPosition().y, pCam->GetPosition().z );
-			CRenderInfo::GetSingleton().SetLabelText( "CameraPos", buff );
-			xst_sprintf( buff, 100, "%.3f, %.3f", pCam->GetRotationAngles().x, pCam->GetRotationAngles().y );
-			CRenderInfo::GetSingleton().SetLabelText( "CameraAngles", buff );
-			xst_sprintf( buff, 100, "%.3f, %.3f, %.3f", pCam->GetDirection().x, pCam->GetDirection().y, pCam->GetDirection().z );
-			CRenderInfo::GetSingleton().SetLabelText( "CameraDirection", buff );
-			xst_sprintf( buff, 100, "%.3f, %.3f, %.3f", pCam->GetRight().x, pCam->GetRight().y, pCam->GetRight().z );
-			CRenderInfo::GetSingleton().SetLabelText( "CameraRight", buff );*/
+			m_pDbgDlg->SetDrawCallCount( m_pSampleMgr->GetEngine()->GetRenderSystem()->GetDiagnostics().ulDrawCallCount );
+			m_pDbgDlg->SetIndexedDrawCallCount( m_pSampleMgr->GetEngine()->GetRenderSystem()->GetDiagnostics().ulIndexedDrawCallCount );
 		}
 	}
 	

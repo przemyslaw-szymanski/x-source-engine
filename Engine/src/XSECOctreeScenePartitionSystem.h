@@ -44,6 +44,10 @@ namespace XSE
 					void			_OctRangeCull(const CBoundingSphere& CamSphere);
 
 					void			_OctFrustumCull(COctree* pNode, const CCamera* pCamera);
+					void			_OctFrustumCull(const CCamera* pCamera);
+
+					void			_NodeObjectsFrustumCull(COctree* pNode, const CCamera* pCamera);
+					void			_NodeObjectsRangeCull(COctree* pNode, const CBoundingSphere& CamSphere);
 
 		protected:
 

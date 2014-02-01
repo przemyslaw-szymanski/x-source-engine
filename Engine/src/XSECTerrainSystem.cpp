@@ -49,6 +49,10 @@ namespace XSE
 
 	void CTerrainSystem::Update()
 	{
+		for( auto pTerrain : m_vTerrains )
+		{
+			pTerrain->Update();
+		}
 	}
 
 	ITerrain*	CTerrainSystem::CreateTerrain(xst_castring& strName, STerrainOptions& Options, bool bLockOnly)

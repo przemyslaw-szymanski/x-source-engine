@@ -115,12 +115,18 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	this->m_pViewCam->SetAngleY( 0.580f );
 	this->m_pViewCam->SetPosition( -18, 101, -56 );
 	this->m_pViewCam->SetSpeed( 40, 1.1f, 1.1f );
+	this->m_pViewCam->SetFar( 1000 );
 
-	this->m_pDbgCam->SetPosition( 0, 100, 110 );
-	//this->m_pDbgCam->SetAngleX( 0.397f );
-	//this->m_pDbgCam->SetAngleY( 0.580f );
-	this->m_pDbgCam->SetFOV( XST::DegreesToRadians( 30 ), 0.1f, 100.0f );
+	//this->m_pDbgCam->SetPosition( 0, 100, 0 );
+	this->m_pDbgCam->SetPosition( this->m_pViewCam->GetPosition() );
+	this->m_pDbgCam->SetAngleX( this->m_pViewCam->GetAngles().x );
+	this->m_pDbgCam->SetAngleY( this->m_pViewCam->GetAngles().y );
+	this->m_pDbgCam->SetFOV( XST::DegreesToRadians( 45 ), 0.1f, 1000.0f );
 	this->m_pDbgCam->ShowFrustumMesh( true );
+
+	this->EnableDbgCamera( false );
+
+	//this->m_pSceneMgr->SetViewFrustumCullType( XSE::ViewFrustumCullTypes::NONE );
 
 	//this->m_pMoveCam = this->m_pDbgCam;
 
@@ -139,7 +145,9 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	Options.PageCount = XSE::CPoint( 1, 1 );
 	Options.vHeightmaps.push_back( "heightmap04.jpg" );
 	Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
-	Options.TileVertexCount = XSE::CPoint( 16 * 2 + 1 );
+	Options.TileVertexCount = XSE::CPoint( 16 + 1 );
+	//Options.PageVertexCount = XSE::CPoint( 32 * 32 + 1 );
+	//Options.TileVertexCount = XSE::CPoint( 16 + 16 + 1 );
 	Options.uiLODCount = 2;
 	Options.bColor = true;
 	Options.bBinormal = Options.bNormal = Options.bTangent = Options.bTexCoord = false;

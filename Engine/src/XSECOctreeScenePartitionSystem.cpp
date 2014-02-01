@@ -95,6 +95,18 @@ namespace XSE
 		m_bProcessSkipped = true;
 	}
 
+#if defined( XSE_RENDERER_DEBUG )
+	u32 g_uiObjChecked = 0;
+	u32 g_uiObjDisabled = 0;
+	u32 g_uiNodesChecked = 0;
+	u32 g_uiAllNodes = 0;
+	u32 g_uiNodesDisabled = 0;
+	u32 g_uiRangeCullNodeDisabled = 0;
+	u32 g_uiSphereCullNodeDisabled = 0;
+	u32 g_uiAABBCullNodeDisabled = 0;
+	u32 g_uiSphereCullObjDisabled;
+	u32 g_uiAABBCullObjDisabled;
+#endif
 	void	COctreeScenePartitionSystem::Update()
 	{
 		if( m_bProcessSkipped || m_bProcessingStopped )
@@ -104,12 +116,27 @@ namespace XSE
 		}
 
 		m_vOctNodes.clear();
+#if defined( XSE_RENDERER_DEBUG )
+		g_uiObjChecked = 0;
+		g_uiObjDisabled = 0;
+		g_uiNodesChecked = 0;
+		g_uiAllNodes = 0;
+		g_uiNodesDisabled = 0;
+		g_uiAABBCullNodeDisabled = 0;
+		g_uiSphereCullNodeDisabled = 0;
+		g_uiRangeCullNodeDisabled = 0;
+		g_uiSphereCullObjDisabled = 0;
+		g_uiAABBCullObjDisabled = 0;
+#endif
 		CCamera* pCam = m_pSceneMgr->GetComputeCamera();
 
 		CBoundingSphere CamSphere( pCam->GetViewDistance(), pCam->GetPosition() );
 		
-		_OctFrustumCull( m_pOctree, pCam );
 		//_OctRangeCull( CamSphere );
+		//_OctFrustumCull( m_pOctree, pCam );
+
+		_OctRangeCull( m_pOctree, CamSphere );
+		_OctFrustumCull( pCam );
 	}
 			
 	void COctreeScenePartitionSystem::AddObject(CObject* pObj)
@@ -125,11 +152,14 @@ namespace XSE
 		m_pOctree->RemoveObject( pObj );
 	}
 
+
 	void DisableOctNode(COctree* pNode, u32 uiReason)
 	{
 		if( pNode == xst_null )
 			return;
-
+#if defined( XSE_RENDERER_DEBUG )
+g_uiNodesDisabled++;
+#endif
 		COctree::ObjectVector& vObjs = pNode->GetObjects();
 		CObject* pObj;
 
@@ -140,9 +170,13 @@ namespace XSE
 			//If this object is disabled skip it, it is disabled by other culling test
 			if( pObj->GetObjectDisableReason() != ODR::NOT_DISABLED )
 				continue;
-
+#if defined( XSE_RENDERER_DEBUG )
+g_uiObjDisabled++;
+#endif
 			pObj->DisableObject( uiReason );
 		}
+
+		pNode->IsVisible( false );
 
 		//Do the same for each child
 		COctree** apChildren = pNode->GetChildren();
@@ -156,30 +190,8 @@ namespace XSE
 		DisableOctNode( apChildren[ 7 ], uiReason );
 	}
 
-	//TODO
-	void COctreeScenePartitionSystem::_OctFrustumCull(COctree* pNode, const CCamera* pCamera)
+	void COctreeScenePartitionSystem::_NodeObjectsFrustumCull(COctree* pNode, const CCamera* pCamera)
 	{
-		if( pNode == xst_null )
-			return;
-
-		// Check the bounding sphere
-		// TODO: cache miss here. Calculate bounding volume based only on the node level and its position
-		CBoundingVolume Volume = pNode->CalcBoundingVolume();
-		if( !pCamera->IsSphereInFrustum( Volume.GetSphere() ) )
-		{
-			DisableOctNode( pNode, ODR::FRUSTUM_CULLING );
-			return;
-		}
-
-		if( !pCamera->IsAABBInFrustum( Volume.GetAABB() ) )
-		{
-			DisableOctNode( pNode, ODR::FRUSTUM_CULLING );
-			return;
-		}
-
-		m_vOctNodes.push_back( pNode );
-
-		//Check node children
 		CObject* pObj;
 		COctree::ObjectVector& vObjs = pNode->GetObjects();
 		OBJECT_DISABLE_REASON eDisableReason;
@@ -194,7 +206,9 @@ namespace XSE
 
 			//const CBoundingSphere& ObjSphere = pObj->GetObjectBoundingVolume().GetSphere();
 			const CBoundingVolume& Volume = pObj->GetObjectBoundingVolume();
-
+#if defined( XSE_RENDERER_DEBUG )
+g_uiObjChecked++;
+#endif
 			eDisableReason = ODR::FRUSTUM_CULLING;
 			/*if( pCamera->IsSphereInFrustum( Volume.GetSphere() ) )
 			{
@@ -209,6 +223,63 @@ namespace XSE
 
 			pObj->DisableObject( eDisableReason );
 		}
+	}
+
+	void COctreeScenePartitionSystem::_NodeObjectsRangeCull(COctree* pNode, const CBoundingSphere& CamSphere)
+	{
+		CObject* pObj;
+		COctree::ObjectVector& vObjs = pNode->GetObjects();
+		f32 fDist;
+
+		for(u32 o = vObjs.size(); o --> 0;)
+		{
+			pObj = vObjs[ o ];
+
+			const CBoundingSphere& ObjSphere = pObj->GetObjectBoundingVolume().GetSphere();
+
+			//If this object is disabled by other test do not test it
+			if( pObj->GetObjectDisableReason() != ODR::NOT_DISABLED && pObj->GetObjectDisableReason() != ODR::RANGE_CULLING )
+				continue;
+
+			fDist = CamSphere.CalcDistance( ObjSphere );
+			pObj->SetObjectDistanceToCamera( fDist );
+
+			if( fDist >= ObjSphere.fRadius + CamSphere.fRadius )
+			{
+				pObj->DisableObject( ObjectDisableReasons::RANGE_CULLING );
+			}
+			else
+			{
+				pObj->DisableObject( ObjectDisableReasons::NOT_DISABLED );
+			}
+		}
+	}
+
+	//TODO
+	void COctreeScenePartitionSystem::_OctFrustumCull(COctree* pNode, const CCamera* pCamera)
+	{
+		if( pNode == xst_null )
+			return;
+
+		// Check the bounding sphere
+		// TODO: cache miss here. Calculate bounding volume based only on the node level and its position
+		CBoundingVolume Volume = pNode->CalcBoundingVolume();
+		if( !pCamera->IsSphereInFrustum( Volume.GetSphere() ) /*&& pNode->IsVisible()*/ )
+		{
+			DisableOctNode( pNode, ODR::FRUSTUM_CULLING );
+			return;
+		}
+
+		if( !pCamera->IsAABBInFrustum( Volume.GetAABB() ) /*&& pNode->IsVisible()*/ )
+		{
+			DisableOctNode( pNode, ODR::FRUSTUM_CULLING );
+			return;
+		}
+
+		pNode->IsVisible( true );
+		m_vOctNodes.push_back( pNode );
+
+		_NodeObjectsFrustumCull( pNode, pCamera );
 
 		COctree** apChildren = pNode->GetChildren();
 		_OctFrustumCull( apChildren[ 0 ], pCamera );
@@ -219,6 +290,40 @@ namespace XSE
 		_OctFrustumCull( apChildren[ 5 ], pCamera );
 		_OctFrustumCull( apChildren[ 6 ], pCamera );
 		_OctFrustumCull( apChildren[ 7 ], pCamera );
+	}
+
+	void COctreeScenePartitionSystem::_OctFrustumCull(const CCamera* pCamera)
+	{
+		for( u32 i = m_vOctNodes.size(); i-- > 0; )
+		{
+			COctree* pNode = m_vOctNodes[ i ];
+			// Check the bounding sphere
+			// TODO: cache miss here. Calculate bounding volume based only on the node level and its position
+			CBoundingVolume Volume = pNode->CalcBoundingVolume();
+			if( !pCamera->IsSphereInFrustum( Volume.GetSphere() ) /*&& pNode->IsVisible()*/ )
+			{
+#if defined( XSE_RENDERER_DEBUG )
+g_uiSphereCullNodeDisabled++;
+#endif
+				DisableOctNode( pNode, ODR::FRUSTUM_CULLING );
+				continue;
+			}
+
+			if( !pCamera->IsAABBInFrustum( Volume.GetAABB() ) /*&& pNode->IsVisible()*/ )
+			{
+#if defined( XSE_RENDERER_DEBUG )
+g_uiAABBCullNodeDisabled++;
+#endif
+				DisableOctNode( pNode, ODR::FRUSTUM_CULLING );
+				continue;
+			}
+
+			pNode->IsVisible( true );
+
+			//Check node children
+			_NodeObjectsFrustumCull( pNode, pCamera );
+		}
+
 	}
 
 #define xst_vector_fast_remove_by_id(_vVector, _iId) 
@@ -253,28 +358,7 @@ namespace XSE
 				continue;
 			}
 
-			COctree::ObjectVector& vObjs = pNode->GetObjects();
-
-			for(u32 o = vObjs.size(); o --> 0;)
-			{
-				pObj = vObjs[ o ];
-
-				const CBoundingSphere& ObjSphere = pObj->GetObjectBoundingVolume().GetSphere();
-
-				//If this object is disabled by other test do not test it
-				if( pObj->GetObjectDisableReason() != ODR::NOT_DISABLED && pObj->GetObjectDisableReason() != ODR::RANGE_CULLING )
-					continue;
-
-				fDist = ObjSphere.CalcDistance( CamSphere );
-				if( fDist >= CamSphere.fRadius )
-				{
-					pObj->DisableObject( ObjectDisableReasons::RANGE_CULLING );
-				}
-				else
-				{
-					pObj->DisableObject( ObjectDisableReasons::NOT_DISABLED );
-				}
-			}
+			_NodeObjectsRangeCull( pNode, CamSphere );
 		}
 		
 	}
@@ -288,38 +372,16 @@ namespace XSE
 		//If the camera is too far from this node disable all objects
 		if( !NodeSphere.Intersects( CamSphere ) )
 		{
+#if defined( XSE_RENDERER_DEBUG )
+g_uiRangeCullNodeDisabled++;
+#endif
 			DisableOctNode( pNode, ODR::RANGE_CULLING );
 			return;
 		}
 
 		m_vOctNodes.push_back( pNode );
 
-		//Calc range for each node object
-		COctree::ObjectVector& vObjs = pNode->GetObjects();
-		COctree::ObjectVector::iterator Itr;
-		CObject* pObj;
-		f32 fDist;
-
-		for(u32 i = vObjs.size(); i --> 0;)
-		{
-			pObj = vObjs[ i ];
-	
-			const CBoundingSphere& ObjSphere = pObj->GetObjectBoundingVolume().GetSphere();
-
-			//If this object is disabled by other test do not test it
-			if( pObj->GetObjectDisableReason() != ODR::NOT_DISABLED && pObj->GetObjectDisableReason() != ODR::RANGE_CULLING )
-				continue;
-
-			fDist = ObjSphere.CalcDistance( CamSphere );
-			if( fDist >= CamSphere.fRadius )
-			{
-				pObj->DisableObject( ObjectDisableReasons::RANGE_CULLING );
-			}
-			else
-			{
-				pObj->DisableObject( ObjectDisableReasons::NOT_DISABLED );
-			}
-		}
+		_NodeObjectsRangeCull( pNode, CamSphere );
 
 		COctree** apChildren = pNode->GetChildren();
 		_OctRangeCull( apChildren[ 0 ], CamSphere );
@@ -370,12 +432,19 @@ namespace XSE
 
 	void SphereAABBCullTest(const CCamera* pCam, const CBoundingVolume& Vol, OBJECT_DISABLE_REASON* peReasonOut)
 	{
+#if defined( XSE_RENDERER_DEBUG )
+g_uiSphereCullObjDisabled++;	
+#endif
 		if( pCam->IsSphereInFrustum( Vol.GetSphere() ) )
 		{
 			*peReasonOut = ObjectDisableReasons::NOT_DISABLED;
 			if( !pCam->IsAABBInFrustum( Vol.GetAABB() ) )
 			{
 				*peReasonOut = ObjectDisableReasons::FRUSTUM_CULLING;
+#if defined( XSE_RENDERER_DEBUG )
+g_uiSphereCullObjDisabled--;
+g_uiAABBCullObjDisabled++;
+#endif
 			}
 		}
 	}

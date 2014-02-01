@@ -6,6 +6,7 @@
 
 class CSampleMgr;
 class CRenderInfo;
+class CDebugDialog;
 
 class CRenderWidget : public QWidget
 {
@@ -34,6 +35,9 @@ class CRenderWidget : public QWidget
 
 		void			mouseReleaseEvent(QMouseEvent* pEvent);
 
+		void			SetDebugDialog( CDebugDialog* pDlg )
+						{ m_pDbgDlg = pDlg; }
+
 	protected Q_SLOTS :
 
 
@@ -41,6 +45,7 @@ class CRenderWidget : public QWidget
 	protected:
 
 		CSampleMgr*	m_pSampleMgr = 0;
+		CDebugDialog* m_pDbgDlg = 0;
 };
 
 #endif

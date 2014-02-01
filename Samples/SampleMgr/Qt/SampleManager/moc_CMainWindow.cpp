@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_CMainWindow_t {
-    QByteArrayData data[13];
-    char stringdata[219];
+    QByteArrayData data[18];
+    char stringdata[370];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -41,7 +41,12 @@ QT_MOC_LITERAL(8, 102, 26),
 QT_MOC_LITERAL(9, 129, 26),
 QT_MOC_LITERAL(10, 156, 28),
 QT_MOC_LITERAL(11, 185, 7),
-QT_MOC_LITERAL(12, 193, 24)
+QT_MOC_LITERAL(12, 193, 24),
+QT_MOC_LITERAL(13, 218, 30),
+QT_MOC_LITERAL(14, 249, 27),
+QT_MOC_LITERAL(15, 277, 29),
+QT_MOC_LITERAL(16, 307, 27),
+QT_MOC_LITERAL(17, 335, 33)
     },
     "CMainWindow\0on_SampleTree_itemDoubleClicked\0"
     "\0QTreeWidgetItem*\0item\0column\0"
@@ -50,6 +55,11 @@ QT_MOC_LITERAL(12, 193, 24)
     "on_ActionWireframe_changed\0"
     "on_ActionWireframe_triggered\0checked\0"
     "on_ActionSolid_triggered\0"
+    "on_ActionDebugWindow_triggered\0"
+    "on_ActionCullNone_triggered\0"
+    "on_ActionCullSphere_triggered\0"
+    "on_ActionCullAABB_triggered\0"
+    "on_ActionCullSphereAABB_triggered\0"
 };
 #undef QT_MOC_LITERAL
 
@@ -59,7 +69,7 @@ static const uint qt_meta_data_CMainWindow[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       6,   14, // methods
+      11,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -67,18 +77,28 @@ static const uint qt_meta_data_CMainWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    2,   44,    2, 0x08,
-       6,    1,   49,    2, 0x08,
-       8,    1,   52,    2, 0x08,
-       9,    0,   55,    2, 0x08,
-      10,    1,   56,    2, 0x08,
-      12,    1,   59,    2, 0x08,
+       1,    2,   69,    2, 0x08,
+       6,    1,   74,    2, 0x08,
+       8,    1,   77,    2, 0x08,
+       9,    0,   80,    2, 0x08,
+      10,    1,   81,    2, 0x08,
+      12,    1,   84,    2, 0x08,
+      13,    0,   87,    2, 0x08,
+      14,    1,   88,    2, 0x08,
+      15,    1,   91,    2, 0x08,
+      16,    1,   94,    2, 0x08,
+      17,    1,   97,    2, 0x08,
 
  // slots: parameters
     QMetaType::Void, 0x80000000 | 3, QMetaType::Int,    4,    5,
     QMetaType::Void, QMetaType::Bool,    7,
     QMetaType::Void, QMetaType::Bool,    7,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::Bool,   11,
+    QMetaType::Void, QMetaType::Bool,   11,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::Bool,   11,
+    QMetaType::Void, QMetaType::Bool,   11,
     QMetaType::Void, QMetaType::Bool,   11,
     QMetaType::Void, QMetaType::Bool,   11,
 
@@ -96,6 +116,11 @@ void CMainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 3: _t->on_ActionWireframe_changed(); break;
         case 4: _t->on_ActionWireframe_triggered((*reinterpret_cast< bool(*)>(_a[1]))); break;
         case 5: _t->on_ActionSolid_triggered((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 6: _t->on_ActionDebugWindow_triggered(); break;
+        case 7: _t->on_ActionCullNone_triggered((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 8: _t->on_ActionCullSphere_triggered((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 9: _t->on_ActionCullAABB_triggered((*reinterpret_cast< bool(*)>(_a[1]))); break;
+        case 10: _t->on_ActionCullSphereAABB_triggered((*reinterpret_cast< bool(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -126,13 +151,13 @@ int CMainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 6)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
+        _id -= 11;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 6)
+        if (_id < 11)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 6;
+        _id -= 11;
     }
     return _id;
 }

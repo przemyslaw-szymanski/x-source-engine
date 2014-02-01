@@ -51,6 +51,15 @@
     </item>
    </layout>
   </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
@@ -76,22 +85,33 @@
      <addaction name="ActionSolid"/>
      <addaction name="ActionWireframe"/>
     </widget>
+    <widget class="QMenu" name="menuView_Frustum_Culling">
+     <property name="title">
+      <string>View Frustum Culling</string>
+     </property>
+     <addaction name="ActionCullNone"/>
+     <addaction name="ActionCullSphere"/>
+     <addaction name="ActionCullAABB"/>
+     <addaction name="ActionCullSphereAABB"/>
+    </widget>
     <addaction name="menuMode"/>
+    <addaction name="menuView_Frustum_Culling"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="ActionDebugWindow"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuRender"/>
+   <addaction name="menuView"/>
   </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-  </widget>
-  <widget class="QStatusBar" name="statusBar"/>
   <action name="ActionSolid">
    <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
     <bool>true</bool>
    </property>
    <property name="text">
@@ -104,6 +124,43 @@
    </property>
    <property name="text">
     <string>Wireframe</string>
+   </property>
+  </action>
+  <action name="ActionDebugWindow">
+   <property name="text">
+    <string>Debug Window</string>
+   </property>
+  </action>
+  <action name="ActionCullNone">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>None</string>
+   </property>
+  </action>
+  <action name="ActionCullSphere">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Sphere</string>
+   </property>
+  </action>
+  <action name="ActionCullAABB">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>AABB</string>
+   </property>
+  </action>
+  <action name="ActionCullSphereAABB">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Sphere And AABB</string>
    </property>
   </action>
  </widget>

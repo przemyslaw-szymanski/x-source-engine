@@ -2,6 +2,7 @@
 #include "ui_cmainwindow.h"
 #include <qlayout.h>
 #include <qdesktopwidget.h>
+#include "cdebugdialog.h"
 
 #if defined(_MSC_VER)
 #include "ui/CRenderWidget.h"
@@ -17,9 +18,17 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	QSize Size( ScrSize.width() * 0.8f, ScrSize.height() * 0.8f );
 	this->setFixedSize( Size );
     ui->setupUi(this);
+
+    ui->SampleTree->expandAll();
+
+    m_pDbgDlg = new CDebugDialog( this );
+	m_pDbgDlg->setVisible( false );
+	m_pDbgDlg->setAccessibleName( "DebugDialog" );
+
 #if defined(_MSC_VER)
 	m_pRenderWidget = new CRenderWidget(ui->RenderWidget);
 	ui->RenderWidget->layout()->addWidget(m_pRenderWidget);
+	m_pRenderWidget->SetDebugDialog( m_pDbgDlg );
 #endif
 }
 
@@ -29,6 +38,7 @@ CMainWindow::~CMainWindow()
 	m_pSampleMgr->UnregisterSamples();
 	m_pSampleMgr->DestroyEngine();
 #endif
+    //delete m_pDbgDlg;
     delete ui;
 }
 
@@ -67,6 +77,7 @@ void CMainWindow::AddSample(const QString& strName, const QString& strGroup)
 		pItem->addChild( new QTreeWidgetItem( QStringList( strName ) ) );
 	}
 	
+    ui->SampleTree->expandAll();
 }
 
 void CMainWindow::on_SampleTree_itemDoubleClicked(QTreeWidgetItem *pItem, int column)
@@ -95,6 +106,7 @@ void CMainWindow::on_ActionWireframe_changed()
 void CMainWindow::on_ActionWireframe_triggered(bool checked)
 {
 	ui->ActionSolid->setChecked( false );
+    ui->ActionWireframe->setChecked( true );
 #if defined(_MSC_VER)
 	if( m_pSampleMgr )
 		m_pSampleMgr->RenderWireframe();
@@ -103,9 +115,63 @@ void CMainWindow::on_ActionWireframe_triggered(bool checked)
 
 void CMainWindow::on_ActionSolid_triggered(bool checked)
 {
-    ui->ActionSolid->setChecked(false);
+    ui->ActionWireframe->setChecked(false);
+    ui->ActionSolid->setChecked(true);
 #if defined(_MSC_VER)
 	if( m_pSampleMgr )
 		m_pSampleMgr->RenderSolid();
 #endif
+}
+
+void CMainWindow::on_ActionCullNone_triggered(bool checked)
+{
+    ui->ActionCullAABB->setChecked(false);
+    ui->ActionCullNone->setChecked(true);
+    ui->ActionCullSphere->setChecked(false);
+    ui->ActionCullSphereAABB->setChecked(false);
+#if defined(_MSC_VER)
+	if( m_pSampleMgr )
+		m_pSampleMgr->SetFrustumCullType( XSE::ViewFrustumCullTypes::NONE );
+#endif
+}
+
+void CMainWindow::on_ActionCullSphere_triggered(bool checked)
+{
+    ui->ActionCullAABB->setChecked(false);
+    ui->ActionCullNone->setChecked(false);
+    ui->ActionCullSphere->setChecked(true);
+    ui->ActionCullSphereAABB->setChecked(false);
+#if defined(_MSC_VER)
+	if( m_pSampleMgr )
+		m_pSampleMgr->SetFrustumCullType( XSE::ViewFrustumCullTypes::SPHERE );
+#endif
+}
+
+void CMainWindow::on_ActionCullAABB_triggered(bool checked)
+{
+    ui->ActionCullAABB->setChecked(true);
+    ui->ActionCullNone->setChecked(false);
+    ui->ActionCullSphere->setChecked(false);
+    ui->ActionCullSphereAABB->setChecked(false);
+#if defined(_MSC_VER)
+	if( m_pSampleMgr )
+		m_pSampleMgr->SetFrustumCullType( XSE::ViewFrustumCullTypes::AABB );
+#endif
+}
+
+void CMainWindow::on_ActionCullSphereAABB_triggered(bool checked)
+{
+    ui->ActionCullAABB->setChecked(false);
+    ui->ActionCullNone->setChecked(false);
+    ui->ActionCullSphere->setChecked(false);
+    ui->ActionCullSphereAABB->setChecked(true);
+#if defined(_MSC_VER)
+	if( m_pSampleMgr )
+		m_pSampleMgr->SetFrustumCullType( XSE::ViewFrustumCullTypes::SPHERE_AABB );
+#endif
+}
+
+void CMainWindow::on_ActionDebugWindow_triggered()
+{
+    m_pDbgDlg->show();
 }

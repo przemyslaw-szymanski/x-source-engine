@@ -292,6 +292,9 @@ namespace XSE
 		void CMesh::SetLOD(cu8& uiLOD)
 		{
 			m_pCurrentLOD = &m_vLODs[ Math::Max< u8 >( 0, uiLOD ) ];
+			xst_assert( m_pCurrentLOD, "(CMesh::SetLOD)" );
+			xst_assert( m_pCurrentLOD->pVertexBuffer, "(CMesh::SetLOD)" );
+			xst_assert( m_pCurrentLOD->pIndexBuffer, "(CMesh::SetLOD)" );
 			//DebugPrintIndexData( m_pCurrentLOD->pIndexBuffer->GetIndexData() );
 			//Todo
 			//If previous material is different to new lod force update render queue

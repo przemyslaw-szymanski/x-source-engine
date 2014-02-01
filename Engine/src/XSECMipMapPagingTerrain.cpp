@@ -78,7 +78,21 @@ namespace XSE
 
 	void CMipMapPagingTerrain::Update()
 	{
-		
+		for(u32 i = 0; i < m_vTiles.size(); ++i)
+		{
+			CMipMapTerrainTile* pTile = m_vTiles[ i ];
+			f32 fDist = pTile->GetMesh()->GetObjectDistanceToCamera();
+			f32 fLODDist = 100;
+			for( u32 l = 0; l < m_Options.uiLODCount; ++l )
+			{
+				fLODDist *= ( l + 1 ); // multiply by l begins from 1
+				if( fDist < fLODDist )
+				{
+					pTile->GetMesh()->SetLOD( l );
+					break;
+				}
+			}
+		}
 	}
 
 	i32 CMipMapPagingTerrain::Init(const STerrainOptions& Options)

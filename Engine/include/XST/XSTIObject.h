@@ -16,7 +16,10 @@ namespace XST
 	{
 		public:
 
-								IObject() : m_lRefCounter(1), m_bIsNull(false) {}
+								IObject() {};
+#if defined( XST_OBJ_DEBUG )
+								IObject(xst_castring& strDbgName) : m_strDbgName( strDbgName ) {}
+#endif
 		virtual					~IObject() 
 								{ 
 									//xst_assert(m_lRefCounter <= 0, "Reference counter must be 0. Object not deleted!"); 
@@ -67,8 +70,8 @@ namespace XST
 
 		private:
 
-			l32		    m_lRefCounter;
-			bool		m_bIsNull;
+			l32		    m_lRefCounter = 1;
+			bool		m_bIsNull = false;
 		#if defined(XST_OBJ_DEBUG)
 			xst_astring	m_strDbgName;
 		#endif //XST_OBJ_DEBUG
