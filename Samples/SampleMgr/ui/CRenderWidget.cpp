@@ -4,7 +4,7 @@
 #include "CRenderInfo.h"
 #include "../Qt/SampleManager/CMainWindow.h"
 #include "../Qt/SampleManager/CDebugDialog.h"
-#include <qlayout.h>
+#include <QtWidgets/qlayout.h>
 
 XSE::SMouseEvent g_Event;
 XSE::CPoint g_lastMousePos;

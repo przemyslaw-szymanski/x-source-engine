@@ -1,5 +1,5 @@
 #include "CMainWindow.h"
-#include <QApplication>
+#include <QtWidgets/QApplication>
 #if defined(_MSC_VER)
 #include "CSampleMgr.h"
 

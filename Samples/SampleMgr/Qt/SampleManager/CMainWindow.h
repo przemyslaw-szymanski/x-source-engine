@@ -1,7 +1,7 @@
 #ifndef CMAINWINDOW_H
 #define CMAINWINDOW_H
 
-#include <QMainWindow>
+#include <QtWidgets/QMainWindow>
 #include <QtWidgets/QTreeWidget>
 
 namespace Ui {

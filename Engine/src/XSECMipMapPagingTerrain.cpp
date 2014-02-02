@@ -76,6 +76,11 @@ namespace XSE
 		this->m_uiObjDisableReason = uiReason;
 	}
 
+	xst_fi u32 CalcLOD(cu32& uiLOD, const MIPMAP_STITCH_TYPE& eType)
+	{
+		return uiLOD * MipMapTerrainStitchTypes::_MAX_COUNT + eType;
+	}
+
 	void CMipMapPagingTerrain::Update()
 	{
 		for(u32 i = 0; i < m_vTiles.size(); ++i)
@@ -83,12 +88,14 @@ namespace XSE
 			CMipMapTerrainTile* pTile = m_vTiles[ i ];
 			f32 fDist = pTile->GetMesh()->GetObjectDistanceToCamera();
 			f32 fLODDist = 100;
+			u32 uiMaxLOD = (m_Options.uiLODCount - 1) * (MipMapTerrainStitchTypes::_MAX_COUNT - 1);
+			pTile->GetMesh()->SetLOD( CalcLOD( 1, MipMapTerrainStitchTypes::DOWN ) );
 			for( u32 l = 0; l < m_Options.uiLODCount; ++l )
 			{
 				fLODDist *= ( l + 1 ); // multiply by l begins from 1
 				if( fDist < fLODDist )
 				{
-					pTile->GetMesh()->SetLOD( l );
+					//pTile->GetMesh()->SetLOD( l );
 					break;
 				}
 			}
@@ -670,10 +677,14 @@ namespace XSE
 		const int iMaxLODCount = m_Options.uiLODCount * MipMapTerrainStitchTypes::_MAX_COUNT;
 		SMeshLOD LOD;
 		int iCurrLOD = 0;
+		CMipMapTerrainTile* pCurrTile;
+		CMesh* pCurrMesh;
 
 		for(u32 t = 0; t < m_vTiles.size(); ++t)
 		{
-			m_vTiles[ t ]->m_pMesh->SetLODCount( iMaxLODCount );
+			pCurrTile = m_vTiles[t];
+			pCurrMesh = pCurrTile->m_pMesh.GetPointer();
+			pCurrMesh->SetLODCount( iMaxLODCount );
 			iCurrLOD = 0;
 
 			for(u32 i = 0; i < m_Options.uiLODCount; ++i)
@@ -683,20 +694,22 @@ namespace XSE
 					SMipMapIndexBuffer IBuffer = GetIndexBuffer( i, j );
 					if( j == 0 && i == 0 ) //first, default lod
 					{
-						iCurrLOD++;
-						m_vTiles[ t ]->m_pMesh->SetIndexBuffer( IBuffer.pIndexBuffer );
+						pCurrMesh->SetIndexBuffer( IBuffer.pIndexBuffer );
 					}
 					else
 					{
-						//SMeshLOD& LOD = m_vTiles[ t ]->m_pMesh->AddLOD();
-						//LOD.pIndexBuffer = IBuffer.pIndexBuffer;
+						// LOD levels are created in a batch it is need to fill them properly now
+						SMeshLOD* pLOD = pCurrMesh->GetLOD( iCurrLOD );
+						pLOD->pIndexBuffer = IBuffer.pIndexBuffer;
 
-						SMeshLOD& LOD = m_vTiles[ t ]->m_pMesh->AddLOD( iCurrLOD++ );
-						LOD.pIndexBuffer = IBuffer.pIndexBuffer;
+						//SMeshLOD& LOD = m_vTiles[ t ]->m_pMesh->AddLOD( iCurrLOD++ );
+						//LOD.pIndexBuffer = IBuffer.pIndexBuffer;
 						//LOD.pIndexBuffer = IBuffer.pIndexBuffer;
 						//LOD.pVertexBuffer = m_vTiles[ t ]->m_pMesh->GetVertexBuffer();
 						//m_vTiles[ t ]->m_pMesh->SetLOD( iCurrLOD++, LOD );
 					}
+
+					iCurrLOD++;
 				}
 			}
 
@@ -885,9 +898,14 @@ namespace XSE
 	{
 		u32 ulQuad = 0;
 		cu32 uiLODStep = CalcLODStep( uiLOD );
-		cu32 uiNextLODStep = CalcLODStep( uiLOD + 1 );
-		cu32 uiHeight = m_Options.TileVertexCount.y - uiLODStep;
+		// If this lod is the las lod there is no next lod step
+		cu32 uiNextLODStep = (uiLOD == m_Options.uiMaxLODCount - 1) ? uiLODStep : CalcLODStep( uiLOD + 1 );
+		/*cu32 uiHeight = m_Options.TileVertexCount.y - uiLODStep;
 		cu32 uiWidth = m_Options.TileVertexCount.x - uiLODStep;
+		cu32 uiLastX = uiWidth - uiLODStep;
+		cu32 uiLastY = uiHeight - uiLODStep;*/
+		cu32 uiHeight = m_Options.TileVertexCount.y - 1;
+		cu32 uiWidth = m_Options.TileVertexCount.x - 1;
 		cu32 uiLastX = uiWidth - uiLODStep;
 		cu32 uiLastY = uiHeight - uiLODStep;
 		u32 uiCurrId = 0;
@@ -907,21 +925,24 @@ namespace XSE
 		Info.uiNextLODStep = uiNextLODStep;
 		Info.uiVertCountX = m_Options.TileVertexCount.x;
 		Info.uiVertCountY = m_Options.TileVertexCount.y;
+		Info.uiCurrItrX = Info.uiCurrItrY = 0;
 
 		for(u32 z = 0; z < uiHeight; z += uiLODStep)
 		{
 			Info.uiCurrY = z;
-
+			Info.uiCurrItrY++;
+			Info.uiCurrItrX = 0;
 			bBackslash = ulQuad % 2 == 0;
+
 			for(u32 x = 0; x < uiWidth; x += uiLODStep)
 			{
 				_CalcQuadCW( &IData, x, z, &uiCurrTri, uiLODStep, bBackslash );
 				bBackslash = !bBackslash;
 				Info.uiCurrID = uiCurrTri * 3;
-
 				Info.uiCurrX = x;
 				XST_CALL_MEMBER_FN_PTR( this, Func1 )( &IData, Info );
 				XST_CALL_MEMBER_FN_PTR( this, Func2 )( &IData, Info );
+				Info.uiCurrItrX++;
 			}
 			ulQuad++;
 		}
@@ -1034,12 +1055,15 @@ namespace XSE
 	{
 		if( Info.uiCurrY == Info.uiLastY ) //if this is the last row
 		{
+			// Index position in the buffer
+			// Vertex id in the vertex buffer
 			u32 uiPos, uiId;
 			//For even quads change right up vertex of the second triangle
-			if( Info.uiCurrX % 2 == 0 )
+			//if( Info.uiCurrX % 2 == 0 )
+			if( Info.uiCurrItrX % 2 == 0 )
 			{
 				/* /| to /\ */
-				//Right up vertex of the second triangle is at position -2
+				//Right down vertex of the second triangle is at position -2
 				uiPos = Info.uiCurrID - 1;
 				uiId = CALC_XY( Info.uiCurrX + Info.uiNextLODStep, Info.uiCurrY + Info.uiLODStep, Info.uiVertCountX );
 				pData->SetIndex( uiPos, uiId );

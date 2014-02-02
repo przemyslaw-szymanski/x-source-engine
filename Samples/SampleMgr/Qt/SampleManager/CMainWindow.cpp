@@ -1,7 +1,7 @@
 #include "CMainWindow.h"
 #include "ui_cmainwindow.h"
-#include <qlayout.h>
-#include <qdesktopwidget.h>
+#include <QtWidgets/qlayout.h>
+#include <QtWidgets/qdesktopwidget.h>
 #include "cdebugdialog.h"
 
 #if defined(_MSC_VER)

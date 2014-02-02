@@ -1,7 +1,7 @@
 #ifndef CDEBUGDIALOG_H
 #define CDEBUGDIALOG_H
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 
 namespace Ui {
 class CDebugDialog;

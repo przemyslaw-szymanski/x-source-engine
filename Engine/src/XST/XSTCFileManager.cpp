@@ -146,6 +146,7 @@ namespace XST
 		CFileLocation Loc;
 		Loc.bRecursive = bRecursive;
 
+		// TODO: the FileLoader should check directory!!!
 		if( XST_FAILED( _GetDefaultDir( strDirectory, &Loc.strLocation, &Loc.strLocationPath, &Loc.bPhysical ) ) )
 		{
 			return XST_FAIL;
@@ -256,6 +257,7 @@ namespace XST
 	{
 		*strDirOut = *strPathOut = "";
 
+		// If physical directory does not exists on the hard disk search it in the virtual file system
 		if( XST::IFile::IsDirectoryExists( strLocation ) )
 		{
 			*strDirOut = strLocation;

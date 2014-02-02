@@ -282,6 +282,11 @@ namespace XSE
 			//m_vLODs.reserve( uiLODCount );
 			SMeshLOD LOD;
 			m_vLODs.resize( uiLODCount, LOD );
+			for( u32 i = 0; i < m_vLODs.size(); ++i )
+			{
+				m_vLODs[ i ] = m_vLODs[ 0 ];
+				m_vLODs[ i ].byID = i;
+			}
 		}
 
 		void CMesh::SetLOD(cu32& uiLOD, const SMeshLOD& LOD)

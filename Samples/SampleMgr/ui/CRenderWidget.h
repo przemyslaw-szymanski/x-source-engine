@@ -1,8 +1,8 @@
 #ifndef CRENDER_WIDGET_H
 #define CRENDER_WIDGET_H
 
-#include <QWidget>
-#include <QLabel>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QLabel>
 
 class CSampleMgr;
 class CRenderInfo;

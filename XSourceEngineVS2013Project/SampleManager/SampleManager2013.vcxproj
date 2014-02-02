@@ -83,7 +83,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;XST_STL;NO_EXPORT_SAMPLE;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\Samples\SampleMgr\Qt\SampleManager;$(QT_HOME)\include\QtWidgets;$(QT_HOME)\include;../../Engine/include;../../Samples/SampleMgr/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QTSDK)\include;..\..\Samples\SampleMgr\Qt\SampleManager;$(QT_HOME)\include\QtWidgets;$(QT_HOME)\include;../../Engine/include;../../Samples/SampleMgr/</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -92,7 +92,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\Engine\bin;$(QT_HOME)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTSDK)\lib;..\..\Engine\bin;$(QT_HOME)\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>XSourceEngined.lib;qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -105,7 +105,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;XST_STL;NO_EXPORT_SAMPLE;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\Samples\SampleMgr\Qt\SampleManager;$(QT_HOME)\include\QtWidgets;$(QT_HOME)\include;../../Engine/include;../../Samples/SampleMgr/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(QTSDK)\include;..\..\Samples\SampleMgr\Qt\SampleManager;$(QT_HOME)\include\QtWidgets;$(QT_HOME)\include;../../Engine/include;../../Samples/SampleMgr/</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -113,7 +113,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\Engine\bin;$(QT_HOME)\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTSDK)\lib;..\..\Engine\bin;$(QT_HOME)\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>XSourceEngined.lib;qtmaind.lib;QtCored4.lib;QtGuid4.lib;QtMultimediad4.lib;QtXmld4.lib;QtNetworkd4.lib;QtScriptd4.lib;Qt3Supportd4.lib;comdlg32.lib;QAxContainerd.lib;QtHelpd4.lib;QtXmlPatternsd4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

@@ -78,6 +78,8 @@ namespace XSE
 				u32 uiLODStep;
 				u32 uiNextLODStep;
 				u32 uiCurrID;
+				u32 uiCurrItrX;
+				u32 uiCurrItrY;
 			};
 
 			typedef void (CMipMapPagingTerrain::*pfnRender)(IRenderSystem* pRS);
