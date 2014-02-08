@@ -492,6 +492,9 @@
       <FileType>Document</FileType>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Engine\include\XST\Impl\XSTCAABB.impl" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{00FC135B-F3C8-421C-BB1A-76F861A49C6F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

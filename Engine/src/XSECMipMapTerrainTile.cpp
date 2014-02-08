@@ -18,6 +18,12 @@ namespace XSE
 		//xst_release( m_pMesh );
 	}
 
+	i32 CMipMapTerrainTile::Init(const CPoint& GridId)
+	{
+		m_GridId = GridId;
+		return XST_OK;
+	}
+
 	i32	CMipMapTerrainTile::Lock(MeshPtr pMesh, ul32 ulVertexCount)
 	{
 		m_pMesh = pMesh;
@@ -136,9 +142,11 @@ namespace XSE
 		return m_pMesh->GetVertexBuffer()->Unlock();
 	}
 		
-	void CMipMapTerrainTile::SetLOD(u32 uiLOD)
+	void CMipMapTerrainTile::SetLOD(u32 uiMeshLOD, u32 uiLOD, MIPMAP_TERRAIN_STITCH_TYPE eType)
 	{
-		m_pMesh->SetLOD( uiLOD );
+		m_uiLOD = uiLOD;
+		m_eStitchType = eType;
+		m_pMesh->SetLOD( uiMeshLOD );
 	}
 
 	/*

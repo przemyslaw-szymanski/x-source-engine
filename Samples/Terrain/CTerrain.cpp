@@ -109,11 +109,13 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	f32 fTime = Timer.GetQPerfElapsedTime();
 
 	this->CreateSceneManager( pEngine, 1250 );
+    this->m_pSceneMgr->GetRenderSystem( )->GetCurrentViewport()->SetFillMode( XSE::FillModes::WIREFRAME );
 	//this->m_pSceneMgr->GetCurrentCamera()->SetPosition( 0, 5, -10 );
 	//this->m_pSceneMgr->GetCurrentCamera()->SetMoveSpeed( 1 );
 	this->m_pViewCam->SetAngleX( 0.397f );
 	this->m_pViewCam->SetAngleY( 0.580f );
-	this->m_pViewCam->SetPosition( -18, 101, -56 );
+	//this->m_pViewCam->SetPosition( -18, 101, -56 );
+	this->m_pViewCam->SetPosition( 0, 100, 0 );
 	this->m_pViewCam->SetSpeed( 200, 1.1f, 1.1f );
 	this->m_pViewCam->SetFar( 1000 );
 
@@ -140,14 +142,14 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	}
 
 	XSE::STerrainOptions Options;
-	Options.Size = XSE::CPoint( 100, 100 );
+	Options.Size = XSE::CPoint( 1000, 1000 );
 	u32 uiCount = 11;
 	Options.PageCount = XSE::CPoint( 1, 1 );
 	Options.vHeightmaps.push_back( "heightmap04.jpg" );
-	//Options.PageVertexCount = XSE::CPoint( 32 * 1 + 1 );
-	//Options.TileVertexCount = XSE::CPoint( 32 + 1 );
-	Options.PageVertexCount = XSE::CPoint( 32 * 1 + 1 );
-	Options.TileVertexCount = XSE::CPoint( 32 + 1 );
+	Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
+	Options.TileVertexCount = XSE::CPoint( 16 + 1 );
+	//Options.PageVertexCount = XSE::CPoint( 16 * 1 + 1 );
+	//Options.TileVertexCount = XSE::CPoint( 16 + 1 );
 	//Options.PageVertexCount = XSE::CPoint( 32 * 32 + 1 );
 	//Options.TileVertexCount = XSE::CPoint( 16 + 16 + 1 );
 	Options.uiLODCount = 3;

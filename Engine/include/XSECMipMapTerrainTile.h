@@ -9,6 +9,33 @@ namespace XSE
 {
 	class CMeshManager;
 
+	struct MipMapTerrainStitchTypes
+	{
+		enum TYPE
+		{
+			NONE = 0,
+			UP, // -
+			RIGHT, // |
+			DOWN, // _
+			LEFT, // |
+			UP_RIGHT, // -|
+			UP_LEFT, // |-
+			RIGHT_DOWN, // _|
+			DOWN_LEFT, // |_
+			/*UP_RIGHT_DOWN,
+			UP_LEFT_DOWN,
+			RIGHT_DOWN_LEFT,
+			UP_LEFT_RIGHT,
+			UP_RIGHT_DOWN_LEFT,*/
+			_MAX_COUNT,
+			DOWN_RIGHT	= RIGHT_DOWN,
+			RIGHT_UP	= UP_RIGHT,
+			LEFT_UP		= UP_LEFT,
+			LEFT_DOWN	= DOWN_LEFT
+		};
+	};
+
+	typedef MipMapTerrainStitchTypes::TYPE	MIPMAP_TERRAIN_STITCH_TYPE;
 
 	class XST_API CMipMapTerrainTile
 	{
@@ -35,6 +62,14 @@ namespace XSE
 											CMipMapTerrainTile();
 			virtual							~CMipMapTerrainTile();
 
+			i32								Init(const CPoint& GridId);
+
+			void							SetPoolId(cu32& uiId)
+											{ m_uiPoolId = uiId; }
+
+			xst_fi	u32						GetPoolId() const
+											{ return m_uiPoolId; }
+
 			i32								Lock(MeshPtr pMesh, ul32 ulVertexCount);
 
 			i32								CalcVertexData(const SInfo& Info);
@@ -50,7 +85,7 @@ namespace XSE
 
 			i32								Unlock();
 
-			void							SetLOD(u32 uiLOD);
+			void							SetLOD(u32 uiMeshLOD, u32 uiLOD, MIPMAP_TERRAIN_STITCH_TYPE eType);
 
 			const Vec3&						GetTranslation() const
 											{ return m_vecTranslation; }
@@ -64,6 +99,21 @@ namespace XSE
 			i32								SetVertexData(const CVertexData& Data);
 
 			void							SetBoundingVolume(const CBoundingVolume& Volume);
+
+			void							SetNeighbours(CMipMapTerrainTile* apNeigbours[ 4 ])
+											{ m_apNeighbours[ 0 ] = apNeigbours[ 0 ]; m_apNeighbours[ 1 ] = apNeigbours[ 1 ]; m_apNeighbours[ 2 ] = apNeigbours[ 2 ]; m_apNeighbours[ 3 ] = apNeigbours[ 3 ]; }
+
+			CMipMapTerrainTile*				GetNeighbour(u32 uiId)
+											{ return m_apNeighbours[ uiId ]; }
+
+			xst_fi const CPoint&			GetGridId() const
+											{ return m_GridId; }
+
+			xst_fi	u32						GetLOD() const
+											{ return m_uiLOD; }
+
+			xst_fi MIPMAP_TERRAIN_STITCH_TYPE		GetStitchType() const
+											{ return m_eStitchType; }
 
 		protected:
 
@@ -87,8 +137,13 @@ namespace XSE
 		protected:
 
 			MeshPtr				m_pMesh;
+			CMipMapTerrainTile*	m_apNeighbours[ 4 ];
 			Vec3				m_vecTranslation;
 			Vec2				m_vecSize;
+			CPoint				m_GridId; // position id in the grid
+			u32					m_uiLOD = 0;
+			u32					m_uiPoolId; // id in the tile pool
+			MIPMAP_TERRAIN_STITCH_TYPE	m_eStitchType = MipMapTerrainStitchTypes::NONE;
 			bool				m_bReady;
 	};
 }//xse

@@ -84,6 +84,8 @@ namespace XST
 
 					Vec3		CalcNearestCorner(const Vec3& vecPos) const;
 
+					void		CalcNearestCorner( const Vec3& vecPoint, Vec3 (*pavecCornersOut)[ 8 ], u32* puiCornerIdOut, f32* pfDistanceOut) const;
+
 					void		CalcCorners(Vec3* aCornersOut) const;
 
 			xst_fi	bool		IsZero() const
@@ -109,6 +111,9 @@ namespace XST
 									return _mm_movemask_ps( cmp ) == 15;
 								}
 
+            static
+            xst_fi  bool        Intersects(const CAABB& Left, const CAABB& Right);
+
 			static
 			xst_fi	bool		Includes(const CAABB& Bigger, const CAABB& Smaller)
 								{
@@ -126,6 +131,8 @@ namespace XST
 	};
 
 	bool IncludeTest_SSE(CAABB& Left, const CAABB& Right);
+
+#include "impl/XSTCAABB.impl"
 
 }//xst
 

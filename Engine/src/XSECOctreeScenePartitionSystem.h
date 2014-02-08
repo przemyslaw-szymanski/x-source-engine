@@ -15,7 +15,8 @@ namespace XSE
 		friend class COctreeListener;
 
 		typedef xst_vector< COctree* >	OctreeVec;
-		typedef void ( *pfnCullTest )(const CCamera*, const CBoundingVolume&, OBJECT_DISABLE_REASON*);
+		//typedef void ( *pfnCullTest )(const CCamera*, const CBoundingVolume&, OBJECT_DISABLE_REASON*);
+		using pfnCullTest = void (*)(const CCamera*, const CBoundingVolume&, OBJECT_DISABLE_REASON*);
 
 		public:
 									

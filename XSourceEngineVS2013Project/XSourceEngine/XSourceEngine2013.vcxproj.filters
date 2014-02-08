@@ -1488,4 +1488,9 @@
       <Filter>src\XST\ThirdParty\Lua51</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Engine\include\XST\Impl\XSTCAABB.impl">
+      <Filter>include\XST\Impl</Filter>
+    </None>
+  </ItemGroup>
 </Project>

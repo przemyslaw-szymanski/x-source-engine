@@ -14,34 +14,6 @@ namespace XSE
 	class CMipMapPagingTerrain;
 	class CTerrainSystem;
 
-	struct MipMapTerrainStitchTypes
-	{
-		enum TYPE
-		{
-			NONE = 0,
-			UP, // -
-			RIGHT, // |
-			DOWN, // _
-			LEFT, // |
-			UP_RIGHT, // -|
-			UP_LEFT, // |-
-			RIGHT_DOWN, // _|
-			DOWN_LEFT, // |_
-			/*UP_RIGHT_DOWN,
-			UP_LEFT_DOWN,
-			RIGHT_DOWN_LEFT,
-			UP_LEFT_RIGHT,
-			UP_RIGHT_DOWN_LEFT,*/
-			_MAX_COUNT,
-			DOWN_RIGHT	= RIGHT_DOWN,
-			RIGHT_UP	= UP_RIGHT,
-			LEFT_UP		= UP_LEFT,
-			LEFT_DOWN	= DOWN_LEFT
-		};
-	};
-
-	typedef MipMapTerrainStitchTypes::TYPE	MIPMAP_STITCH_TYPE;
-
 	class XST_API CMipMapPagingTerrain : public ITerrain
 	{
 		friend class CSceneManager;
@@ -53,15 +25,25 @@ namespace XSE
 
 			struct SMipMapIndexBuffer
 			{
-				MIPMAP_STITCH_TYPE	eType;
+				MIPMAP_TERRAIN_STITCH_TYPE	eType;
 				IndexBufferPtr		pIndexBuffer;
 				u8					byLOD;
 			};
+
+            struct STileInfo
+            {
+                bool bVisible = true;
+            };
 
 			typedef xst_vector< SMipMapIndexBuffer >	IBVec;
 			typedef xst_vector< CMipMapTerrainTile* >	TileVec;
 			typedef xst_vector< CMipMapTerrainPage* >	PageVec;
 			typedef xst_vector< CMipMapTerrainTile >	TilePoolVec;
+			typedef xst_vector< u32 >					IntVec;
+			typedef xst_vector< IntVec >				TileIdVec;
+            typedef xst_vector< TileVec >               TileGrid;
+            using TileInfoVec = xst_vector< STileInfo >;
+            using TileInfoGrid = xst_vector< TileInfoVec >;
 
 		protected:
 
@@ -216,6 +198,9 @@ namespace XSE
 			//xst_astring		m_strName;
 			TileVec			m_vTiles; //shared tiles among all pages
 			TilePoolVec		m_vTilePool;
+			TileIdVec		m_vTileIdGrid; // grid of the tile ids
+            TileGrid        m_vTileGrid;
+            TileInfoGrid    m_vTileInfoGrid;
 			PageVec			m_vPages;
 			IBVec			m_vIndexBuffers;
 			CPoint			m_TileCount;

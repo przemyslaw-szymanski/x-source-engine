@@ -12,6 +12,8 @@
 
 namespace XSE
 {
+	#define CALC_XY(_x, _y, _width) ( (_x) + (_y) * (_width) )
+
 	void DebugPrintVB(MeshPtr& pMesh)
 	{
 		CVertexData& Data = pMesh->GetVertexBuffer()->GetVertexData();
@@ -25,8 +27,6 @@ namespace XSE
 			XST::CDebug::PrintDebugLN( XST::StringUtil::ToString< Vec3 >( vecPos ) );
 		}
 	}
-
-	
 
 	CMipMapPagingTerrain::CMipMapPagingTerrain(xst_castring& strName, IInputLayout* pIL, CSceneManager* pSceneMgr) :
 		ITerrain( pIL, strName.c_str(), false ),
@@ -76,30 +76,112 @@ namespace XSE
 		this->m_uiObjDisableReason = uiReason;
 	}
 
-	xst_fi u32 CalcLOD(cu32& uiLOD, const MIPMAP_STITCH_TYPE& eType)
+	xst_fi u32 CalcLOD(cu32& uiLOD, const MIPMAP_TERRAIN_STITCH_TYPE& eType)
 	{
 		return uiLOD * MipMapTerrainStitchTypes::_MAX_COUNT + eType;
 	}
 
 	void CMipMapPagingTerrain::Update()
 	{
+		CMesh* pCurrMesh;
+		CMipMapTerrainTile* pCurrTile;
+        f32 fConstDist = 80;
+        f32 fLODDist = fConstDist;
+        f32 fPrevDist;
+        CCamera* pCam = m_pSceneMgr->GetComputeCamera();
+
 		for(u32 i = 0; i < m_vTiles.size(); ++i)
 		{
-			CMipMapTerrainTile* pTile = m_vTiles[ i ];
-			f32 fDist = pTile->GetMesh()->GetObjectDistanceToCamera();
-			f32 fLODDist = 100;
-			u32 uiMaxLOD = (m_Options.uiLODCount - 1) * (MipMapTerrainStitchTypes::_MAX_COUNT - 1);
-			pTile->GetMesh()->SetLOD( CalcLOD( 1, MipMapTerrainStitchTypes::DOWN ) );
+			pCurrTile = m_vTiles[ i ];
+			pCurrMesh = pCurrTile->m_pMesh.GetPointer();
+            const CAABB& AABB = pCurrMesh->GetObjectBoundingVolume().GetAABB();
+			f32 fDist = pCurrMesh->GetObjectDistanceToCamera();
+            fLODDist = 0;
+			// Set the max lod by default
+			//pCurrTile->SetLOD( CalcLOD( 3, MipMapTerrainStitchTypes::LEFT ), m_Options.uiLODCount - 1, MipMapTerrainStitchTypes::NONE );
+			pCurrTile->SetLOD( CalcLOD( m_Options.uiLODCount - 1, MipMapTerrainStitchTypes::NONE ), m_Options.uiLODCount - 1, MipMapTerrainStitchTypes::NONE );
+
 			for( u32 l = 0; l < m_Options.uiLODCount; ++l )
 			{
-				fLODDist *= ( l + 1 ); // multiply by l begins from 1
-				if( fDist < fLODDist )
+				// Get lod of all neighbours
+				// This block costs 2fps
+                fPrevDist = fLODDist;
+				fLODDist += fConstDist; // multiply by l begins from 1
+				if( fDist < fLODDist * 1.5f )
 				{
-					//pTile->GetMesh()->SetLOD( l );
-					break;
+                    const CAABB ViewAABB(   Vec3( pCam->GetPosition().x - fLODDist, pCam->GetPosition().y - fLODDist, pCam->GetPosition().z - fLODDist ), 
+                                            Vec3( Vec3( pCam->GetPosition().x + fLODDist, pCam->GetPosition().y + fLODDist, pCam->GetPosition().z + fLODDist ) ) );
+                    f32 fMaxLenX = ViewAABB.vecMax.x - ViewAABB.vecMin.x + AABB.vecMax.x - AABB.vecMin.x;
+                    f32 fMaxLenY = ViewAABB.vecMax.y - ViewAABB.vecMin.y + AABB.vecMax.y - AABB.vecMin.y;
+                    // Check if this tile intersects the view square (not only view sphere)
+                    /*bool a = ViewAABB.vecMin.x > AABB.vecMax.x;
+                    bool b = ViewAABB.vecMin.z < AABB.vecMax.z;
+                    bool c = ViewAABB.vecMax.x < AABB.vecMin.x;
+                    bool d = ViewAABB.vecMax.z < AABB.vecMin.z;
+                    if( !(  ViewAABB.vecMin.x > AABB.vecMax.x ||
+                            ViewAABB.vecMin.z > AABB.vecMax.z ||
+                            ViewAABB.vecMax.x < AABB.vecMin.x ||
+                            ViewAABB.vecMax.z < AABB.vecMin.z ) )*/
+                    f32 fDistX = ViewAABB.vecMax.x - AABB.vecMin.x;
+                    f32 fDistY = ViewAABB.vecMax.y - AABB.vecMin.y;
+                    if( ( fDistX < fMaxLenX && fDistX > 0.0f ) &&
+                        ( fDistY < fMaxLenY && fDistY > 0.0f ) )
+                    //if( AABB.vecMin.x <= ViewAABB.vecMax.x && ViewAABB.vecMax.x <= AABB.vecMax.x && AABB.vecMax.z <= ViewAABB.vecMin.z && ViewAABB.vecMax.z <= AABB.vecMin.z )
+                    {
+                        pCurrTile->SetLOD( CalcLOD( l, MipMapTerrainStitchTypes::NONE ), l, MipMapTerrainStitchTypes::NONE );
+                        break;
+                    }
+                    else
+                    {
+                        u32 ulLod = XST::Math::Min( l + 1, m_Options.uiLODCount - 1 );
+                        pCurrTile->SetLOD( CalcLOD( ulLod, MipMapTerrainStitchTypes::NONE ), ulLod, MipMapTerrainStitchTypes::NONE );
+                        break;
+                    }
 				}
 			}
 		}
+
+        CMipMapTerrainTile* pLeft, *pRight, *pUp, *pDown;
+        u32 uiLOD;
+        bool bLeftLOD, bRightLOD, bUpLOD, bDownLOD;
+        MIPMAP_TERRAIN_STITCH_TYPE eStitchType = MipMapTerrainStitchTypes::NONE;
+        for( u32 y = 1; y < m_TileCount.y - 1; ++y )
+        {
+            for( u32 x = 1; x < m_TileCount.x - 1; ++x )
+            {
+                eStitchType = MipMapTerrainStitchTypes::NONE;
+                pCurrTile = m_vTileGrid[ x ][ y ];
+                uiLOD = pCurrTile->GetLOD();
+                pLeft = m_vTileGrid[ x - 1 ][ y ];
+                pRight = m_vTileGrid[ x + 1 ][ y ];
+                pUp = m_vTileGrid[ x ][ y - 1 ];
+                pDown = m_vTileGrid[ x ][ y + 1 ];
+
+                bLeftLOD = pLeft->GetLOD() > uiLOD;
+                bRightLOD = pRight->GetLOD() > uiLOD;
+                bUpLOD = pUp->GetLOD() > uiLOD;
+                bDownLOD = pDown->GetLOD() > uiLOD;
+
+                if( bLeftLOD && bUpLOD )
+                    eStitchType = MipMapTerrainStitchTypes::LEFT_UP;
+                else if( bLeftLOD && bDownLOD )
+                    eStitchType = MipMapTerrainStitchTypes::LEFT_DOWN;
+                else if( bRightLOD && bUpLOD )
+                    eStitchType = MipMapTerrainStitchTypes::RIGHT_UP;
+                else if( bRightLOD && bDownLOD )
+                    eStitchType = MipMapTerrainStitchTypes::RIGHT_DOWN;
+                else if( bLeftLOD )
+                    eStitchType = MipMapTerrainStitchTypes::LEFT;
+                else if( bRightLOD )
+                    eStitchType = MipMapTerrainStitchTypes::RIGHT;
+                else if( bUpLOD )
+                    eStitchType = MipMapTerrainStitchTypes::UP;
+                else if( bDownLOD )
+                    eStitchType = MipMapTerrainStitchTypes::DOWN;
+
+                pCurrTile->SetLOD( CalcLOD( uiLOD, eStitchType ), uiLOD, eStitchType );
+            }
+        }
 	}
 
 	i32 CMipMapPagingTerrain::Init(const STerrainOptions& Options)
@@ -181,9 +263,11 @@ namespace XSE
 	CMipMapTerrainTile* CMipMapPagingTerrain::CreateTile()
 	{
 		//CMipMapTerrainTile* pTile = xst_new CMipMapTerrainTile();
-		CMipMapTerrainTile* pTile = &m_vTilePool[ m_vTiles.size() ];
+		u32 uiId = m_vTiles.size();
+		CMipMapTerrainTile* pTile = &m_vTilePool[ uiId ];
+        pTile->SetPoolId( uiId );
 		m_vTiles.push_back( pTile );
-		
+        
 		return pTile;
 	}
 
@@ -289,14 +373,70 @@ namespace XSE
 	{
 		u32 uiTileCount = m_TileCount.x * m_TileCount.y;
 		
+		m_vTileGrid.resize( m_TileCount.x );
+        m_vTileInfoGrid.resize( m_TileCount.x );
+        for( u32 i = 0; i < m_TileCount.x; ++i )
+        {
+            m_vTileGrid[ i ].resize( m_TileCount.y );
+            m_vTileInfoGrid[ i ].resize( m_TileCount.y );
+        }
 		m_vTiles.reserve( uiTileCount );
 		m_vTilePool.reserve( uiTileCount );
 		m_vTilePool.resize( uiTileCount );
 		//m_vTiles.resize( uiTileCount );
 
-		for(u32 i = 0; i < uiTileCount; ++i)
+		/*for(u32 i = 0; i < uiTileCount; ++i)
 		{
 			 CreateTile();
+		}*/
+
+		// Create tiles in the grid
+		for( u32 y = 0; y < m_TileCount.y; ++y )
+		{
+			for( u32 x = 0; x < m_TileCount.x; ++x )
+			{
+				CMipMapTerrainTile* pTile = CreateTile();
+				pTile->Init( CPoint( x, y ) );
+                m_vTileGrid[ x ][ y ] = pTile;
+			}
+		}
+
+		// Set tile neighbours
+		CMipMapTerrainTile* pTmpTile;
+		for( u32 y = 0; y < m_TileCount.y; ++y )
+		{
+			for( u32 x = 0; x < m_TileCount.x; ++x )
+			{
+				CMipMapTerrainTile* pTile = m_vTiles[ CALC_XY( x, y, m_TileCount.x ) ];
+				// Prepare neighbours
+				CMipMapTerrainTile* pLeftTile = xst_null;
+				CMipMapTerrainTile* pRightTile = xst_null;
+				CMipMapTerrainTile* pUpTile = xst_null;
+				CMipMapTerrainTile* pDownTile = xst_null;
+				// Get left neighbour
+				if( x > 0 )
+				{
+					pLeftTile = m_vTiles[ CALC_XY( x - 1, y, m_TileCount.x ) ];
+				}
+				// Get up neighbour
+				if( y > 0 )
+				{
+					pUpTile = m_vTiles[ CALC_XY( x, y - 1, m_TileCount.x ) ];
+				}
+				// Get right neighbour
+				if( x < m_TileCount.x - 1 )
+				{
+					pRightTile = m_vTiles[ CALC_XY( x + 1, y, m_TileCount.x ) ];
+				}
+				// Get down neighbour
+				if( y < m_TileCount.y - 1 )
+				{
+					pDownTile = m_vTiles[ CALC_XY( x, y + 1, m_TileCount.x ) ];
+				}
+
+				CMipMapTerrainTile* aTiles[ 4 ] = { pLeftTile, pUpTile, pRightTile, pDownTile };
+				pTile->SetNeighbours( aTiles );
+			}
 		}
 
 		return XST_OK;
@@ -575,7 +715,7 @@ namespace XSE
 				IndexBufferPtr pIB = IndexBufferPtr( m_pSceneMgr->GetRenderSystem()->CreateIndexBuffer() );
 				pIB->SetUsage( BufferUsages::STATIC );
 				pIB->SetIndexCount( usIndexCount );
-				SMipMapIndexBuffer IB = { (MIPMAP_STITCH_TYPE)s, pIB, l };
+				SMipMapIndexBuffer IB = { (MIPMAP_TERRAIN_STITCH_TYPE)s, pIB, l };
 				m_vIndexBuffers.push_back( IB );
 			}
 		}
@@ -713,7 +853,7 @@ namespace XSE
 				}
 			}
 
-			m_vTiles[ t ]->SetLOD( 0 );
+			m_vTiles[ t ]->SetLOD( 0, 0, MipMapTerrainStitchTypes::NONE );
 			//DebugPrintIndexData( m_vTiles[ t ]->m_pMesh->GetIndexBuffer()->GetIndexData() );
 			//DebugPrintVB( m_vTiles[ t ]->m_pMesh );
 			//DebugPrintIB( m_vTiles[ t ]->m_pMesh );
@@ -727,7 +867,7 @@ namespace XSE
 		TileVec::iterator Itr;
 		xst_stl_foreach( Itr, m_vTiles )
 		{
-			(*Itr)->SetLOD( uiLOD );
+			(*Itr)->SetLOD( uiLOD, uiLOD, MipMapTerrainStitchTypes::NONE );
 		}
 	}
 
@@ -782,8 +922,6 @@ namespace XSE
 			pNode->AddObject( m_vTiles[ i ]->m_pMesh );
 		}
 	}
-
-	#define CALC_XY(_x, _y, _width) ( (_x) + (_y) * (_width) )
 
 	#define LEFT_UP		0
 	#define RIGHT_UP	1
@@ -898,8 +1036,9 @@ namespace XSE
 	{
 		u32 ulQuad = 0;
 		cu32 uiLODStep = CalcLODStep( uiLOD );
+		bool bIsLadLOD = (uiLOD == m_Options.uiMaxLODCount - 1);
 		// If this lod is the las lod there is no next lod step
-		cu32 uiNextLODStep = (uiLOD == m_Options.uiMaxLODCount - 1) ? uiLODStep : CalcLODStep( uiLOD + 1 );
+		cu32 uiNextLODStep = ( bIsLadLOD ) ? uiLODStep : CalcLODStep( uiLOD + 1 );
 		/*cu32 uiHeight = m_Options.TileVertexCount.y - uiLODStep;
 		cu32 uiWidth = m_Options.TileVertexCount.x - uiLODStep;
 		cu32 uiLastX = uiWidth - uiLODStep;
@@ -927,10 +1066,15 @@ namespace XSE
 		Info.uiVertCountY = m_Options.TileVertexCount.y;
 		Info.uiCurrItrX = Info.uiCurrItrY = 0;
 
+		if( bIsLadLOD )
+		{
+			Func1 = &CMipMapPagingTerrain::_CalcBaseIBStitchEmpty;
+			Func2 = &CMipMapPagingTerrain::_CalcBaseIBStitchEmpty;
+		}
+
 		for(u32 z = 0; z < uiHeight; z += uiLODStep)
 		{
 			Info.uiCurrY = z;
-			Info.uiCurrItrY++;
 			Info.uiCurrItrX = 0;
 			bBackslash = ulQuad % 2 == 0;
 
@@ -945,6 +1089,7 @@ namespace XSE
 				Info.uiCurrItrX++;
 			}
 			ulQuad++;
+			Info.uiCurrItrY++;
 		}
 	}
 
@@ -982,7 +1127,8 @@ namespace XSE
 			u32 uiPos;
 			u32 uiId;
 			//For even strip
-			if( Info.uiCurrY % 2 == 0 )
+			//if( Info.uiCurrY % 2 == 0 )
+			if( Info.uiCurrItrY % 2 == 0 )
 			{
 				//Left down vertex is at index -5
 				/* /| */
@@ -1007,7 +1153,8 @@ namespace XSE
 		{
 			u32 uiPos, uiId;
 			//For even strip
-			if( Info.uiCurrY % 2 == 0 )
+			//if( Info.uiCurrY % 2 == 0 )
+			if( Info.uiCurrItrY % 2 == 0 )
 			{
 				//Left down vertex is at index -5
 				/* |\ */
@@ -1032,7 +1179,8 @@ namespace XSE
 		{
 			u32 uiPos, uiId;
 			//For even quads change right up vertex of the second triangle
-			if( Info.uiCurrX % 2 == 0 )
+			//if( Info.uiCurrX % 2 == 0 )
+			if( Info.uiCurrItrX % 2 == 0 )
 			{
 				/* \| change to \/ */
 				//Right up vertex of the second triangle is at position -2

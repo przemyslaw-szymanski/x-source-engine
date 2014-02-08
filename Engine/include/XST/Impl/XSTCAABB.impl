@@ -1,0 +1,18 @@
+
+xst_fi bool CAABB::Intersects(const CAABB& A1, const CAABB& A2)
+{
+#if defined( XST_SSE2 )
+
+#else
+
+#endif
+    if( A1.vecMax.x > A2.vecMin.x )
+    {
+        //if( A1.vecMax.y )
+    }
+    //else if( )
+    {
+    }
+
+    return false;
+}

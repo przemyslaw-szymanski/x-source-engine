@@ -222,6 +222,17 @@ g_uiObjChecked++;
 			m_CullTest( pCamera, Volume, &eDisableReason );
 
 			pObj->DisableObject( eDisableReason );
+
+			//if( eDisableReason == ODR::NOT_DISABLED )
+			//{
+			//	// Calculate distance to the closest AABB corner
+			//	// TODO: do it with SIMD
+			//	const CAABB& AABB = Volume.GetAABB();
+			//	f32 fDist1 = AABB.vecMin.Distance( pCamera->GetPosition() );
+			//	f32 fDist2 = AABB.vecMax.Distance( pCamera->GetPosition() );
+			//	f32 fDist3 = pObj->GetObjectDistanceToCamera();
+			//	pObj->SetObjectDistanceToCamera( XST::Math::Min( fDist1, fDist2 ) );
+			//}
 		}
 	}
 
@@ -230,18 +241,24 @@ g_uiObjChecked++;
 		CObject* pObj;
 		COctree::ObjectVector& vObjs = pNode->GetObjects();
 		f32 fDist;
+		Vec3 avecCorners[ 8 ];
+		u32 uiCornerId;
 
 		for(u32 o = vObjs.size(); o --> 0;)
 		{
 			pObj = vObjs[ o ];
 
 			const CBoundingSphere& ObjSphere = pObj->GetObjectBoundingVolume().GetSphere();
+			const CAABB& ObjAABB = pObj->GetObjectBoundingVolume().GetAABB();
 
 			//If this object is disabled by other test do not test it
 			if( pObj->GetObjectDisableReason() != ODR::NOT_DISABLED && pObj->GetObjectDisableReason() != ODR::RANGE_CULLING )
 				continue;
 
 			fDist = CamSphere.CalcDistance( ObjSphere );
+			//fDist = CamSphere.vecCenter.Distance( ObjAABB.vecMin );
+			//ObjAABB.CalcNearestCorner( CamSphere.vecCenter, &avecCorners, &uiCornerId, &fDist );
+			
 			pObj->SetObjectDistanceToCamera( fDist );
 
 			if( fDist >= ObjSphere.fRadius + CamSphere.fRadius )
@@ -309,7 +326,8 @@ g_uiSphereCullNodeDisabled++;
 				continue;
 			}
 
-			if( !pCamera->IsAABBInFrustum( Volume.GetAABB() ) /*&& pNode->IsVisible()*/ )
+			const CAABB& AABB = Volume.GetAABB();
+			if( !pCamera->IsAABBInFrustum( AABB ) /*&& pNode->IsVisible()*/ )
 			{
 #if defined( XSE_RENDERER_DEBUG )
 g_uiAABBCullNodeDisabled++;

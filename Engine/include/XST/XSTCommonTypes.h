@@ -166,6 +166,7 @@ namespace XST
 		#	define xst_ends			"\0" 
 		#endif
 
+		#define XST_MACRO_SCOPE(_exp) do { (_exp); } while(0)
 		#define xst_sort_ex(_container, _func)	xst_sort( (_container).begin(), (_container).end(), &(_func) )
 		#define xst_find_ex(_container, _value)	xst_find( (_container).begin(), (_container).end(), (_value) )
 
@@ -316,11 +317,11 @@ namespace XST
 		//#define xst_new new
 		//#define xst_delete delete
 		#if defined(XST_DEBUG) || defined (_DEBUG)
-        #   define xst_delete(_pPtr) if(_pPtr) delete (_pPtr); (_pPtr) = 0
-		#   define xst_deletea(_pArray) if(_pArray) delete[] (_pArray); (_pArray) = 0
+		#   define xst_delete(_pPtr) do { delete (_pPtr); (_pPtr) = xst_null; } while(0)
+		#   define xst_deletea(_pArray) do { delete[] (_pArray); (_pArray) = xst_null; } while(0)
 		#else//if defined(_DEBUG)
-			#define xst_delete(_pPtr) delete (_pPtr); (_pPtr) = 0
-			#define xst_deletea(_pArray) delete[] (_pArray); (_pArray) = 0
+		#   define xst_delete(_pPtr) do { delete (_pPtr); (_pPtr) = xst_null; } while(0)
+		#   define xst_deletea(_pArray) do { delete[] (_pArray); (_pArray) = xst_null; } while(0)
 		#endif
 
 		#if defined(XST_VISUAL_STUDIO)
