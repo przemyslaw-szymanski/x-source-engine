@@ -42,7 +42,7 @@ namespace XSE
 
 					void			SetVisible(bool bVisible);
 					
-					void			DisableObject(cu32& uiReason);
+					void			Disable(cu32& uiReason);
 
 
 					void			AddMesh(const MeshPtr& pMesh, const MaterialPtr& pMat, const Vec3& vecPos = Vec3::ZERO, xst_unknown pUserData = xst_null);

@@ -168,12 +168,12 @@ g_uiNodesDisabled++;
 			pObj = vObjs[ i ];
 
 			//If this object is disabled skip it, it is disabled by other culling test
-			if( pObj->GetObjectDisableReason() != ODR::NOT_DISABLED )
+			if( pObj->GetDisableReason() != ODR::NOT_DISABLED )
 				continue;
 #if defined( XSE_RENDERER_DEBUG )
 g_uiObjDisabled++;
 #endif
-			pObj->DisableObject( uiReason );
+			pObj->Disable( uiReason );
 		}
 
 		pNode->IsVisible( false );
@@ -201,11 +201,11 @@ g_uiObjDisabled++;
 			pObj = vObjs[ o ];
 			//If this object is disabled for other reason
 			// TODO: Cache miss here
-			if( pObj->GetObjectDisableReason() != ODR::NOT_DISABLED && pObj->GetObjectDisableReason() != ODR::FRUSTUM_CULLING )
+			if( pObj->GetDisableReason() != ODR::NOT_DISABLED && pObj->GetDisableReason() != ODR::FRUSTUM_CULLING )
 				continue; //skip it
 
-			//const CBoundingSphere& ObjSphere = pObj->GetObjectBoundingVolume().GetSphere();
-			const CBoundingVolume& Volume = pObj->GetObjectBoundingVolume();
+			//const CBoundingSphere& ObjSphere = pObj->GetBoundingVolume().GetSphere();
+			const CBoundingVolume& Volume = pObj->GetBoundingVolume();
 #if defined( XSE_RENDERER_DEBUG )
 g_uiObjChecked++;
 #endif
@@ -221,7 +221,7 @@ g_uiObjChecked++;
 			// Function pointer should not be so slow in this case
 			m_CullTest( pCamera, Volume, &eDisableReason );
 
-			pObj->DisableObject( eDisableReason );
+			pObj->Disable( eDisableReason );
 
 			//if( eDisableReason == ODR::NOT_DISABLED )
 			//{
@@ -230,8 +230,8 @@ g_uiObjChecked++;
 			//	const CAABB& AABB = Volume.GetAABB();
 			//	f32 fDist1 = AABB.vecMin.Distance( pCamera->GetPosition() );
 			//	f32 fDist2 = AABB.vecMax.Distance( pCamera->GetPosition() );
-			//	f32 fDist3 = pObj->GetObjectDistanceToCamera();
-			//	pObj->SetObjectDistanceToCamera( XST::Math::Min( fDist1, fDist2 ) );
+			//	f32 fDist3 = pObj->GetDistanceToCamera();
+			//	pObj->SetDistanceToCamera( XST::Math::Min( fDist1, fDist2 ) );
 			//}
 		}
 	}
@@ -248,26 +248,26 @@ g_uiObjChecked++;
 		{
 			pObj = vObjs[ o ];
 
-			const CBoundingSphere& ObjSphere = pObj->GetObjectBoundingVolume().GetSphere();
-			const CAABB& ObjAABB = pObj->GetObjectBoundingVolume().GetAABB();
+			const CBoundingSphere& ObjSphere = pObj->GetBoundingVolume().GetSphere();
+			const CAABB& ObjAABB = pObj->GetBoundingVolume().GetAABB();
 
 			//If this object is disabled by other test do not test it
-			if( pObj->GetObjectDisableReason() != ODR::NOT_DISABLED && pObj->GetObjectDisableReason() != ODR::RANGE_CULLING )
+			if( pObj->GetDisableReason() != ODR::NOT_DISABLED && pObj->GetDisableReason() != ODR::RANGE_CULLING )
 				continue;
 
 			fDist = CamSphere.CalcDistance( ObjSphere );
 			//fDist = CamSphere.vecCenter.Distance( ObjAABB.vecMin );
 			//ObjAABB.CalcNearestCorner( CamSphere.vecCenter, &avecCorners, &uiCornerId, &fDist );
 			
-			pObj->SetObjectDistanceToCamera( fDist );
+			pObj->SetDistanceToCamera( fDist );
 
 			if( fDist >= ObjSphere.fRadius + CamSphere.fRadius )
 			{
-				pObj->DisableObject( ObjectDisableReasons::RANGE_CULLING );
+				pObj->Disable( ObjectDisableReasons::RANGE_CULLING );
 			}
 			else
 			{
-				pObj->DisableObject( ObjectDisableReasons::NOT_DISABLED );
+				pObj->Disable( ObjectDisableReasons::NOT_DISABLED );
 			}
 		}
 	}

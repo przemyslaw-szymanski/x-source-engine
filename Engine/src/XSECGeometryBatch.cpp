@@ -16,11 +16,11 @@ namespace XSE
 
 	}
 
-	void CGeometryBatch::DisableObject(cu32& uiReason)
+	void CGeometryBatch::Disable(cu32& uiReason)
 	{
 		this->m_uiObjDisableReason = uiReason;
 
-		if( !this->IsObjectDisabled() )
+		if( !this->IsDisabled() )
 		{
 			this->SetVisible( this->IsVisible() );
 		}
@@ -34,7 +34,7 @@ namespace XSE
 	{
 		this->m_bVisible = bVisible;
 
-		if( bVisible && !this->IsObjectDisabled() )
+		if( bVisible && !this->IsDisabled() )
 		{
 			m_RenderMethod = &CGeometryBatch::_RenderNormal;
 		}

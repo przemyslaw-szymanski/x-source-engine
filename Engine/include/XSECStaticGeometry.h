@@ -35,7 +35,7 @@ namespace XSE
 
 					void				SetVisible(bool bVisible);
 					
-					void				DisableObject(cu32& uiReason);
+					void				Disable(cu32& uiReason);
 
 					i32					Build();
 

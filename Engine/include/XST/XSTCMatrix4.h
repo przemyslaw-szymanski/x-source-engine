@@ -206,7 +206,7 @@ namespace XST
 					SetRow( 0, IDENTITY_R0 );
 					SetRow( 1, IDENTITY_R1);
 					SetRow( 2, IDENTITY_R2 );
-					SetRow( 3, 1.0f, fOffsetX, fOffsetY, fOffsetZ );
+					SetRow( 3, fOffsetX, fOffsetY, fOffsetZ, 1.0f );
 				}
 
 				xst_fi void	Identity()

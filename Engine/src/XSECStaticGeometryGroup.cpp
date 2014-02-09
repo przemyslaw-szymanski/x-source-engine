@@ -61,7 +61,7 @@ namespace XSE
 		this->m_bVisible = bVisible;
 	}
 
-	void CStaticGeometryGroup::DisableObject(cu32& uiReason)
+	void CStaticGeometryGroup::Disable(cu32& uiReason)
 	{
 		this->m_uiObjDisableReason = uiReason;
 	}

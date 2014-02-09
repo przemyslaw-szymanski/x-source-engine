@@ -78,7 +78,7 @@ namespace XSE
 
 			virtual void				DestroyData();
 
-					void				DisableObject(cu32& uiReason);
+					void				Disable(cu32& uiReason);
 
 			virtual	xst_fi void			Render(IRenderSystem* pRS)
 										{ XST_CALL_MEMBER_FN_PTR( this, _Render )( pRS ); }

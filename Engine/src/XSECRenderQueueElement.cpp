@@ -49,7 +49,7 @@ namespace XSE
 		{
 			pObj = (*Itr);
 			
-			if( pObj->IsObjectDisabled() )
+			if( pObj->IsDisabled() )
 				continue;
 
 			pMat = pObj->GetMaterial().GetPointer();
@@ -76,7 +76,7 @@ namespace XSE
 				//Update shaders input
 				pRenderSystem->UpdateObjectInputs();
 				//Draw object
-				if( pObj->GetObjectDisableReason() == ObjectDisableReasons::NOT_DISABLED )
+				if( pObj->GetDisableReason() == ObjectDisableReasons::NOT_DISABLED )
 				{
 					pObj->Render( pRenderSystem );
 				}

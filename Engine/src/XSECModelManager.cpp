@@ -95,12 +95,12 @@ namespace XSE
 			pModel->SetMaterial( pSrcModel->GetMaterial() );
 			pModel->SetTransformMatrix( pSrcModel->GetTransformMatrix() );
 			pModel->SetVisible( pSrcModel->IsVisible() );
-			pModel->DisableObject( pSrcModel->GetObjectDisableReason() );
+			pModel->Disable( pSrcModel->GetDisableReason() );
 			pModel->SetMaxLOD( pSrcModel->GetMaxLOD() );
 			pModel->SetMinLOD( pSrcModel->GetMinLOD() );
 			pModel->SetLOD( pSrcModel->GetCurrentLODId() );
-			pModel->SetObjectBoundingVolume( pSrcModel->GetObjectBoundingVolume() );
-			pModel->SetObjectDirection( pSrcModel->GetObjectDirection() );
+			pModel->SetBoundingVolume( pSrcModel->GetBoundingVolume() );
+			pModel->SetDirection( pSrcModel->GetDirection() );
 		}
 		else
 		{

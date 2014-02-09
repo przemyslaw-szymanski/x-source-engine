@@ -58,7 +58,7 @@ namespace XSE
 
 	void CMipMapTerrainTile::SetBoundingVolume(const CBoundingVolume& Volume)
 	{
-		m_pMesh->SetObjectBoundingVolume( Volume );
+		m_pMesh->SetBoundingVolume( Volume );
 	}
 
 	i32 CMipMapTerrainTile::CalcVertexData(const SInfo& Info, CVertexData* pData, CBoundingVolume* pVolumeOut)

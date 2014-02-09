@@ -71,7 +71,7 @@ namespace XSE
 		xst_vector_clear( m_vTilePool, TilePoolVec::value_type );
 	}
 
-	void CMipMapPagingTerrain::DisableObject(cu32& uiReason)
+	void CMipMapPagingTerrain::Disable(cu32& uiReason)
 	{
 		this->m_uiObjDisableReason = uiReason;
 	}
@@ -94,8 +94,8 @@ namespace XSE
 		{
 			pCurrTile = m_vTiles[ i ];
 			pCurrMesh = pCurrTile->m_pMesh.GetPointer();
-            const CAABB& AABB = pCurrMesh->GetObjectBoundingVolume().GetAABB();
-			f32 fDist = pCurrMesh->GetObjectDistanceToCamera();
+            const CAABB& AABB = pCurrMesh->GetBoundingVolume().GetAABB();
+			f32 fDist = pCurrMesh->GetDistanceToCamera();
             fLODDist = 0;
 			// Set the max lod by default
 			//pCurrTile->SetLOD( CalcLOD( 3, MipMapTerrainStitchTypes::LEFT ), m_Options.uiLODCount - 1, MipMapTerrainStitchTypes::NONE );
@@ -128,11 +128,19 @@ namespace XSE
                         ( fDistY < fMaxLenY && fDistY > 0.0f ) )
                     //if( AABB.vecMin.x <= ViewAABB.vecMax.x && ViewAABB.vecMax.x <= AABB.vecMax.x && AABB.vecMax.z <= ViewAABB.vecMin.z && ViewAABB.vecMax.z <= AABB.vecMin.z )
                     {
+						//XST::CDebug::PrintDebugLN( xst_castring( "pass: " ) + pCurrTile->GetMesh()->_GetDbgName() );
                         pCurrTile->SetLOD( CalcLOD( l, MipMapTerrainStitchTypes::NONE ), l, MipMapTerrainStitchTypes::NONE );
                         break;
                     }
                     else
                     {
+						lpcastr pName = pCurrTile->GetMesh()->_GetDbgName();
+						//XST::CDebug::PrintDebugLN( xst_castring( "not pass: " ) + pCurrTile->GetMesh( )->_GetDbgName( ) );
+						if( strcmp( pName, "Terrain_2_4" ) == 0 )
+						{
+							Vec3 vecPos = pCurrTile->GetMesh()->GetSceneNode()->GetPosition();
+							pCurrTile->GetMesh( )->GetSceneNode()->SetPosition( vecPos.x, 350, vecPos.z );
+						}
                         u32 ulLod = XST::Math::Min( l + 1, m_Options.uiLODCount - 1 );
                         pCurrTile->SetLOD( CalcLOD( ulLod, MipMapTerrainStitchTypes::NONE ), ulLod, MipMapTerrainStitchTypes::NONE );
                         break;
@@ -273,7 +281,7 @@ namespace XSE
 
 	void CMipMapPagingTerrain::SetVisible(bool bVisible)
 	{
-		if( bVisible && !this->IsObjectDisabled() )
+		if( bVisible && !this->IsDisabled() )
 		{
 			_Render = &CMipMapPagingTerrain::_RenderNormal;
 		}
@@ -605,7 +613,7 @@ namespace XSE
 				if( !m_bBoundingObjectsCreated )
 				{
 					SCircleOptions SphereOptions;
-					const CBoundingVolume& Volume = pCurrTile->GetMesh( )->GetObjectBoundingVolume( );
+					const CBoundingVolume& Volume = pCurrTile->GetMesh( )->GetBoundingVolume( );
 					SphereOptions.fRadius = Volume.GetSphere().fRadius;
 					SphereOptions.vecPos = Volume.GetSphere().vecCenter;
 					SphereOptions.uStep = 20;

@@ -104,7 +104,7 @@ namespace XSE
 		this->m_bVisible = bVisible;
 	}
 
-	void CDynamicGeometry::DisableObject(cu32& uiReason)
+	void CDynamicGeometry::Disable(cu32& uiReason)
 	{
 		this->m_uiObjDisableReason = uiReason;
 	}

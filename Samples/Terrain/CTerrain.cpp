@@ -115,7 +115,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	this->m_pViewCam->SetAngleX( 0.397f );
 	this->m_pViewCam->SetAngleY( 0.580f );
 	//this->m_pViewCam->SetPosition( -18, 101, -56 );
-	this->m_pViewCam->SetPosition( 0, 100, 0 );
+	this->m_pViewCam->SetPosition( 32, 100, 24 );
 	this->m_pViewCam->SetSpeed( 200, 1.1f, 1.1f );
 	this->m_pViewCam->SetFar( 1000 );
 

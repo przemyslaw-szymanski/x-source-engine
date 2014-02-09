@@ -53,22 +53,22 @@ namespace XSE
 		xst_stl_foreach( Itr, m_vObjects )
 		{
 			pObj = (*Itr);
-			if( !pObj->IsObjectDirty() )
+			if( !pObj->IsDirty() )
 				continue;
 
 			//Reorganize object in the scene partition system
 			m_pSceneMgr->GetScenePartitionSystem()->ReorganizeObject( pObj );
 			
-			pObj->SetObjectDirty( false );
+			pObj->IsDirty( false );
 		}
 	}
 
 	void CSceneNode::ReorganizeObject(CObject* pObj)
 	{
-		if( !pObj->IsObjectDirty() )
+		if( !pObj->IsDirty() )
 			return;
 		m_pSceneMgr->GetScenePartitionSystem()->ReorganizeObject( pObj );
-		pObj->SetObjectDirty( false );
+		pObj->IsDirty( false );
 	}
 
 	CSceneNode* CSceneNode::CreateChildNode(xst_castring &strName, bool bAutoDestroy)
@@ -163,7 +163,7 @@ namespace XSE
 	{
 		for(_NodeIterator Itr = m_lChildNodes.begin(); Itr != m_lChildNodes.end(); ++Itr)
 		{
-			(*Itr)->SetObjectPosition( this->m_vecPosition );
+			(*Itr)->SetPosition( this->m_vecPosition );
 			(*Itr)->Update( fElapsedTime );
 		}
 	}

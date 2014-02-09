@@ -11,7 +11,7 @@ namespace XSE
 	//It is a base interface used by any object that should be rendered (visible on the screen)
 	//It inherits from CObject a base class for any object used in whole engine. 
 	//If something should be processed in the engine it need to be inherited from CObject
-	class XST_API IRenderableObject :  public CObject
+	class XST_API IRenderableObject : public CObject
 	{
 		friend class CSceneNode;
 		friend class CSceneManager;
@@ -20,10 +20,10 @@ namespace XSE
 
 		public:
 
-			using CObject::SetObjectPosition;
-			using CObject::SetObjectScale;
-			using CObject::SetObjectOrientation;
-			using CObject::SetObjectDirection;
+			using CObject::SetPosition;
+			using CObject::SetScale;
+			using CObject::SetOrientation;
+			using CObject::SetDirection;
 
 			typedef CSceneNode*	SceneNodePtr;
 
@@ -43,35 +43,6 @@ namespace XSE
 			
 			virtual xst_fi	bool		IsVisible() const
 										{ return m_bVisible; }
-
-			virtual void				SetObjectPosition(cf32& fX, cf32& fY, cf32& fZ);
-
-			virtual void				SetObjectScale(cf32& fX, cf32& fY, cf32& fZ);
-
-			//virtual void				SetObjectDirection(cf32& fX, cf32& fY, cf32& fZ);
-
-			virtual void				SetObjectOrientation(cf32& fAngle, cf32& fX, cf32& fY, cf32& fZ);
-
-			virtual xst_fi void			SetPosition(const Vec3& vecPos)
-										{ SetPosition( vecPos.x, vecPos.y, vecPos.z ); }
-
-			virtual void				SetPosition(cf32& fX, cf32& fY, cf32& fZ);
-
-			virtual xst_fi void			SetScale(const Vec3& vecScale)
-										{ SetScale( vecScale.x, vecScale.y, vecScale.z ); }
-
-			virtual void				SetScale(cf32& fX, cf32& fY, cf32& fZ);
-
-			virtual xst_fi void			SetOrientation(const Quat& quatOrientation)
-										{ SetOrientation( quatOrientation.x, quatOrientation.y, quatOrientation.z, quatOrientation.w ); }
-
-			virtual void				SetOrientation(cf32& fAngle, cf32& fX, cf32& fY, cf32& fZ);
-
-			virtual const Vec3&			GetPosition() const;
-
-			virtual const Vec3&			GetScale() const;
-
-			virtual const Quat&			GetOrientation() const;
 
 			virtual void				SetMaterial(MaterialPtr pMat) 
 										{ m_pMaterial = pMat; }
@@ -110,6 +81,15 @@ namespace XSE
 
 			virtual void				SetRenderableObject(const IRenderableObject* pOther);
 
+			virtual void				CalcWorldPosition(Vec3* pVecOut);
+
+			virtual void				CalcWorldScale(Vec3* pVecOut);
+
+			virtual void				CalcWorldRotation(Vec4* pVecOut);
+
+			virtual xst_i
+			const Vec3&					GetWorldPosition() const
+										{ return m_vecWorldPosition; }
 
 		protected:
 
@@ -123,14 +103,14 @@ namespace XSE
 
 		protected:
 
+			Mtx4					m_mtxTransform;
 			MaterialPtr				m_pMaterial;
 			IInputLayout*			m_pInputLayout;
 			CRenderQueue*			m_pRenderQueue;
 			CSceneNode*				m_pSceneNode;
-			Mtx4					m_mtxTransform;
+			Vec3					m_vecWorldPosition;
 			bool					m_bManualRendering;
 			bool					m_bVisible;
-			bool					m_bNeedUpdate;
 	};
 
 	typedef XST::TCObjectSmartPointer< IRenderableObject > RenderableObjectPtr;

@@ -40,14 +40,15 @@ namespace XSE
 		return this->m_vecPosition;
 	}
 
-	void CObject::SetObjectBoundingVolume(const CBoundingVolume& Volume)
+	void CObject::SetBoundingVolume(const CBoundingVolume& Volume)
 	{
 		m_ObjBoundingVolume = Volume; 
 	}
 
-	void CObject::RotateObject(cf32& fAngle, cf32& fX, cf32& fY, cf32& fZ)
+	void CObject::Rotate(cf32& fAngle, cf32& fX, cf32& fY, cf32& fZ)
 	{
 		m_quatOrientation.Set( XST::Math::AngleToRadian( fAngle ), fX, fY, fZ );
+		IsDirty( true );
 	}
 
 	void CObject::VisibleAABB(bool bVisible)
@@ -69,9 +70,9 @@ namespace XSE
 		return false;
 	}
 
-	void CObject::SetObjectDistanceToCamera(cf32& fDist)
+	void CObject::SetDistanceToCamera(cf32& fDist)
 	{
-		xst_assert( m_pObjListener, "(CObject::SetObjectDistanceToCamera) Listener is null" );
+		xst_assert( m_pObjListener, "(CObject::SetDistanceToCamera) Listener is null" );
 		m_fObjDistToCamera = fDist;
 		m_pObjListener->OnObjectSetDistanceToCamera( this );
 	}

@@ -73,11 +73,11 @@ namespace XSE
 			}
 		}
 
-		void CModel::DisableObject(cu32& uiReason)
+		void CModel::Disable(cu32& uiReason)
 		{
 			this->m_uiObjDisableReason = uiReason;
 
-			if( !this->IsObjectDisabled() )
+			if( !this->IsDisabled() )
 			{
 				this->SetVisible( this->IsVisible() );
 			}
@@ -88,7 +88,7 @@ namespace XSE
 
 			xst_stl_foreach( m_MeshItr, m_vMeshes )
 			{
-				(*m_MeshItr)->DisableObject( uiReason );
+				(*m_MeshItr)->Disable( uiReason );
 			}
 		}
 
@@ -96,7 +96,7 @@ namespace XSE
 		{
 			this->m_bVisible = bVisible;
 
-			if( bVisible && !this->IsObjectDisabled() )
+			if( bVisible && !this->IsDisabled() )
 			{
 				m_RenderMethod = &CModel::_Render;
 			}
@@ -127,7 +127,7 @@ namespace XSE
 			this->m_pSceneNode->AddObject( pMesh );
 			m_vMeshes.push_back( pMesh ); 
 			this->CalcObjectBoundingVolume();
-			this->SetObjectDirty( true );
+			CObject::IsDirty( true );
 			this->m_pSceneNode->ReorganizeObject( this );
 			if( bSetModelMaterial )
 				pMesh->SetMaterial( this->m_pMaterial );
@@ -143,7 +143,7 @@ namespace XSE
 			
 			xst_stl_foreach( Itr, m_vMeshes )
 			{
-				const XST::CAABB& AABB = (*Itr)->GetObjectBoundingVolume().GetAABB();
+				const XST::CAABB& AABB = (*Itr)->GetBoundingVolume().GetAABB();
 				if( vecMin > AABB.vecMin )
 					vecMin = AABB.vecMin;
 				if( vecMax < AABB.vecMax )
@@ -158,6 +158,16 @@ namespace XSE
 		{
 			//m_pMesh->Render();
 			return 0;
+		}
+
+		void CModel::SetPosition(cf32& fX, cf32& fY, cf32& fZ)
+		{
+			IRenderableObject::SetPosition( fX, fY, fZ );
+			for( MeshPtr& pMesh : m_vMeshes )
+			{
+				// Meshes need to be updated
+				pMesh->IsDirty( true );
+			}
 		}
 
 	}//resources

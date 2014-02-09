@@ -110,8 +110,8 @@ namespace XSE
 		//Calc center
 		const Vec3 vecCenter( pNode->CalcCenter() );
 		//Determine the node part based on object position
-		//const Vec3& vecObjPos = pObj->GetObjectPosition();
-		const CBoundingVolume& ObjVolume = pObj->GetObjectBoundingVolume();
+		//const Vec3& vecObjPos = pObj->GetPosition();
+		const CBoundingVolume& ObjVolume = pObj->GetBoundingVolume();
 		const Vec4& vecObjPos = ObjVolume.GetSphere().vecCenter;
 
 		//bool bRightPart = ( vecObjPos.x > vecCenter.x );
@@ -231,8 +231,8 @@ namespace XSE
 		}
 
 		//Check if this object fits to this node
-		//const Vec3& vecObjPos = pObj->GetObjectPosition();
-		const CBoundingVolume& ObjVolume = pObj->GetObjectBoundingVolume();
+		//const Vec3& vecObjPos = pObj->GetPosition();
+		const CBoundingVolume& ObjVolume = pObj->GetBoundingVolume();
 		const Vec3& vecObjPos = ObjVolume.GetSphere().GetCenterPoint();
 
 		//Specific case, AABB has size == 0, add to this node
@@ -305,7 +305,7 @@ namespace XSE
 		}
 
 		//If node found so obj exists in this node, check if it still fits
-		if( !pDstNode->CalcAABB().Includes( pObj->GetObjectBoundingVolume().GetAABB() ) )
+		if( !pDstNode->CalcAABB().Includes( pObj->GetBoundingVolume().GetAABB() ) )
 		{
 			//If not fits remove it from this node
 			pDstNode->_RemoveObject( ObjItr ); 

@@ -53,7 +53,7 @@ namespace XSE
 		if( pObj->IsDbgObject() )
 			return XST_FAIL;
 
-		/*const XST::CAABB& AABB = pObj->GetObjectBoundingVolume().GetAABB();
+		/*const XST::CAABB& AABB = pObj->GetBoundingVolume().GetAABB();
 
 		MeshPtr pClonedMesh;
 		{ XSTSimpleProfiler2( "CloneMesh" );
@@ -65,7 +65,7 @@ namespace XSE
 		pObj->m_pAABBMesh = pClonedMesh.GetPointer();
 		pObj->m_pAABBMesh->SetObjectScale( AABB.CalcSize() );
 		Vec3 vecPos = AABB.CalcCenter();
-		pObj->m_pAABBMesh->SetObjectPosition( AABB.CalcCenter() );
+		pObj->m_pAABBMesh->SetPosition( AABB.CalcCenter() );
 		pObj->m_pAABBMesh->Update();
 		pClonedMesh->m_bDbgObject = true;*/
 		
@@ -82,7 +82,7 @@ namespace XSE
 	void CSceneDebug::_UpdateObjectAABBMesh(CObject* pObj)
 	{
 #if defined( XSE_SCENE_DEBUG )
-		if( pObj->m_pAABBMesh == xst_null || !pObj->m_pAABBMesh->IsVisible() || pObj->m_pAABBMesh->IsObjectDisabled() )
+		if( pObj->m_pAABBMesh == xst_null || !pObj->m_pAABBMesh->IsVisible() || pObj->m_pAABBMesh->IsDisabled() )
 			return;
 #endif
 	}

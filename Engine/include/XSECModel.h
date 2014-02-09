@@ -33,7 +33,7 @@ namespace XSE
 
 						void			SetVisible(bool bVisible);
 
-						void			DisableObject(cu32& uiReason);
+						void			Disable(cu32& uiReason);
 
 						void			SetMesh(MeshPtr pMesh, cu32& uiId = 0);
 
@@ -44,6 +44,8 @@ namespace XSE
 
 				xst_fi	ul32			GetObjectHandle() const
 										{ return this->m_ulResourceHandle; }
+
+				virtual void			SetPosition(cf32& fX, cf32& fY, cf32& fZ);
 
 				const CBoundingVolume&	CalcObjectBoundingVolume();
 

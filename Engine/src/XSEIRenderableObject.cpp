@@ -14,43 +14,6 @@ namespace XSE
 		this->SetVisible( pOther->IsVisible() );
 		this->m_pInputLayout = pOther->GetInputLayout();
 		this->m_bManualRendering = pOther->IsManualRendering();
-		this->m_bNeedUpdate = false;
-	}
-
-	void IRenderableObject::SetPosition(cf32 &fX, cf32 &fY, cf32 &fZ)
-	{
-		xst_assert( m_pSceneNode != xst_null, "(IRenderableObject::SetPosition) Object is not in scene node" ); 
-		m_pSceneNode->SetObjectPosition( fX, fY, fZ );
-	}
-
-	void IRenderableObject::SetScale(cf32& fX, cf32& fY, cf32& fZ)
-	{
-		xst_assert( m_pSceneNode != xst_null, "(IRenderableObject::SetPosition) Object is not in scene node" ); 
-		m_pSceneNode->SetObjectScale( fX, fY, fZ );
-	}
-
-	void IRenderableObject::SetOrientation(cf32& fAngle, cf32& fX, cf32& fY, cf32& fZ)
-	{
-		xst_assert( m_pSceneNode != xst_null, "(IRenderableObject::SetPosition) Object is not in scene node" ); 
-		m_pSceneNode->SetObjectOrientation( fAngle, fX, fY, fZ );
-	}
-
-	const Vec3& IRenderableObject::GetPosition() const
-	{ 
-		xst_assert( m_pSceneNode != xst_null, "(IRenderableObject::SetPosition) Object is not in scene node" ); 
-		return m_pSceneNode->GetObjectPosition(); 
-	}
-
-	const Vec3& IRenderableObject::GetScale() const
-	{
-		xst_assert( m_pSceneNode != xst_null, "(IRenderableObject::SetPosition) Object is not in scene node" ); 
-		return m_pSceneNode->GetObjectScale();
-	}
-
-	const Quat& IRenderableObject::GetOrientation() const
-	{
-		xst_assert( m_pSceneNode != xst_null, "(IRenderableObject::SetPosition) Object is not in scene node" ); 
-		return m_pSceneNode->GetObjectOrientation();
 	}
 
 	i32 IRenderableObject::SetMaterial(xst_castring& strMatName, xst_castring& strMatGroup /* = ALL_GROUPS */)
@@ -61,18 +24,8 @@ namespace XSE
 		return XST_OK;
 	}
 
-	void IRenderableObject::SetObjectPosition(cf32& fX, cf32& fY, cf32& fZ)
-	{
-		if( this->m_vecPosition.x != fX || this->m_vecPosition.y != fY || this->m_vecPosition.z != fZ )
-		{
-			this->m_vecPosition.x = fX;
-			this->m_vecPosition.y = fY;
-			this->m_vecPosition.z = fZ;
-			m_bNeedUpdate = true;
-		}
-	}
 
-	void IRenderableObject::SetObjectOrientation(cf32& fAngle, cf32& fX, cf32& fY, cf32& fZ)
+	/*void IRenderableObject::SetObjectOrientation(cf32& fAngle, cf32& fX, cf32& fY, cf32& fZ)
 	{
 		if( this->m_quatOrientation.x != fX || this->m_quatOrientation.y != fY || this->m_quatOrientation.z != fZ || this->m_quatOrientation.w != fAngle )
 		{
@@ -90,28 +43,57 @@ namespace XSE
 			this->m_vecScale.z = fZ;
 			m_bNeedUpdate = true;
 		}
+	}*/
+
+	void IRenderableObject::CalcWorldPosition(Vec3* pVecOut)
+	{
+		xst_assert( pVecOut != xst_null, "(IRenderableObject::CalcWorldPosition)" );
+		xst_assert( m_pSceneNode != xst_null, "(IRenderableObject::CalcWorldPosition) Scene node is not set" );
+		pVecOut->Set( m_pSceneNode->GetPosition() );
+		pVecOut->AddAssign( this->m_vecPosition );
+	}
+
+	void IRenderableObject::CalcWorldScale(Vec3* pVecOut)
+	{
+		xst_assert( pVecOut != xst_null, "(IRenderableObject::CalcWorldPosition)" );
+		xst_assert( m_pSceneNode != xst_null, "(IRenderableObject::CalcWorldPosition) Scene node is not set" );
+		pVecOut->Set( m_pSceneNode->GetScale() );
+		pVecOut->MulAssign( this->m_vecScale );
+	}
+
+	void IRenderableObject::CalcWorldRotation(Vec4* pVecOut)
+	{
+		xst_assert( pVecOut != xst_null, "(IRenderableObject::CalcWorldPosition)" );
+		xst_assert( m_pSceneNode != xst_null, "(IRenderableObject::CalcWorldPosition) Scene node is not set" );
+		//pVecOut->Set( m_pSceneNode->Getdi );
+		//pVecOut->AddAssign( this->m_vecPosition );
+		// TODO: implement
+		pVecOut->Set( 0.0f );
 	}
 
 	void IRenderableObject::Update()
 	{
-		if( !m_bNeedUpdate )
+		if( !this->m_bObjDirty )
 			return;
-		m_bNeedUpdate = false;
+		//this->m_bDbgObject = false;
 		xst_assert( m_pSceneNode != xst_null, "(IRenderableObject::SetPosition) Object is not in scene node" ); 
 		
 		IRenderSystem* pRS = m_pSceneNode->GetSceneManager()->GetRenderSystem();
 
 		m_mtxTransform.Identity();
 
-		Mtx4 mtxTranslate, mtxScale, mtxRotation;
+		Mtx4 mtxTranslate( Mtx4::IDENTITY ), mtxScale ( Mtx4::IDENTITY ), mtxRotation( Mtx4::IDENTITY );
 		//pRS->SetTranslation( this->m_vecPosition.x, this->m_vecPosition.y, this->m_vecPosition.z );
 		//pRS->GetMatrix( MatrixTypes::WORLD, &mtxTransform );
-		pRS->SetTranslation( &mtxTranslate, this->GetObjectPosition() );
+		CalcWorldPosition( &m_vecWorldPosition );
+		mtxTranslate.Translate( m_vecWorldPosition.x, m_vecWorldPosition.y, m_vecWorldPosition.z );
+		Vec3 vecScale, vecRotate;
+		// TODO: implmenet scale and rotation
 		f32 fAngle;
 		Vec3 vecAxis;
-		this->GetObjectOrientation().ToAngleAxis( &fAngle, &vecAxis );
-		pRS->SetRotation( &mtxRotation, fAngle, vecAxis );
-		pRS->SetScale( &mtxScale, this->GetObjectScale() );
+		this->GetOrientation().ToAngleAxis( &fAngle, &vecAxis );
+		//pRS->SetRotation( &mtxRotation, fAngle, vecAxis );
+		//pRS->SetScale( &mtxScale, this->GetScale() );
 		
 		m_mtxTransform = mtxScale * ( mtxTranslate * mtxRotation );
 	}

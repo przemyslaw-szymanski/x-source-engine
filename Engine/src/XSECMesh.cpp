@@ -172,11 +172,11 @@ namespace XSE
 			XST_CALL_MEMBER_FN_PTR( this, m_RenderMethod )();
 		}
 
-		void CMesh::DisableObject(cu32& uiReason)
+		void CMesh::Disable(cu32& uiReason)
 		{
 			this->m_uiObjDisableReason = uiReason;
 
-			if( !this->IsObjectDisabled() )
+			if( !this->IsDisabled() )
 			{
 				this->SetVisible( IRenderableObject::IsVisible() );
 			}
@@ -190,7 +190,7 @@ namespace XSE
 		{
 			this->m_bVisible = bVisible;
 
-			if( bVisible && !this->IsObjectDisabled() )
+			if( bVisible && !this->IsDisabled() )
 			{
 				if( m_bIndexedGeometry )
 				{

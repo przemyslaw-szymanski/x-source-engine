@@ -27,62 +27,65 @@ namespace XSE
 
 			virtual void				SetObject(const CObject* pOther)
 										{
-											this->SetObjectBoundingVolume( pOther->GetObjectBoundingVolume() );
-											this->DisableObject( pOther->GetObjectDisableReason() );
+											this->SetBoundingVolume( pOther->GetBoundingVolume() );
+											this->Disable( pOther->GetDisableReason() );
 											this->SetDbgObject( pOther->IsDbgObject() );
-											this->SetObjectDirection( pOther->GetObjectDirection() );
-											this->SetObjectDirty( true );
-											this->SetObjectOrientation( this->GetObjectOrientation() );
-											this->SetObjectPosition( this->GetObjectPosition() );
-											this->SetObjectScale( this->GetObjectScale() );
+											this->SetDirection( pOther->GetDirection() );
+											this->IsDirty( true );
+											this->SetOrientation( this->GetOrientation() );
+											this->SetPosition( this->GetPosition() );
+											this->SetScale( this->GetScale() );
 										}
 
 			/*virtual
 			xst_fi	xst_castring&		GetObjectName() const
 										{ return this->_GetDbgName(); }*/
 
-			virtual	xst_fi	void		SetObjectPosition(const Vec3& vecPos)
-										{ SetObjectPosition( vecPos.x, vecPos.y, vecPos.z ); }
+			virtual	xst_fi	void		SetPosition(const Vec3& vecPos)
+										{ SetPosition( vecPos.x, vecPos.y, vecPos.z ); }
 
-			virtual void				SetObjectPosition(cf32& fX, cf32& fY, cf32& fZ)
+			virtual void				SetPosition(cf32& fX, cf32& fY, cf32& fZ)
 										{ m_vecPosition.x = fX; m_vecPosition.y = fY; m_vecPosition.z = fZ; }
 
-			virtual const Vec3&			GetObjectPosition() const
+			virtual xst_fi
+			const Vec3&					GetPosition() const
 										{ return m_vecPosition; }
 
-			virtual	xst_fi	void		SetObjectDirection(const Vec3& vecDir)
-										{ SetObjectDirection( vecDir.x, vecDir.y, vecDir.z ); }
+			virtual	xst_fi	void		SetDirection(const Vec3& vecDir)
+										{ SetDirection( vecDir.x, vecDir.y, vecDir.z ); }
 
-			virtual void				SetObjectDirection(cf32& fX, cf32& fY, cf32& fZ)
-										{ m_vecDirection.x = fX; m_vecDirection.y = fY; m_vecDirection.z = fZ; }
+			virtual void				SetDirection(cf32& fX, cf32& fY, cf32& fZ)
+										{ m_vecDirection.x = fX; m_vecDirection.y = fY; m_vecDirection.z = fZ; IsDirty( true ); }
 
-			virtual xst_fi	void		SetObjectScale(const Vec3& vecScale)
-										{ SetObjectScale( vecScale.x, vecScale.y, vecScale.z ); }
+			virtual xst_fi	void		SetScale(const Vec3& vecScale)
+										{ SetScale( vecScale.x, vecScale.y, vecScale.z ); }
 
-			virtual void				SetObjectScale(cf32& fX, cf32& fY, cf32& fZ)
-										{ m_vecScale.x = fX; m_vecScale.y = fY; m_vecScale.z = fZ; }
+			virtual void				SetScale(cf32& fX, cf32& fY, cf32& fZ)
+										{ m_vecScale.x = fX; m_vecScale.y = fY; m_vecScale.z = fZ; IsDirty( true ); }
 
-			virtual	const Vec3&			GetObjectDirection() const
+			virtual	xst_i
+			const Vec3&					GetDirection() const
 										{ return m_vecDirection; }
 
-			virtual const Vec3&			GetObjectScale() const
+			virtual xst_i
+			const Vec3&					GetScale() const
 										{ return m_vecScale; }
 
-			virtual void				SetObjectOrientation(cf32& fAngle, cf32& fX, cf32& fY, cf32& fZ)
-										{ m_quatOrientation.Set( XST::Math::AngleToRadian( fAngle ), fX, fY, fZ ); }
+			virtual void				SetOrientation(cf32& fAngle, cf32& fX, cf32& fY, cf32& fZ)
+										{ m_quatOrientation.Set( XST::Math::AngleToRadian( fAngle ), fX, fY, fZ ); IsDirty( true ); }
 
-			virtual xst_fi void			RotateObject(cf32& fAngle, const Vec3& vecAxis)
-										{ RotateObject( fAngle, vecAxis.x, vecAxis.y, vecAxis.z ); }
+			virtual xst_fi	void		Rotate(cf32& fAngle, const Vec3& vecAxis)
+										{ Rotate( fAngle, vecAxis.x, vecAxis.y, vecAxis.z ); }
 
-			virtual void				RotateObject(cf32& fAngle, cf32& fX, cf32& fY, cf32& fZ);
+			virtual void				Rotate(cf32& fAngle, cf32& fX, cf32& fY, cf32& fZ);
 
 
 			virtual 
-			xst_fi	const Quat&			GetObjectOrientation() const
+			xst_fi	const Quat&			GetOrientation() const
 										{ return m_quatOrientation; }
 
-			virtual xst_fi void			SetObjectOrientation(const Quat& quatOrientation)
-										{ SetObjectOrientation( quatOrientation.x, quatOrientation.y, quatOrientation.z, quatOrientation.w ); }
+			virtual xst_fi void			SetOrientation(const Quat& quatOrientation)
+										{ SetOrientation( quatOrientation.x, quatOrientation.y, quatOrientation.z, quatOrientation.w ); }
 
 			virtual const Vec3&			MoveObject(cf32& fDistance, const Vec3& vecDirection);
 			virtual const Vec3&			MoveObject(const Vec3& vecMove);
@@ -93,45 +96,45 @@ namespace XSE
 			xst_fi xst_castring&		GetObjectName() const
 										{ return XST_GET_DBG_NAME( this ); }*/
 
-			virtual void				UpdateObject(cf32& fElapsedTime) {}
+			virtual void				Update(cf32& fElapsedTime) {}
 
 			xst_fi	ul32				GetObjectType() const
 										{ return m_ulObjType; }
 
-			virtual void				DisableObject(cu32& uiDisableReason) 
+			virtual void				Disable(cu32& uiDisableReason) 
 										{ m_uiObjDisableReason = uiDisableReason; }
 
-			virtual xst_fi u32			GetObjectDisableReason() const
+			virtual xst_fi u32			GetDisableReason() const
 										{ return m_uiObjDisableReason; }
 
-			virtual xst_fi bool			IsObjectDisabled() const
+			virtual xst_fi bool			IsDisabled() const
 										{ return m_uiObjDisableReason != ODR::NOT_DISABLED; }
 
 			virtual 
-			xst_fi	CBoundingVolume&	GetObjectBoundingVolume()
+			xst_fi	CBoundingVolume&	GetBoundingVolume()
 										{ return m_ObjBoundingVolume; }
 
 			virtual xst_fi	
-			const	CBoundingVolume&	GetObjectBoundingVolume() const
+			const	CBoundingVolume&	GetBoundingVolume() const
 										{ return m_ObjBoundingVolume; }
 
-			virtual void				SetObjectBoundingVolume(const CBoundingVolume& Volume);
+			virtual void				SetBoundingVolume(const CBoundingVolume& Volume);
 
 			virtual 
 			const	CBoundingVolume&	CalcObjectBoundingVolume()
 										{ return m_ObjBoundingVolume; }
 
-			virtual	void				SetObjectDirty(bool bDirty)
+			virtual	xst_i	void		IsDirty(bool bDirty)
 										{ m_bObjDirty = bDirty; }
 
-			virtual void				SetObjectDistanceToCamera(cf32& fDist);
+			virtual void				SetDistanceToCamera(cf32& fDist);
 
 			virtual xst_fi
-			f32							GetObjectDistanceToCamera() const
+			f32							GetDistanceToCamera() const
 										{ return m_fObjDistToCamera; }
 
 			virtual xst_fi
-			bool						IsObjectDirty() const
+			bool						IsDirty() const
 										{ return m_bObjDirty; }
 
 			virtual	void				VisibleAABB(bool bVisible);
