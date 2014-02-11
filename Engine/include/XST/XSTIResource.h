@@ -62,8 +62,8 @@ namespace XST
 
 			public:
 
-									/*IResource() : m_iResourceType(0), m_iResourceState(0), m_pResourceCreator(xst_null), m_pResourceAllocator(xst_null) {}
-									IResource(ul32 _ulID) : m_ulID(_ulID) {}
+									IResource() : m_iResourceType(0), m_iResourceState(0), m_pResourceAllocator(xst_null) {}
+									/*IResource(ul32 _ulID) : m_ulID(_ulID) {}
 									IResource(const xst_string &_strName) : m_ulID(0), m_strName(_strName) {}
 									IResource(ul32 _ulID, const xst_string &_strName) : m_ulID(_ulID), m_strName(_strName) {}*/
 									IResource( XST_IRESOURCE_DECL_PARAMS ) : m_strResourceName( strName ), m_iResourceType( iType ), m_iResourceState( iState ), m_pResourceAllocator( pAllocator ) 

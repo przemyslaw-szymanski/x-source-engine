@@ -10,22 +10,28 @@ namespace XSE
 
 	static CEmptyObjectListener g_EmptyListener;
 
-	CObject::CObject(ul32 ulType, lpcastr strDbgName) : 
+	CObject::CObject(ul32 ulType, lpcastr strDbgName, CObject* pParent) : 
 #if defined( XST_OBJ_DEBUG )
 		XST::IObject( strDbgName )
 #endif
-		,m_ulObjType( ulType )
-		,m_pObjListener( &g_EmptyListener )
+		, m_ulObjType( ulType )
+		, m_pObjListener( &g_EmptyListener )
+		, m_pParent( pParent )
 	{
 		//XST_SET_DBG_NAME( this, strDbgName );
 	}
 
-	CObject::CObject(ul32 ulType, ul32 ulHandle, lpcastr strDbgName) : CObject( ulType, strDbgName )
+	CObject::CObject(ul32 ulType, ul32 ulHandle, lpcastr strDbgName, CObject* pParent) : CObject( ulType, strDbgName, pParent )
 	{
 	}
 
 	CObject::~CObject() 
 	{
+	}
+
+	void CObject::Update(cf32& fTime)
+	{
+		IsDirty( false );
 	}
 
 	const Vec3&	CObject::MoveObject(cf32& fDistance, const Vec3& vecDirection)

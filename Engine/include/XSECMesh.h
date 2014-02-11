@@ -69,11 +69,11 @@ namespace XSE
 
 						void				Render(IRenderSystem* pRS);
 
-						void				Update();
+						void				Update(cf32& fTime = 0.0f);
 
 						void				SetVisible(bool bVisible);
 
-						void				DisableObject(cu32& uiReason);
+						void				Disable(cu32& uiReason);
 
 						VertexBufferPtr		CreateVertexBuffer();
 						

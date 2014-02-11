@@ -135,11 +135,12 @@ namespace XSE
                     else
                     {
 						lpcastr pName = pCurrTile->GetMesh()->_GetDbgName();
-						//XST::CDebug::PrintDebugLN( xst_castring( "not pass: " ) + pCurrTile->GetMesh( )->_GetDbgName( ) );
-						if( strcmp( pName, "Terrain_2_4" ) == 0 )
+						XST::CDebug::PrintDebugLN( xst_castring( "not pass: " ) + pCurrTile->GetMesh( )->_GetDbgName( ) );
+						if( strcmp( pName, "Terrain_9_3" ) == 0 )
 						{
-							Vec3 vecPos = pCurrTile->GetMesh()->GetSceneNode()->GetPosition();
-							pCurrTile->GetMesh( )->GetSceneNode()->SetPosition( vecPos.x, 350, vecPos.z );
+							CMesh* pMesh = pCurrTile->GetMesh( ).GetPointer();
+							Vec3 vecPos = pMesh->GetPosition();
+							pMesh->SetPosition( vecPos.x, 350, vecPos.z );
 						}
                         u32 ulLod = XST::Math::Min( l + 1, m_Options.uiLODCount - 1 );
                         pCurrTile->SetLOD( CalcLOD( ulLod, MipMapTerrainStitchTypes::NONE ), ulLod, MipMapTerrainStitchTypes::NONE );

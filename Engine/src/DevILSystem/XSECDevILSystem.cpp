@@ -163,7 +163,7 @@ namespace XSE
 			iluScale( uiWidth, uiHeight, 0 );
 			pImg->m_uiWidth = uiWidth;
 			pImg->m_uiHeight = uiHeight;
-			pImg->m_bDirty = true;
+			//pImg->m_bDirty = true;
 			if( pImg->m_bManual )
 			{
 				xst_deletea( pImg->m_pData );
@@ -197,7 +197,7 @@ namespace XSE
 
 			ilBindImage( pTmpImg->m_uiImgId );
 
-			pImage->m_bDirty = false;
+			//pImage->m_bDirty = false;
 			pImage->m_bManual = false;
 			pImage->SetDataType( pTmpImg->m_eDataType);
 			pImage->SetFormat( pTmpImg->m_eFormat );

@@ -71,10 +71,11 @@ namespace XSE
 		pVecOut->Set( 0.0f );
 	}
 
-	void IRenderableObject::Update()
+	void IRenderableObject::Update(cf32& fTime)
 	{
-		if( !this->m_bObjDirty )
+		if( !this->IsDirty() )
 			return;
+		CObject::Update( fTime );
 		//this->m_bDbgObject = false;
 		xst_assert( m_pSceneNode != xst_null, "(IRenderableObject::SetPosition) Object is not in scene node" ); 
 		
@@ -87,6 +88,7 @@ namespace XSE
 		//pRS->GetMatrix( MatrixTypes::WORLD, &mtxTransform );
 		CalcWorldPosition( &m_vecWorldPosition );
 		mtxTranslate.Translate( m_vecWorldPosition.x, m_vecWorldPosition.y, m_vecWorldPosition.z );
+		//pRS->SetTranslation( &mtxTranslate, m_vecWorldPosition );
 		Vec3 vecScale, vecRotate;
 		// TODO: implmenet scale and rotation
 		f32 fAngle;

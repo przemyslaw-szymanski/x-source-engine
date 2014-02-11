@@ -46,7 +46,7 @@ namespace XSE
 			m_vLODs.clear();
 		}
 
-		void CMesh::Update()
+		void CMesh::Update(cf32& fTime)
 		{
 			//if( m_pVertexBuffer ) m_pVertexBuffer->SetInputLayout( this->m_pInputLayout );
 			/*for(u32 i = 0; i < m_vLODs.size(); ++i)
@@ -56,7 +56,7 @@ namespace XSE
 					m_vLODs[ i ]->pVertexBuffer->SetInputLayout( this->m_pInputLayout );
 				}
 			}*/
-			IRenderableObject::Update();
+			IRenderableObject::Update(fTime);
 		}
 
 		VertexBufferPtr CMesh::CreateVertexBuffer()

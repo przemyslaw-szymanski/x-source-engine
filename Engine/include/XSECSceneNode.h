@@ -35,6 +35,12 @@ namespace XSE
 			//typedef XST::TCPairIterator< NodeMap >		NodeIterator;
 			typedef XST::TCPairIterator< ObjectMap >	ObjectIterator;
 
+			using CObject::SetPosition;
+			using CObject::SetDirection;
+			using CObject::SetScale;
+			using CObject::Rotate;
+			using CObject::SetOrientation;
+
 		public:
 
 									CSceneNode(CSceneManager* pCreator, CSceneNode* pParent, xst_castring& strName, ul32 ulHandle);
@@ -88,7 +94,9 @@ namespace XSE
 			xst_fi const CSceneManager* GetSceneManager() const
 										{ return m_pSceneMgr; }*/
 
-			virtual void			Update(cf32& fElapsedTime);
+			virtual	void			Update(cf32& fElapsedTime) override;
+
+			virtual	void			SetPosition(cf32& fX, cf32& fY, cf32& fZ);
 
 			xst_fi	bool			IsAutoDestroy()
 									{ return m_bAutoDestroy; }

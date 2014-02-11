@@ -163,7 +163,6 @@ namespace XSE
 	{
 		for(_NodeIterator Itr = m_lChildNodes.begin(); Itr != m_lChildNodes.end(); ++Itr)
 		{
-			(*Itr)->SetPosition( this->m_vecPosition );
 			(*Itr)->Update( fElapsedTime );
 		}
 	}
@@ -298,6 +297,15 @@ namespace XSE
 		m_lChildNodes.push_back( pNode );
 		pNode->m_pParentNode = this;
 		return XST_OK;
+	}
+
+	void CSceneNode::SetPosition(cf32& fX, cf32& fY, cf32& fZ)
+	{
+		CObject::SetPosition( fX, fY, fZ );
+		for( auto& pObj : m_vObjects )
+		{
+			pObj->IsDirty( true );
+		}
 	}
 
 }//xse

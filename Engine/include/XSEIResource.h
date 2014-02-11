@@ -26,15 +26,15 @@ namespace XSE
 				typedef XST::TCObjectSmartPointer< IResource >	ResourcePtr;
 			
 			public:
-
-										IResource(XSE_IRESOURCE_DECL_PARAMS_DEFAULT) : m_ulResourceHandle( ulHandle ), m_pResourceCreator( pCreator ), m_bDirty( false ), XST_IRESOURCE_CTOR {}
+				
+										IResource() { xst_assert( 0, "(IResource::IResource) Do not use this constructor" ); }
+										IResource(XSE_IRESOURCE_DECL_PARAMS_DEFAULT) : m_ulResourceHandle( ulHandle ), m_pResourceCreator( pCreator ), XST_IRESOURCE_CTOR {}
 				
 				virtual					~IResource() 
 										{
 											m_ulResourceHandle = 0;
 											m_pResourceCreator = xst_null;
 											m_ulResourceGroupId = 0;
-											m_bDirty = false;
 										}
 
 				xst_fi	ul32			GetResourceHandle()
@@ -48,12 +48,8 @@ namespace XSE
 
 				virtual ResourcePtr		Clone(xst_castring& strName = XST::StringUtil::EmptyAString, bool bFullClone = true);
 
-				xst_fi	bool			IsDirty() const
-										{ return m_bDirty; }
-
 				xst_i	void			SetResource(const IResource* pOther)
 										{
-											this->m_bDirty = true;
 											this->m_pResourceFile = pOther->m_pResourceFile;
 											this->m_iResourceState = pOther->m_iResourceState;
 											this->m_iResourceType = pOther->m_iResourceType;
@@ -87,10 +83,9 @@ namespace XSE
 
 			protected:
 
-				ul32				m_ulResourceHandle;
-				IResourceManager*	m_pResourceCreator;
-				ul32				m_ulResourceGroupId;
-				bool				m_bDirty;
+				IResourceManager*	m_pResourceCreator = xst_null;
+				ul32				m_ulResourceHandle = 0;
+				ul32				m_ulResourceGroupId = 0;
 		};
 
 	}//resources

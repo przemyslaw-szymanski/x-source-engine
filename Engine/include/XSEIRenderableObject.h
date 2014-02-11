@@ -39,7 +39,7 @@ namespace XSE
 			virtual	void				Render(IRenderSystem* pRS) = 0;
 			virtual void				SetVisible(bool bVisible) = 0;
 
-			virtual void				Update();
+			virtual void				Update(cf32& fTime = 0.0f);
 			
 			virtual xst_fi	bool		IsVisible() const
 										{ return m_bVisible; }

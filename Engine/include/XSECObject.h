@@ -16,14 +16,13 @@ namespace XSE
 
 		public:
 
-										CObject(ul32 ulType, lpcastr strDbgName);
-
-										CObject(ul32 ulType, ul32 ulHandle, lpcastr strDbgName);
+										CObject() {}
+										CObject(ul32 ulType, lpcastr strDbgName, CObject* pParent = xst_null);
+										CObject(ul32 ulType, ul32 ulHandle, lpcastr strDbgName, CObject* pParent = xst_null);
 
 			virtual						~CObject();
 
-			virtual	void				Update()
-										{ return;}
+			virtual	void				Update(cf32& fTime = 0.0f);
 
 			virtual void				SetObject(const CObject* pOther)
 										{
@@ -41,11 +40,14 @@ namespace XSE
 			xst_fi	xst_castring&		GetObjectName() const
 										{ return this->_GetDbgName(); }*/
 
+			virtual xst_i	CObject*	GetParent() const
+										{ return m_pParent; }
+
 			virtual	xst_fi	void		SetPosition(const Vec3& vecPos)
 										{ SetPosition( vecPos.x, vecPos.y, vecPos.z ); }
 
 			virtual void				SetPosition(cf32& fX, cf32& fY, cf32& fZ)
-										{ m_vecPosition.x = fX; m_vecPosition.y = fY; m_vecPosition.z = fZ; }
+										{ m_vecPosition.x = fX; m_vecPosition.y = fY; m_vecPosition.z = fZ; IsDirty( true ); }
 
 			virtual xst_fi
 			const Vec3&					GetPosition() const
@@ -96,8 +98,6 @@ namespace XSE
 			xst_fi xst_castring&		GetObjectName() const
 										{ return XST_GET_DBG_NAME( this ); }*/
 
-			virtual void				Update(cf32& fElapsedTime) {}
-
 			xst_fi	ul32				GetObjectType() const
 										{ return m_ulObjType; }
 
@@ -124,14 +124,14 @@ namespace XSE
 			const	CBoundingVolume&	CalcObjectBoundingVolume()
 										{ return m_ObjBoundingVolume; }
 
-			virtual	xst_i	void		IsDirty(bool bDirty)
-										{ m_bObjDirty = bDirty; }
-
 			virtual void				SetDistanceToCamera(cf32& fDist);
 
 			virtual xst_fi
 			f32							GetDistanceToCamera() const
 										{ return m_fObjDistToCamera; }
+			
+			virtual	xst_i	void		IsDirty(bool bDirty)
+										{ m_bObjDirty = bDirty; }
 
 			virtual xst_fi
 			bool						IsDirty() const
@@ -180,10 +180,11 @@ namespace XSE
 			Vec3				m_vecPosition = Vec3::ZERO; //translate
 			Vec3				m_vecDirection = Vec3::Z; 
 			Vec3				m_vecScale = Vec3::UNIT;
+			IObjectListener*	m_pObjListener = xst_null;
+			CObject*			m_pParent = xst_null;
 			ul32				m_ulObjType;
 			u32					m_uiObjDisableReason = ODR::NOT_DISABLED;
 			f32					m_fObjDistToCamera = -1.0f; // object distance to camera
-			IObjectListener*	m_pObjListener = xst_null;
 			bool				m_bObjDirty = false;
 #if defined( XSE_SCENE_DEBUG )
 			Resources::CMesh*	m_pAABBMesh = xst_null;
