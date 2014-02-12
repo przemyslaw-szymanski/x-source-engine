@@ -85,7 +85,7 @@ namespace XSE
 	{
 		CMesh* pCurrMesh;
 		CMipMapTerrainTile* pCurrTile;
-        f32 fConstDist = 80;
+        f32 fConstDist = 100;
         f32 fLODDist = fConstDist;
         f32 fPrevDist;
         CCamera* pCam = m_pSceneMgr->GetComputeCamera();
@@ -95,55 +95,35 @@ namespace XSE
 			pCurrTile = m_vTiles[ i ];
 			pCurrMesh = pCurrTile->m_pMesh.GetPointer();
             const CAABB& AABB = pCurrMesh->GetBoundingVolume().GetAABB();
+            Vec3 vecSize = AABB.CalcSize();
+            fConstDist = vecSize.x * 1;
 			f32 fDist = pCurrMesh->GetDistanceToCamera();
             fLODDist = 0;
 			// Set the max lod by default
 			//pCurrTile->SetLOD( CalcLOD( 3, MipMapTerrainStitchTypes::LEFT ), m_Options.uiLODCount - 1, MipMapTerrainStitchTypes::NONE );
 			pCurrTile->SetLOD( CalcLOD( m_Options.uiLODCount - 1, MipMapTerrainStitchTypes::NONE ), m_Options.uiLODCount - 1, MipMapTerrainStitchTypes::NONE );
-
+            lpcastr pName = pCurrTile->GetMesh()->_GetDbgName();
 			for( u32 l = 0; l < m_Options.uiLODCount; ++l )
 			{
+                //strcmp( pName, "Terrain_5_4" ) == 0 || strcmp( pName, "Terrain_6_4" ) == 0
 				// Get lod of all neighbours
 				// This block costs 2fps
                 fPrevDist = fLODDist;
 				fLODDist += fConstDist; // multiply by l begins from 1
-				if( fDist < fLODDist * 1.5f )
+				//if( fDist < fLODDist + 0 )
 				{
                     const CAABB ViewAABB(   Vec3( pCam->GetPosition().x - fLODDist, pCam->GetPosition().y - fLODDist, pCam->GetPosition().z - fLODDist ), 
                                             Vec3( Vec3( pCam->GetPosition().x + fLODDist, pCam->GetPosition().y + fLODDist, pCam->GetPosition().z + fLODDist ) ) );
                     f32 fMaxLenX = ViewAABB.vecMax.x - ViewAABB.vecMin.x + AABB.vecMax.x - AABB.vecMin.x;
-                    f32 fMaxLenY = ViewAABB.vecMax.y - ViewAABB.vecMin.y + AABB.vecMax.y - AABB.vecMin.y;
+                    f32 fMaxLenZ = ViewAABB.vecMax.z - ViewAABB.vecMin.z + AABB.vecMax.z - AABB.vecMin.z;
                     // Check if this tile intersects the view square (not only view sphere)
-                    /*bool a = ViewAABB.vecMin.x > AABB.vecMax.x;
-                    bool b = ViewAABB.vecMin.z < AABB.vecMax.z;
-                    bool c = ViewAABB.vecMax.x < AABB.vecMin.x;
-                    bool d = ViewAABB.vecMax.z < AABB.vecMin.z;
-                    if( !(  ViewAABB.vecMin.x > AABB.vecMax.x ||
-                            ViewAABB.vecMin.z > AABB.vecMax.z ||
-                            ViewAABB.vecMax.x < AABB.vecMin.x ||
-                            ViewAABB.vecMax.z < AABB.vecMin.z ) )*/
+
                     f32 fDistX = ViewAABB.vecMax.x - AABB.vecMin.x;
-                    f32 fDistY = ViewAABB.vecMax.y - AABB.vecMin.y;
+                    f32 fDistZ = ViewAABB.vecMax.z - AABB.vecMin.z;
                     if( ( fDistX < fMaxLenX && fDistX > 0.0f ) &&
-                        ( fDistY < fMaxLenY && fDistY > 0.0f ) )
-                    //if( AABB.vecMin.x <= ViewAABB.vecMax.x && ViewAABB.vecMax.x <= AABB.vecMax.x && AABB.vecMax.z <= ViewAABB.vecMin.z && ViewAABB.vecMax.z <= AABB.vecMin.z )
+                        ( fDistZ < fMaxLenZ && fDistZ > 0.0f ) )
                     {
-						//XST::CDebug::PrintDebugLN( xst_castring( "pass: " ) + pCurrTile->GetMesh()->_GetDbgName() );
                         pCurrTile->SetLOD( CalcLOD( l, MipMapTerrainStitchTypes::NONE ), l, MipMapTerrainStitchTypes::NONE );
-                        break;
-                    }
-                    else
-                    {
-						lpcastr pName = pCurrTile->GetMesh()->_GetDbgName();
-						XST::CDebug::PrintDebugLN( xst_castring( "not pass: " ) + pCurrTile->GetMesh( )->_GetDbgName( ) );
-						if( strcmp( pName, "Terrain_9_3" ) == 0 )
-						{
-							CMesh* pMesh = pCurrTile->GetMesh( ).GetPointer();
-							Vec3 vecPos = pMesh->GetPosition();
-							pMesh->SetPosition( vecPos.x, 350, vecPos.z );
-						}
-                        u32 ulLod = XST::Math::Min( l + 1, m_Options.uiLODCount - 1 );
-                        pCurrTile->SetLOD( CalcLOD( ulLod, MipMapTerrainStitchTypes::NONE ), ulLod, MipMapTerrainStitchTypes::NONE );
                         break;
                     }
 				}
