@@ -5,8 +5,6 @@
 //If disabled C++ exceptions
 #pragma warning(disable: 4530)
 
-
-#include "XSTCommonInclude.h"
 #include "XSTCommonTypes.h"
 #include "XSTTCStack.h"
 #include "XSTCLastError.h"

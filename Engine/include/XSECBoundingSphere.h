@@ -33,7 +33,10 @@ namespace XSE
 			xst_fi const Vec4&	GetCenterPoint() const
 								{ return vecCenter; }
 
-					f32			CalcDistance(const CBoundingSphere& Sphere) const;
+            xst_fi  f32         CalcDistance(const Vec4& vecPoint) const
+                                { return vecCenter.Distance( vecPoint ); }
+            xst_fi	f32			CalcDistance(const CBoundingSphere& Sphere) const
+                                { return CalcDistance( Sphere.vecCenter ); }
 
 			xst_fi	bool		Intersects(const CBoundingSphere& Sphere) const
 								{

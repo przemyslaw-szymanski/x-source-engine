@@ -255,7 +255,7 @@ g_uiObjChecked++;
 			if( pObj->GetDisableReason() != ODR::NOT_DISABLED && pObj->GetDisableReason() != ODR::RANGE_CULLING )
 				continue;
 
-			fDist = CamSphere.CalcDistance( ObjSphere );
+			fDist = CamSphere.CalcDistance( pObj->GetPosition() );
 			//fDist = CamSphere.vecCenter.Distance( ObjAABB.vecMin );
 			//ObjAABB.CalcNearestCorner( CamSphere.vecCenter, &avecCorners, &uiCornerId, &fDist );
 			

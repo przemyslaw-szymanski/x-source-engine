@@ -67,13 +67,13 @@ namespace XSE
 											CMesh(IRenderSystem* pRS, IInputLayout* pIL, XSE_IRESOURCE_DECL_PARAMS_DEFAULT);
 				virtual						~CMesh();
 
-						void				Render(IRenderSystem* pRS);
+						void				Render(IRenderSystem* pRS) xst_implement;
 
-						void				Update(cf32& fTime = 0.0f);
+						void				Update(cf32& fTime = 0.0f) xst_implement;
 
-						void				SetVisible(bool bVisible);
+						void				Disable(cu32& uiReason) xst_implement;
 
-						void				Disable(cu32& uiReason);
+                        void                SetVisible(bool bVisible) xst_implement;
 
 						VertexBufferPtr		CreateVertexBuffer();
 						

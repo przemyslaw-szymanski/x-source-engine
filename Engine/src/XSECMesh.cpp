@@ -174,21 +174,13 @@ namespace XSE
 
 		void CMesh::Disable(cu32& uiReason)
 		{
-			this->m_uiObjDisableReason = uiReason;
-
-			if( !this->IsDisabled() )
-			{
-				this->SetVisible( IRenderableObject::IsVisible() );
-			}
-			else
-			{
-				m_RenderMethod = &CMesh::_RenderEmpty;
-			}
+            CObject::Disable( uiReason );
+            //SetVisible( !this->IsDisabled() );
 		}
 
 		void CMesh::SetVisible(bool bVisible)
 		{
-			this->m_bVisible = bVisible;
+            IRenderableObject::SetVisible( bVisible );
 
 			if( bVisible && !this->IsDisabled() )
 			{

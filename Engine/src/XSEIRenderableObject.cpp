@@ -24,6 +24,12 @@ namespace XSE
 		return XST_OK;
 	}
 
+    void IRenderableObject::SetVisible(bool bIs)
+    {
+        m_bVisible = bIs;
+        //this->Disable( ( bIs )? ODR::OTHER : ODR::NOT_DISABLED );
+    }
+
 
 	/*void IRenderableObject::SetObjectOrientation(cf32& fAngle, cf32& fX, cf32& fY, cf32& fZ)
 	{

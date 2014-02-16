@@ -90,10 +90,12 @@ namespace XSE
         f32 fPrevDist;
         CCamera* pCam = m_pSceneMgr->GetComputeCamera();
 
-		for(u32 i = 0; i < m_vTiles.size(); ++i)
-		{
-			pCurrTile = m_vTiles[ i ];
-			pCurrMesh = pCurrTile->m_pMesh.GetPointer();
+        for( u32 i = 0; i < m_vTiles.size(); ++i )
+        {
+            pCurrTile = m_vTiles[ i ];
+            pCurrMesh = pCurrTile->m_pMesh.GetPointer();
+            if( !pCurrMesh->IsVisible() || pCurrMesh->IsDisabled() )
+                continue;
             const CAABB& AABB = pCurrMesh->GetBoundingVolume().GetAABB();
             Vec3 vecSize = AABB.CalcSize();
             fConstDist = vecSize.x * 1;
@@ -134,12 +136,15 @@ namespace XSE
         u32 uiLOD;
         bool bLeftLOD, bRightLOD, bUpLOD, bDownLOD;
         MIPMAP_TERRAIN_STITCH_TYPE eStitchType = MipMapTerrainStitchTypes::NONE;
+        // TODO: first and last tiles also should be computed
         for( u32 y = 1; y < m_TileCount.y - 1; ++y )
         {
             for( u32 x = 1; x < m_TileCount.x - 1; ++x )
             {
                 eStitchType = MipMapTerrainStitchTypes::NONE;
                 pCurrTile = m_vTileGrid[ x ][ y ];
+                if( !pCurrTile->GetMesh()->IsVisible() /*|| pCurrTile->GetMesh()->IsDisabled()*/ )
+                    continue;
                 uiLOD = pCurrTile->GetLOD();
                 pLeft = m_vTileGrid[ x - 1 ][ y ];
                 pRight = m_vTileGrid[ x + 1 ][ y ];
@@ -274,77 +279,7 @@ namespace XSE
 
 	void CMipMapPagingTerrain::_RenderNormal(XSE::IRenderSystem *pRS)
 	{
-		//pRS->SetVertexBuffer( this->m_pVBuffer );
-		/*pRS->SetInputLayout( this->m_pInputLayout );
-		pRS->SetVertexShader( this->m_pMaterial->GetVertexShader().GetPointer() );
-		pRS->SetPixelShader( this->m_pMaterial->GetPixelShader().GetPointer() );
-		pRS->SetTranslation( 0, 0, 0 );
-		pRS->SetTopology( TopologyTypes::TRIANGLE_STRIP );
-		pRS->UpdateObjectInputs();
-		for(u32 i = 0; i < this->m_vIndexBuffers.size(); ++i)
-		{
-			pRS->SetVertexBuffer( this->m_pVBuffer );
-			pRS->SetIndexBuffer( this->m_vIndexBuffers[ i ] );
-			pRS->DrawVertexBuffer( this->m_pVBuffer, this->m_vIndexBuffers[ i ] );
-		}*/
-
-		//TileVec::iterator Itr;
-		//pRS->SetInputLayout( this->m_pInputLayout );
-		//pRS->SetVertexShader( this->m_pMaterial->GetVertexShader().GetPointer() );
-		//pRS->SetPixelShader( this->m_pMaterial->GetPixelShader().GetPointer() );
-		//pRS->SetTopology( TopologyTypes::TRIANGLE_STRIP );
-
-		//pRS->SetTranslation( 0, 0, 0 );
-
-		//pRS->UpdateObjectInputs();
-
-		//bool bTest = false;
-		//ul32 ulSize = (bTest)? 1 : m_aRenderBuffer.size(); //m_vTiles.size();
-		//CMipMapTerrainTile* pTile;
-		//CPoint MinMax( 0, ulSize );
-		////CPoint MinMax( 0, 0 );
-
-		//if( this->m_pVBuffer )
-		//	pRS->SetVertexBufferWithCheck( this->m_pVBuffer );
-		//if( this->m_vIndexBuffers.size() == 1 )
-		//	pRS->SetIndexBuffer( this->m_vIndexBuffers[ 0 ] );
-		//if( this->m_pVBuffer && this->m_vIndexBuffers.size() == 1 )
-		//	pRS->DrawVertexBuffer( this->m_pVBuffer, this->m_vIndexBuffers[ 0 ] );
-		//
-		//for(u32 i = MinMax.x; i < MinMax.y; ++i)
-		//{
-
-		//	//pTile = m_vTiles[ i ];
-		//	pTile = m_aRenderBuffer[ i ];
-		//	if( pTile->m_pVBuffer )
-		//	{
-		//		pRS->SetVertexBuffer( pTile->m_pVBuffer );
-		//		pRS->SetIndexBuffer( pTile->m_pCurrentIndexBuffer );
-		//		pRS->DrawVertexBuffer( pTile->m_pVBuffer, pTile->m_pCurrentIndexBuffer );
-		//		//Draw normals - TEST
-		//		if( pTile->m_pVBNormals )
-		//		{
-		//			pRS->SetVertexBuffer( pTile->m_pVBNormals );
-		//			pRS->SetTopology( pTile->m_pVBNormals->GetTopologyType() );
-		//			pRS->SetInputLayout( pTile->m_pVBNormals->GetInputLayout() );
-		//			pRS->SetVertexShader( pTile->m_pNormalVS );
-		//			pRS->SetPixelShader( pTile->m_pNormalPS );
-		//			pRS->DrawVertexBuffer( pTile->m_pVBNormals );
-
-		//			pRS->SetInputLayout( this->m_pInputLayout );
-		//			pRS->SetVertexShader( this->m_pMaterial->GetVertexShader().GetPointer() );
-		//			pRS->SetPixelShader( this->m_pMaterial->GetPixelShader().GetPointer() );
-		//			pRS->SetTopology( TopologyTypes::TRIANGLE_STRIP );
-		//		}
-		//	}
-		//	else
-		//	{
-		//		//pRS->SetIndexBuffer( pTile->m_pCurrentIndexBuffer );
-		//		//pRS->DrawVertexBuffer( this->m_pVBuffer, pTile->m_pCurrentIndexBuffer );
-		//		//pRS->SetTopology( TopologyTypes::POINT_LIST );
-		//		//pRS->DrawVertexBuffer( this->m_pVBuffer );
-		//	}
-		//}
+		
 	}
 
 	void CMipMapPagingTerrain::SetMaterial(MaterialPtr pMat)
@@ -463,7 +398,8 @@ namespace XSE
 
 		//int iBaseNameLen = xst_sprintf( strTileName, 32, "%s_", strTerrName.c_str() );
 		//int iTmpLen = 0;
-
+        {
+            XSTSimpleProfiler2( "Create and lock tile meshes" );
 		for(i32 y = 0; y < m_TileCount.y; ++y)
 		{
 			for(i32 x = 0; x < m_TileCount.x; ++x)
@@ -490,7 +426,7 @@ namespace XSE
 				
 			}
 		}
-
+        }
 		m_bTileLocked = true;
 
 		return XST_OK;

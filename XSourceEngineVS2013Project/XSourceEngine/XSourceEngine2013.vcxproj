@@ -216,6 +216,7 @@
     <ClInclude Include="..\..\Engine\include\XST\XSTTCDynamicArray.h" />
     <ClInclude Include="..\..\Engine\include\XST\XSTTCIterator.h" />
     <ClInclude Include="..\..\Engine\include\XST\XSTTCMemoryManager.h" />
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCPool.h" />
     <ClInclude Include="..\..\Engine\include\XST\XSTTCOctree.h" />
     <ClInclude Include="..\..\Engine\include\XST\XSTTCQuadTree.h" />
     <ClInclude Include="..\..\Engine\include\XST\XSTTCResourceGroupManager.h" />
@@ -482,6 +483,7 @@
     <ClCompile Include="..\..\Engine\src\XST\XSTMemoryManagerFactory.cpp" />
     <ClCompile Include="..\..\Engine\src\XST\XSTPath.cpp" />
     <ClCompile Include="..\..\Engine\src\XST\XSTPlatform.cpp" />
+    <ClCompile Include="..\..\Engine\src\XST\XSTTCPool.cpp" />
     <ClCompile Include="..\..\Engine\src\XST\XSTTCOctree.cpp" />
     <ClCompile Include="..\..\Engine\stdafx.cpp" />
   </ItemGroup>

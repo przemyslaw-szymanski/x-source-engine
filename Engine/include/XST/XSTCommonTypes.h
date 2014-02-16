@@ -293,6 +293,8 @@ namespace XST
 		//#endif //XST_VS_10
 
 		#define xst_null NULL
+        #define xst_implement override
+        #define xst_overload
 
 		#define XST_TO_TEXT(_type)	#_type
 		#define xst_init(_pData, _DataType)		memset(_pData, 0, sizeof(_DataType))

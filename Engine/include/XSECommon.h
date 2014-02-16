@@ -273,6 +273,7 @@ namespace XSE
 			OCCLUSION_CULLING,
 			RANGE_CULLING,
 			RENDER_SYSTEM_ERROR,
+            OTHER,
 			_ENUM_COUNT
 		};
 	};

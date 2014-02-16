@@ -37,12 +37,13 @@ namespace XSE
 			virtual						~IRenderableObject() {}
 
 			virtual	void				Render(IRenderSystem* pRS) = 0;
-			virtual void				SetVisible(bool bVisible) = 0;
 
-			virtual void				Update(cf32& fTime = 0.0f);
+			virtual void				Update(cf32& fTime = 0.0f) xst_implement;
 			
-			virtual xst_fi	bool		IsVisible() const
-										{ return m_bVisible; }
+            virtual void				SetVisible(bool bVisible);
+
+            virtual xst_fi	bool		IsVisible() const
+                                        { return m_bVisible && !this->IsDisabled(); }
 
 			virtual void				SetMaterial(MaterialPtr pMat) 
 										{ m_pMaterial = pMat; }

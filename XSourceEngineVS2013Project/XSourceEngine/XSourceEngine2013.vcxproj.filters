@@ -879,6 +879,9 @@
       <Filter>include\XST\ThirdParty\lua51</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Engine\include\XST\Impl\XSTCQuaternion.impl" />
+    <ClInclude Include="..\..\Engine\include\XST\XSTTCPool.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine\dllmain.cpp">
@@ -1486,6 +1489,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\tolua_to.c">
       <Filter>src\XST\ThirdParty\Lua51</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTTCPool.cpp">
+      <Filter>src\XST</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

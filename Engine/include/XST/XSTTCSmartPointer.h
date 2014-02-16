@@ -12,23 +12,37 @@ namespace XST
 	{
 		public:
 
-			explicit    TCWeakPointer(_T_* _pPtr) : m_pPtr( _pPtr )
-                        {
-                        }
+            xst_fi          TCWeakPointer()
+                            {}
 
-						TCWeakPointer(const TCWeakPointer& _Ptr)
-                        {
-                            if( this != &_Ptr )
+			xst_fi explicit TCWeakPointer(_T_* _pPtr) : m_pPtr( _pPtr )
+                            {}
+
+			xst_fi  	    TCWeakPointer(const TCWeakPointer& _Ptr)
                             {
-                                xst_delete( m_pPtr );
+                                if( this != &_Ptr )
+                                {
+                                    xst_delete( m_pPtr );
+                                }
+                                m_pPtr = _Ptr->m_pPtr;
                             }
-                            m_pPtr = _Ptr->m_pPtr;
-                        }
 
-			virtual		~TCWeakPointer() 
-						{
-							m_pPtr = xst_null;
-						}
+			xst_fi virtual   ~TCWeakPointer() 
+						    {
+							    m_pPtr = xst_null;
+						    }
+
+            xst_fi _T_*     GetPointer() const
+                            { return m_pPtr; }
+
+			xst_fi operator bool() const
+			                { return m_pPtr != xst_null; }
+
+            xst_fi _T_*	    operator->()
+                            { return m_pPtr; }
+
+			xst_fi bool     IsNull() const
+			                { return m_pPtr == xst_null; }
 
 		protected:
 
@@ -101,26 +115,6 @@ namespace XST
                 return *this;
             }
 
-            _T_*        GetPointer() const
-            {
-                return m_pPtr;
-            }
-
-			xst_fi operator bool()
-			{
-				return m_pPtr != xst_null;
-			}
-
-            _T_*	operator->()
-            {
-                return m_pPtr;
-            }
-
-			xst_fi bool IsNull()
-			{
-				return m_pPtr == xst_null;
-			}
-
 		protected:
 
             _T_*    m_pPtr = xst_null;
@@ -128,7 +122,7 @@ namespace XST
 
 
     template<class _T_>
-    class TCObjectSmartPointer 
+    class TCObjectSmartPointer //: public TCWeakPointer< _T_ >
     {
         public:
 
