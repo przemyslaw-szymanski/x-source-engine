@@ -178,7 +178,7 @@ namespace XSE
 			if( pTmpTable == xst_null || this->GetResource( TableItr->first ) ) continue;
 
 			MaterialPtr pMat = CreateMaterial( TableItr->first, strGroup );
-			if( Parser.Parse( pMat.GetPtr(), pTmpTable ) != RESULT::OK )
+			if( Parser.Parse( pMat.GetPointer(), pTmpTable ) != RESULT::OK )
 			{
 				continue;
 			}

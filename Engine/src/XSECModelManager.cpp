@@ -76,14 +76,14 @@ namespace XSE
 
 	ResourcePtr CModelManager::CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName /* = XST::StringUtil::EmptyAString */, bool bFullClone /* = true */)
 	{
-		ResourceWeakPtr pNewRes = IResourceManager::CloneResource( pSrcRes, strNewName, bFullClone );
+		ResourcePtr pNewRes( IResourceManager::CloneResource( pSrcRes, strNewName, bFullClone ) );
 		if( pNewRes == xst_null )
 		{
 			return pNewRes;
 		}
 
 		Resources::CModel* pSrcModel = (Resources::CModel*)pSrcRes;
-		Resources::CModel* pModel = (Resources::CModel*)pNewRes.GetPtr();
+		Resources::CModel* pModel = (Resources::CModel*)pNewRes.GetPointer();
 		
 		if( !bFullClone )
 		{
@@ -114,7 +114,7 @@ namespace XSE
 	ModelPtr CModelManager::CreateModel(xst_castring& strName, xst_castring& strGroup)
 	{
 		ResourcePtr pRes = this->CreateResource( strName, strGroup );
-		//CModel* pModel = (CModel*)pRes.GetPtr();
+		//CModel* pModel = (CModel*)pRes.GetPointer();
 		ModelPtr pModel = ModelPtr( pRes );
 
 		return pModel;
@@ -123,7 +123,7 @@ namespace XSE
 	ModelPtr CModelManager::CreateModel(xst_castring& strName, CSceneNode* pNode, xst_castring& strGroup)
 	{
 		ResourcePtr pRes = this->CreateResource( strName, strGroup );
-		//CModel* pModel = (CModel*)pRes.GetPtr();
+		//CModel* pModel = (CModel*)pRes.GetPointer();
 		ModelPtr pModel = ModelPtr( pRes );
 
 		if( pNode )
@@ -137,7 +137,7 @@ namespace XSE
 	ModelPtr CModelManager::CreateModel(CSceneManager* pSceneMgr, xst_castring& strName, xst_castring& strNodeName, xst_castring& strGroup)
 	{
 		ResourcePtr pRes = this->CreateResource( strName, strGroup );
-		//CModel* pModel = (CModel*)pRes.GetPtr();
+		//CModel* pModel = (CModel*)pRes.GetPointer();
 		ModelPtr pModel = ModelPtr( pRes );
 		
 		xst_assert( pSceneMgr, "(CModelManager::CreateModel)" );

@@ -294,7 +294,7 @@ namespace XSE
 				pShader->SetCGProfile( this->m_aeProfiles[ pShader->GetProfile() ] );
 			}
 
-			xst_castring& strData = (lpcastr)pShader->GetResourceFile().GetPtr()->GetData().GetData();
+			xst_castring& strData = (lpcastr)pShader->GetResourceFile().GetPointer()->GetData().GetData();
 			CG::CreateVShader( strData, pShader->GetEntryPoint() );
 
 			//if( XST_FAILED( XSE::CCGShaderSystem::CompileVertexShader( pVS ) ) )
@@ -329,7 +329,7 @@ namespace XSE
 				return XST_FAIL;
 			}*/
 
-			xst_castring& strData = (lpcastr)pShader->GetResourceFile().GetPtr()->GetData().GetData();
+			xst_castring& strData = (lpcastr)pShader->GetResourceFile().GetPointer()->GetData().GetData();
 			CG::CreatePShader( strData, pShader->GetEntryPoint() );
 
 			//if( XST_FAILED( XSE::CCGShaderSystem::CompileVertexShader( pVS ) ) )

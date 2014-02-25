@@ -54,14 +54,14 @@ namespace XSE
 		//xst_stl_foreach( Itr, m_lObjects )
 		//{
 		//	pObj = (*Itr);
-		//	pMat = pObj->GetMaterial().GetPtr();
+		//	pMat = pObj->GetMaterial().GetPointer();
 
 		//	pTech = pMat->GetCurrentTechnique();
 		//	for(u32 i = 0; i < pTech->GetPassCount(); ++i)
 		//	{
 		//		pPass = pTech->GetPass( i );
-		//		pVS = pPass->GetVertexShader().GetPtr();
-		//		pPS = pPass->GetPixelShader().GetPtr();
+		//		pVS = pPass->GetVertexShader().GetPointer();
+		//		pPS = pPass->GetPixelShader().GetPointer();
 
 		//		//Set shaders
 		//		m_pRS->SetVertexShaderWithCheck( pVS );

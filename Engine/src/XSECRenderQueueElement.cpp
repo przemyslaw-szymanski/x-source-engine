@@ -52,7 +52,7 @@ namespace XSE
 			if( pObj->IsDisabled() )
 				continue;
 
-			pMat = pObj->GetMaterial().GetPtr();
+			pMat = pObj->GetMaterial().GetPointer();
 
 			pTech = pMat->GetCurrentTechnique();
 			for(u32 i = 0; i < pTech->GetPassCount(); ++i)
@@ -60,8 +60,8 @@ namespace XSE
 				pObj->Update();
 
 				pPass = pTech->GetPass( i );
-				pVS = pPass->GetVertexShader().GetPtr();
-				pPS = pPass->GetPixelShader().GetPtr();
+				pVS = pPass->GetVertexShader().GetPointer();
+				pPS = pPass->GetPixelShader().GetPointer();
 
 				//Set shaders
 				pRenderSystem->SetVertexShaderWithCheck( pVS );

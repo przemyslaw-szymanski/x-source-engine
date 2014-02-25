@@ -29,7 +29,7 @@ namespace XSE
 
 		//CDynamicGeometryGroup::SubGroupIterator Itr = pGroup->GetSubGroupIterator();
 		//Set index buffers
-		//m_pRS->SetIndexBuffer( pGroup->GetIndexBuffer().GetPtr() );
+		//m_pRS->SetIndexBuffer( pGroup->GetIndexBuffer().GetPointer() );
 		pRS->UpdateObjectInputs();
 		pRS->SetTopology( TopologyTypes::TRIANGLE_LIST );
 
@@ -56,8 +56,8 @@ namespace XSE
 					const ITechnique* pTech = pMat->GetCurrentTechnique();//Itr.GetValue().GetMaterial()->GetCurrentTechnique();
 					for(u32 i = 0; i < pTech->GetPassCount(); ++i)
 					{
-						pRS->SetVertexShader( pTech->GetPass( i )->GetVertexShader().GetPtr() );
-						pRS->SetPixelShader( pTech->GetPass( i )->GetPixelShader().GetPtr() );
+						pRS->SetVertexShader( pTech->GetPass( i )->GetVertexShader().GetPointer() );
+						pRS->SetPixelShader( pTech->GetPass( i )->GetPixelShader().GetPointer() );
 						
 						ul32 ulIndexCount = (*BatchItr).GetIndexCount();
 						ul32 ulBeginIndex = (*BatchItr).GetBeginIndex();

@@ -489,7 +489,8 @@ namespace XST
             typedef _RESOURCE_      Resource;
             typedef XST_RES_GROUP	ResourceGroup;
             typedef TCObjectSmartPointer< ResourceGroup >   GroupPtr;
-            typedef TCWeakPointer< ResourceGroup >          WeakGroupPtr;
+            //typedef TCWeakPointer< ResourceGroup >          WeakGroupPtr;
+			typedef GroupPtr WeakGroupPtr;
             //typedef _OPERATOR_		OperatorClass;
             typedef _KEY_           ResourceKey;
 			typedef _HASH_			ResourceHash;

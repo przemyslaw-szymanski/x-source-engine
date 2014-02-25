@@ -159,9 +159,9 @@ namespace XST
 		Resources::CDirectory::FileMap::const_iterator Itr = mFiles.begin();
 		for(; Itr != mFiles.end(); ++Itr)
 		{
-			if( (*pulLargetSize) < Itr->second.GetPtr()->GetCompressedSize() )
+			if( (*pulLargetSize) < Itr->second.GetPointer()->GetCompressedSize() )
 			{
-				(*pulLargetSize) = Itr->second.GetPtr()->GetCompressedSize();
+				(*pulLargetSize) = Itr->second.GetPointer()->GetCompressedSize();
 			}
 			m_vAllFiles.push_back( Itr->second );
 		}
@@ -196,12 +196,12 @@ namespace XST
 
 		for(i32 i = 0; i < iFileCount; ++i)
 		{
-			ReadFileInfo( m_pRootDir.GetPtr(), Reader );
+			ReadFileInfo( m_pRootDir.GetPointer(), Reader );
 		}
 
 		for(i32 i = 0; i < iDirCount; ++i)
 		{
-			ReadDirInfo( m_pRootDir.GetPtr(), Reader );
+			ReadDirInfo( m_pRootDir.GetPointer(), Reader );
 		}
 
 		(*pulOffset) += (ul32)( iHeaderSize + iBlockSize );
@@ -251,12 +251,12 @@ namespace XST
 
 		for(u32 i = 0; i < uiFileCount; ++i)
 		{
-			ReadFileInfo( pDir.GetPtr(), Reader );
+			ReadFileInfo( pDir.GetPointer(), Reader );
 		}
 
 		for(u32 i = 0; i < uiDirCount; ++i)
 		{
-			ReadDirInfo( pDir.GetPtr(), Reader );
+			ReadDirInfo( pDir.GetPointer(), Reader );
 		}
 
 		return RESULT::OK;

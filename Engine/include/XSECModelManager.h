@@ -47,7 +47,7 @@ namespace XSE
 					ResourcePtr		CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true) xst_implement;
 
 			xst_fi	ModelPtr			CloneModel(const ModelPtr& pSrcModel, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true)
-										{ return CloneResource( pSrcModel.GetPtr(), strNewName, bFullClone ); }
+										{ return CloneResource( pSrcModel.GetPointer(), strNewName, bFullClone ); }
 
 		protected:
 

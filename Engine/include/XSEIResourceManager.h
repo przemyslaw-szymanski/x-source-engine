@@ -16,7 +16,8 @@ namespace XSE
 	        static xst_castring IResourceManager::DEFAULT_GROUP;
 
             typedef XST::TCObjectSmartPointer< IResourceGroup > GroupPtr;
-            typedef XST::TCWeakPointer< IResourceGroup >        GroupWeakPtr;
+            //typedef XST::TCWeakPointer< IResourceGroup >        GroupWeakPtr;
+			typedef GroupPtr GroupWeakPtr;
             typedef IResourceGroup::ResourceHandle              ResourceHandle;
             typedef IResourceGroup::Handle                      GroupHandle;
             typedef xst_hash_table< GroupHandle, GroupPtr >     ResGroupMap;
@@ -69,12 +70,14 @@ namespace XSE
 
         virtual i32 DestroyResource(xst_castring& strName);
         virtual i32 DestroyResource(const ResourceHandle& Handle);
-        virtual i32 DestroyResource(ResourcePtr pRes);
+        virtual i32 DestroyResourcePtr(ResourcePtr pRes);
         virtual i32 DestroyResource(xst_castring& strName, xst_castring& strGroup);
         virtual i32 DestroyResource(const ResourceHandle& Handle, const GroupHandle& GroupHandle);
 
+		virtual void				DestroyResources() {}
+
         virtual	xst_fi ResourcePtr				CloneResource(ResourcePtr pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true)
-											{ return CloneResource( pSrcRes.GetPtr(), strNewName, bFullClone ); }
+											{ return CloneResource( pSrcRes.GetPointer(), strNewName, bFullClone ); }
 
 			virtual ResourcePtr				CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true);
 
@@ -187,7 +190,7 @@ namespace XSE
 											{ return !GetResource( strName, strGroupName ).IsNull(); }
 
 			virtual	ResourcePtr				CloneResource(const ResourcePtr pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true)
-											{ return CloneResource( pSrcRes.GetPtr(), strNewName, bFullClone ); }
+											{ return CloneResource( pSrcRes.GetPointer(), strNewName, bFullClone ); }
 
 			virtual ResourcePtr				CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true);
 

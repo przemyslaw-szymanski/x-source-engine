@@ -201,7 +201,7 @@ namespace XSE
 		Scale.y = (u32)std::min< u32 >( Options.Size.y, 5000 );
 		pTmpImg->Scale( Scale.x, Scale.y );
 
-		Resources::IImage* pImg = pTmpImg.GetPtr();
+		Resources::IImage* pImg = pTmpImg.GetPointer();
 
 		Vec2 vecTexelSize( 1.0f / pImg->GetWidth(), 1.0f / pImg->GetHeight() );
 		Vec3 vecPos;
@@ -331,8 +331,8 @@ namespace XSE
 					pNormalData = &pTile->m_pVBNormals->GetVertexData();
 				}
 
-				pTile->m_pNormalVS = CShaderManager::GetSingletonPtr()->GetDefaultVertexShader().GetPtr();
-				pTile->m_pNormalPS = CShaderManager::GetSingletonPtr()->GetDefaultPixelShader().GetPtr();
+				pTile->m_pNormalVS = CShaderManager::GetSingletonPtr()->GetDefaultVertexShader().GetPointer();
+				pTile->m_pNormalPS = CShaderManager::GetSingletonPtr()->GetDefaultPixelShader().GetPointer();
 				
 				for(u32 id = 2; id < IData.GetIndexCount() - 3; ++id)
 				{

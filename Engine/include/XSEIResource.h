@@ -25,7 +25,7 @@ namespace XSE
 			public:
 
 				typedef XST::TCObjectSmartPointer< IResource >	ResourcePtr;
-                typedef XST::TCWeakPointer< IResource >         ResourceWeakPtr;
+                //typedef XST::TCWeakPointer< IResource >         ResourceWeakPtr;
                 typedef ul32                                    Handle;
 			
 			public:
@@ -62,7 +62,7 @@ namespace XSE
 										}
 
 				xst_fi	void			SetResource(const ResourcePtr pOther)
-										{ SetResource( pOther.GetPtr() ); }
+										{ SetResource( pOther.GetPointer() ); }
 
             protected:
 
@@ -97,9 +97,9 @@ namespace XSE
 	}//resources
 
 	typedef Resources::IResource::ResourcePtr	    ResourcePtr;
-    typedef Resources::IResource::ResourceWeakPtr	ResourceWeakPtr;
+    //typedef Resources::IResource::ResourceWeakPtr	ResourceWeakPtr;
 	XST_TEMPLATE_CLASS XST::TCObjectSmartPointer< Resources::IResource >;
-    XST_TEMPLATE_CLASS XST::TCWeakPointer< Resources::IResource >;
+    //XST_TEMPLATE_CLASS XST::TCWeakPointer< Resources::IResource >;
 
 }//xse
 

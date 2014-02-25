@@ -156,7 +156,7 @@ namespace XST
 	//			{
 	//				// found a file; do something with it
 	//				//PathCombine(szFullPattern, lpFolder, FindFileData.cFileName);
-	//				Resources::FilePtr pFile( xst_new Resources::CFile( pCurrDir.GetPtr(), Path::GetFileName( FindFileData.cFileName ) ) );
+	//				Resources::FilePtr pFile( xst_new Resources::CFile( pCurrDir.GetPointer(), Path::GetFileName( FindFileData.cFileName ) ) );
 	//				pmFiles->insert( Resources::CDirectory::FileMap::value_type( pFile->GetName(), pFile ) );
 	//			}
 	//		} while(FindNextFileA(hFindFile, &FindFileData));
@@ -191,7 +191,7 @@ namespace XST
 					{
 						if( !( FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) )
 						{
-							Resources::FilePtr pFile( xst_new Resources::CFile( m_pRoot.GetPtr(), Path::GetFileName( FindFileData.cFileName ), xst_null, 0, 0, 0 ) );
+							Resources::FilePtr pFile( xst_new Resources::CFile( m_pRoot.GetPointer(), Path::GetFileName( FindFileData.cFileName ), xst_null, 0, 0, 0 ) );
 							m_mFiles.insert( Resources::CDirectory::FileMap::value_type( pFile->GetName(), pFile ) );
 						}
 					}

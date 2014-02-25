@@ -221,13 +221,13 @@ namespace XSE
 		this->m_eShaderType = eType;
 		this->m_strEntryPoint = strEntryPoint;
 
-		ResourceWeakPtr pRes = this->LoadResource( strFileName, strShaderName, strGroupName );
+		ResourcePtr pRes = this->LoadResource( strFileName, strShaderName, strGroupName );
 		if( pRes.IsNull() )
 		{
 			return ShaderPtr();
 		}
 
-		ShaderWeakPtr pShader( pRes );
+		ShaderPtr pShader( pRes );
 		pShader->m_eShaderType = eType;
 		
 		if( XST_FAILED( this->AddResource( strShaderName, pShader, strGroupName ) ) )
@@ -306,12 +306,12 @@ namespace XSE
 	i32	CShaderManager::PrepareResource(ResourcePtr pRes)
 	{
 		xst_assert( pRes != xst_null, "(CShaderManager::PrepareResource)" );
-		if( XST_FAILED( m_pRenderSystem->GetShaderSystem()->PrepareResource( pRes.GetPtr() ) ) )
+		if( XST_FAILED( m_pRenderSystem->GetShaderSystem()->PrepareResource( pRes.GetPointer() ) ) )
 		{
 			return XST_FAIL;
 		}
 		//pRes->m_iResourceState = ResourceStates::PREPARED;
-		IShader* pShader = (IShader*)pRes.GetPtr();
+		IShader* pShader = (IShader*)pRes.GetPointer();
 		pShader->m_iResourceState = ResourceStates::PREPARED;
 
 		return XST_OK;

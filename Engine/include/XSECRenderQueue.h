@@ -42,16 +42,16 @@ namespace XSE
 			virtual						~CRenderQueue();
 
 			virtual void				AddObject(const RenderableObjectPtr& pObj)
-										{ AddObject( pObj.GetPtr() ); }
+										{ AddObject( pObj.GetPointer() ); }
 			virtual void				AddObject(IRenderableObject* pObj);
 
 			virtual	void				AddObject(RENDER_QUEUE_TYPE eType, const RenderableObjectPtr& pObj)
-										{ AddObject( eType, pObj.GetPtr() ); }
+										{ AddObject( eType, pObj.GetPointer() ); }
 			virtual	void				AddObject(RENDER_QUEUE_TYPE eType, IRenderableObject* pObj);
 
 			virtual void				Remove(RENDER_QUEUE_TYPE eType, IRenderableObject* pObject);
 			virtual	void				Remove(RENDER_QUEUE_TYPE eType, const RenderableObjectPtr& pObject)
-										{ Remove( eType, pObject.GetPtr() ); }
+										{ Remove( eType, pObject.GetPointer() ); }
 
 			virtual	void				Render(CSceneManager* pSceneMgr);
 

@@ -32,7 +32,7 @@
 //
 //	i32 CStaticGeometryGroup::AddMesh(const XSE::MeshPtr &pMesh, const MaterialPtr& pMat, const XSE::Vec3 &vecPosition)
 //	{
-//		Resources::CMesh* pSrcMesh = pMesh.GetPtr();
+//		Resources::CMesh* pSrcMesh = pMesh.GetPointer();
 //		m_ulVBufferSize += pSrcMesh->GetVertexBuffer()->GetVertexData().GetSize();
 //		m_ulVertCount += pSrcMesh->GetVertexBuffer()->GetVertexData().GetVertexCount();
 //		m_ulIBufferSize += pSrcMesh->GetIndexBuffer()->GetIndexData().GetSize();
@@ -45,7 +45,7 @@
 //	void CStaticGeometryGroup::_SetSceneNode(CSceneNode* pNode)
 //	{
 //		this->m_pSceneNode = pNode;
-//		if( m_pMesh ) m_pMesh.GetPtr()->_SetSceneNode( pNode );
+//		if( m_pMesh ) m_pMesh.GetPointer()->_SetSceneNode( pNode );
 //	}
 //
 //	i32 CStaticGeometryGroup::Build()
@@ -332,8 +332,8 @@ namespace XSE
 					const ITechnique* pTech = pMat->GetCurrentTechnique();//Itr.GetValue().GetMaterial()->GetCurrentTechnique();
 					for(u32 i = 0; i < pTech->GetPassCount(); ++i)
 					{
-						pRS->SetVertexShader( pTech->GetPass( i )->GetVertexShader().GetPtr() );
-						pRS->SetPixelShader( pTech->GetPass( i )->GetPixelShader().GetPtr() );
+						pRS->SetVertexShader( pTech->GetPass( i )->GetVertexShader().GetPointer() );
+						pRS->SetPixelShader( pTech->GetPass( i )->GetPixelShader().GetPointer() );
 						
 						ul32 ulIndexCount = (*BatchItr).GetIndexCount();
 						ul32 ulBeginIndex = (*BatchItr).GetBeginIndex();

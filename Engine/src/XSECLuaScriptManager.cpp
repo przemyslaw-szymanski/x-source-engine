@@ -38,7 +38,7 @@ namespace XSE
 	i32	CLuaScriptManager::PrepareResource(ResourcePtr pRes)
 	{
 		//Compile script
-		LuaScriptWeakPtr pScript = pRes;
+		LuaScriptPtr pScript = pRes;
 		return pScript->Compile();
 	}
 
@@ -70,19 +70,14 @@ namespace XSE
 		return pScript;
 	}
 
-	void Test( ResourcePtr p )
-	{
-
-	}
-
 	LuaScriptPtr CLuaScriptManager::LoadScript(xst_castring &strName, xst_castring &strGroupName, XST::CLuaApi* pApi)
 	{
-		ResourceWeakPtr pRes = this->LoadResource( strName, strGroupName );
+		ResourcePtr pRes = this->LoadResource( strName, strGroupName );
 		if( pRes.IsNull() )
 		{
 			return LuaScriptPtr();
 		}
-		Test( pRes );
+
 		LuaScriptPtr pScript( pRes );
 		pScript->m_pApi = ( pApi != xst_null )? pApi : m_pDefaultApi;
 		if( pScript->Load() != RESULT::OK || pScript->Compile() != RESULT::OK )

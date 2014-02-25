@@ -16,17 +16,17 @@ namespace XSE
 	{
 		xst_assert( pObj, "" );
 		xst_assert( !pObj->GetMaterial().IsNull(), "" );
-		ObjectArrayMap::iterator Itr = m_mObjects.find( pObj->GetMaterial().GetPtr() );
+		ObjectArrayMap::iterator Itr = m_mObjects.find( pObj->GetMaterial().GetPointer() );
 		
 		if( Itr == m_mObjects.end() )
 		{
-			if( XST_FAILED( AddMaterial( pObj->GetMaterial().GetPtr() ) ) )
+			if( XST_FAILED( AddMaterial( pObj->GetMaterial().GetPointer() ) ) )
 			{
 				return XST_FAIL;
 			}
 		}
 
-		Itr = m_mObjects.find( pObj->GetMaterial().GetPtr() );
+		Itr = m_mObjects.find( pObj->GetMaterial().GetPointer() );
 		return Itr->second->AddObject( pObj );
 	}
 
@@ -78,7 +78,7 @@ namespace XSE
 	{
 		MaterialPtr pMat = pObj->GetMaterial();
 		xst_assert( !pMat.IsNull(), "(CRenderArray::AddObject) Material is not set" );
-		CRenderMaterialArray* pMatArr = GetMaterialArray( pMat.GetPtr() );
+		CRenderMaterialArray* pMatArr = GetMaterialArray( pMat.GetPointer() );
 		return pMatArr->AddObject( pObj );
 	}
 
@@ -157,7 +157,7 @@ namespace XSE
 		//xst_assert( pIL, "(CRenderTree::Add)" );
 
 		////Get or create input layout map
-		//ObjVec* pVec = GetOrCreateObjVec( pVS.GetPtr(), pPS.GetPtr(), xst_null );
+		//ObjVec* pVec = GetOrCreateObjVec( pVS.GetPointer(), pPS.GetPointer(), xst_null );
 		//xst_assert( pVec, "(CRenderTree::Add)" );
 		//pVec->push_back( pObj );
 
@@ -177,7 +177,7 @@ namespace XSE
 		//}
 
 		////Add main mesh
-		//if( XST_FAILED( Add( pMesh.GetPtr() ) ) )
+		//if( XST_FAILED( Add( pMesh.GetPointer() ) ) )
 		//{
 		//	return XST_FAIL;
 		//}
@@ -186,7 +186,7 @@ namespace XSE
 		//CMesh::MeshIterator Itr = pMesh->GetSubMeshIterator();
 		//while( Itr.HasMoreElements() )
 		//{
-		//	if( XST_FAILED( Add( Itr.GetValue().GetPtr() ) ) )
+		//	if( XST_FAILED( Add( Itr.GetValue().GetPointer() ) ) )
 		//	{
 		//		return XST_FAIL;
 		//	}
@@ -196,7 +196,7 @@ namespace XSE
 		CModel::MeshVecItr Itr;
 		xst_stl_foreach( Itr, pModel->GetMeshes() )
 		{
-			if( XST_FAILED( Add( (*Itr).GetPtr() ) ) )
+			if( XST_FAILED( Add( (*Itr).GetPointer() ) ) )
 			{
 				return XST_FAIL;
 			}
@@ -217,7 +217,7 @@ namespace XSE
 		const IInputLayout* pIL = pVS->GetInputLayout();
 		xst_assert( pIL, "" );
 
-		ObjVec* pVec = GetObjVec( pVS.GetPtr(), pPS.GetPtr(), pMat->GetDiffuseTexture().GetPtr() );
+		ObjVec* pVec = GetObjVec( pVS.GetPointer(), pPS.GetPointer(), pMat->GetDiffuseTexture().GetPointer() );
 		xst_assert( pVec, "" );
 		ObjVec::iterator Itr = std::remove( pVec->begin(), pVec->end(), pObj );
 		if( Itr == pVec->end() )

@@ -60,7 +60,7 @@ namespace XSE
 
 	i32 CMipMapTerrainPage::CalcVertexData(CMipMapTerrainTile::SInfo Info)
 	{
-		Info.pHeightmap = m_pImg.GetPtr();
+		Info.pHeightmap = m_pImg.GetPointer();
 
 		for(u32 y = 0; y < m_TileCount.y; ++y)
 		{

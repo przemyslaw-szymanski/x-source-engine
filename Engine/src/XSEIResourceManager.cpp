@@ -46,7 +46,7 @@ namespace XSE
         {
             for( auto& ResItr : GroupItr.second->m_mResources )
             {
-                //Callback( ResItr.second, GroupItr.second );
+                Callback( ResItr.second, GroupItr.second );
             }
         }
     }
@@ -258,7 +258,7 @@ namespace XSE
     ResourcePtr IResourceManager::PrepareResource(xst_castring &strName, GroupWeakPtr pGroup)
 	{
         xst_assert( pGroup, "(IResourceManager::PrepareResource) Group is null" );
-		ResourceWeakPtr pRes = pGroup->GetResource( strName );
+		ResourcePtr pRes = pGroup->GetResource( strName );
 		if( !pRes ) 
 		{
 			return XSE_NULLRES;
@@ -617,7 +617,7 @@ namespace XSE
         return XST_FAIL;
     }
         
-    i32 IResourceManager::DestroyResource(ResourcePtr pRes)
+    i32 IResourceManager::DestroyResourcePtr(ResourcePtr pRes)
     {
         if( RemoveResource( pRes ) )
             return XST_OK;

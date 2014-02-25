@@ -16,7 +16,7 @@ namespace XSE
             public:
 
                 typedef XST::TCObjectSmartPointer< Resources::CLuaScript >	LuaScriptPtr;
-                typedef XST::TCWeakPointer< Resources::CLuaScript >	        LuaScriptWeakPtr;
+                //typedef XST::TCWeakPointer< Resources::CLuaScript >	        LuaScriptWeakPtr;
 
 			public:
 
@@ -53,7 +53,7 @@ namespace XSE
 	}//resources
 
 	typedef Resources::CLuaScript::LuaScriptPtr     LuaScriptPtr;
-    typedef Resources::CLuaScript::LuaScriptWeakPtr LuaScriptWeakPtr;
+    //typedef Resources::CLuaScript::LuaScriptWeakPtr LuaScriptWeakPtr;
 
 }//xse
 

@@ -57,7 +57,7 @@ namespace XSE
 
 	void CMeshManager::_DestroyMeshBuffers(ResourcePtr pRes)
 	{
-		CMesh* pMesh = (CMesh*)pRes.GetPtr();
+		CMesh* pMesh = (CMesh*)pRes.GetPointer();
 		pMesh->DestroyBuffers();
 	}
 
@@ -108,9 +108,7 @@ namespace XSE
 			g_strName.assign( g_astrName );
 		}
 
-		ResourceWeakPtr pNewRes;
-
-		pNewRes = this->CreateMesh( g_strName/*this->m_ssTmpName.str()*/, this->GetGroup( pSrcMesh->GetResourceGroupHandle() ) );
+		ResourcePtr pNewRes( this->CreateMesh( g_strName/*this->m_ssTmpName.str()*/, this->GetGroup( pSrcMesh->GetResourceGroupHandle() ) ) );
 	
 		if( pNewRes == xst_null )
 		{
@@ -124,7 +122,7 @@ namespace XSE
 		}
 
 		{ XSTSimpleProfiler2( "clone mesh: set data" );
-		Resources::CMesh* pNewMesh = (Resources::CMesh*)pNewRes.GetPtr();
+		Resources::CMesh* pNewMesh = (Resources::CMesh*)pNewRes.GetPointer();
 		
 		//if( bFullClone )
 		{
@@ -175,7 +173,7 @@ namespace XSE
 
 	i32	CMeshManager::PrepareResource(ResourcePtr pRes)
 	{
-		Resources::CMesh* pMesh = (Resources::CMesh*)pRes.GetPtr();
+		Resources::CMesh* pMesh = (Resources::CMesh*)pRes.GetPointer();
 		//Resource has to be in created state
 		if( pMesh->GetResourceState() != ResourceStates::CREATED )
 			return XST_FAIL;
@@ -235,9 +233,9 @@ namespace XSE
 				SBoxOptions Options;
 				if( pShapeOptions != xst_null ) 
 					Options = *(SBoxOptions*)pShapeOptions;
-				if( XST_FAILED( CreateBox( pMesh.GetPtr(), pIL, Options ) ) )
+				if( XST_FAILED( CreateBox( pMesh.GetPointer(), pIL, Options ) ) )
 				{
-					this->DestroyResource( pMesh );
+					this->DestroyResourcePtr( pMesh );
 					pMesh = xst_null;
 				}
 			}
@@ -248,7 +246,7 @@ namespace XSE
 				SLineBoxOptions Options;
 				if( pShapeOptions != xst_null ) 
 					Options = *(SLineBoxOptions*)pShapeOptions;
-				if( XST_FAILED( CreateBox( pMesh.GetPtr(), pIL, Options ) ) )
+				if( XST_FAILED( CreateBox( pMesh.GetPointer(), pIL, Options ) ) )
 				{
 					this->DestroyResource( pMesh );
 					pMesh = xst_null;
@@ -261,7 +259,7 @@ namespace XSE
 				SCircleOptions Options;
 				if( pShapeOptions != xst_null )
 					Options = *(SCircleOptions*)pShapeOptions;
-				if( XST_FAILED( CreateCircle( pMesh.GetPtr(), pIL, Options ) ) )
+				if( XST_FAILED( CreateCircle( pMesh.GetPointer(), pIL, Options ) ) )
 				{
 					this->DestroyResource( pMesh );
 					pMesh = xst_null;
@@ -273,7 +271,7 @@ namespace XSE
 			{
 				SPlaneOptions Options;
 				if( pShapeOptions != xst_null ) Options = *(SPlaneOptions*)pShapeOptions;
-				if( XST_FAILED( CreatePlane( pMesh.GetPtr(), pIL, Options ) ) )
+				if( XST_FAILED( CreatePlane( pMesh.GetPointer(), pIL, Options ) ) )
 				{
 					this->DestroyResource( pMesh );
 					pMesh = xst_null;
@@ -285,7 +283,7 @@ namespace XSE
 			{
 				SRect2DOptions Options;
 				if( pShapeOptions != xst_null ) Options = *(SRect2DOptions*)pShapeOptions;
-				if( XST_FAILED( CreateRect2D( pMesh.GetPtr(), pIL, Options ) ) )
+				if( XST_FAILED( CreateRect2D( pMesh.GetPointer(), pIL, Options ) ) )
 				{
 					this->DestroyResource( pMesh );
 					pMesh = xst_null;

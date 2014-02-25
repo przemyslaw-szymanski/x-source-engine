@@ -13,32 +13,22 @@ namespace XSE
 
 	CImageManager::~CImageManager()
 	{
-		//Destroy all image datas
-		//IResourceManager::_GroupIterator GrItr;
-		//IResourceManager::ResourceIterator ResItr;
-		//IImage* pImg = xst_null;
-		//xst_stl_foreach( GrItr, this->m_mResources )
-		//{
-		//	ResItr = GrItr->second->GetIterator();
-		//	for(; ResItr.HasMoreElements(); ResItr.MoveNext())
-		//	{
-		//		pImg = (IImage*)ResItr.GetValue().GetPtr();
-		//		//ResItr.GetValue()->DestroyData();
-		//		pImg->DestroyData();
-		//	}
-		//}
-
-        IImage* pImg;
-        this->ForEachResource( [&] ( ResourceWeakPtr& pRes, GroupWeakPtr pGroup )
-        {
-            pImg = static_cast< IImage* >( pRes.GetPtr() );
-            pImg->DestroyData();
-        } );
-
+		DestroyResources();
 		if( m_pImgSystem && m_pImgSystem->IsAutoDestroy() )
 		{
 			xst_delete( m_pImgSystem );
 		}
+	}
+
+	void CImageManager::DestroyResources()
+	{
+		xst_assert( m_pImgSystem, "(CImageManager::DestroyResources) ImageSystem is destroyed or not created" );
+		IImage* pImg;
+        this->ForEachResource( [&] ( ResourcePtr pRes, GroupWeakPtr pGroup )
+        {
+            pImg = static_cast< IImage* >( pRes.GetPointer() );
+            pImg->DestroyData();
+        } );
 	}
 
 	i32 CImageManager::Init()
@@ -53,7 +43,7 @@ namespace XSE
 
 	i32 CImageManager::CreateImageData(ImagePtr pImg)
 	{
-		return m_pImgSystem->CreateImageData( pImg.GetPtr() );
+		return m_pImgSystem->CreateImageData( pImg.GetPointer() );
 	}
 
 	i32	CImageManager::_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator)
@@ -100,15 +90,15 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32	CImageManager::PrepareResource(ResourceWeakPtr pRes)
+	i32	CImageManager::PrepareResource(ResourcePtr pRes)
 	{
-		if( XST_FAILED( m_pImgSystem->PrepareResource( pRes.GetPtr() ) ) )
+		if( XST_FAILED( m_pImgSystem->PrepareResource( pRes.GetPointer() ) ) )
 		{
 			return XST_FAIL;
 		}
 
 		//Unload the image if loaded
-		IImage* pImg = (IImage*)pRes.GetPtr();
+		IImage* pImg = (IImage*)pRes.GetPointer();
 		if( pImg->m_pResourceFile != xst_null )
 		{
 			i32 iResult = this->m_pFileMgr->DestroyResource( pImg->m_pResourceFile->GetName() );
