@@ -45,7 +45,7 @@ void CRenderWidget::paintEvent(QPaintEvent *pEvent)
 {
 	//QWidget::paintEvent( pEvent );
 
-	if( m_pSampleMgr != xst_null && m_pSampleMgr->GetCurrentSample() != NULL )
+	if( m_pSampleMgr != xst_null && m_pSampleMgr->GetCurrentSample() != NULL && m_pSampleMgr->GetCurrentSample()->IsReady() )
 	{
 		m_pSampleMgr->RenderSample();
 		if( m_pSampleMgr->GetEngine()->GetSceneManager() != xst_null )

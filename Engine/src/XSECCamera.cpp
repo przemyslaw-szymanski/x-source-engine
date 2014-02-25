@@ -391,7 +391,7 @@ namespace XSE
 			return XST_FAIL;
 		}
 
-		m_pVolumeMesh = pMesh.GetPointer();
+		m_pVolumeMesh = pMesh.GetPtr();
 		m_pVolumeMesh->SetVisible( false ); //by default do not show it
 
 		m_pSceneMgr->CreateNode( this->m_strName + "/volume_dbg" )->AddObject( pMesh );

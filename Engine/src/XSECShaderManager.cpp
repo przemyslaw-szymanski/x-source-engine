@@ -23,7 +23,7 @@ namespace XSE
 	{
 	}
 	//
-	i32 CShaderManager::_Init()
+	i32 CShaderManager::Init()
 	{
 		//Create default shaders
 		IInputLayout* pIL = m_pRenderSystem->GetInputLayout( ILEs::POSITION );
@@ -131,7 +131,7 @@ namespace XSE
 
 		if( XST_FAILED( pVS->Compile( strEntryPoint, ShaderProfiles::VS_BEST, strCode ) ) )
 		{
-			this->DestroyResourceByHandle( pVS->m_ulResourceHandle, pVS->m_ulResourceGroupId );
+			this->DestroyResource( pVS );
 			return VertexShaderPtr();
 		}
 		pVS->m_iResourceState = ResourceStates::PREPARED;
@@ -156,7 +156,7 @@ namespace XSE
 
 		if( XST_FAILED( pPS->Compile( strEntryPoint, ShaderProfiles::PS_BEST, strCode ) ) )
 		{
-			this->DestroyResourceByHandle( pPS->m_ulResourceHandle, pPS->m_ulResourceGroupId );
+			this->DestroyResource( pPS );
 			return PixelShaderPtr();
 		}
 		pPS->m_iResourceState = ResourceStates::PREPARED;
@@ -182,7 +182,7 @@ namespace XSE
 		return pShader;
 	}
 
-	Resources::IResource*	CShaderManager::_CreateResource(xst_castring& strName, cul32& ulHandle, IResourceManager::GroupPtr pGroup)
+	Resources::IResource*	CShaderManager::_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup)
 	{
 		xst_assert( m_pRenderSystem, "(CShaderManager::_CreateResource) RenderSystem not set" );
 		Resources::IResource* pRes = xst_null;
@@ -221,18 +221,18 @@ namespace XSE
 		this->m_eShaderType = eType;
 		this->m_strEntryPoint = strEntryPoint;
 
-		ResourcePtr pRes = this->LoadResource( strFileName, strShaderName, strGroupName );
+		ResourceWeakPtr pRes = this->LoadResource( strFileName, strShaderName, strGroupName );
 		if( pRes.IsNull() )
 		{
 			return ShaderPtr();
 		}
 
-		ShaderPtr pShader( pRes );
+		ShaderWeakPtr pShader( pRes );
 		pShader->m_eShaderType = eType;
 		
 		if( XST_FAILED( this->AddResource( strShaderName, pShader, strGroupName ) ) )
 		{
-			this->DestroyResourceByHandle( pShader->m_ulResourceHandle, strGroupName );
+			this->DestroyResource( pShader );
 			return ShaderPtr();
 		}
 
@@ -289,7 +289,7 @@ namespace XSE
 		xst_assert( pIL->GetVertexShader() != xst_null, "(CShaderManager::GetdefaultVertexShader) Vertex shader for input layout must be created!" );
 		//Try to get this shader
 		VShaderMap::iterator Itr;
-		if( XST_FAILED( XST::MapUtils::FindPlace( m_mDefaultVShaders, pIL, &Itr ) ) )
+		if( XST::MapUtils::FindPlace( m_mDefaultVShaders, pIL, &Itr ) )
 		{
 			XST::MapUtils::InsertOnPlace( m_mDefaultVShaders, pIL, VertexShaderPtr( pIL->GetVertexShader() ), Itr );
 		}
@@ -306,12 +306,12 @@ namespace XSE
 	i32	CShaderManager::PrepareResource(ResourcePtr pRes)
 	{
 		xst_assert( pRes != xst_null, "(CShaderManager::PrepareResource)" );
-		if( XST_FAILED( m_pRenderSystem->GetShaderSystem()->PrepareResource( pRes.GetPointer() ) ) )
+		if( XST_FAILED( m_pRenderSystem->GetShaderSystem()->PrepareResource( pRes.GetPtr() ) ) )
 		{
 			return XST_FAIL;
 		}
 		//pRes->m_iResourceState = ResourceStates::PREPARED;
-		IShader* pShader = (IShader*)pRes.GetPointer();
+		IShader* pShader = (IShader*)pRes.GetPtr();
 		pShader->m_iResourceState = ResourceStates::PREPARED;
 
 		return XST_OK;

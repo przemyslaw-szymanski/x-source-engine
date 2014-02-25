@@ -16,7 +16,9 @@ namespace XSE
 										CMeshManager(CMaterialManager* pMatMgr);
 			virtual						~CMeshManager();
 
-					i32					PrepareResource(ResourcePtr pRes);
+                    i32					Init() xst_implement;
+
+					i32					PrepareResource(ResourcePtr pRes) xst_implement;
 
 			xst_fi	void				SetDefaultMeshLODCount(u16 usCount)
 										{ m_usDefaultLODCount = usCount; }
@@ -32,21 +34,21 @@ namespace XSE
 
 					MeshPtr				CreateMesh(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
 
-					MeshPtr				CreateMesh(xst_castring& strName, GroupPtr pResourceGroup);
+					MeshPtr				CreateMesh(xst_castring& strName, GroupWeakPtr pResourceGroup);
 
 					MeshPtr				CreateMesh(xst_castring& strName, IInputLayout* pIL, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName = DEFAULT_GROUP);
 
 					MeshPtr				LoadMesh(xst_castring& strName, xst_castring& strGroup = DEFAULT_GROUP);
 
-					i32					DestroyMesh(MeshPtr& pMesh, xst_castring& strGroupName = ALL_GROUPS);
+					//i32					DestroyMesh(MeshPtr& pMesh, xst_castring& strGroupName = ALL_GROUPS);
 
 			xst_fi	MeshPtr				GetDefaultMesh()
 										{ return m_pDefaultMesh; }
 
-					ResourcePtr			CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true);
+					ResourcePtr  	CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true) xst_implement;
 
 			xst_fi	MeshPtr				CloneMesh(const MeshPtr& pMesh, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true)
-										{ return CloneResource( pMesh.GetPointer(), strNewName, bFullClone ); }
+										{ return CloneResource( pMesh.GetPtr(), strNewName, bFullClone ); }
 
 					i32					SetDefaultMesh(MeshPtr pMesh);
 
@@ -66,22 +68,18 @@ namespace XSE
 
 
 		protected:
-
-					i32					_Init();
 			
 			virtual	
-			Resources::IResource*		_CreateResource(xst_castring& strName, cul32& ulHandle, GroupPtr pGroup);
+			Resources::IResource*		_CreateResource(xst_castring& strName, const ResourceHandle& ResHandle, GroupWeakPtr pGroup) xst_implement;
 
 			xst_fi	void				_SetRenderSystem(IRenderSystem* pRS)
 										{ m_pRenderSystem = pRS; }
 
-					void				_OnResDestroy(ResourcePtr& pRes);
+					void				_OnResDestroy(ResourcePtr pRes);
 
-					void				_OnResRemove(ResourcePtr& pRes);
+					void				_OnResRemove(ResourcePtr pRes);
 
-					void				_DestroyMeshBuffers(ResourcePtr& pRes);
-
-			virtual	i32					_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null);
+					void				_DestroyMeshBuffers(ResourcePtr pRes);
 
 		protected:
 

@@ -27,12 +27,12 @@ namespace XSE
 		m_pRenderSystem = xst_null;
 		m_pDefaultIL = xst_null;
 
-		this->m_OnResDestroy.bind( this, &CMeshManager::_OnResDestroy );
+		/*this->m_OnResDestroy.bind( this, &CMeshManager::_OnResDestroy );
 		this->m_OnResRemove.bind( this, &CMeshManager::_OnResRemove );
 		this->_SetOnRemoveDestroyDelegates();
 
 		this->m_OnResItr.bind( this, &CMeshManager::_DestroyMeshBuffers );
-		this->_SetOnResourceIterationDelegate();
+		this->_SetOnResourceIterationDelegate();*/
 
 		g_strName.reserve( 256 );
 
@@ -44,36 +44,36 @@ namespace XSE
 		m_pDefaultMesh = xst_null;
 		m_pDefaultIL = xst_null;
 
-		CMeshManager::_GroupIterator GrItr;
+		/*CMeshManager::_GroupIterator GrItr;
 		for(GrItr = m_mResources.begin(); GrItr != m_mResources.end(); ++GrItr)
 		{
 			CMeshManager::ResourceIterator Itr;
 			//GrItr->second->DestroyResources();
-		}
+		}*/
 
 		//m_mResources.clear();
 	}
 
 
-	void CMeshManager::_DestroyMeshBuffers(ResourcePtr& pRes)
+	void CMeshManager::_DestroyMeshBuffers(ResourcePtr pRes)
 	{
-		CMesh* pMesh = (CMesh*)pRes.GetPointer();
+		CMesh* pMesh = (CMesh*)pRes.GetPtr();
 		pMesh->DestroyBuffers();
 	}
 
-	void CMeshManager::_OnResDestroy(ResourcePtr& pRes)
+	void CMeshManager::_OnResDestroy(ResourcePtr pRes)
 	{
 		MeshPtr pMesh = pRes;
 		pMesh->DestroyBuffers();
 	}
 						
-	void CMeshManager::_OnResRemove(ResourcePtr& pRes)
+	void CMeshManager::_OnResRemove(ResourcePtr pRes)
 	{
 		//MeshPtr pMesh = pRes;
 		//xst_release( pMesh );
 	}
 
-	i32 CMeshManager::_CreateMemoryPool(cul32 &ulObjCount, XST::IAllocator *pAllocator)
+	/*i32 CMeshManager::_CreateMemoryPool(cul32 &ulObjCount, XST::IAllocator *pAllocator)
 	{
 		if( pAllocator )
 		{
@@ -92,7 +92,7 @@ namespace XSE
 		}
 
 		return RESULT::OK;
-	}
+	}*/
 
 	ResourcePtr CMeshManager::CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName /* = XST::StringUtil::EmptyAString */, bool bFullClone /* = true */)
 	{
@@ -108,9 +108,9 @@ namespace XSE
 			g_strName.assign( g_astrName );
 		}
 
-		ResourcePtr pNewRes;
+		ResourceWeakPtr pNewRes;
 
-		pNewRes = this->CreateMesh( g_strName/*this->m_ssTmpName.str()*/, this->GetGroupByHandle( pSrcMesh->m_ulResourceGroupId ) );
+		pNewRes = this->CreateMesh( g_strName/*this->m_ssTmpName.str()*/, this->GetGroup( pSrcMesh->GetResourceGroupHandle() ) );
 	
 		if( pNewRes == xst_null )
 		{
@@ -119,12 +119,12 @@ namespace XSE
 
 		if( XST_FAILED( PrepareResource( pNewRes ) ) )
 		{
-			this->DestroyResourceByHandle( pNewRes->GetResourceHandle() );
+			this->DestroyResource( pNewRes );
 			return ResourcePtr();
 		}
 
 		{ XSTSimpleProfiler2( "clone mesh: set data" );
-		Resources::CMesh* pNewMesh = (Resources::CMesh*)pNewRes.GetPointer();
+		Resources::CMesh* pNewMesh = (Resources::CMesh*)pNewRes.GetPtr();
 		
 		//if( bFullClone )
 		{
@@ -175,7 +175,7 @@ namespace XSE
 
 	i32	CMeshManager::PrepareResource(ResourcePtr pRes)
 	{
-		Resources::CMesh* pMesh = (Resources::CMesh*)pRes.GetPointer();
+		Resources::CMesh* pMesh = (Resources::CMesh*)pRes.GetPtr();
 		//Resource has to be in created state
 		if( pMesh->GetResourceState() != ResourceStates::CREATED )
 			return XST_FAIL;
@@ -185,9 +185,9 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32 CMeshManager::_Init()
+	i32 CMeshManager::Init()
 	{
-		xst_assert( m_pRenderSystem ,"(CMeshManager::_Init()" );
+		xst_assert( m_pRenderSystem ,"(CMeshManager::Init()" );
 		m_pDefaultIL = m_pRenderSystem->GetInputLayout( ILEs::POSITION );
 
 		SBoxOptions Options;
@@ -235,9 +235,9 @@ namespace XSE
 				SBoxOptions Options;
 				if( pShapeOptions != xst_null ) 
 					Options = *(SBoxOptions*)pShapeOptions;
-				if( XST_FAILED( CreateBox( pMesh.GetPointer(), pIL, Options ) ) )
+				if( XST_FAILED( CreateBox( pMesh.GetPtr(), pIL, Options ) ) )
 				{
-					DestroyMesh( pMesh, strGroupName );
+					this->DestroyResource( pMesh );
 					pMesh = xst_null;
 				}
 			}
@@ -248,9 +248,9 @@ namespace XSE
 				SLineBoxOptions Options;
 				if( pShapeOptions != xst_null ) 
 					Options = *(SLineBoxOptions*)pShapeOptions;
-				if( XST_FAILED( CreateBox( pMesh.GetPointer(), pIL, Options ) ) )
+				if( XST_FAILED( CreateBox( pMesh.GetPtr(), pIL, Options ) ) )
 				{
-					DestroyMesh( pMesh, strGroupName );
+					this->DestroyResource( pMesh );
 					pMesh = xst_null;
 				}
 			}
@@ -261,9 +261,9 @@ namespace XSE
 				SCircleOptions Options;
 				if( pShapeOptions != xst_null )
 					Options = *(SCircleOptions*)pShapeOptions;
-				if( XST_FAILED( CreateCircle( pMesh.GetPointer(), pIL, Options ) ) )
+				if( XST_FAILED( CreateCircle( pMesh.GetPtr(), pIL, Options ) ) )
 				{
-					DestroyMesh( pMesh, strGroupName );
+					this->DestroyResource( pMesh );
 					pMesh = xst_null;
 				}
 			}
@@ -273,9 +273,9 @@ namespace XSE
 			{
 				SPlaneOptions Options;
 				if( pShapeOptions != xst_null ) Options = *(SPlaneOptions*)pShapeOptions;
-				if( XST_FAILED( CreatePlane( pMesh.GetPointer(), pIL, Options ) ) )
+				if( XST_FAILED( CreatePlane( pMesh.GetPtr(), pIL, Options ) ) )
 				{
-					DestroyMesh( pMesh, strGroupName );
+					this->DestroyResource( pMesh );
 					pMesh = xst_null;
 				}
 			}
@@ -285,9 +285,9 @@ namespace XSE
 			{
 				SRect2DOptions Options;
 				if( pShapeOptions != xst_null ) Options = *(SRect2DOptions*)pShapeOptions;
-				if( XST_FAILED( CreateRect2D( pMesh.GetPointer(), pIL, Options ) ) )
+				if( XST_FAILED( CreateRect2D( pMesh.GetPtr(), pIL, Options ) ) )
 				{
-					DestroyMesh( pMesh, strGroupName );
+					this->DestroyResource( pMesh );
 					pMesh = xst_null;
 				}
 			}
@@ -295,7 +295,7 @@ namespace XSE
 
 			default:
 			{
-				DestroyMesh( pMesh, strGroupName );
+				this->DestroyResource( pMesh );
 				pMesh = xst_null;
 			}
 			break;
@@ -310,7 +310,7 @@ namespace XSE
 		ResourcePtr pRes = this->GetOrCreateResource( strName, strGroupName, &bCreated );//this->CreateResource( strName, strGroupName );
 		if( pRes.IsNull() )
 		{
-			return this->m_pNullRes;
+			return MeshPtr();
 		}
 
 		MeshPtr pMesh( pRes );
@@ -330,7 +330,7 @@ namespace XSE
 		return CreateMesh( strName, this->GetOrCreateGroup( strGroupName ) );
 	}
 
-	MeshPtr	CMeshManager::CreateMesh(xst_castring& strName, GroupPtr pGroup)
+	MeshPtr	CMeshManager::CreateMesh(xst_castring& strName, GroupWeakPtr pGroup)
 	{
 		//XSTSimpleProfiler();
 		xst_assert( pGroup != xst_null, "(CMeshManager::CreateMesh)" );
@@ -342,7 +342,7 @@ namespace XSE
 		//}
 		if( pRes.IsNull() )
 		{
-			return this->m_pNullRes;
+			return MeshPtr();
 		}
 
 		MeshPtr pMesh( pRes );
@@ -373,7 +373,7 @@ namespace XSE
 		return pMesh;
 	}
 
-	i32 CMeshManager::DestroyMesh(MeshPtr& pMesh, xst_castring& strGroupName)
+	/*i32 CMeshManager::DestroyMesh(MeshPtr& pMesh, xst_castring& strGroupName)
 	{
 		if( strGroupName == ALL_GROUPS )
 		{
@@ -392,9 +392,9 @@ namespace XSE
 			return this->DestroyResourceByHandle( pMesh->GetResourceHandle(), strGroupName );
 		}
 		return XST_FAIL;
-	}
+	}*/
 
-	Resources::IResource* CMeshManager::_CreateResource(xst_castring &strName, cul32 &ulHandle, XSE::IResourceManager::GroupPtr pGroup)
+	Resources::IResource* CMeshManager::_CreateResource(xst_castring &strName, cul32 &ulHandle, IResourceManager::GroupWeakPtr pGroup)
 	{
 		//XSTSimpleProfiler();
 		xst_assert( m_pRenderSystem, "(CMeshManager::_CreateResource) Render system is not set/created or engine is not initialized" );

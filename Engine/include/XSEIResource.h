@@ -5,45 +5,51 @@
 
 namespace XSE
 {
-
 	namespace Resources
 	{
 		using namespace XST;
 
 		#define XSE_INVALID_HANDLE	0
 
-		#define XSE_IRESOURCE_DECL_PARAMS_DEFAULT	XSE::IResourceManager* pCreator, XST::Types::cul32& ulHandle = XSE_INVALID_HANDLE, XST_IRESOURCE_DECL_PARAMS_DEFAULT
-		#define XSE_IRESOURCE_DECL_PARAMS			XSE::IResourceManager* pCreator, XST::Types::cul32& ulHandle, XST_IRESOURCE_DECL_PARAMS
-		#define	XSE_IRESOURCE_PARAMS				pCreator, ulHandle, XST_IRESOURCE_PARAMS
+		#define XSE_IRESOURCE_DECL_PARAMS_DEFAULT	XSE::IResourceManager* pCreator, const Handle& Handle = XSE_INVALID_HANDLE, XST_IRESOURCE_DECL_PARAMS_DEFAULT
+		#define XSE_IRESOURCE_DECL_PARAMS			XSE::IResourceManager* pCreator, const Handle& Handle, XST_IRESOURCE_DECL_PARAMS
+		#define	XSE_IRESOURCE_PARAMS				pCreator, Handle, XST_IRESOURCE_PARAMS
 		#define	XSE_IRESOURCE_CTOR					XSE::Resources::IResource( XSE_IRESOURCE_PARAMS )
 
 		class XST_API IResource : public XST::Resources::IResource
 		{
 			friend class XSE::IResourceManager;
+            friend class XSE::IResourceGroup;
+            friend class XSE::IResourceManager2;
 			
 			public:
 
 				typedef XST::TCObjectSmartPointer< IResource >	ResourcePtr;
+                typedef XST::TCWeakPointer< IResource >         ResourceWeakPtr;
+                typedef ul32                                    Handle;
 			
 			public:
 				
 										IResource() { xst_assert( 0, "(IResource::IResource) Do not use this constructor" ); }
-										IResource(XSE_IRESOURCE_DECL_PARAMS_DEFAULT) : m_ulResourceHandle( ulHandle ), m_pResourceCreator( pCreator ), XST_IRESOURCE_CTOR {}
+										IResource(XSE_IRESOURCE_DECL_PARAMS_DEFAULT) : m_ResourceHandle( Handle ), m_pResourceCreator( pCreator ), XST_IRESOURCE_CTOR {}
 				
 				virtual					~IResource() 
 										{
-											m_ulResourceHandle = 0;
+											m_ResourceHandle = 0;
 											m_pResourceCreator = xst_null;
-											m_ulResourceGroupId = 0;
+											m_ResourceGroupHandle = 0;
 										}
 
-				xst_fi	ul32			GetResourceHandle()
-										{ return m_ulResourceHandle; }
+				xst_fi	Handle			GetResourceHandle() const
+										{ return m_ResourceHandle; }
+
+                xst_fi  Handle          GetResourceGroupHandle() const
+                                        { return m_ResourceGroupHandle; }
 
 				xst_fi	const FilePtr	GetResourceFile() const
 										{ return this->m_pResourceFile; }
 
-				xst_fi	IResourceManager*	GetResourceCreator()
+				xst_fi	IResourceManager*	GetResourceCreator() const
 											{ return m_pResourceCreator; }
 
 				virtual ResourcePtr		Clone(xst_castring& strName = XST::StringUtil::EmptyAString, bool bFullClone = true);
@@ -55,8 +61,8 @@ namespace XSE
 											this->m_iResourceType = pOther->m_iResourceType;
 										}
 
-				xst_fi	void			SetResource(const ResourcePtr& pOther)
-										{ SetResource( pOther.GetPointer() ); }
+				xst_fi	void			SetResource(const ResourcePtr pOther)
+										{ SetResource( pOther.GetPtr() ); }
 
             protected:
 
@@ -84,14 +90,16 @@ namespace XSE
 			protected:
 
 				IResourceManager*	m_pResourceCreator = xst_null;
-				ul32				m_ulResourceHandle = 0;
-				ul32				m_ulResourceGroupId = 0;
+				Handle				m_ResourceHandle = 0;
+				Handle				m_ResourceGroupHandle = 0;
 		};
 
 	}//resources
 
-	typedef Resources::IResource::ResourcePtr	ResourcePtr;
+	typedef Resources::IResource::ResourcePtr	    ResourcePtr;
+    typedef Resources::IResource::ResourceWeakPtr	ResourceWeakPtr;
 	XST_TEMPLATE_CLASS XST::TCObjectSmartPointer< Resources::IResource >;
+    XST_TEMPLATE_CLASS XST::TCWeakPointer< Resources::IResource >;
 
 }//xse
 

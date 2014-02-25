@@ -89,41 +89,42 @@ namespace XST
 				if( Itr != map.end() && !( map.key_comp()( key, Itr->first ) ) )
 				{
 					//Resource already exists, return failed
+                    if( pItrOut ) *pItrOut = Itr;
 					return RESULT::FAILED;
 				}
 				else
 				{
 					//Resource doesn't exists, add it to the map
 					map.insert( Itr, _M_::value_type( key, value ) );
+                    if( pItrOut ) *pItrOut = Itr;
 					return RESULT::OK;
 				}
 
-				if( pItrOut ) *pItrOut = Itr;
 				return RESULT::FAILED;
 
 			}
 
 			template<class _M_, class _K_, class _V_>
-			static xst_fi void	InsertOnPlace(_M_& map, const _K_& key, const _V_& value, typename _M_::iterator& Itr)
+			static xst_fi void InsertOnPlace(_M_& map, const _K_& key, const _V_& value, typename _M_::iterator& Itr)
 			{
 				map.insert( Itr, _M_::value_type( key, value ) );
 			}
 
 			template<class _M_, class _K_>
-			static xst_fi i32 FindPlace(_M_& map, const _K_& key, typename _M_::iterator* pItrOut = xst_null)
+			static xst_fi bool FindPlace(_M_& map, const _K_& key, typename _M_::iterator* pItrOut = xst_null)
 			{
 
 				//ResourceIterator Itr = m_mResources.lower_bound(_ulID);
 				typename _M_::iterator Itr = map.lower_bound( key );
-				if( pItrOut ) *pItrOut = Itr;
 				if( Itr != map.end() && !( map.key_comp()( key, Itr->first ) ) )
 				{
-					//Resource already exists, return failed
-					return RESULT::OK;
+					//Resource already exists
+                    if( pItrOut ) *pItrOut = map.end();
+					return false;
 				}
 
-				pItrOut = 0;
-				return RESULT::FAILED;
+                if( pItrOut ) *pItrOut = Itr;
+				return true;
 
 			}
 
@@ -259,7 +260,7 @@ namespace XST
 			xst_i i32	AddResourceByHandle(const _HASH_& resId, const Resource& Res)
 			{
 				_ResourceIterator Itr;
-				if( MapUtils::FindPlace( m_mResources, resId, &Itr ) == RESULT::OK )
+				if( !MapUtils::FindPlace( m_mResources, resId, &Itr ) )
 				{
 					return RESULT::FAILED;
 				}
@@ -272,6 +273,11 @@ namespace XST
 			i32 GetResource(const Key& Id, Resource* pResOut)
 			{
 				Hash ResId = HashClass::GetHash( Id );
+                if( m_LastUsedHash == ResId )
+                {
+                    *pResOut = m_LastUsedResource;
+                    return RESULT::OK;
+                }
 				//pResOut = 0;
 				//Find resource
 				_ResourceIterator Itr = m_mResources.find( ResId );
@@ -282,7 +288,8 @@ namespace XST
 				}
 
 				*pResOut = Itr->second;
-
+                m_LastUsedHash = ResId;
+                m_LastUsedResource = Itr->second;
 				return RESULT::OK;
 			}
 
@@ -330,22 +337,32 @@ namespace XST
 
 			void RemoveResources()
 			{
-				typename ResourceMap::iterator Itr = m_mResources.begin();
-				for(; Itr != m_mResources.end(); ++Itr)
-				{
-					if( m_OnResRemoveDelegate ) m_OnResRemoveDelegate( Itr->second );
-				}
+				//typename ResourceMap::iterator Itr = m_mResources.begin();
+				//for(; Itr != m_mResources.end(); ++Itr)
+                if( m_OnResRemoveDelegate )
+                {
+                    for( auto& Itr : m_mResources )
+                    {
+                        m_OnResRemoveDelegate( Itr.second );
+                    }
+                }
 				m_mResources.clear();
+                m_LastUsedHash = 0;
 			}
 
 			void DestroyResources()
 			{
-				typename ResourceMap::iterator Itr = m_mResources.begin();
-				for(; Itr != m_mResources.end(); ++Itr)
-				{
-					if( m_OnResDestroyDelegate ) m_OnResDestroyDelegate( Itr->second );
-				}
+				//typename ResourceMap::iterator Itr = m_mResources.begin();
+				//for(; Itr != m_mResources.end(); ++Itr)
+                if( m_OnResDestroyDelegate )
+                {
+                    for( auto& Itr : m_mResources )
+                    {
+                        m_OnResDestroyDelegate( Itr.second );
+                    }
+                }
 				m_mResources.clear();
+                //m_LastUsedHash = 0;
 			}
 
 			void	_SetDelegates(const Delegate& OnResRemove, const Delegate& OnResDestroy)
@@ -359,16 +376,17 @@ namespace XST
 				m_OnResItrDelegate = OnResItr;
 			}
 
-			void	_ForEachResource()
+			/*void	_ForEachResource()
 			{
 				if( m_OnResItrDelegate )
 				{
-					for(_ResourceIterator Itr = m_mResources.begin(); Itr != m_mResources.end(); ++Itr)
+					//for(_ResourceIterator Itr = m_mResources.begin(); Itr != m_mResources.end(); ++Itr)
+                    for( auto& Itr : m_mResources )
 					{
 						m_OnResItrDelegate( Itr->second );
 					}
 				}
-			}
+			}*/
 
 			xst_fi	void	SetUserData(xst_unknown pUserData)
 							{ m_pUserData = pUserData; }
@@ -387,11 +405,13 @@ namespace XST
         protected:
 
             ResourceMap			m_mResources;
-			bool				m_bManualResourceDestroy;
+            Hash                m_LastUsedHash;
+            Resource            m_LastUsedResource;
 			Delegate			m_OnResDestroyDelegate;
 			Delegate			m_OnResRemoveDelegate;
 			Delegate			m_OnResItrDelegate;
 			xst_unknown			m_pUserData;
+            bool				m_bManualResourceDestroy;
     };
 
 
@@ -468,7 +488,8 @@ namespace XST
 
             typedef _RESOURCE_      Resource;
             typedef XST_RES_GROUP	ResourceGroup;
-            typedef TCObjectSmartPointer< ResourceGroup >  GroupPtr;
+            typedef TCObjectSmartPointer< ResourceGroup >   GroupPtr;
+            typedef TCWeakPointer< ResourceGroup >          WeakGroupPtr;
             //typedef _OPERATOR_		OperatorClass;
             typedef _KEY_           ResourceKey;
 			typedef _HASH_			ResourceHash;
@@ -500,44 +521,25 @@ namespace XST
 				_SetOnRemoveDestroyDelegates();
 			}
 
-            virtual             ~TCResourceManager()
+            virtual ~TCResourceManager()
             {
 
             }
-
-			/*xst_fi	void		SetListener(IResourceListener* pListener)
-			{
-				m_pListener = pListener;
-				_GroupIterator Itr;
-				for(Itr = m_mResources.begin(); Itr != m_mResources.end(); ++Itr)
-				{
-					Itr->second->SetListener( pListener );
-				}
-			}*/
 
 			xst_fi GroupIterator GetGroupIterator()
 			{
 				return this->GetIterator();
 			}
 
-			/*xst_fi ResourceIterator GetResourceIterator(const GroupKey& strGroupName)
-			{
-				GroupPtr pGr = GetGroup( strGroupName );
-				if( pGr.IsNull() )
-				{
-					return ResourceIterator();
-				}
-
-				return pGr->GetIterator();
-			}*/
-
-			xst_fi	GroupPtr	CreateGroup(const GroupKey& strGroupName, const bool& bReturnIfExists = true)
+			xst_fi	WeakGroupPtr	CreateGroup(const GroupKey& strGroupName, const bool& bReturnIfExists = true)
 			{
 				GroupHash groupId = GroupHashClass::GetHash( strGroupName );
+                if( m_LastUsedGroupHash == groupId )
+                    return m_pLastUsedGroup;
 
 				//If resource found return null
 				_GroupIterator Itr;
-				if( MapUtils::FindPlace< GroupMap, GroupHash >( this->m_mResources, groupId, &Itr ) == RESULT::OK )
+				if( !MapUtils::FindPlace< GroupMap, GroupHash >( this->m_mResources, groupId, &Itr ) )
 				{
 					if( bReturnIfExists )
 					{
@@ -555,16 +557,20 @@ namespace XST
 				pGr->_SetGroupName( strGroupName );
 				pGr->_SetGroupHandle( groupId );
 				pGr->_SetDelegates( this->m_OnResRemove, this->m_OnResDestroy );
+                m_pLastUsedGroup = pGr;
+                m_LastUsedGroupHash = groupId;
 				return pGr;
 			}
 
-			xst_fi	GroupPtr	GetOrCreateGroup(const GroupKey& strGroupName)
+			xst_fi	WeakGroupPtr	GetOrCreateGroup(const GroupKey& strGroupName)
 			{
 				GroupHash groupId = GroupHashClass::GetHash( strGroupName );
+                if( m_LastUsedGroupHash == groupId )
+                    return m_pLastUsedGroup;
 
 				//If resource found return it
 				_GroupIterator Itr;
-				if( MapUtils::FindPlace< GroupMap, GroupHash >( this->m_mResources, groupId, &Itr ) == RESULT::OK )
+				if( !MapUtils::FindPlace< GroupMap, GroupHash >( this->m_mResources, groupId, &Itr ) )
 				{
 					return Itr->second;
 				}
@@ -575,13 +581,15 @@ namespace XST
 				pGr->_SetGroupName( strGroupName );
 				pGr->_SetGroupHandle( groupId );
 				pGr->_SetDelegates( this->m_OnResRemove, this->m_OnResDestroy );
+                m_LastUsedGroupHash = groupId;
+                m_pLastUsedGroup = pGr;
 				return pGr;
 			}
 
             xst_i  i32     AddResource(const ResourceKey& resourceName, const Resource& Res, const GroupKey& groupName, bool bCreateGroup = true)
             {
 				//Get the group
-				GroupPtr pGr;
+				WeakGroupPtr pGr;
 				if( bCreateGroup )
 				{
 					pGr = GetOrCreateGroup( groupName );
@@ -611,7 +619,7 @@ namespace XST
 			xst_i	i32	AddResourceByHandle(const ResourceHash& resourceHandle, const Resource& Res, const GroupKey& groupName, bool bCreateGroup = true)
 			{
 				//Get the group
-				GroupPtr pGr;
+				WeakGroupPtr pGr;
 				if( bCreateGroup )
 				{
 					pGr = GetOrCreateGroup( groupName );
@@ -632,7 +640,7 @@ namespace XST
 				return pGr->AddResourceByHandle( resourceHandle, Res );
 			}
 
-			xst_i	i32	AddResourceByHandle(const ResourceHash& resourceHandle, const Resource& Res, const GroupPtr& pGr, bool bCreateGroup = true)
+			xst_fi	i32	AddResourceByHandle(const ResourceHash& resourceHandle, const Resource& Res, const GroupPtr& pGr, bool bCreateGroup = true)
 			{
 				xst_assert( pGr != xst_null, "(XSTTCResourceManager::AddResourceByHandle)" );
 				return pGr->AddResourceByHandle( resourceHandle, Res );
@@ -640,7 +648,7 @@ namespace XST
 
             xst_fi  i32   GetResource(const ResourceKey& resourceName, Resource* pResOut, const GroupKey& groupName)
             {
-                GroupPtr pGr = GetGroup( groupName );
+                WeeakGroupPtr pGr = GetGroup( groupName );
 				if( pGr.IsNull() )
 				{
 					return RESULT::FAILED;
@@ -649,28 +657,31 @@ namespace XST
 				return pGr->GetResource( resourceName, pResOut );
             }
 
-			xst_fi	GroupPtr GetGroupByHandle(const GroupHash& groupHandle)
+			xst_i	WeakGroupPtr GetGroupByHandle(const GroupHash& groupHandle)
 			{
+                if( m_LastUsedGroupHash == groupHandle )
+                    return m_pLastUsedGroup;
 				_GroupIterator Itr = this->m_mResources.find( groupHandle );
 				if( Itr == this->m_mResources.end() )
 				{
 					//XST_RESMGR_LOG( "Resource group: " << groupName << " not found." );
-					return GroupPtr( 0 );
+					return WeakGroupPtr( 0 );
 				}
-
-				return Itr->second;
+                m_LastUsedGroupHash = groupHandle;
+                m_pLastUsedGroup = Itr->second;
+				return m_pLastUsedGroup;
 			}
 
-            xst_fi  GroupPtr GetGroup(const GroupKey& groupName)
+            xst_fi  WeakGroupPtr GetGroup(const GroupKey& groupName)
             {
 				GroupHash groupId = GroupHashClass::GetHash( groupName );
                 return GetGroupByHandle( groupId );
             }
 
-            i32 RemoveResource(const ResourceKey& resName, const GroupKey& groupName)
+            xst_i i32 RemoveResource(const ResourceKey& resName, const GroupKey& groupName)
             {
                 //Get the group
-                GroupPtr pGr = GetGroup( groupName );
+                WeakGroupPtr pGr = GetGroup( groupName );
 				if( pGr.IsNull() )
 				{
 					return RESULT::FAILED;
@@ -685,13 +696,18 @@ namespace XST
 				return RemoveResourceByHandle( resId );
             }
 
-			i32 RemoveResourceByHandle(const _HASH_& resId)
+			xst_i i32 RemoveResourceByHandle(const _HASH_& resId)
             {
-				_GroupIterator GrItr = this->m_mResources.begin();
+				/*_GroupIterator GrItr = this->m_mResources.begin();
 				for(; GrItr != this->m_mResources.end(); ++GrItr)
 				{
 					GrItr->second->RemoveResourceByHandle( resId );
-				}
+				}*/
+
+                for( auto& GrItr : this->m_mResources )
+                {
+                    GrItr.second->RemoveResourceByHandle( resId );
+                }
 
 				return RESULT::OK;
             }
@@ -716,7 +732,7 @@ namespace XST
 			i32 DestroyResource(const ResourceKey& resName, const GroupKey& groupName)
             {
                 //Get the group
-                GroupPtr pGr = GetGroup( groupName );
+                WeakGroupPtr pGr = GetGroup( groupName );
 				if( pGr.IsNull() )
 				{
 					return RESULT::FAILED;
@@ -728,7 +744,7 @@ namespace XST
 			i32 DestroyResourceByHandle(const _HASH_& resId, const GroupKey& groupName)
             {
                 //Get the group
-                GroupPtr pGr = GetGroup( groupName );
+                WeakGroupPtr pGr = GetGroup( groupName );
 				if( pGr.IsNull() )
 				{
 					return RESULT::FAILED;
@@ -740,7 +756,7 @@ namespace XST
 			i32 DestroyResourceByHandle(const _HASH_& resId, const GroupHash& groupHandle)
             {
                 //Get the group
-                GroupPtr pGr = GetGroupByHandle( groupHandle );
+                WeakGroupPtr pGr = GetGroupByHandle( groupHandle );
 				if( pGr.IsNull() )
 				{
 					return RESULT::FAILED;
@@ -770,6 +786,8 @@ namespace XST
 			void DestroyGroups()
 			{
 				this->m_mResources.clear();
+                m_LastUsedGroupHash = 0;
+                m_pLastUsedGroup = xst_null;
 			}
 
 			void	RemoveResource(Resources::IResource* pRes)
@@ -817,6 +835,8 @@ namespace XST
 
         protected:
 
+            GroupHash           m_LastUsedGroupHash = 0;
+            WeakGroupPtr        m_pLastUsedGroup = xst_null;
 			ResourceDelegate	m_OnResRemove;
 			ResourceDelegate	m_OnResDestroy;
 			ResourceDelegate	m_OnResItr;

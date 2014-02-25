@@ -22,11 +22,13 @@ namespace XSE
 									CMaterialManager(CShaderManager* pShaderMgr);
 			virtual					~CMaterialManager();
 
+            virtual i32				Init() xst_implement;
+
 					MaterialPtr		CreateMaterial(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
 
 					i32				PrepareMaterials(xst_castring& strGroup);
 
-					i32				PrepareResource(ResourcePtr pRes);
+					i32				PrepareResource(ResourcePtr pRes) xst_implement;
 
 					MaterialPtr		LoadMaterial(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
 
@@ -48,8 +50,7 @@ namespace XSE
 
 		protected:
 
-					i32				_Init();
-			virtual	Resources::IResource*	_CreateResource(xst_castring& strName, cul32& ulHandle, GroupPtr pGroup);
+			virtual	Resources::IResource*	_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup) xst_implement;
 			virtual	i32				_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null);
 
 		protected:

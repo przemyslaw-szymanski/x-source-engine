@@ -90,10 +90,10 @@ namespace XSE
 			const Vec3&						GetTranslation() const
 											{ return m_vecTranslation; }
 
-			const MeshPtr&					GetMesh() const
+			WeakMeshPtr				        GetMesh() const
 											{ return m_pMesh; }
 
-			MeshPtr							GetMesh()
+			WeakMeshPtr						GetMesh()
 											{ return m_pMesh; }
 
 			i32								SetVertexData(const CVertexData& Data);

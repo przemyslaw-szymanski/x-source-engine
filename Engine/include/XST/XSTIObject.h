@@ -26,7 +26,7 @@ namespace XST
 									#if defined ( XST_OBJ_DEBUG )
 										if( m_lRefCounter > 0 )
 										{
-											//XST_LOG_WRN( "Object: " << this->m_strDbgName << " reference counter is: " << m_lRefCounter << ". This object could not be destroyed" );
+											XST_LOG_WRN( "Object: " << this->m_strDbgName << " reference counter is: " << m_lRefCounter << ". This object could not be destroyed" );
 										}
 									#endif //XST_OBJ_DEBUG
 										m_lRefCounter = 0;
@@ -41,6 +41,12 @@ namespace XST
 										delete this;
 									}
 								}
+
+                void            _ForceRelease()
+                                {
+                                    m_lRefCounter = 1;
+                                    Release();
+                                }
 
 		xst_fi	l32			    AddRef()
 								{ return ++m_lRefCounter; }

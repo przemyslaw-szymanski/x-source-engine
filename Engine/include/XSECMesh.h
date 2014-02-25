@@ -50,6 +50,7 @@ namespace XSE
 			public:
 
 				typedef XST::TCObjectSmartPointer< CMesh >	MeshPtr;
+                typedef XST::TCWeakPointer< CMesh >         WeakMeshPtr;
 
 				//XST_TYPEDEF_OBJSMART_PTR( CMesh )	MeshPtr;
 
@@ -74,6 +75,9 @@ namespace XSE
 						void				Disable(cu32& uiReason) xst_implement;
 
                         void                SetVisible(bool bVisible) xst_implement;
+
+                xst_fi  Handle              GetObjectHandle() const xst_implement
+                                            { return this->GetResourceHandle(); }
 
 						VertexBufferPtr		CreateVertexBuffer();
 						
@@ -135,9 +139,6 @@ namespace XSE
 				//xst_fi	xst_castring&		GetObjectName() const
 				//							{ return this->_GetDbgName(); /*this->m_strResourceName;*/ }
 
-				xst_fi	ul32				GetObjectHandle() const
-											{ return this->m_ulResourceHandle; }
-
 						void				SetInputLayout(IInputLayout* pIL);
 
 			protected:
@@ -165,10 +166,12 @@ namespace XSE
 		};
 
 		XST_TEMPLATE_CLASS XST::TCObjectSmartPointer< CMesh >;
+        XST_TEMPLATE_CLASS XST::TCWeakPointer< CMesh >;
 
 	}//resources
 
 	typedef Resources::CMesh::MeshPtr MeshPtr;
+    typedef Resources::CMesh::WeakMeshPtr WeakMeshPtr;
 
 }//xse
 

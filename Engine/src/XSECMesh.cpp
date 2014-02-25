@@ -134,7 +134,7 @@ namespace XSE
 
 		void CMesh::SetMaterial(XSE::MaterialPtr pMat, cu32& uiLODId)
 		{
-			xst_assert( pMat != xst_null, "(CMesh::SetMaterial)" );
+			xst_assert( pMat != xst_null, "(CMesh::SetMaterial) Trying to set a null material" );
 			//TODO Override GetMaterial method for mesh. Should returns current lod material
 			m_pMaterial = pMat;
 			if( uiLODId < m_vLODs.size() )
@@ -300,7 +300,7 @@ namespace XSE
 		i32 CMesh::_Render()
 		{
 			xst_assert( this->m_pCurrentLOD != xst_null, "(CMesh::_Render) No LOD set for mesh" );
-			const IVertexBuffer* pVB = this->m_pCurrentLOD->pVertexBuffer.GetPointer(); //this->m_pVertexBuffer.GetPointer();
+			const IVertexBuffer* pVB = this->m_pCurrentLOD->pVertexBuffer.GetPtr(); //this->m_pVertexBuffer.GetPtr();
 			m_pRS->SetVertexBufferWithCheck( pVB );
 			return m_pRS->DrawVertexBuffer( pVB );
 		}
@@ -308,8 +308,8 @@ namespace XSE
 		i32 CMesh::_RenderIndexed()
 		{
 			xst_assert( this->m_pCurrentLOD != xst_null, "(CMesh::_RenderIndexed) No LOD set for mesh" );
-			IVertexBuffer* pVB = this->m_pCurrentLOD->pVertexBuffer.GetPointer();
-			IIndexBuffer* pIB = this->m_pCurrentLOD->pIndexBuffer.GetPointer();
+			IVertexBuffer* pVB = this->m_pCurrentLOD->pVertexBuffer.GetPtr();
+			IIndexBuffer* pIB = this->m_pCurrentLOD->pIndexBuffer.GetPtr();
 			//DebugPrintIndexData( pIB->GetIndexData() );
 			m_pRS->SetVertexBufferWithCheck( pVB );
 			m_pRS->SetIndexBufferWithCheck( pIB );

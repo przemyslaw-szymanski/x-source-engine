@@ -882,6 +882,9 @@
     <ClInclude Include="..\..\Engine\include\XST\XSTTCPool.h">
       <Filter>include\XST</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIResourceGroup.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine\dllmain.cpp">
@@ -1492,6 +1495,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine\src\XST\XSTTCPool.cpp">
       <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSEIResourceGroup.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

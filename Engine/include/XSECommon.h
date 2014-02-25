@@ -61,7 +61,9 @@ namespace XSE
 {
 	using namespace XST::Types;
 
+    class IResourceGroup;
 	class IResourceManager;
+    class IResourceManager2;
 	class CLuaScriptManager;
 	class CMaterialManager;
 	class CTextureManager;

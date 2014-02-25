@@ -131,11 +131,14 @@ namespace XST
 		#if defined XST_STL
 		#	define xst_vector		std::vector
 		#	define xst_list			std::list
-		#   if defined (XST_VISUAL_STUDIO)
-		#	    define xst_map		stdext::hash_map
-		#   else
-		#       define xst_map      std::map
-		#   endif //XST_VISUAL_STUDIO
+        #   if defined ( XST_VISUAL_STUDIO )
+        #       define xst_map          stdext::hash_map
+        #   elif defined ( XST_GCC )
+        #       define xst_map          std::tr1::hash_map
+        #else
+        #   error "Compiler not supproted"
+        #endif // XST_VISUAL_STUDIO
+        #   define xst_hash_table   std::unordered_map
 		#	define xst_pair			std::pair
 		#	define xst_astring		std::string
 		#	define xst_wstring		std::wstring
@@ -154,6 +157,7 @@ namespace XST
 		#	define xst_pair			_STL::pair
 		#	define xst_astring		_STL::string
 		#	define xst_wstring		_STL::wstring
+#error "STL port types not defined"
 		#endif //_USING_STL
 
 		#if defined (XST_WINDOWS)

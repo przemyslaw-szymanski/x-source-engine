@@ -60,7 +60,10 @@ i32 CSampleMgr::InitEngine(u32 uiWindowHandle)
 
 	//Init resources
 	XSE::CResourceFileManager* pFileMgr = XSE::CResourceFileManager::GetSingletonPtr();
-	pFileMgr->AddLocation( "Data", "Sample", "FileSystem", true );
+    if( XST_FAILED( pFileMgr->AddLocation( "Data", "Sample", "FileSystem", true ) ) )
+    {
+        return XST_FAIL;
+    }
 	if( XST_FAILED( pFileMgr->PrepareAllGroups() ) )
 	{
 		return XST_FAIL;
@@ -128,7 +131,7 @@ ISample* CSampleMgr::GetSample(xst_castring& strName)
 
 void CSampleMgr::RenderSample()
 {
-	if( m_pCurrSample != xst_null )
+	if( m_pCurrSample != xst_null/* && m_pCurrSample->IsReady()*/ )
 	{
 		m_pRenderWnd->BeginRenderFrame();
 		m_pRenderWnd->EndRenderFrame();
@@ -156,6 +159,7 @@ bool CSampleMgr::RunSample(xst_castring& strName)
 	}
 
 	m_pCurrSample = pSample;
+    m_pCurrSample->SetReady( false );
 	if( m_pCurrSample->Init( m_pEngine, m_pRenderWnd ) != XST_OK )
 	{
 		return false;
@@ -164,6 +168,7 @@ bool CSampleMgr::RunSample(xst_castring& strName)
 	m_pRenderWnd->GetKeyboard()->AddListener( m_pCurrSample );
 	m_pRenderWnd->GetMouse()->AddListener( m_pCurrSample );
 	m_pRenderWnd->Show( true );
+    m_pCurrSample->SetReady( true );
 	return m_pCurrSample->Run() == XST_OK;
 }
 

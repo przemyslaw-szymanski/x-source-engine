@@ -173,32 +173,32 @@ namespace XSE
 		//XST::CMath::EnableFullSSE2();
 		IResourceManager* pTmpMgr = xst_null;
 		pTmpMgr = m_pLuaScriptMgr;
-		if( pTmpMgr->_CreateMemoryPool( XSE_LUA_COUNT ) != RESULT::OK )
+		if( pTmpMgr->CreateMemoryPool( XSE_LUA_COUNT ) != RESULT::OK )
 		{
 			return RESULT::FAILED;
 		}
 		pTmpMgr = m_pMeshMgr;
-		if( pTmpMgr->_CreateMemoryPool( XSE_LUA_COUNT ) != RESULT::OK )
+		if( pTmpMgr->CreateMemoryPool( XSE_LUA_COUNT ) != RESULT::OK )
 		{
 			return RESULT::FAILED;
 		}
 		pTmpMgr = m_pMatMgr;
-		if( XST_FAILED( pTmpMgr->_CreateMemoryPool( XSE_LUA_COUNT ) ) )
+		if( XST_FAILED( pTmpMgr->CreateMemoryPool( XSE_LUA_COUNT ) ) )
 		{
 			return XST_FAIL;
 		}
 		pTmpMgr = m_pModelMgr;
-		if( XST_FAILED( pTmpMgr->_CreateMemoryPool( XSE_LUA_COUNT ) ) )
+		if( XST_FAILED( pTmpMgr->CreateMemoryPool( XSE_LUA_COUNT ) ) )
 		{
 			return XST_FAIL;
 		}
 		pTmpMgr = m_pImgMgr;
-		if( XST_FAILED( pTmpMgr->_CreateMemoryPool( XSE_LUA_COUNT ) ) )
+		if( XST_FAILED( pTmpMgr->CreateMemoryPool( XSE_LUA_COUNT ) ) )
 		{
 			return XST_FAIL;
 		}
 		pTmpMgr = m_pTexMgr;
-		if( XST_FAILED( pTmpMgr->_CreateMemoryPool( XSE_LUA_COUNT ) ) )
+		if( XST_FAILED( pTmpMgr->CreateMemoryPool( XSE_LUA_COUNT ) ) )
 		{
 			return XST_FAIL;
 		}
@@ -252,7 +252,7 @@ namespace XSE
 
 		//Shader manager uses render system to create memory pools for different shader types
 		pTmpMgr = m_pShaderMgr;
-		if( XST_FAILED( pTmpMgr->_CreateMemoryPool( XSE_LUA_COUNT ) ) )
+		if( XST_FAILED( pTmpMgr->CreateMemoryPool( XSE_LUA_COUNT ) ) )
 		{
 			return XST_FAIL;
 		}
@@ -285,37 +285,37 @@ namespace XSE
 
 		//Init managers
 		pTmpMgr = m_pLuaScriptMgr;
-		if( XST_FAILED( pTmpMgr->_Init() ) )
+		if( XST_FAILED( pTmpMgr->Init() ) )
 		{
 			return XST_FAIL;
 		}
 		pTmpMgr = m_pShaderMgr;
-		if( XST_FAILED( pTmpMgr->_Init() ) )
+		if( XST_FAILED( pTmpMgr->Init() ) )
 		{
 			return XST_FAIL;
 		}
 		pTmpMgr = m_pImgMgr;
-		if( XST_FAILED( pTmpMgr->_Init() ) )
+		if( XST_FAILED( pTmpMgr->Init() ) )
 		{
 			return XST_FAIL;
 		}
 		pTmpMgr = m_pTexMgr;
-		if( XST_FAILED( pTmpMgr->_Init() ) )
+		if( XST_FAILED( pTmpMgr->Init() ) )
 		{
 			return XST_FAIL;
 		}
 		pTmpMgr = m_pMatMgr;
-		if( XST_FAILED( pTmpMgr->_Init() ) )
+		if( XST_FAILED( pTmpMgr->Init() ) )
 		{
 			return XST_FAIL;
 		}
 		pTmpMgr = m_pMeshMgr;
-		if( XST_FAILED( pTmpMgr->_Init() ) )
+		if( XST_FAILED( pTmpMgr->Init() ) )
 		{
 			return XST_FAIL;
 		}
 		pTmpMgr = m_pModelMgr;
-		if( XST_FAILED( pTmpMgr->_Init() ) )
+		if( XST_FAILED( pTmpMgr->Init() ) )
 		{
 			return XST_FAIL;
 		}

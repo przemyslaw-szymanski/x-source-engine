@@ -14,19 +14,26 @@ namespace XSE
 	CImageManager::~CImageManager()
 	{
 		//Destroy all image datas
-		IResourceManager::_GroupIterator GrItr;
-		IResourceManager::ResourceIterator ResItr;
-		IImage* pImg = xst_null;
-		xst_stl_foreach( GrItr, this->m_mResources )
-		{
-			ResItr = GrItr->second->GetIterator();
-			for(; ResItr.HasMoreElements(); ResItr.MoveNext())
-			{
-				pImg = (IImage*)ResItr.GetValue().GetPointer();
-				//ResItr.GetValue()->DestroyData();
-				pImg->DestroyData();
-			}
-		}
+		//IResourceManager::_GroupIterator GrItr;
+		//IResourceManager::ResourceIterator ResItr;
+		//IImage* pImg = xst_null;
+		//xst_stl_foreach( GrItr, this->m_mResources )
+		//{
+		//	ResItr = GrItr->second->GetIterator();
+		//	for(; ResItr.HasMoreElements(); ResItr.MoveNext())
+		//	{
+		//		pImg = (IImage*)ResItr.GetValue().GetPtr();
+		//		//ResItr.GetValue()->DestroyData();
+		//		pImg->DestroyData();
+		//	}
+		//}
+
+        IImage* pImg;
+        this->ForEachResource( [&] ( ResourceWeakPtr& pRes, GroupWeakPtr pGroup )
+        {
+            pImg = static_cast< IImage* >( pRes.GetPtr() );
+            pImg->DestroyData();
+        } );
 
 		if( m_pImgSystem && m_pImgSystem->IsAutoDestroy() )
 		{
@@ -34,7 +41,7 @@ namespace XSE
 		}
 	}
 
-	i32 CImageManager::_Init()
+	i32 CImageManager::Init()
 	{
 		if( XST_FAILED( m_pImgSystem->Init() ) )
 		{
@@ -46,7 +53,7 @@ namespace XSE
 
 	i32 CImageManager::CreateImageData(ImagePtr pImg)
 	{
-		return m_pImgSystem->CreateImageData( pImg.GetPointer() );
+		return m_pImgSystem->CreateImageData( pImg.GetPtr() );
 	}
 
 	i32	CImageManager::_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator)
@@ -73,7 +80,7 @@ namespace XSE
 		return RESULT::OK;
 	}
 
-	IResource*	CImageManager::_CreateResource(xst_castring& strName, cul32& ulHandle, GroupPtr pGroup)
+	IResource*	CImageManager::_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup)
 	{
 		IResource* pRes = m_pImgSystem->CreateImage( this, ulHandle, strName, this->m_pMemoryMgr );
 		return pRes;
@@ -93,15 +100,15 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32	CImageManager::PrepareResource(ResourcePtr pRes)
+	i32	CImageManager::PrepareResource(ResourceWeakPtr pRes)
 	{
-		if( XST_FAILED( m_pImgSystem->PrepareResource( pRes.GetPointer() ) ) )
+		if( XST_FAILED( m_pImgSystem->PrepareResource( pRes.GetPtr() ) ) )
 		{
 			return XST_FAIL;
 		}
 
 		//Unload the image if loaded
-		IImage* pImg = (IImage*)pRes.GetPointer();
+		IImage* pImg = (IImage*)pRes.GetPtr();
 		if( pImg->m_pResourceFile != xst_null )
 		{
 			i32 iResult = this->m_pFileMgr->DestroyResource( pImg->m_pResourceFile->GetName() );

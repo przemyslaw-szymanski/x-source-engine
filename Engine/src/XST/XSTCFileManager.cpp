@@ -114,7 +114,7 @@ namespace XST
 		m_mLoaders.clear();
 	}
 
-	/*void CFileManager::_OnDestroyFile(ResourcePtr& pRes)
+	/*void CFileManager::_OnDestroyFile(ResourcePtr pRes)
 	{
 		xst_assert2( pRes != xst_null );
 		FilePtr& pFile = pRes;

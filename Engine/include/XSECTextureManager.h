@@ -9,11 +9,11 @@ namespace XSE
 	{
 		public:
 
-				i32						PrepareResource(ResourcePtr pRes) { return 0; }
+				i32						PrepareResource(ResourcePtr pRes) xst_implement { return 0; }
 
 		protected:
 
-				Resources::IResource*	_CreateResource(xst_castring& strName, cul32& ulHandle, GroupPtr pGroup)
+				Resources::IResource*	_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup) xst_implement
 										{ return xst_null; }
 
 				i32						_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null)

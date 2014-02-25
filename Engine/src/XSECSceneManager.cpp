@@ -169,7 +169,8 @@ namespace XSE
 	{
 		_CameraIterator Itr;
 		ul32 ulHandle = XST::CHash::GetCRC( strName );
-		if( !XST_FAILED( XST::MapUtils::FindPlace( m_mCameras, ulHandle, &Itr ) ) )
+        // If camera exists (no free place on this handle)
+		if( !XST::MapUtils::FindPlace( m_mCameras, ulHandle, &Itr ) )
 		{
 			return Itr->second;
 		}

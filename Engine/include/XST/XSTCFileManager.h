@@ -139,16 +139,14 @@ namespace XST
 
 		protected:
 
-				//void				_OnDestroyFile(ResourcePtr& pRes);
-				//void				_OnRemoveFile(ResourcePtr& pRes) {}
+				//void				_OnDestroyFile(ResourcePtr pRes);
+				//void				_OnRemoveFile(ResourcePtr pRes) {}
 				IFileLoader*		_GetLoader(xst_castring& strName);
 				i32					_GetDefaultDir(xst_castring& strLocation, xst_astring* strDirOut, xst_astring* strPathOut, bool* bDirOut);
 
 		private:
 
 			xst_map< xst_astring, i32 >	m_mExts;
-			bool						m_bAllFilesSupported;
-			bool						m_bExtensionFilter;
 			xst_vector<xst_astring>		m_vLocations;
 			CFileLocationManager*		m_pLocMgr;
 			LoaderMap					m_mLoaders;
@@ -158,6 +156,9 @@ namespace XST
 
 			Delegate					m_OnResRemove;
 			Delegate					m_OnResDestroy;
+
+            bool						m_bAllFilesSupported;
+			bool						m_bExtensionFilter;
 	};
 
 }//xst

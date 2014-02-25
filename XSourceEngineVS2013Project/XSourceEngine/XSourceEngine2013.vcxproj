@@ -100,6 +100,7 @@
     <ClInclude Include="..\..\Engine\include\XSERenderSystemCommon.h" />
     <ClInclude Include="..\..\Engine\include\XSETCData.h" />
     <ClInclude Include="..\..\Engine\include\XSourceEngine.h" />
+    <ClInclude Include="..\..\Engine\include\XSEIResourceGroup.h" />
     <ClInclude Include="..\..\Engine\include\XST\mtrand.h" />
     <ClInclude Include="..\..\Engine\include\XST\STL\XSTTCAlignedAllocator.h" />
     <ClInclude Include="..\..\Engine\include\XST\ThirdParty\FastDelegate\FastDelegate.h" />
@@ -377,6 +378,7 @@
     <ClCompile Include="..\..\Engine\src\XSEMemoryAllocators.cpp" />
     <ClCompile Include="..\..\Engine\src\XSEStaticDefinitions.cpp" />
     <ClCompile Include="..\..\Engine\src\XSourceEngine.cpp" />
+    <ClCompile Include="..\..\Engine\src\XSEIResourceGroup.cpp" />
     <ClCompile Include="..\..\Engine\src\XST\mtrand.cpp" />
     <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lapi.c" />
     <ClCompile Include="..\..\Engine\src\XST\ThirdParty\lua51\lauxlib.c" />

@@ -173,9 +173,9 @@ namespace XSE
 
 			xst_astring					m_strName;
 			SRenderSystemOptions		m_Options;
+            SRSCapapiblities			m_Caps;
 			ShaderSystemMap				m_mpShaderSystems;
 			//RSFeatures					m_Features;
-			SRSCapapiblities			m_Caps;
 	};
 
 	typedef IRenderSystem::UpdateOptionsResults	RSUpdateOptionsResults;

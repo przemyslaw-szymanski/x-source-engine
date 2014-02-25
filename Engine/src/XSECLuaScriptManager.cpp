@@ -38,11 +38,11 @@ namespace XSE
 	i32	CLuaScriptManager::PrepareResource(ResourcePtr pRes)
 	{
 		//Compile script
-		LuaScriptPtr pScript = pRes;
+		LuaScriptWeakPtr pScript = pRes;
 		return pScript->Compile();
 	}
 
-	Resources::IResource* CLuaScriptManager::_CreateResource(xst_castring &strName, cul32 &ulHandle, XSE::IResourceManager::GroupPtr pGroup)
+	Resources::IResource* CLuaScriptManager::_CreateResource(xst_castring &strName, const IResourceManager::ResourceHandle& ulHandle, XSE::IResourceManager::GroupWeakPtr pGroup)
 	{
 		Resources::CLuaScript* pScript = xst_new Resources::CLuaScript( m_pDefaultApi, this, ulHandle, strName, XST::ResourceType::LUA_SCRIPT, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
 		if( pScript == xst_null )
@@ -61,7 +61,7 @@ namespace XSE
 		ResourcePtr pRes = this->CreateResource( strName, strGroupName );
 		if( pRes.IsNull() )
 		{
-			return this->m_pNullRes;
+			return LuaScriptPtr();
 		}
 
 		LuaScriptPtr pScript( pRes );
@@ -72,10 +72,10 @@ namespace XSE
 
 	LuaScriptPtr CLuaScriptManager::LoadScript(xst_castring &strName, xst_castring &strGroupName, XST::CLuaApi* pApi)
 	{
-		ResourcePtr pRes = this->LoadResource( strName, strGroupName );
+		ResourceWeakPtr pRes = this->LoadResource( strName, strGroupName );
 		if( pRes.IsNull() )
 		{
-			return this->m_pNullRes;
+			return LuaScriptPtr();
 		}
 
 		LuaScriptPtr pScript( pRes );
@@ -83,9 +83,9 @@ namespace XSE
 		if( pScript->Load() != RESULT::OK || pScript->Compile() != RESULT::OK )
 		{
 			XST_LOG_ERR( pScript->GetApi().GetLastError() );
-			this->DestroyResourceByHandle( pRes->GetResourceHandle(), strGroupName );
+			this->DestroyResource( pRes );
 			pScript = xst_null;
-			return this->m_pNullRes;
+			return LuaScriptPtr();
 		}
 
 		pScript->m_iResourceState = XST::ResourceStates::LOADED;

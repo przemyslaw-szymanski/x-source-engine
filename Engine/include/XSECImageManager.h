@@ -14,18 +14,20 @@ namespace XSE
 									CImageManager();
 			virtual					~CImageManager();
 
-					ImagePtr		CreateImage(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP)
-									{ return this->CreateResource( strName, strGroupName ); }
+                    i32				Init() xst_implement;    
 
-					i32				LoadImage(ImagePtr pImg, xst_castring& strGroupName = ALL_GROUPS)
-									{ return this->LoadResource( pImg, strGroupName ); }
+					/*ImagePtr		CreateImage(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP)
+									{ return this->CreateResource( strName, strGroupName ); }*/
+
+					/*i32				LoadImage(ImagePtr pImg, xst_castring& strGroupName = ALL_GROUPS)
+									{ return this->LoadResource( pImg, strGroupName ); }*/
 
 					i32				RegisterImageSystem(IImageSystem* pImgSystem, bool bAutoDestroy = true);
 
-					i32				PrepareResource(ResourcePtr pRes);
+					i32				PrepareResource(ResourceWeakPtr pRes);
 
-			xst_fi	i32				PrepareImage(ImagePtr pImg)
-									{ return PrepareResource( pImg ); }
+			/*xst_fi	i32				PrepareImage(ImagePtr pImg)
+									{ return PrepareResource( pImg ); }*/
 
 					i32				CreateImageData(ImagePtr pImg);
 
@@ -34,8 +36,7 @@ namespace XSE
 
 		protected:
 
-					i32				_Init();
-					Resources::IResource*	_CreateResource(xst_castring& strName, cul32& ulHandle, GroupPtr pGroup);
+					Resources::IResource*	_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup) xst_implement;
 					i32						_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null);
 
 		protected:

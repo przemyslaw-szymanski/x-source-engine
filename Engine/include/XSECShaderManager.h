@@ -23,7 +23,9 @@ namespace XSE
 											CShaderManager();
 			virtual							~CShaderManager();
 
-					i32						PrepareResource(ResourcePtr pRes);
+                    i32						Init() xst_implement;
+
+					i32						PrepareResource(ResourcePtr pRes) xst_implement;
 
 					VertexShaderPtr			CompileVertexShader(xst_castring& strName, xst_castring& strEntryPoint, xst_castring& strCode, xst_castring& strGroupName = DEFAULT_GROUP);
 
@@ -53,9 +55,7 @@ namespace XSE
 
 		protected:
 
-					i32						_Init();
-
-				Resources::IResource*	_CreateResource(xst_castring& strName, cul32& ulHandle, GroupPtr pGroup);
+				Resources::IResource*	_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup) xst_implement;
 
 			xst_fi	void				_SetRenderSystem(IRenderSystem* pRS)
 										{ m_pRenderSystem = pRS; }

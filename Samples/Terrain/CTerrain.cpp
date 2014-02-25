@@ -146,8 +146,8 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	u32 uiCount = 11;
 	Options.PageCount = XSE::CPoint( 1, 1 );
 	Options.vHeightmaps.push_back( "heightmap04.jpg" );
-	Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
-	Options.TileVertexCount = XSE::CPoint( 16 + 1 );
+	Options.PageVertexCount = XSE::CPoint( 32 * 1 + 1 );
+	Options.TileVertexCount = XSE::CPoint( 16 * 2 + 1 );
 	//Options.PageVertexCount = XSE::CPoint( 16 * 1 + 1 );
 	//Options.TileVertexCount = XSE::CPoint( 16 + 1 );
 	//Options.PageVertexCount = XSE::CPoint( 32 * 32 + 1 );
@@ -159,6 +159,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	{
 		XSTSimpleProfiler2( "CreateTerrain");
 	XSE::ITerrain* pTerrain = this->m_pSceneMgr->CreateTerrain( "Terrain", Options );
+    xst_assert( pTerrain != xst_null, "(CTerrain::Init) Terrain sample creation failed. Engine error!!!" );
 	}
 	return XSE::RESULT::OK;
 }

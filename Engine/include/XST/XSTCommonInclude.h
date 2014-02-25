@@ -23,6 +23,11 @@
 #include <sstream>
 #include <stack>
 #include <queue>
+#include <unordered_map>
+#include <unordered_set>
+#include <hash_map>
+#include <hash_set>
+#include <functional>
 #else
 #error "Define XST_STL or XST_STLPORT to use stl"
 #endif//XST_STL

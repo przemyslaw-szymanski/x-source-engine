@@ -17,11 +17,11 @@ namespace XSE
 
 					LuaScriptPtr			LoadScript(xst_castring& strName, xst_castring& strGroupName, XST::CLuaApi* pApi = xst_null);
 
-					i32						PrepareResource(ResourcePtr pRes);
+					i32						PrepareResource(ResourcePtr pRes) xst_implement;
 
 		protected:
 
-			virtual	Resources::IResource*	_CreateResource(xst_castring& strName, cul32& ulHandle, GroupPtr pGroup);
+			virtual	Resources::IResource*	_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup) xst_implement;
 			virtual	i32						_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null);
 
 		protected:

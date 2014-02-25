@@ -28,6 +28,12 @@ class SAMPLE_API ISample : public XSE::IKeyboardListener, public XSE::IMouseList
 
 		virtual i32					Run() = 0;
 
+        virtual void                SetReady( bool bIs )
+                                    { m_bIsReady = bIs; }
+
+        virtual bool                IsReady() const
+                                    { return m_bIsReady; }
+
 		virtual void				Update() 
 		{
 			MoveCamera();
@@ -172,6 +178,7 @@ class SAMPLE_API ISample : public XSE::IKeyboardListener, public XSE::IMouseList
 		float					m_fCamRotateSpeed = 0.01f;
 		float					m_fCamMoveSpeed = 0.00001f;
 		bool					m_bDbgCamEnabled = false;
+        bool                    m_bIsReady = false;
 };
 
 #define SAMPLE_EXPORT_FUNC(_ClassName) \

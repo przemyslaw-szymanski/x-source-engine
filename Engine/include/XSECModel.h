@@ -29,11 +29,14 @@ namespace XSE
 										CModel(IRenderSystem* pRS, IInputLayout* pIL, XSE_IRESOURCE_DECL_PARAMS_DEFAULT);
 				virtual					~CModel();
 
-						void			Render(IRenderSystem* pRS);
+						void			Render(IRenderSystem* pRS) xst_implement;
 
-						void			SetVisible(bool bVisible);
+						void			SetVisible(bool bVisible) xst_implement;
 
-						void			Disable(cu32& uiReason);
+						void			Disable(cu32& uiReason) xst_implement;
+
+                xst_fi  Handle          GetObjectHandle() const xst_implement
+                                        { return this->GetResourceHandle(); }
 
 						void			SetMesh(MeshPtr pMesh, cu32& uiId = 0);
 
@@ -42,10 +45,7 @@ namespace XSE
 				/*xst_fi	xst_castring&	GetObjectName() const
 										{ return this->_GetDbgName(); }*/
 
-				xst_fi	ul32			GetObjectHandle() const
-										{ return this->m_ulResourceHandle; }
-
-				virtual void			SetPosition(cf32& fX, cf32& fY, cf32& fZ);
+				virtual void			SetPosition(cf32& fX, cf32& fY, cf32& fZ) xst_implement;
 
 				const CBoundingVolume&	CalcObjectBoundingVolume();
 

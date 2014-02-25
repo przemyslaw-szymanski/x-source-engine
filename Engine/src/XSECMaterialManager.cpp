@@ -37,10 +37,10 @@ namespace XSE
 
 	CMaterialManager::~CMaterialManager()
 	{
-	
+        int a = m_pDefaultMat->GetRefCount();
 	}
 
-	i32 CMaterialManager::_Init()
+	i32 CMaterialManager::Init()
 	{
 		//Create default material
 		Resources::CMaterial* pMat = xst_new Resources::CMaterial( m_pShaderMgr, this, 0, "xse_default_material", XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED, xst_null );
@@ -61,6 +61,7 @@ namespace XSE
 
 		{
 			MaterialPtr pMat = CreateMaterial( DEFAULT_MAT_COLOR, DEFAULT_GROUP );
+            // TODO: implement case if pMat is null if( !pMat ) this resource should be destroyed
 			IPass* pPass = pMat->GetCurrentTechnique()->GetPass( 0 );
 			strShaderCode = m_pShaderMgr->CreateShaderCode( ILEs::POSITION | ILEs::COLOR, ILEs::POSITION | ILEs::COLOR );	
 			VertexShaderPtr pVS = m_pShaderMgr->CompileVertexShader( "xse_default_color_vs", "vs_main", strShaderCode );
@@ -101,13 +102,13 @@ namespace XSE
 		MaterialPtr pMat = this->CreateResource( strName, strGroupName );
 		if( pMat.IsNull() )
 		{
-			return this->m_pNullRes;
+			return MaterialPtr();
 		}
 
 		return pMat;
 	}
 
-	Resources::IResource* CMaterialManager::_CreateResource(xst_castring& strName, cul32& ulHandle, GroupPtr pGroup)
+	Resources::IResource* CMaterialManager::_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup)
 	{
 		Resources::CMaterial* pMat = xst_new Resources::CMaterial( m_pShaderMgr, this, ulHandle, strName, XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
 		if( pMat == xst_null )
@@ -126,7 +127,7 @@ namespace XSE
 		//Get or create default material for this input layout
 		DefaultMatMap::iterator Itr;
 		//If resource not found
-		if( XST_FAILED( XST::MapUtils::FindPlace( m_mDefaultMaterials, pIL, &Itr ) ) )
+		if( XST::MapUtils::FindPlace( m_mDefaultMaterials, pIL, &Itr ) )
 		{
 			//Create new material	
 			CMaterial* pMat = xst_new CMaterial( m_pShaderMgr, this, 0, "Default", XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED, xst_null );
@@ -174,10 +175,10 @@ namespace XSE
 		for(; TableItr != MaterialsTable.GetChildTableMap().end(); ++TableItr)
 		{
 			XST::CLuaTable* pTmpTable = TableItr->second;
-			if( pTmpTable == xst_null || this->IsResourceExists( TableItr->first ) ) continue;
+			if( pTmpTable == xst_null || this->GetResource( TableItr->first ) ) continue;
 
 			MaterialPtr pMat = CreateMaterial( TableItr->first, strGroup );
-			if( Parser.Parse( pMat.GetPointer(), pTmpTable ) != RESULT::OK )
+			if( Parser.Parse( pMat.GetPtr(), pTmpTable ) != RESULT::OK )
 			{
 				continue;
 			}
@@ -191,10 +192,11 @@ namespace XSE
 		LuaScriptPtr pScript = CLuaScriptManager::GetSingletonPtr()->LoadScript( strName, strGroupName, &m_LuaApi );
 		if( pScript.IsNull() )
 		{
-			return this->m_pNullRes;
+			return MaterialPtr();
 		}
 
-		return this->m_pNullRes;
+        xst_assert( 0, "(CMaterialManager::LoadMaterial) Not implemented" );
+		return MaterialPtr();
 	}
 
 	i32 CMaterialManager::SaveMaterial(xst_castring &strFileName, XSE::MaterialPtr pMat)

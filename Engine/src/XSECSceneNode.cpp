@@ -271,14 +271,14 @@ namespace XSE
 	{
 		xst_assert( !pObject.IsNull(), "(CSceneNode::AddObject) Object is nul" );
 
-		IRenderableObject* pObj = pObject.GetPointer();
+		IRenderableObject* pObj = pObject.GetPtr();
 		pObj->_SetSceneNode( this );;
 		return AddObject( pObj );
 	}
 
 	i32 CSceneNode::RemoveObject(const RenderableObjectPtr& pObject)
 	{
-		return RemoveObject( pObject.GetPointer() );
+		return RemoveObject( pObject.GetPtr() );
 	}
 
 	i32 CSceneNode::RemoveObject(const CObject* pObject)

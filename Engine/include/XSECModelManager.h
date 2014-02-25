@@ -14,7 +14,7 @@ namespace XSE
 										CModelManager(CMeshManager* pMeshMgr);
 										~CModelManager();
 
-				i32						PrepareResource(ResourcePtr pRes);
+				i32						PrepareResource(ResourcePtr pRes) xst_implement;
 
 				ModelPtr				CreateModel(xst_castring& strName, xst_castring& strGroup = DEFAULT_GROUP);
 				ModelPtr				CreateModel(xst_castring& strName, BASIC_SHAPE eShape, IInputLayout* pLayout, xst_unknown pOptions = xst_null, xst_castring& strGroup = DEFAULT_GROUP);
@@ -44,14 +44,14 @@ namespace XSE
 			const IRenderSystem*		GetRenderSystem() const
 										{ return m_pRenderSystem; }
 
-					ResourcePtr			CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true);
+					ResourcePtr		CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true) xst_implement;
 
 			xst_fi	ModelPtr			CloneModel(const ModelPtr& pSrcModel, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true)
-										{ return CloneResource( pSrcModel.GetPointer(), strNewName, bFullClone ); }
+										{ return CloneResource( pSrcModel.GetPtr(), strNewName, bFullClone ); }
 
 		protected:
 
-				Resources::IResource*	_CreateResource(xst_castring& strName, cul32& ulHandle, GroupPtr pGroup);
+				Resources::IResource*	_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup) xst_implement;
 
 			xst_fi	void				_SetRenderSystem(IRenderSystem* pRS)
 										{ m_pRenderSystem = pRS; }
