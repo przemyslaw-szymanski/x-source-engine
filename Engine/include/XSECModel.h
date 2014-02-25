@@ -75,7 +75,7 @@ namespace XSE
 				xst_fi	MeshPtr			GetMesh(cu32& uiId = 0)
 										{ return m_vMeshes[ uiId ]; }
 
-						u32				AddMesh(MeshPtr& pMesh, bool bSetModelMaterial = false);
+						u32				AddMesh(MeshPtr pMesh, bool bSetModelMaterial = false);
 
 				xst_fi u32				GetMeshCount()
 										{ return m_vMeshes.size(); }

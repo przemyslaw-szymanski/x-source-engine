@@ -66,10 +66,10 @@ namespace XSE
 					i32				DestroyChildNode(cul32& ulHandle);
 					i32				DestroyChildNode(CSceneNode* pNode);
 
-					i32				AddObject(const RenderableObjectPtr& pObject);
+					i32				AddObject(RenderableObjectPtr pObject);
 					i32				AddObject(CObject* pObject);
 
-					i32				RemoveObject(const RenderableObjectPtr& pObject);
+					i32				RemoveObject(RenderableObjectPtr pObject);
 					i32				RemoveObject(const CObject* pObject);
 
 					void			Reorganize();

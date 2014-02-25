@@ -122,7 +122,7 @@ namespace XSE
 			m_byCurrLod = byLOD;
 		}
 
-		u32 CModel::AddMesh(MeshPtr& pMesh, bool bSetModelMaterial)
+		u32 CModel::AddMesh(MeshPtr pMesh, bool bSetModelMaterial)
 		{ 
 			this->m_pSceneNode->AddObject( pMesh );
 			m_vMeshes.push_back( pMesh ); 

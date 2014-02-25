@@ -12,7 +12,7 @@ namespace XST
 	template<class _T_>
 	class TCWeakPointer
 	{
-        friend class TCObjectSmartPointer< _T_ >;
+        //friend class TCObjectSmartPointer< _T_ >;
 		public:
 
             xst_fi TCWeakPointer()
@@ -23,9 +23,6 @@ namespace XST
 
             template< class _A_ >
             xst_fi TCWeakPointer(const TCWeakPointer< _A_ >& Ptr) : TCWeakPointer( static_cast< _T_* >( Ptr.GetPtr() ) )
-            {}
-
-            xst_fi TCWeakPointer(const TCObjectSmartPointer< _T_ >& Ptr) : TCWeakPointer( Ptr.GetPtr() )
             {}
 
             template< class _A_ >
@@ -40,22 +37,16 @@ namespace XST
 				m_pPtr = xst_null;
 			}
 
+			xst_fi TCWeakPointer& operator=(const TCWeakPointer& Right)
+            {
+                m_pPtr = Right.m_pPtr;
+                return *this;
+            }
+
             template< class _A_ >
             xst_fi TCWeakPointer& operator=(const TCWeakPointer< _A_ >& Right)
             {
                 m_pPtr = static_cast< _T_*>( Right.GetPtr() );
-                return *this;
-            }
-
-            xst_fi TCWeakPointer& operator=(const TCWeakPointer& Right)
-            {
-                m_pPtr = Right.m_pPtr;
-                return *this;
-            }
-
-            xst_fi TCWeakPointer& operator=(const TCObjectSmartPointer< _T_ >& Right)
-            {
-                m_pPtr = Right.m_pPtr;
                 return *this;
             }
 
@@ -72,17 +63,11 @@ namespace XST
                 return *this;
             }
 
-            xst_fi _T_*	operator->()
-            { return m_pPtr; }
-
             xst_fi _T_*	operator->() const
             { return m_pPtr; }
 
             xst_fi operator bool() const
             { return m_pPtr != xst_null; }
-
-            xst_fi bool operator!() const
-            { return !m_pPtr; }
 
             xst_fi bool operator==(const TCWeakPointer& Right) const
             { return m_pPtr == Right.m_pPtr; }
@@ -183,7 +168,7 @@ namespace XST
     template<class _T_>
     class TCObjectSmartPointer
     {
-        friend class TCWeakPointer< _T_ >;
+        //friend class TCWeakPointer< _T_ >;
 
         public:
 
@@ -192,11 +177,6 @@ namespace XST
 
             xst_fi TCObjectSmartPointer(const TCObjectSmartPointer& Right)
             {                                                           
-                _BaseSetPtr( Right.m_pPtr );
-            }
-
-            xst_fi TCObjectSmartPointer(const TCWeakPointer< _T_ >& Right)
-            {
                 _BaseSetPtr( Right.m_pPtr );
             }
 
@@ -252,36 +232,24 @@ namespace XST
                 return TCWeakPointer< _T_ >( this->m_pPtr );
             }
 
-            template< class _A_>
+            template< class _A_ >
             xst_fi operator TCWeakPointer< _A_ >() const
             {
                 return TCWeakPointer< _A_ >( static_cast< _A_* >( this->m_pPtr ) );
             }
 
-            xst_fi TCObjectSmartPointer& operator=(const TCWeakPointer< _T_ >& Right)
-            {
-                _SetPtr( Right.m_pPtr );
-                return *this;
-            }
-
             template< class _A_ >
             xst_i TCObjectSmartPointer& operator=(const TCWeakPointer< _A_ >& Right)
             {
-                _SetPtr( Right.m_pPtr );
+                _SetPtr( Right.GetPtr() );
                 return *this;
             }
-
-            xst_fi _T_*	operator->()
-            { return m_pPtr; }
 
             xst_fi _T_*	operator->() const
             { return m_pPtr; }
 
             xst_fi operator bool() const
             { return m_pPtr != xst_null; }
-
-            xst_fi bool operator!() const
-            { return !m_pPtr; }
 
             xst_fi bool operator==(const TCObjectSmartPointer& Right) const
             { return m_pPtr == Right.m_pPtr; }
@@ -290,10 +258,10 @@ namespace XST
             { return m_pPtr != Right.m_pPtr; }
 
             xst_fi bool operator==(const TCWeakPointer< _T_ >& Right) const
-            { return m_pPtr == Right.m_pPtr; }
+            { return m_pPtr == Right.GetPtr(); }
 
             xst_fi bool operator!=(const TCWeakPointer< _T_ >& Right) const
-            { return m_pPtr != Right.m_pPtr; }
+            { return m_pPtr != Right.GetPtr(); }
 
 			xst_fi bool IsNull() const
             { return m_pPtr == xst_null; }

@@ -102,8 +102,7 @@ namespace XSE
 
 			m_pDynamicGeometry->Build();
 
-			m_pSceneMgr->AddToRenderQueue( RenderQueueTypes::GUI, m_pDynamicGeometry );
-
+			//m_pSceneMgr->AddToRenderQueue( RenderQueueTypes::GUI, m_pDynamicGeometry );
 			m_pMeshMgr->DestroyResource( pMesh );
 			return XST_OK;
 		}

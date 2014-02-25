@@ -70,6 +70,11 @@ namespace XSE
 		return pScript;
 	}
 
+	void Test( ResourcePtr p )
+	{
+
+	}
+
 	LuaScriptPtr CLuaScriptManager::LoadScript(xst_castring &strName, xst_castring &strGroupName, XST::CLuaApi* pApi)
 	{
 		ResourceWeakPtr pRes = this->LoadResource( strName, strGroupName );
@@ -77,7 +82,7 @@ namespace XSE
 		{
 			return LuaScriptPtr();
 		}
-
+		Test( pRes );
 		LuaScriptPtr pScript( pRes );
 		pScript->m_pApi = ( pApi != xst_null )? pApi : m_pDefaultApi;
 		if( pScript->Load() != RESULT::OK || pScript->Compile() != RESULT::OK )

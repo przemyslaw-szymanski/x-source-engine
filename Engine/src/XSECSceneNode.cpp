@@ -267,7 +267,7 @@ namespace XSE
 		return XST_FAIL;
 	}
 
-	i32 CSceneNode::AddObject(const RenderableObjectPtr& pObject)
+	i32 CSceneNode::AddObject(RenderableObjectPtr pObject)
 	{
 		xst_assert( !pObject.IsNull(), "(CSceneNode::AddObject) Object is nul" );
 
@@ -276,7 +276,7 @@ namespace XSE
 		return AddObject( pObj );
 	}
 
-	i32 CSceneNode::RemoveObject(const RenderableObjectPtr& pObject)
+	i32 CSceneNode::RemoveObject(RenderableObjectPtr pObject)
 	{
 		return RemoveObject( pObject.GetPtr() );
 	}

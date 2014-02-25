@@ -49,11 +49,11 @@ namespace XSE
 										{ return m_uiElementType; }
 
 			virtual void			AddObject(IRenderableObject* pObject);
-			virtual	void			AddObject(const RenderableObjectPtr& pObject)
+			virtual	void			AddObject(RenderableObjectPtr pObject)
 									{ AddObject( pObject.GetPtr() ); }
 
 			virtual void			RemoveObject(IRenderableObject* pObject);
-			virtual void			RemoveObject(const RenderableObjectPtr& pObject)
+			virtual void			RemoveObject(RenderableObjectPtr pObject)
 									{ RemoveObject( pObject.GetPtr() ); }
 
 			xst_fi	bool			IsManualDestroy() const

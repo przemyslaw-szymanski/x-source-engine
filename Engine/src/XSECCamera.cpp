@@ -295,12 +295,15 @@ namespace XSE
 #define RIGHT_UP_FAR		6
 #define RIGHT_DOWN_FAR		7
 
+	void Test( RenderableObjectPtr p )
+	{}
+
 	i32 CCamera::_CreateFrustumMesh()
 	{
 		CMeshManager* pMeshMgr = m_pSceneMgr->GetModelManager()->GetMeshManager();
 		IInputLayout* pIL = m_pRS->GetInputLayout( InputLayoutElements::POSITION );
 		MeshPtr pMesh = pMeshMgr->CreateMesh( this->m_strName, pIL, m_pSceneMgr->GetName() );
-
+		Test( pMesh );
 		VertexBufferPtr pVB = pMesh->CreateVertexBuffer();
 		IndexBufferPtr pIB = pMesh->CreateIndexBuffer();
 
