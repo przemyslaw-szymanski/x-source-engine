@@ -150,7 +150,7 @@ namespace XSE
 		        void			DestroyDynamicGeometries();
 
 		xst_fi	void			AddToRenderQueue(RENDER_QUEUE_TYPE eType, const RenderableObjectPtr& pObj)
-		                        { AddToRenderQueue( eType, pObj.GetPointer() ); }
+		                        { AddToRenderQueue( eType, pObj.GetPtr() ); }
 		        void			AddToRenderQueue(RENDER_QUEUE_TYPE eType, IRenderableObject* pObj);
 
 		        i32				SetTerrainSystem(ITerrainSystem* pSystem);
@@ -177,7 +177,7 @@ namespace XSE
 		        void			_AddObject(IRenderableObject* pObj);
 
 		xst_fi	void			_AddObject(const RenderableObjectPtr& pObj)
-		                        { _AddObject( pObj.GetPointer() ); }
+		                        { _AddObject( pObj.GetPtr() ); }
 
 
 	protected:

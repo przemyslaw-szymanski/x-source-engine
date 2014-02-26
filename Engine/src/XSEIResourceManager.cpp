@@ -1,5 +1,6 @@
 #include "../include/XSEIResourceManager.h"
 
+
 namespace XSE
 {
     xst_castring IResourceManager::ALL_GROUPS = "";

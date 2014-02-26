@@ -72,9 +72,9 @@ namespace XSE
 	void CDynamicGeometryGroup::AddMesh(const MeshPtr& pMesh, const MaterialPtr& pMat, const Vec3& vecPos, xst_unknown pUserData)
 	{
 		SubGroup::Object Obj;
-		Obj.m_pMaterial = pMat.GetPointer();
+		Obj.m_pMaterial = pMat.GetPtr();
 		Obj.m_vecPosition = vecPos;
-		Obj.m_pMesh = pMesh.GetPointer();
+		Obj.m_pMesh = pMesh.GetPtr();
 	
 		//m_vObjects.push_back( Obj );
 		m_vObjects.push_back( Obj );
@@ -90,8 +90,8 @@ namespace XSE
 				//Add object to the existing sub group
 				(*Itr).m_vObjects.push_back( Obj );
 				(*Itr).m_vUserDatas.push_back( pUserData );
-				(*Itr).m_ulVertexCount += pMesh.GetPointer()->GetVertexBuffer()->GetVertexCount();
-				(*Itr).m_ulIndexCount += pMesh.GetPointer()->GetIndexBuffer()->GetIndexCount();
+				(*Itr).m_ulVertexCount += pMesh.GetPtr()->GetVertexBuffer()->GetVertexCount();
+				(*Itr).m_ulIndexCount += pMesh.GetPtr()->GetIndexBuffer()->GetIndexCount();
 				break;
 			}
 		}
@@ -102,8 +102,8 @@ namespace XSE
 			SubGr.m_pInputLayout = Obj.m_pMesh->GetInputLayout();
 			SubGr.m_vObjects.push_back( Obj );
 			SubGr.m_vUserDatas.push_back( pUserData );
-			SubGr.m_ulVertexCount += pMesh.GetPointer()->GetVertexBuffer()->GetVertexCount();
-			SubGr.m_ulIndexCount += pMesh.GetPointer()->GetIndexBuffer()->GetIndexCount();
+			SubGr.m_ulVertexCount += pMesh.GetPtr()->GetVertexBuffer()->GetVertexCount();
+			SubGr.m_ulIndexCount += pMesh.GetPtr()->GetIndexBuffer()->GetIndexCount();
 			m_vSubGroups.push_back( SubGr );
 		}
 

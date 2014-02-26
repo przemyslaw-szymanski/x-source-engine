@@ -306,12 +306,12 @@ namespace XSE
 	i32	CShaderManager::PrepareResource(ResourcePtr pRes)
 	{
 		xst_assert( pRes != xst_null, "(CShaderManager::PrepareResource)" );
-		if( XST_FAILED( m_pRenderSystem->GetShaderSystem()->PrepareResource( pRes.GetPointer() ) ) )
+		if( XST_FAILED( m_pRenderSystem->GetShaderSystem()->PrepareResource( pRes.GetPtr() ) ) )
 		{
 			return XST_FAIL;
 		}
 		//pRes->m_iResourceState = ResourceStates::PREPARED;
-		IShader* pShader = (IShader*)pRes.GetPointer();
+		IShader* pShader = (IShader*)pRes.GetPtr();
 		pShader->m_iResourceState = ResourceStates::PREPARED;
 
 		return XST_OK;

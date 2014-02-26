@@ -223,21 +223,21 @@ namespace XSE
 							IPass* pPass1 = m_vTechniques[ t ]->GetPass( p );
 							IPass* pPass2 = pMat->m_vTechniques[ t ]->GetPass( p );
 
-							if( pPass1->GetVertexShader().GetPointer() > pPass2->GetVertexShader().GetPointer() )
+							if( pPass1->GetVertexShader().GetPtr() > pPass2->GetVertexShader().GetPtr() )
 							{
 								return 1;
 							}
-							else if( pPass1->GetVertexShader().GetPointer() < pPass2->GetVertexShader().GetPointer() )
+							else if( pPass1->GetVertexShader().GetPtr() < pPass2->GetVertexShader().GetPtr() )
 							{
 								return -1;
 							}
 							else
 							{
-								if( pPass1->GetPixelShader().GetPointer() > pPass2->GetPixelShader().GetPointer() )
+								if( pPass1->GetPixelShader().GetPtr() > pPass2->GetPixelShader().GetPtr() )
 								{
 									return 1;
 								}
-								else if( pPass1->GetPixelShader().GetPointer() < pPass2->GetPixelShader().GetPointer() )
+								else if( pPass1->GetPixelShader().GetPtr() < pPass2->GetPixelShader().GetPtr() )
 								{
 									return -1;
 								}
@@ -256,7 +256,7 @@ namespace XSE
 
 		i32 CMaterial::Compare(const MaterialPtr& pMat) const
 		{
-			return Compare( pMat.GetPointer() );
+			return Compare( pMat.GetPtr() );
 		}
 
 	}//resources

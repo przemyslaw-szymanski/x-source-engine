@@ -50,11 +50,11 @@ namespace XSE
 
 			virtual void			AddObject(IRenderableObject* pObject);
 			virtual	void			AddObject(RenderableObjectPtr pObject)
-									{ AddObject( pObject.GetPointer() ); }
+									{ AddObject( pObject.GetPtr() ); }
 
 			virtual void			RemoveObject(IRenderableObject* pObject);
 			virtual void			RemoveObject(RenderableObjectPtr pObject)
-									{ RemoveObject( pObject.GetPointer() ); }
+									{ RemoveObject( pObject.GetPtr() ); }
 
 			xst_fi	bool			IsManualDestroy() const
 									{ return m_bManualDestroy; }

@@ -7,33 +7,128 @@
 
 namespace XST
 {
-	/*template<class _T_>
+    template< class _T_ > class TCObjectSmartPointer;
+
+	template<class _T_>
 	class TCWeakPointer
 	{
+        friend class TCObjectSmartPointer< _T_ >;
+
 		public:
 
-			explicit    TCWeakPointer(_T_* _pPtr) : m_pPtr( _pPtr )
-                        {
-                        }
+            xst_fi      TCWeakPointer()
+                        {}
 
-						TCWeakPointer(const TCWeakPointer& _Ptr)
-                        {
-                            if( this != &_Ptr )
-                            {
-                                xst_delete( m_pPtr );
-                            }
-                            m_pPtr = _Ptr->m_pPtr;
-                        }
+			explicit
+            xst_fi      TCWeakPointer(_T_* pPtr) : m_pPtr( pPtr )
+                        {}
 
-			virtual		~TCWeakPointer() 
+			xst_fi      TCWeakPointer(const TCWeakPointer& Ptr) : TCWeakPointer( Ptr.m_pPtr )
+                        {}
+
+            template< class _A_ >
+            xst_fi      TCWeakPointer(const TCWeakPointer< _A_ >& Ptr) : TCWeakPointer( static_cast< _T_* >( Ptr.GetPtr() ) )
+                        {}
+
+            template< class _A_ >
+            xst_fi      TCWeakPointer(const TCObjectSmartPointer< _A_ >& Ptr) : TCWeakPointer( static_cast< _T_* >( Ptr.GetPtr() ) )
+                        {}
+
+			virtual
+            xst_fi      ~TCWeakPointer() 
 						{
 							m_pPtr = xst_null;
 						}
 
+            xst_fi TCWeakPointer&   operator=(const TCWeakPointer& Right)
+		    {
+                m_pPtr = Right.m_pPtr;
+			    return *this;
+		    }
+
+		    template<class _A_>
+		    xst_fi TCWeakPointer&   operator=(const TCWeakPointer< _A_ >& Right)
+		    {
+                m_pPtr = static_cast< _T_* >( Right.GetPtr() );
+			    return *this;
+		    }
+
+		    template<class _A_>
+		    xst_fi TCWeakPointer&   operator=(const TCObjectSmartPointer< _A_ >& Right)
+		    {
+                m_pPtr = static_cast< _T_* >( Right.GetPtr() );
+			    return *this;
+		    }
+
+		    xst_fi TCWeakPointer&   operator=(_T_* pRight)
+		    {
+                m_pPtr = pRight;
+			    return *this;
+		    }
+
+		    xst_fi bool	operator==(const TCWeakPointer& pRight) const
+		    {
+			    return this->m_pPtr == pRight.m_pPtr;
+		    }
+
+		    xst_fi bool	operator!=(const TCWeakPointer& pRight) const
+		    {
+			    return this->m_pPtr != pRight.m_pPtr;
+		    }
+
+            xst_fi bool	operator==(const _T_* pRight) const
+		    {
+			    return this->m_pPtr == pRight;
+		    }
+
+		    xst_fi bool	operator!=(const _T_* pRight) const
+		    {
+			    return this->m_pPtr != pRight;
+		    }
+
+		    xst_fi _T_* GetPtr() const
+            {
+                return m_pPtr;
+            }
+
+		    /*xst_fi operator bool() const
+		    {
+			    return m_pPtr != xst_null;
+		    }*/
+
+            xst_fi bool operator!() const
+            { return !m_pPtr; }
+
+            xst_fi bool operator<(const TCWeakPointer& Right) const
+            { return m_pPtr < Right.m_pPtr; }
+
+		    xst_fi _T_*	operator->()
+            {
+                return m_pPtr;
+            }
+
+		    xst_fi const _T_*	operator->() const
+		    {
+			    return m_pPtr;
+		    }
+
+		    xst_fi bool IsNull() const
+		    {
+			    return m_pPtr == xst_null;
+		    }
+
 		protected:
 
             _T_*    m_pPtr = xst_null;
-	};*/
+	};
+
+    template< class _T_ >
+    xst_fi operator bool(const TCObjectSmartPointer< _T_ >& Ptr)
+    { return Ptr.GetPtr() != xst_null; }
+
+    template< class _T_ >
+    xst_fi operator size_t(const TCObjectSmartPointer< _T_ >& Ptr)
+    { return Ptr.GetPtr(); }
 
 	template<class  _T_>
 	class TCSmartPointer //: public TCWeakPointer< _T_ >
@@ -130,193 +225,140 @@ namespace XST
     template<class _T_>
     class TCObjectSmartPointer 
     {
+        friend class TCWeakPointer< _T_ >;
+
         public:
 
-						xst_fi TCObjectSmartPointer() 
-						{
-						}
+			xst_fi TCObjectSmartPointer() 
+			{}
 
-			explicit	xst_fi TCObjectSmartPointer(_T_* pPtr) : m_pPtr( pPtr )
-						{
-						}
+		    explicit xst_fi TCObjectSmartPointer(_T_* pPtr) : m_pPtr( pPtr )
+			{}
 
-						xst_fi TCObjectSmartPointer(const TCObjectSmartPointer& pRight)
-                        {
-							if( m_pPtr != pRight.m_pPtr )
-								delete m_pPtr;
+			xst_fi TCObjectSmartPointer(const TCObjectSmartPointer& Right)
+            {
+                _BaseSetPtr( Right.m_pPtr );
+            }
 
-                            m_pPtr = pRight.m_pPtr;
-							if( m_pPtr )
-								m_pPtr->AddRef();
-                        }
+		    template<class _A_>
+		    xst_fi TCObjectSmartPointer(const TCObjectSmartPointer< _A_ >& Right) 
+		    {
+                _BaseSetPtr( static_cast< _T_* >( Right.GetPtr() ) );
+            }
 
-						xst_fi TCObjectSmartPointer(TCObjectSmartPointer&& pRight)
-                        {
-							if( m_pPtr != pRight.m_pPtr )
-								delete m_pPtr;
+            template<class _A_>
+		    xst_fi TCObjectSmartPointer(const TCWeakPointer< _A_ >& Right) 
+		    {
+                _BaseSetPtr( static_cast< _T_* >( Right.GetPtr() ) );
+            }
 
-                            m_pPtr = pRight.m_pPtr;
-							if( m_pPtr )
-								m_pPtr->AddRef();
-							pRight.Release();
-                        }
+		    virtual	xst_fi  ~TCObjectSmartPointer()
+		    {
+                Release();
+		    }
 
-						template<class _A_>
-						xst_fi TCObjectSmartPointer(const TCObjectSmartPointer< _A_ >& pRight) 
-						{
-							if( m_pPtr != pRight.GetPointer() )
-								delete m_pPtr;
+		    xst_fi	void Release()
+		    {
+			    xst_release( m_pPtr );
+		    }
 
-							m_pPtr = (_T_*)pRight.GetPointer();
-							if( m_pPtr )
-								m_pPtr->AddRef();
-						}
+		    xst_fi TCObjectSmartPointer&   operator=(const TCObjectSmartPointer& Right)
+		    {
+                _SetPtr( Right.m_pPtr );
+			    return *this;
+		    }
 
-						template<class _A_>
-						xst_fi TCObjectSmartPointer(TCObjectSmartPointer< _A_ >&& pRight) 
-						{
-							if( m_pPtr != pRight.GetPointer() )
-								delete m_pPtr;
+		    template<class _A_>
+		    xst_fi TCObjectSmartPointer&   operator=(const TCObjectSmartPointer< _A_ >& Right)
+		    {
+                _SetPtr( static_cast< _T_* >( Right.GetPtr() ) );
+			    return *this;
+		    }
 
-							m_pPtr = (_T_*)pRight.GetPointer();
-							if( m_pPtr )
-								m_pPtr->AddRef();
-							pRight.Release();
-						}
+		    template<class _A_>
+		    xst_fi TCObjectSmartPointer&   operator=(const TCWeakPointer< _A_ >& Right)
+		    {
+                _SetPtr( static_cast< _T_* >( Right.GetPtr() ) );
+			    return *this;
+		    }
 
-		virtual	xst_fi  ~TCObjectSmartPointer()
-		{
-			xst_release( m_pPtr );
-		}
+		    xst_fi TCObjectSmartPointer&   operator=(_T_* pRight)
+		    {
+                _SetPtr( pRight );
+			    return *this;
+		    }
 
-		xst_fi	void Release()
-		{
-			xst_release( m_pPtr );
-		}
+		    xst_fi bool	operator==(const TCObjectSmartPointer& pRight) const
+		    {
+			    return this->m_pPtr == pRight.m_pPtr;
+		    }
 
-		xst_fi TCObjectSmartPointer&   operator=(const TCObjectSmartPointer& pRight)
-		{
-			if( m_pPtr == pRight.m_pPtr )
-				return *this;
+		    xst_fi bool	operator!=(const TCObjectSmartPointer& pRight) const
+		    {
+			    return this->m_pPtr != pRight.m_pPtr;
+		    }
 
-			xst_release( this->m_pPtr );
-			this->m_pPtr = pRight.m_pPtr;
-			if( this->m_pPtr )
-				this->m_pPtr->AddRef();
-			return *this;
-		}
+            xst_fi bool	operator==(const _T_* pRight) const
+		    {
+			    return this->m_pPtr == pRight;
+		    }
 
-		template<class _A_>
-		xst_fi TCObjectSmartPointer&   operator=(const TCObjectSmartPointer< _A_ >& pRight)
-		{
-			if( m_pPtr == pRight.GetPointer() )
-				return *this;
+		    xst_fi bool	operator!=(const _T_* pRight) const
+		    {
+			    return this->m_pPtr != pRight;
+		    }
 
-			xst_release( this->m_pPtr );
-			this->m_pPtr = (_T_*)pRight.GetPointer();
-			if( this->m_pPtr )
-				this->m_pPtr->AddRef();
-			return *this;
-		}
+		    xst_fi _T_* GetPtr() const
+            {
+                return m_pPtr;
+            }
 
-		xst_fi TCObjectSmartPointer&   operator=(TCObjectSmartPointer&& pRight)
-		{
-			if( m_pPtr == pRight.m_pPtr )
-				return *this;
+		    /*xst_fi operator bool() const
+		    {
+			    return m_pPtr != xst_null;
+		    }*/
 
-			xst_release( this->m_pPtr );
-			this->m_pPtr = pRight.m_pPtr;
-			if( this->m_pPtr )
-				this->m_pPtr->AddRef();
-			pRight.Release();
-			return *this;
-		}
+            xst_fi bool operator!() const
+            { return !m_pPtr; }
 
-		template<class _A_>
-		xst_fi TCObjectSmartPointer&   operator=(TCObjectSmartPointer< _A_ >&& pRight)
-		{
-			if( m_pPtr == pRight.GetPointer() )
-				return *this;
+            xst_fi bool operator<(const TCObjectSmartPointer& Right) const
+            { return m_pPtr < Right.m_pPtr; }
 
-			xst_release( this->m_pPtr );
-			this->m_pPtr = (_T_*)pRight.GetPointer();
-			if( this->m_pPtr )
-				this->m_pPtr->AddRef();
-			pRight.Release();
-			return *this;
-		}
+		    xst_fi _T_*	operator->()
+            {
+                return m_pPtr;
+            }
 
-		xst_fi TCObjectSmartPointer&   operator=(_T_* pRight)
-		{
-			if( m_pPtr == pRight )
-				return *this;
-			xst_release( this->m_pPtr );
-			this->m_pPtr = pRight;
-			if( this->m_pPtr )
-				this->m_pPtr->AddRef();
-			return *this;
-		}
+		    xst_fi const _T_*	operator->() const
+		    {
+			    return m_pPtr;
+		    }
 
-		xst_fi const bool	operator==(const TCObjectSmartPointer& pRight) const
-		{
-			return this->m_pPtr == pRight.m_pPtr;
-		}
+		    xst_fi bool IsNull() const
+		    {
+			    return m_pPtr == xst_null;
+		    }
 
-		xst_fi const bool	operator!=(const TCObjectSmartPointer& pRight) const
-		{
-			return this->m_pPtr != pRight.m_pPtr;
-		}
+    protected:
 
-		xst_fi const bool	operator<=(const TCObjectSmartPointer& pRight) const
-		{
-			return this->m_pPtr <= pRight.m_pPtr;
-		}
+            xst_fi void _BaseSetPtr(_T_* pPtr)
+            {
+                m_pPtr = pPtr;
+                if( m_pPtr )
+                    m_pPtr->AddRef();
+            }
 
-		xst_fi const bool	operator>=(const TCObjectSmartPointer& pRight) const
-		{
-			return this->m_pPtr >= pRight.m_pPtr;
-		}
-
-		xst_fi const bool	operator<(const TCObjectSmartPointer& pRight) const
-		{
-			return this->m_pPtr < pRight.m_pPtr;
-		}
-
-		xst_fi const bool	operator>(const TCObjectSmartPointer& pRight) const
-		{
-			return this->m_pPtr > pRight.m_pPtr;
-		}
-
-		xst_fi _T_*        GetPointer() const
-        {
-            return m_pPtr;
-        }
-
-		xst_fi operator bool() const
-		{
-			return m_pPtr != xst_null;
-		}
-
-		xst_fi _T_*	operator->()
-        {
-            return m_pPtr;
-        }
-
-		xst_fi const _T_*	operator->() const
-		{
-			return m_pPtr;
-		}
-
-		xst_fi bool IsNull() const
-		{
-			return m_pPtr == xst_null;
-		}
-
-		xst_fi void operator delete(void* pPtr)
-		{
-			/*TCObjectSmartPointer< _T_ >* pSPtr = (TCObjectSmartPointer< _T_ >*)pPtr;
-			*pSPtr.Release();*/
-		}
+            xst_fi void _SetPtr(_T_* pPtr)
+            {
+                if( m_pPtr != pPtr )
+                {
+                    if( m_pPtr )
+                        m_pPtr->Release();
+                    m_pPtr = pPtr;
+                    if( m_pPtr )
+                        m_pPtr->AddRef();
+                }
+            }
 
     protected:
 

@@ -26,7 +26,7 @@ namespace XSE
 		IImage* pImg;
         this->ForEachResource( [&] ( ResourcePtr pRes, GroupWeakPtr pGroup )
         {
-            pImg = static_cast< IImage* >( pRes.GetPointer() );
+            pImg = static_cast< IImage* >( pRes.GetPtr() );
             pImg->DestroyData();
         } );
 	}
@@ -43,7 +43,7 @@ namespace XSE
 
 	i32 CImageManager::CreateImageData(ImagePtr pImg)
 	{
-		return m_pImgSystem->CreateImageData( pImg.GetPointer() );
+		return m_pImgSystem->CreateImageData( pImg.GetPtr() );
 	}
 
 	i32	CImageManager::_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator)
@@ -92,13 +92,13 @@ namespace XSE
 
 	i32	CImageManager::PrepareResource(ResourcePtr pRes)
 	{
-		if( XST_FAILED( m_pImgSystem->PrepareResource( pRes.GetPointer() ) ) )
+		if( XST_FAILED( m_pImgSystem->PrepareResource( pRes.GetPtr() ) ) )
 		{
 			return XST_FAIL;
 		}
 
 		//Unload the image if loaded
-		IImage* pImg = (IImage*)pRes.GetPointer();
+		IImage* pImg = (IImage*)pRes.GetPtr();
 		if( pImg->m_pResourceFile != xst_null )
 		{
 			i32 iResult = this->m_pFileMgr->DestroyResource( pImg->m_pResourceFile->GetName() );

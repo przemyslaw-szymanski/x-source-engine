@@ -62,7 +62,7 @@ namespace XSE
 		{ XSTSimpleProfiler2( "CreateNode" );
 		m_pMgr->CreateNode( pClonedMesh->GetResourceName() )->AddObject( pClonedMesh );
 		}
-		pObj->m_pAABBMesh = pClonedMesh.GetPointer();
+		pObj->m_pAABBMesh = pClonedMesh.GetPtr();
 		pObj->m_pAABBMesh->SetObjectScale( AABB.CalcSize() );
 		Vec3 vecPos = AABB.CalcCenter();
 		pObj->m_pAABBMesh->SetPosition( AABB.CalcCenter() );

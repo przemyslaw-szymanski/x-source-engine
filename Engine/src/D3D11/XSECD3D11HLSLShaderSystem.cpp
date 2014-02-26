@@ -357,7 +357,7 @@ namespace XSE
 			CVertexShader* pShader = (CVertexShader*)pVS;
 			pShader->m_ulFlags = m_pRS->_GetShaderFlags();
 			//Add default constants
-			//xst_castring& strData = (lpcastr)pShader->GetResourceFile().GetPointer()->GetData().GetData();
+			//xst_castring& strData = (lpcastr)pShader->GetResourceFile().GetPtr()->GetData().GetData();
 			//xst_castring& strShader = HLSL::CreateVShader( strData, pVS->GetEntryPoint() );
 			//XST_LOG_ERR( strShader );
 
@@ -375,7 +375,7 @@ namespace XSE
 			CPixelShader* pShader = (CPixelShader*)pPS;
 			pShader->m_ulFlags = m_pRS->_GetShaderFlags();
 			//Add default constants
-			//xst_castring& strData = (lpcastr)pShader->GetResourceFile().GetPointer()->GetData().GetData();
+			//xst_castring& strData = (lpcastr)pShader->GetResourceFile().GetPtr()->GetData().GetData();
 			//xst_castring& strShader = HLSL::CreatePShader( strData, pPS->GetEntryPoint() );
 
 			if( XST_FAILED( m_pRS->_CompileShader( pShader, m_astrProfiles[ pShader->GetProfile() ].data() ) ) )

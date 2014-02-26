@@ -93,7 +93,7 @@ namespace XSE
         for( u32 i = 0; i < m_vTiles.size(); ++i )
         {
             pCurrTile = m_vTiles[ i ];
-            pCurrMesh = pCurrTile->m_pMesh.GetPointer();
+            pCurrMesh = pCurrTile->m_pMesh.GetPtr();
             if( !pCurrMesh->IsVisible() || pCurrMesh->IsDisabled() )
                 continue;
             const CAABB& AABB = pCurrMesh->GetBoundingVolume().GetAABB();
@@ -591,7 +591,7 @@ namespace XSE
 		TileInfo.VertexCount = m_Options.TileVertexCount;
 		TileInfo.vecHeightRange = m_Options.vecHeightRange;
 		//Temp
-		TileInfo.pHeightmap = m_vPages[ 0 ]->GetImage().GetPointer();
+		TileInfo.pHeightmap = m_vPages[ 0 ]->GetImage().GetPtr();
 
 		for(i32 y = 0; y < m_TileCount.y; ++y)
 		{
@@ -764,7 +764,7 @@ namespace XSE
 		for(u32 t = 0; t < m_vTiles.size(); ++t)
 		{
 			pCurrTile = m_vTiles[t];
-			pCurrMesh = pCurrTile->m_pMesh.GetPointer();
+			pCurrMesh = pCurrTile->m_pMesh.GetPtr();
 			pCurrMesh->SetLODCount( iMaxLODCount );
 			iCurrLOD = 0;
 

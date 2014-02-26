@@ -93,12 +93,12 @@ namespace XSE
 
 	i32	CCGShaderSystem::CompileVertexShader(Resources::IVertexShader* pVS)
 	{
-		return CompileVertexShader( (lpcastr)pVS->GetResourceFile().GetPointer()->GetData().GetData(), 0, pVS );
+		return CompileVertexShader( (lpcastr)pVS->GetResourceFile().GetPtr()->GetData().GetData(), 0, pVS );
 	}
 	
 	i32	CCGShaderSystem::CompilePixelShader(Resources::IPixelShader* pPS)
 	{
-		return CompilePixelShader( (lpcastr)pPS->GetResourceFile().GetPointer()->GetData().GetData(), 0, pPS );
+		return CompilePixelShader( (lpcastr)pPS->GetResourceFile().GetPtr()->GetData().GetData(), 0, pPS );
 	}
 
 	i32	CCGShaderSystem::CompileVertexShader(lpcastr lpszShaderCode, ul32 ulCodeSize, Resources::IVertexShader* pVS)

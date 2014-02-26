@@ -285,8 +285,8 @@ fclose( pFile );
 	{
 		//pRS->SetVertexBuffer( this->m_pVBuffer );
 		/*pRS->SetInputLayout( this->m_pInputLayout );
-		pRS->SetVertexShader( this->m_pMaterial->GetVertexShader().GetPointer() );
-		pRS->SetPixelShader( this->m_pMaterial->GetPixelShader().GetPointer() );
+		pRS->SetVertexShader( this->m_pMaterial->GetVertexShader().GetPtr() );
+		pRS->SetPixelShader( this->m_pMaterial->GetPixelShader().GetPtr() );
 		pRS->SetTranslation( 0, 0, 0 );
 		pRS->SetTopology( TopologyTypes::TRIANGLE_STRIP );
 		pRS->UpdateObjectInputs();
@@ -299,8 +299,8 @@ fclose( pFile );
 
 		TileVector::iterator Itr;
 		pRS->SetInputLayout( this->m_pInputLayout );
-		pRS->SetVertexShader( this->m_pMaterial->GetVertexShader().GetPointer() );
-		pRS->SetPixelShader( this->m_pMaterial->GetPixelShader().GetPointer() );
+		pRS->SetVertexShader( this->m_pMaterial->GetVertexShader().GetPtr() );
+		pRS->SetPixelShader( this->m_pMaterial->GetPixelShader().GetPtr() );
 		pRS->SetTopology( TopologyTypes::TRIANGLE_STRIP );
 
 		pRS->SetTranslation( 0, 0, 0 );
@@ -341,8 +341,8 @@ fclose( pFile );
 					pRS->DrawVertexBuffer( pTile->m_pVBNormals );
 
 					pRS->SetInputLayout( this->m_pInputLayout );
-					pRS->SetVertexShader( this->m_pMaterial->GetVertexShader().GetPointer() );
-					pRS->SetPixelShader( this->m_pMaterial->GetPixelShader().GetPointer() );
+					pRS->SetVertexShader( this->m_pMaterial->GetVertexShader().GetPtr() );
+					pRS->SetPixelShader( this->m_pMaterial->GetPixelShader().GetPtr() );
 					pRS->SetTopology( TopologyTypes::TRIANGLE_STRIP );
 				}
 			}

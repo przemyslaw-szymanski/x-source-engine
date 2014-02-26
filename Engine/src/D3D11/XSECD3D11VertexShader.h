@@ -43,10 +43,10 @@ namespace XSE
 										{ return this->m_strShaderEntryPoint.data(); }
 
 						cu8*			_GetShaderData() 
-										{ xst_assert( this->m_pResourceFile != xst_null, "(CD3D11VertexShader::_GetShaderData)" ); return this->m_pResourceFile->GetData().GetData(); }
+										{ xst_assert( !this->m_pResourceFile.IsNull(), "(CD3D11VertexShader::_GetShaderData)" ); return this->m_pResourceFile->GetData().GetData(); }
 
 						ul32			_GetShaderDataSize()
-										{ xst_assert( this->m_pResourceFile != xst_null, "(CD3D11VertexShader::_GetShaderData)" ); return this->m_pResourceFile->GetData().GetSize(); }
+										{ xst_assert( !this->m_pResourceFile.IsNull(), "(CD3D11VertexShader::_GetShaderData)" ); return this->m_pResourceFile->GetData().GetSize(); }
 
 			protected:
 

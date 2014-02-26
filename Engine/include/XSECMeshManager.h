@@ -48,7 +48,7 @@ namespace XSE
 					ResourcePtr  	CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true) xst_implement;
 
 			xst_fi	MeshPtr				CloneMesh(const MeshPtr& pMesh, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true)
-										{ return CloneResource( pMesh.GetPointer(), strNewName, bFullClone ); }
+										{ return CloneResource( pMesh.GetPtr(), strNewName, bFullClone ); }
 
 					i32					SetDefaultMesh(MeshPtr pMesh);
 

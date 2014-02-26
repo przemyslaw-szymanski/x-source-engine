@@ -56,11 +56,11 @@ namespace XSE
 
         virtual ResourcePtr      RemoveResource( xst_castring& strName );
         virtual ResourcePtr      RemoveResource( const ResourceHandle& ulResourceHandle );
-        virtual ResourcePtr      RemoveResource( const ResourcePtr pRes );
+        virtual ResourcePtr      RemoveResource( ResourceWeakPtr pRes );
 
         i32      DestroyResource( xst_castring& strName );
         i32      DestroyResource( const ResourceHandle& ulResourceHandle );
-        i32      DestroyResource( ResourcePtr pRes );
+        i32      DestroyResource( ResourceWeakPtr pRes );
 
         virtual xst_i ResourceHandle    GetHandle() const
                                         { return m_Handle; }

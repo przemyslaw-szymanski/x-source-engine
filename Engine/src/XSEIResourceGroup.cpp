@@ -89,7 +89,7 @@ namespace XSE
         return RemoveResource( Handle );
     }
 
-    ResourcePtr IResourceGroup::RemoveResource(const ResourcePtr pRes)
+    ResourcePtr IResourceGroup::RemoveResource(ResourceWeakPtr pRes)
     {
         m_pTmpStr = pRes->GetResourceName().c_str();
         return RemoveResource( pRes->GetResourceHandle() );
@@ -119,7 +119,7 @@ namespace XSE
         return DestroyResource( Handle );
     }
 
-    i32 IResourceGroup::DestroyResource(ResourcePtr pRes)
+    i32 IResourceGroup::DestroyResource(ResourceWeakPtr pRes)
     {
         m_pTmpStr = pRes->GetResourceName().c_str();
         return DestroyResource( pRes->GetResourceHandle() );

@@ -1,6 +1,7 @@
 #ifndef XSE_IRESOURCEMANAGER_H
 #define XSE_IRESOURCEMANAGER_H
 
+#include "XSEIResource.h"
 #include "XSEIResourceGroup.h"
 
 namespace XSE
@@ -16,8 +17,8 @@ namespace XSE
 	        static xst_castring IResourceManager::DEFAULT_GROUP;
 
             typedef XST::TCObjectSmartPointer< IResourceGroup > GroupPtr;
-            //typedef XST::TCWeakPointer< IResourceGroup >        GroupWeakPtr;
-			typedef GroupPtr GroupWeakPtr;
+            typedef XST::TCWeakPointer< IResourceGroup >        GroupWeakPtr;
+			//typedef GroupPtr GroupWeakPtr;
             typedef IResourceGroup::ResourceHandle              ResourceHandle;
             typedef IResourceGroup::Handle                      GroupHandle;
             typedef xst_hash_table< GroupHandle, GroupPtr >     ResGroupMap;
@@ -77,7 +78,7 @@ namespace XSE
 		virtual void				DestroyResources() {}
 
         virtual	xst_fi ResourcePtr				CloneResource(ResourcePtr pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true)
-											{ return CloneResource( pSrcRes.GetPointer(), strNewName, bFullClone ); }
+											{ return CloneResource( pSrcRes.GetPtr(), strNewName, bFullClone ); }
 
 			virtual ResourcePtr				CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true);
 
@@ -190,7 +191,7 @@ namespace XSE
 											{ return !GetResource( strName, strGroupName ).IsNull(); }
 
 			virtual	ResourcePtr				CloneResource(const ResourcePtr pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true)
-											{ return CloneResource( pSrcRes.GetPointer(), strNewName, bFullClone ); }
+											{ return CloneResource( pSrcRes.GetPtr(), strNewName, bFullClone ); }
 
 			virtual ResourcePtr				CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true);
 
