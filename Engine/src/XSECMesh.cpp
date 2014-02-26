@@ -154,7 +154,7 @@ namespace XSE
 			this->m_pInputLayout = pIL;
 			for(u32 i = 0; i < m_vLODs.size(); ++i)
 			{
-				if( m_vLODs[ i ].pVertexBuffer )
+				if( m_vLODs[ i ].pVertexBuffer.IsValid() )
 				{
 					m_vLODs[ i ].pVertexBuffer->SetInputLayout( pIL );
 				}
@@ -290,8 +290,8 @@ namespace XSE
 		{
 			m_pCurrentLOD = &m_vLODs[ Math::Max< u8 >( 0, uiLOD ) ];
 			xst_assert( m_pCurrentLOD, "(CMesh::SetLOD)" );
-			xst_assert( m_pCurrentLOD->pVertexBuffer, "(CMesh::SetLOD)" );
-			xst_assert( m_pCurrentLOD->pIndexBuffer, "(CMesh::SetLOD)" );
+			xst_assert( m_pCurrentLOD->pVertexBuffer.IsValid(), "(CMesh::SetLOD)" );
+			xst_assert( m_pCurrentLOD->pIndexBuffer.IsValid(), "(CMesh::SetLOD)" );
 			//DebugPrintIndexData( m_pCurrentLOD->pIndexBuffer->GetIndexData() );
 			//Todo
 			//If previous material is different to new lod force update render queue

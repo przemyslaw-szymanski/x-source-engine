@@ -235,7 +235,7 @@ namespace XSE
 					Options = *(SBoxOptions*)pShapeOptions;
 				if( XST_FAILED( CreateBox( pMesh.GetPtr(), pIL, Options ) ) )
 				{
-					this->DestroyResourcePtr( pMesh );
+					this->DestroyResource( pMesh );
 					pMesh = xst_null;
 				}
 			}

@@ -28,7 +28,7 @@ namespace XST
 		{
 			return XST_FAIL;
 		}
-		m_pData[ ulSize ] = xst_null;
+		m_pData[ ulSize ] = 0;
 		m_pCurrentPosition = m_pData;
 
 		return XST_OK;

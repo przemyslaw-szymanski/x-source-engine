@@ -110,7 +110,7 @@ namespace XSE
 		void IGUIRenderer::SetComponentPosition(const CComponent* pCmp)
 		{
 			Vec3 vecPos;
-			if( m_pDynamicGeometry )
+			if( m_pDynamicGeometry.IsValid() )
 			{
 				CVertexData* pData = m_pDynamicGeometry->GetVertexData( pCmp->m_ulGroupId, pCmp->m_ulSubGroupId );
 				pData->SetPosition( pCmp->m_usBeginVertex + 0, pCmp->m_vecPosition );

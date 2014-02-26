@@ -71,7 +71,7 @@ namespace XSE
 
         virtual i32 DestroyResource(xst_castring& strName);
         virtual i32 DestroyResource(const ResourceHandle& Handle);
-        virtual i32 DestroyResourcePtr(ResourcePtr pRes);
+        virtual i32 DestroyResource(ResourcePtr pRes);
         virtual i32 DestroyResource(xst_castring& strName, xst_castring& strGroup);
         virtual i32 DestroyResource(const ResourceHandle& Handle, const GroupHandle& GroupHandle);
 

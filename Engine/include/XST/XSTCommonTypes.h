@@ -296,7 +296,7 @@ namespace XST
 		//#	define xst_null		0
 		//#endif //XST_VS_10
 
-		#define xst_null NULL
+		#define xst_null nullptr
         #define xst_implement override
         #define xst_overload
 

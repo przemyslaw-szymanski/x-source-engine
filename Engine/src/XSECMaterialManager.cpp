@@ -175,7 +175,7 @@ namespace XSE
 		for(; TableItr != MaterialsTable.GetChildTableMap().end(); ++TableItr)
 		{
 			XST::CLuaTable* pTmpTable = TableItr->second;
-			if( pTmpTable.IsNull() || this->GetResource( TableItr->first ) ) continue;
+			if( pTmpTable || this->GetResource( TableItr->first ).IsValid() ) continue;
 
 			MaterialPtr pMat = CreateMaterial( TableItr->first, strGroup );
 			if( Parser.Parse( pMat.GetPtr(), pTmpTable ) != RESULT::OK )

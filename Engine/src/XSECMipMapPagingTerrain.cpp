@@ -636,7 +636,8 @@ namespace XSE
 		IBVec::iterator Itr;
 		xst_stl_foreach( Itr, m_vIndexBuffers )
 		{
-			xst_release( (*Itr).pIndexBuffer );
+			//xst_release( (*Itr).pIndexBuffer );
+			( *Itr ).pIndexBuffer.Release();
 		}
 
 		xst_vector_clear( m_vIndexBuffers, IBVec::value_type );

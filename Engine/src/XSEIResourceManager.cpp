@@ -160,7 +160,7 @@ namespace XSE
 
     ResourcePtr IResourceManager::CreateResource(xst_castring& strName, GroupWeakPtr pGroup)
     {
-        xst_assert( pGroup, "(IResourceManager::CreateResource) Group is null" );
+        xst_assert( pGroup.IsValid(), "(IResourceManager::CreateResource) Group is null" );
         ResourceHandle Handle; 
 		Resources::IResource* pBaseRes;
         //ResourcePtr pRes;
@@ -205,7 +205,7 @@ namespace XSE
 	ResourcePtr IResourceManager::GetOrCreateResource(xst_castring &strName, GroupWeakPtr pGroup, bool* pbCreatedOut)
 	{
         ResourcePtr pRes = pGroup->GetResource( strName );
-		if( pRes )
+		if( pRes.IsValid() )
 		{
 			//If resource with given name already exists return it
 			if( pbCreatedOut ) *pbCreatedOut = false;
@@ -233,14 +233,14 @@ namespace XSE
             for( auto& Itr : m_mGroups )
             {
                 pRes = Itr.second->GetResource( Handle );
-                if( pRes )
+                if( pRes.IsValid() )
                     return pRes;
             }
 		}
 		else
 		{
 			GroupWeakPtr pGr = GetGroup( strGroup );
-			if( pGr )
+			if( pGr.IsValid() )
 			{
 				pRes = pGr->GetResource( Handle );
 			}
@@ -252,13 +252,13 @@ namespace XSE
 
 	ResourcePtr	IResourceManager::GetResource(xst_castring& strName, GroupWeakPtr pGroup)
 	{
-        xst_assert( pGroup, "(IResourceManager::GetResource) Group is null" );
+        xst_assert( pGroup.IsValid(), "(IResourceManager::GetResource) Group is null" );
 		return pGroup->GetResource( strName );
 	}
 
     ResourcePtr IResourceManager::PrepareResource(xst_castring &strName, GroupWeakPtr pGroup)
 	{
-        xst_assert( pGroup, "(IResourceManager::PrepareResource) Group is null" );
+        xst_assert( pGroup.IsValid(), "(IResourceManager::PrepareResource) Group is null" );
 		ResourcePtr pRes = pGroup->GetResource( strName );
 		if( !pRes ) 
 		{
@@ -591,50 +591,50 @@ namespace XSE
     ResourcePtr IResourceManager::RemoveResource(const ResourceHandle& Handle, const GroupHandle& GroupHandle)
     {
         GroupWeakPtr pGr = GetGroup( GroupHandle );
-        if( pGr )
+        if( pGr.IsValid() )
             return pGr->RemoveResource( Handle );
         return XSE_NULLRES;
     }
         
     ResourcePtr IResourceManager::RemoveResource(ResourcePtr pRes)
     {
-        xst_assert( pRes, "(IResourceManager::RemoveResource) Resource is null" );
+        xst_assert( pRes.IsValid(), "(IResourceManager::RemoveResource) Resource is null" );
         GroupWeakPtr pGroup = GetGroup( pRes->m_ResourceGroupHandle );
-        xst_assert( pGroup, "(IResourceManager::RemoveResource) Invalid resource group handle" );
+        xst_assert( pGroup.IsValid(), "(IResourceManager::RemoveResource) Invalid resource group handle" );
         return pGroup->RemoveResource( pRes );
     }
         
     i32 IResourceManager::DestroyResource(xst_castring& strName)
     {
-        if( RemoveResource( strName ) )
+        if( RemoveResource( strName ).IsValid() )
             return XST_OK;
         return XST_FAIL;
     }
         
     i32 IResourceManager::DestroyResource(const ResourceHandle& Handle)
     {
-        if( RemoveResource( Handle ) )
+        if( RemoveResource( Handle ).IsValid() )
             return XST_OK;
         return XST_FAIL;
     }
         
-    i32 IResourceManager::DestroyResourcePtr(ResourcePtr pRes)
+    i32 IResourceManager::DestroyResource(ResourcePtr pRes)
     {
-        if( RemoveResource( pRes ) )
+        if( RemoveResource( pRes ).IsValid() )
             return XST_OK;
         return XST_FAIL;
     }
 
     i32 IResourceManager::DestroyResource( xst_castring& strName, xst_castring& strGroup )
     {
-        if( RemoveResource( strName, strGroup ) )
+        if( RemoveResource( strName, strGroup ).IsValid() )
             return XST_OK;
         return XST_FAIL;
     }
        
     i32 IResourceManager::DestroyResource( const ResourceHandle& Handle, const GroupHandle& GroupHandle )
     {
-        if( RemoveResource( Handle, GroupHandle ) )
+        if( RemoveResource( Handle, GroupHandle ).IsValid() )
             return XST_OK;
         return XST_FAIL;
     }
