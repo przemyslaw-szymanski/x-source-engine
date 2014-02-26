@@ -15,7 +15,7 @@ namespace XSE
 			protected:
 
 				typedef xst_vector< CComponent* >					CompVector;
-				typedef xst_map< const MaterialPtr, CompVector >	CompMap;
+				//typedef xst_map< const MaterialPtr, CompVector >	CompMap;
 
 			public:
 
@@ -45,7 +45,7 @@ namespace XSE
 				DynamicGeometryPtr	m_pDynamicGeometry;
 				CMeshManager*		m_pMeshMgr;
 				CSceneManager*		m_pSceneMgr;
-				CompMap				m_mComps;
+				//CompMap				m_mComps;
 				MaterialPtr			m_pDefaultMaterial;
 		};
 
