@@ -257,6 +257,12 @@ namespace XST
 			    xst_release( m_pPtr );
 		    }
 
+		    xst_fi TCObjectSmartPointer&   operator=(const TCObjectSmartPointer& Right)
+		    {
+                _SetPtr( Right.m_pPtr );
+			    return *this;
+		    }
+
 		    template<class _U_>
 		    xst_fi TCObjectSmartPointer&   operator=(const TCObjectSmartPointer< _U_ >& Right)
 		    {

@@ -642,7 +642,6 @@ namespace XSE
 			{
 				return BuildInputLayout( ulElements );
 			}
-
 			return Itr->second;
 		}
 
