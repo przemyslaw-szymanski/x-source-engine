@@ -120,6 +120,13 @@ namespace XST
 			xst_fi bool IsValid() const
 			{ return m_pPtr != xst_null; }
 
+            xst_fi _T_* Leak()
+            {
+                _T_* pPtr = m_pPtr;
+                m_pPtr = xst_null;
+                return pPtr;
+            }
+
 		protected:
 
             _T_*    m_pPtr = xst_null;
@@ -216,6 +223,22 @@ namespace XST
             _T_*    m_pPtr = xst_null;
 	};
 
+    template< class _T_ >
+    class TCMovePointer
+    {
+        public:
+
+        TCMovePointer() = delete;
+        TCMovePointer(_T_* pPtr) : m_pPtr( pPtr )
+        {}
+
+        xst_fi _T_* GetPtr() const
+        { reutrn m_pPtr; }
+
+        protected:
+
+            _T_*    m_pPtr;
+    };
 
     template<class _T_>
     class TCObjectSmartPointer 
@@ -247,6 +270,10 @@ namespace XST
                 _BaseSetPtr( static_cast< _T_* >( Right.GetPtr() ) );
             }
 
+            template< class _U_ >
+            xst_fi TCObjectSmartPointer(const TCMovePointer< _U_ >& Ptr) : TCObjectSmartPointer( static_cast< _T_* >( Ptr.GetPtr() ) )
+            {}
+
 		    virtual	xst_fi  ~TCObjectSmartPointer()
 		    {
                 Release();
@@ -274,6 +301,13 @@ namespace XST
 		    xst_fi TCObjectSmartPointer&   operator=(const TCWeakPointer< _U_ >& Right)
 		    {
                 _SetPtr( static_cast< _T_* >( Right.GetPtr() ) );
+			    return *this;
+		    }
+
+            template<class _U_>
+		    xst_fi TCObjectSmartPointer&   operator=(const TCMovePointer< _U_ >& Right)
+		    {
+                m_pPtr = static_cast< _T_* >( Right.GetPtr() );
 			    return *this;
 		    }
 
@@ -345,6 +379,29 @@ namespace XST
 
 			xst_fi bool IsValid() const
 			{ return m_pPtr != xst_null; }
+
+            xst_fi _T_* Leak()
+            {
+                _T_* pPtr = m_pPtr;
+                m_pPtr = xst_null;
+                return pPtr;
+            }
+
+            template< class _V_ >
+            static xst_fi TCMovePointer< _V_ > MoveRef(const TCObjectSmartPointer< _V_>& Ptr)
+            { return Ptr.GetPtr(); }
+
+            template< class _V_, class _U_ >
+            static xst_fi TCMovePointer< _V_ > MoveRef(const TCObjectSmartPointer< _U_>& Ptr)
+            { return static_cast< _V_* >( Ptr.GetPtr() ); }
+
+            template< class _V_ >
+            static xst_fi TCMovePointer< _V_ > MoveRef(const TCWeakPointer< _V_>& Ptr)
+            { return Ptr.GetPtr(); }
+
+            template< class _V_, class _U_ >
+            static xst_fi TCMovePointer< _V_ > MoveRef(const TCWeakPointer< _U_>& Ptr)
+            { return static_cast< _V_* >( Ptr.GetPtr() ); }
 
     protected:
 

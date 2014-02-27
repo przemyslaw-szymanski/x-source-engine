@@ -44,7 +44,7 @@ namespace XSE
 			const IRenderSystem*		GetRenderSystem() const
 										{ return m_pRenderSystem; }
 
-					ResourcePtr		CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true) xst_implement;
+					ResourceWeakPtr		CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true) xst_implement;
 
 			xst_fi	ModelPtr			CloneModel(const ModelPtr& pSrcModel, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true)
 										{ return CloneResource( pSrcModel.GetPtr(), strNewName, bFullClone ); }

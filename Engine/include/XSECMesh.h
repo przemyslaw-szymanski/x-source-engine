@@ -50,7 +50,7 @@ namespace XSE
 			public:
 
 				typedef XST::TCObjectSmartPointer< CMesh >	MeshPtr;
-                //typedef XST::TCWeakPointer< CMesh >         WeakMeshPtr;
+                typedef XST::TCWeakPointer< CMesh >         MeshWeaKPtr;
 
 				//XST_TYPEDEF_OBJSMART_PTR( CMesh )	MeshPtr;
 
@@ -166,12 +166,12 @@ namespace XSE
 		};
 
 		XST_TEMPLATE_CLASS XST::TCObjectSmartPointer< CMesh >;
-        //XST_TEMPLATE_CLASS XST::TCWeakPointer< CMesh >;
+        XST_TEMPLATE_CLASS XST::TCWeakPointer< CMesh >;
 
 	}//resources
 
 	typedef Resources::CMesh::MeshPtr MeshPtr;
-    //typedef Resources::CMesh::WeakMeshPtr WeakMeshPtr;
+    typedef Resources::CMesh::MeshWeaKPtr MeshWeakPtr;
 
 }//xse
 

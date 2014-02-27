@@ -74,7 +74,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-	ResourcePtr CModelManager::CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName /* = XST::StringUtil::EmptyAString */, bool bFullClone /* = true */)
+	ResourceWeakPtr CModelManager::CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName /* = XST::StringUtil::EmptyAString */, bool bFullClone /* = true */)
 	{
 		ResourcePtr pNewRes( IResourceManager::CloneResource( pSrcRes, strNewName, bFullClone ) );
 		if( pNewRes == xst_null )

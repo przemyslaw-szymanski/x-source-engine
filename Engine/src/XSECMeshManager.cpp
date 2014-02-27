@@ -94,7 +94,7 @@ namespace XSE
 		return RESULT::OK;
 	}*/
 
-	ResourcePtr CMeshManager::CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName /* = XST::StringUtil::EmptyAString */, bool bFullClone /* = true */)
+	ResourceWeakPtr CMeshManager::CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName /* = XST::StringUtil::EmptyAString */, bool bFullClone /* = true */)
 	{
 		XSTSimpleProfiler();
 		const Resources::CMesh* pSrcMesh = (const Resources::CMesh*)pSrcRes;
@@ -198,7 +198,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32 CMeshManager::SetDefaultMesh(MeshPtr pMesh)
+	i32 CMeshManager::SetDefaultMesh(MeshWeakPtr pMesh)
 	{
 		m_pDefaultMesh->DestroyBuffers();
 		m_pDefaultMesh = pMesh;
@@ -206,19 +206,19 @@ namespace XSE
 		return XST_OK;
 	}
 
-	MeshPtr	CMeshManager::CreateMesh(xst_castring& strName, ul32 ulInputLayout, xst_castring& strGroupName)
+	MeshWeakPtr	CMeshManager::CreateMesh(xst_castring& strName, ul32 ulInputLayout, xst_castring& strGroupName)
 	{
 		IInputLayout* pIL = m_pRenderSystem->GetInputLayout( ulInputLayout );
 		return CreateMesh( strName, pIL, strGroupName );
 	}
 
-	MeshPtr	CMeshManager::CreateMesh(xst_castring& strName, ul32 ulInputLayout, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName)
+	MeshWeakPtr	CMeshManager::CreateMesh(xst_castring& strName, ul32 ulInputLayout, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName)
 	{
 		IInputLayout* pIL = m_pRenderSystem->GetInputLayout( ulInputLayout );
 		return CreateMesh( strName, pIL, eShape, pShapeOptions, strGroupName );
 	}
 
-	MeshPtr	CMeshManager::CreateMesh(xst_castring& strName, IInputLayout* pIL, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName)
+	MeshWeakPtr	CMeshManager::CreateMesh(xst_castring& strName, IInputLayout* pIL, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName)
 	{
 		MeshPtr pMesh = CreateMesh( strName, pIL, strGroupName );
 		if( pMesh->m_bIsCloned )
@@ -302,7 +302,7 @@ namespace XSE
 		return pMesh;
 	}
 
-	MeshPtr	CMeshManager::CreateMesh(xst_castring& strName, IInputLayout* pIL,  xst_castring& strGroupName)
+	MeshWeakPtr	CMeshManager::CreateMesh(xst_castring& strName, IInputLayout* pIL,  xst_castring& strGroupName)
 	{
 		bool bCreated = true;
 		ResourcePtr pRes = this->GetOrCreateResource( strName, strGroupName, &bCreated );//this->CreateResource( strName, strGroupName );
@@ -323,12 +323,12 @@ namespace XSE
 	}
 
 
-	MeshPtr	CMeshManager::CreateMesh(xst_castring& strName, xst_castring& strGroupName)
+	MeshWeakPtr	CMeshManager::CreateMesh(xst_castring& strName, xst_castring& strGroupName)
 	{
 		return CreateMesh( strName, this->GetOrCreateGroup( strGroupName ) );
 	}
 
-	MeshPtr	CMeshManager::CreateMesh(xst_castring& strName, GroupWeakPtr pGroup)
+	MeshWeakPtr	CMeshManager::CreateMesh(xst_castring& strName, GroupWeakPtr pGroup)
 	{
 		//XSTSimpleProfiler();
 		xst_assert( pGroup != xst_null, "(CMeshManager::CreateMesh)" );
@@ -353,7 +353,7 @@ namespace XSE
 		return pMesh;
 	}
 
-	MeshPtr CMeshManager::LoadMesh(xst_castring &strName, xst_castring &strGroup)
+	MeshWeakPtr CMeshManager::LoadMesh(xst_castring &strName, xst_castring &strGroup)
 	{
 		//Try to get the mesh
 		bool bCreated = true;

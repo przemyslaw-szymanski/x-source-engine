@@ -26,31 +26,31 @@ namespace XSE
 			xst_fi	u16					GetDefaultMeshLODCount() const
 										{ return m_usDefaultLODCount; }
 
-					MeshPtr				CreateMesh(xst_castring& strName, ul32 ulInputLayout, xst_castring& strGroupName = DEFAULT_GROUP);
+					MeshWeakPtr 		CreateMesh(xst_castring& strName, ul32 ulInputLayout, xst_castring& strGroupName = DEFAULT_GROUP);
 
-					MeshPtr				CreateMesh(xst_castring& strName, ul32 ulInputLayout, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName = DEFAULT_GROUP);
+					MeshWeakPtr			CreateMesh(xst_castring& strName, ul32 ulInputLayout, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName = DEFAULT_GROUP);
 
-					MeshPtr				CreateMesh(xst_castring& strName, IInputLayout* pIL, xst_castring& strGroupName = DEFAULT_GROUP);
+					MeshWeakPtr			CreateMesh(xst_castring& strName, IInputLayout* pIL, xst_castring& strGroupName = DEFAULT_GROUP);
 
-					MeshPtr				CreateMesh(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
+					MeshWeakPtr			CreateMesh(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
 
-					MeshPtr				CreateMesh(xst_castring& strName, GroupWeakPtr pResourceGroup);
+					MeshWeakPtr			CreateMesh(xst_castring& strName, GroupWeakPtr pResourceGroup);
 
-					MeshPtr				CreateMesh(xst_castring& strName, IInputLayout* pIL, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName = DEFAULT_GROUP);
+					MeshWeakPtr			CreateMesh(xst_castring& strName, IInputLayout* pIL, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName = DEFAULT_GROUP);
 
-					MeshPtr				LoadMesh(xst_castring& strName, xst_castring& strGroup = DEFAULT_GROUP);
+					MeshWeakPtr			LoadMesh(xst_castring& strName, xst_castring& strGroup = DEFAULT_GROUP);
 
 					//i32					DestroyMesh(MeshPtr& pMesh, xst_castring& strGroupName = ALL_GROUPS);
 
-			xst_fi	MeshPtr				GetDefaultMesh()
+			xst_fi	MeshWeakPtr			GetDefaultMesh()
 										{ return m_pDefaultMesh; }
 
-					ResourcePtr  	CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true) xst_implement;
+					ResourceWeakPtr  	CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true) xst_implement;
 
-			xst_fi	MeshPtr				CloneMesh(const MeshPtr& pMesh, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true)
+			xst_fi	MeshWeakPtr			CloneMesh(const MeshWeakPtr& pMesh, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true)
 										{ return CloneResource( pMesh.GetPtr(), strNewName, bFullClone ); }
 
-					i32					SetDefaultMesh(MeshPtr pMesh);
+					i32					SetDefaultMesh(MeshWeakPtr pMesh);
 
 			xst_fi	CMaterialManager*	GetMaterialManager()
 										{ return m_pMatMgr; }

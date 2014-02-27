@@ -38,11 +38,11 @@ namespace XSE
 
 					ResourcePtr				CreateResource(xst_castring& strName, GroupWeakPtr pGroup);
 
-        virtual i32         AddResource(xst_castring& strName, ResourcePtr pRes, xst_castring& strGroupName, bool bCreateGroup = true);
-        virtual i32         AddResource(xst_castring& strName, ResourcePtr pRes, GroupWeakPtr pGr);
-        virtual i32	AddResource(const ResourceHandle& ulResourceHandle, ResourcePtr pRes, xst_castring& strGroupName, bool bCreateGroup = true);
-        virtual i32	AddResource(const ResourceHandle& ulResourceHandle, ResourcePtr pRes, const GroupHandle& ulGroupHandle);
-        virtual i32	AddResource(const ResourceHandle& ulResourceHandle, ResourcePtr pRes, GroupWeakPtr pGroup);
+        virtual i32         AddResource(xst_castring& strName, ResourceWeakPtr pRes, xst_castring& strGroupName, bool bCreateGroup = true);
+        virtual i32         AddResource(xst_castring& strName, ResourceWeakPtr pRes, GroupWeakPtr pGr);
+        virtual i32	AddResource(const ResourceHandle& ulResourceHandle, ResourceWeakPtr pRes, xst_castring& strGroupName, bool bCreateGroup = true);
+        virtual i32	AddResource(const ResourceHandle& ulResourceHandle, ResourceWeakPtr pRes, const GroupHandle& ulGroupHandle);
+        virtual i32	AddResource(const ResourceHandle& ulResourceHandle, ResourceWeakPtr pRes, GroupWeakPtr pGroup);
 
         virtual GroupWeakPtr    CreateGroup(xst_castring& strName);
         virtual GroupWeakPtr    GetGroup(xst_castring& strName);
@@ -65,22 +65,22 @@ namespace XSE
 
         virtual ResourcePtr RemoveResource(xst_castring& strName);
         virtual ResourcePtr RemoveResource(const ResourceHandle& Handle);
-        virtual ResourcePtr RemoveResource(ResourcePtr pRes);
+        virtual ResourcePtr RemoveResource(ResourceWeakPtr pRes);
         virtual ResourcePtr RemoveResource(xst_castring& strName, xst_castring& strGroup);
         virtual ResourcePtr RemoveResource(const ResourceHandle& Handle, const GroupHandle& GroupHandle);
 
         virtual i32 DestroyResource(xst_castring& strName);
         virtual i32 DestroyResource(const ResourceHandle& Handle);
-        virtual i32 DestroyResource(ResourcePtr pRes);
+        virtual i32 DestroyResource(ResourceWeakPtr pRes);
         virtual i32 DestroyResource(xst_castring& strName, xst_castring& strGroup);
         virtual i32 DestroyResource(const ResourceHandle& Handle, const GroupHandle& GroupHandle);
 
 		virtual void				DestroyResources() {}
 
-        virtual	xst_fi ResourcePtr				CloneResource(ResourcePtr pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true)
+        virtual	xst_fi ResourceWeakPtr				CloneResource(ResourceWeakPtr pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true)
 											{ return CloneResource( pSrcRes.GetPtr(), strNewName, bFullClone ); }
 
-			virtual ResourcePtr				CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true);
+			virtual ResourceWeakPtr				CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true);
 
         virtual	ResourcePtr				LoadResource(xst_castring& strName, xst_castring& strGroupName = ALL_GROUPS);
 

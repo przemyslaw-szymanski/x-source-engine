@@ -376,7 +376,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-    ResourcePtr IResourceManager::CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName, bool bFullClone)
+    ResourceWeakPtr IResourceManager::CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName, bool bFullClone)
 	{
 		m_ssTmpName.str( "" );
 		if( strNewName.empty() )
@@ -424,19 +424,19 @@ namespace XSE
         xst_delete( *ppMemMgr );
     }
 
-    i32 IResourceManager::AddResource( xst_castring& strName, ResourcePtr pRes, xst_castring& strGroupName, bool bCreateGroup )
+    i32 IResourceManager::AddResource( xst_castring& strName, ResourceWeakPtr pRes, xst_castring& strGroupName, bool bCreateGroup )
     {
         ResourceHandle Handle = XSE_HASH( strName );
         return AddResource( Handle, pRes, strGroupName, bCreateGroup );
     }
      
-    i32 IResourceManager::AddResource( xst_castring& strName, ResourcePtr pRes, GroupWeakPtr pGr )
+    i32 IResourceManager::AddResource( xst_castring& strName, ResourceWeakPtr pRes, GroupWeakPtr pGr )
     {
         ResourceHandle Handle = XSE_HASH( strName );
         return AddResource( Handle, pRes, pGr );
     }
      
-    i32 IResourceManager::AddResource(const ResourceHandle& Handle, ResourcePtr pRes, xst_castring& strGroupName, bool bCreateGroup)
+    i32 IResourceManager::AddResource(const ResourceHandle& Handle, ResourceWeakPtr pRes, xst_castring& strGroupName, bool bCreateGroup)
     {
         GroupWeakPtr pGroup;
         if( bCreateGroup )
@@ -450,12 +450,12 @@ namespace XSE
         return AddResource( Handle, pRes, pGroup );
     }
      
-    i32 IResourceManager::AddResource(const ResourceHandle& Handle, ResourcePtr pRes, const GroupHandle& GroupHandle )
+    i32 IResourceManager::AddResource(const ResourceHandle& Handle, ResourceWeakPtr pRes, const GroupHandle& GroupHandle )
     {
         return AddResource( Handle, pRes, GetGroup( GroupHandle ) );
     }
 
-    i32 IResourceManager::AddResource(const ResourceHandle& Handle, ResourcePtr pRes, IResourceManager::GroupWeakPtr pGroup)
+    i32 IResourceManager::AddResource(const ResourceHandle& Handle, ResourceWeakPtr pRes, IResourceManager::GroupWeakPtr pGroup)
     {
         return pGroup->AddResource( Handle, pRes );
     }
@@ -596,7 +596,7 @@ namespace XSE
         return XSE_NULLRES;
     }
         
-    ResourcePtr IResourceManager::RemoveResource(ResourcePtr pRes)
+    ResourcePtr IResourceManager::RemoveResource(ResourceWeakPtr pRes)
     {
         xst_assert( pRes.IsValid(), "(IResourceManager::RemoveResource) Resource is null" );
         GroupWeakPtr pGroup = GetGroup( pRes->m_ResourceGroupHandle );
@@ -618,7 +618,7 @@ namespace XSE
         return XST_FAIL;
     }
         
-    i32 IResourceManager::DestroyResource(ResourcePtr pRes)
+    i32 IResourceManager::DestroyResource(ResourceWeakPtr pRes)
     {
         if( RemoveResource( pRes ).IsValid() )
             return XST_OK;
