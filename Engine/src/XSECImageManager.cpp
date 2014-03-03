@@ -12,12 +12,16 @@ namespace XSE
 	}
 
 	CImageManager::~CImageManager()
-	{
-		DestroyResources();
+	{	
 		if( m_pImgSystem && m_pImgSystem->IsAutoDestroy() )
 		{
 			xst_delete( m_pImgSystem );
 		}
+	}
+
+	void CImageManager::_OnDestroy()
+	{
+		
 	}
 
 	void CImageManager::DestroyResources()
@@ -27,7 +31,7 @@ namespace XSE
         this->ForEachResource( [&] ( ResourcePtr pRes, GroupWeakPtr pGroup )
         {
             pImg = static_cast< IImage* >( pRes.GetPtr() );
-            pImg->DestroyData();
+            pImg->ClearResource();
         } );
 	}
 

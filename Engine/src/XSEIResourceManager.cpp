@@ -16,9 +16,16 @@ namespace XSE
 
 	namespace Resources
 	{
-		ResourcePtr IResource::Clone(xst_castring& strName /* = XST::StringUtil::EmptyAString */, bool bFullClone /* = true */)
+		ResourcePtr IResource::CloneResource(xst_castring& strName /* = XST::StringUtil::EmptyAString */, bool bFullClone /* = true */)
 		{
 			return this->m_pResourceCreator->CloneResource( this, strName, bFullClone );
+		}
+
+		i32 IResource::ClearResource()
+		{
+			m_ResourceHandle = 0;
+			m_ResourceGroupHandle = 0;
+			return XST_OK;
 		}
 	}//Resources
 
@@ -29,14 +36,21 @@ namespace XSE
 
     IResourceManager::~IResourceManager()
     {
-        //RemoveListeners();
-        m_mGroups.clear();
-        _DestroyMemoryManager( &m_pMemoryMgr );
     }
+
+	void IResourceManager::Destroy()
+	{
+		_OnBeforeResourcesDestroyed();
+		m_mGroups.clear();
+		_OnDestroy();
+		_DestroyMemoryManager( &m_pMemoryMgr );
+		m_bDestroyed = true;
+	}
 
     i32 IResourceManager::Init()
     {
         m_pFileMgr = CFileManager::GetSingletonPtr();
+		m_bDestroyed = false;
         xst_assert( m_pFileMgr, "(IResourceManager::Init) File manager singleton not created" );
         return XST_OK;
     }
@@ -151,14 +165,14 @@ namespace XSE
         return xst_new IResourceGroup( strName, Handle );
     }
 
-    ResourcePtr IResourceManager::CreateResource(xst_castring& strName, xst_castring& strGroupName)
+    ResourceWeakPtr IResourceManager::CreateResource(xst_castring& strName, xst_castring& strGroupName)
     {
         GroupWeakPtr pGr = this->GetOrCreateGroup( strGroupName );
         m_pStrTmp = strGroupName.c_str();
 		return CreateResource( strName, pGr );
     }
 
-    ResourcePtr IResourceManager::CreateResource(xst_castring& strName, GroupWeakPtr pGroup)
+    ResourceWeakPtr IResourceManager::CreateResource(xst_castring& strName, GroupWeakPtr pGroup)
     {
         xst_assert( pGroup.IsValid(), "(IResourceManager::CreateResource) Group is null" );
         ResourceHandle Handle; 
@@ -195,14 +209,14 @@ namespace XSE
 		return pRes;
     }
 
-    ResourcePtr IResourceManager::GetOrCreateResource(xst_castring &strName, xst_castring &strGroupName, bool* pbCreatedOut)
+    ResourceWeakPtr IResourceManager::GetOrCreateResource(xst_castring &strName, xst_castring &strGroupName, bool* pbCreatedOut)
 	{
 		GroupPtr pGr = this->GetOrCreateGroup( strGroupName );
         GroupWeakPtr p( pGr );
 		return GetOrCreateResource( strName, pGr, pbCreatedOut );
 	}
 
-	ResourcePtr IResourceManager::GetOrCreateResource(xst_castring &strName, GroupWeakPtr pGroup, bool* pbCreatedOut)
+	ResourceWeakPtr IResourceManager::GetOrCreateResource(xst_castring &strName, GroupWeakPtr pGroup, bool* pbCreatedOut)
 	{
         ResourcePtr pRes = pGroup->GetResource( strName );
 		if( pRes.IsValid() )
@@ -223,7 +237,7 @@ namespace XSE
 		return pRes;
 	}
 
-    ResourcePtr IResourceManager::GetResource(xst_castring &strName, xst_castring &strGroup)
+    ResourceWeakPtr IResourceManager::GetResource(xst_castring &strName, xst_castring &strGroup)
 	{
 		ResourcePtr pRes;
         ResourceHandle Handle = XSE_HASH( strName );
@@ -250,13 +264,13 @@ namespace XSE
 	}
 
 
-	ResourcePtr	IResourceManager::GetResource(xst_castring& strName, GroupWeakPtr pGroup)
+	ResourceWeakPtr	IResourceManager::GetResource(xst_castring& strName, GroupWeakPtr pGroup)
 	{
         xst_assert( pGroup.IsValid(), "(IResourceManager::GetResource) Group is null" );
 		return pGroup->GetResource( strName );
 	}
 
-    ResourcePtr IResourceManager::PrepareResource(xst_castring &strName, GroupWeakPtr pGroup)
+    ResourceWeakPtr IResourceManager::PrepareResource(xst_castring &strName, GroupWeakPtr pGroup)
 	{
         xst_assert( pGroup.IsValid(), "(IResourceManager::PrepareResource) Group is null" );
 		ResourcePtr pRes = pGroup->GetResource( strName );
@@ -273,12 +287,12 @@ namespace XSE
 		return pRes;
 	}
 
-	ResourcePtr IResourceManager::PrepareResource(xst_castring &strName, xst_castring &strGroupName)
+	ResourceWeakPtr IResourceManager::PrepareResource(xst_castring &strName, xst_castring &strGroupName)
 	{
         return PrepareResource( strName, GetGroup( strGroupName ) );
 	}
 
-    ResourcePtr IResourceManager::LoadResource(xst_castring &strName, xst_castring &strGroupName)
+    ResourceWeakPtr IResourceManager::LoadResource(xst_castring &strName, xst_castring &strGroupName)
 	{
 		xst_assert( m_pFileMgr, "(IResourceManager::LoadResource) File manager not created" );
 		XST::FilePtr pFile;
@@ -308,7 +322,7 @@ namespace XSE
 		return pRes;
 	}
 
-	ResourcePtr IResourceManager::LoadResource(xst_castring &strFileName, xst_castring& strResName, xst_castring &strGroupName)
+	ResourceWeakPtr IResourceManager::LoadResource(xst_castring &strFileName, xst_castring& strResName, xst_castring &strGroupName)
 	{
 		xst_assert( m_pFileMgr, "File manager not created" );
 
@@ -638,6 +652,38 @@ namespace XSE
             return XST_OK;
         return XST_FAIL;
     }
+
+	i32 IResourceManager::ManageUnusedResources()
+	{
+		// Clear resources and move them to unused buffer
+		i32 iResult = XST_OK;
+		ForEachResource( [&] (ResourceWeakPtr pRes, GroupWeakPtr pGroup) 
+		{
+			if( pRes->GetRefCount() > 1 ) // branch prediction, most of resources should be used (ref count > 1 )
+				return;
+			else // if this is the last reference = it exists and is used only in its group
+			{
+				ul32 ulHandle = pRes->GetResourceHandle();
+				if( pRes->ClearResource() == XST_OK )
+					m_sUnusedResources.push( pGroup->RemoveResource( ulHandle ) );
+				else
+					iResult = XST_FAIL;
+			}
+		});
+		return iResult;
+	}
+
+	ResourcePtr IResourceManager::GrabUnusedResource()
+	{
+		if( m_sUnusedResources.size() > 0 )
+			return m_sUnusedResources.top_pop();
+		return ResourcePtr();
+	}
+
+	bool IResourceManager::IsUnusedResourceAvailable()
+	{
+		return m_sUnusedResources.size() > 0;
+	}
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 

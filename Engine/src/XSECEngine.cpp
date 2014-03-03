@@ -123,17 +123,31 @@ namespace XSE
 
 		m_mScenes.clear();
 
+		m_pModelMgr->Destroy();
 		xst_delete( m_pModelMgr );
+		
+		m_pMeshMgr->Destroy();
 		xst_delete( m_pMeshMgr );
 
 		//Destroy windows
 		DestroyWindows();
 		
+		m_pShaderMgr->Destroy();
 		xst_delete( m_pShaderMgr );
+		
+		m_pTexMgr->Destroy();
 		xst_delete( m_pTexMgr );
+		
+		m_pImgMgr->Destroy();
 		xst_delete( m_pImgMgr );
-		xst_delete( m_pLuaScriptMgr );
+		
+		m_pMatMgr->Destroy();
 		xst_delete( m_pMatMgr );
+
+		m_pLuaScriptMgr->Destroy();
+		xst_delete( m_pLuaScriptMgr );
+		
+		//m_pResFileMgr->Destroy();
 		xst_delete( m_pResFileMgr );
 
 		if( XSE::DestroyRenderSystem && m_hRenderSystemDll )

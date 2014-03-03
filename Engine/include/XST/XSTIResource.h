@@ -92,7 +92,7 @@ namespace XST
 			xst_fi i32				GetResourceState() const
 									{ return m_iResourceState; }
 
-			virtual	void			DestroyData() {}
+			virtual	i32				ClearResource() { return XST_OK; }
 
 			protected:
 

@@ -24,10 +24,10 @@ namespace XSE
 
 		CImage::~CImage() 
 		{
-			DestroyData();
+			ClearResource();
 		}
 
-		void CImage::DestroyData()
+		i32 CImage::ClearResource()
 		{
 			if( !m_bDestroyed )
 			{
@@ -35,6 +35,7 @@ namespace XSE
 				m_pImageSystem = xst_null;
 				m_bDestroyed = true;
 			}
+			return XST_OK;
 		}
 
 		ImagePtr CImage::Clone() const

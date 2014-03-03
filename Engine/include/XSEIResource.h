@@ -52,7 +52,7 @@ namespace XSE
 				xst_fi	IResourceManager*	GetResourceCreator() const
 											{ return m_pResourceCreator; }
 
-				virtual ResourcePtr		Clone(xst_castring& strName = XST::StringUtil::EmptyAString, bool bFullClone = true);
+				virtual ResourcePtr		CloneResource(xst_castring& strName = XST::StringUtil::EmptyAString, bool bFullClone = true);
 
 				xst_i	void			SetResource(const IResource* pOther)
 										{
@@ -63,6 +63,8 @@ namespace XSE
 
 				xst_fi	void			SetResource(const ResourcePtr pOther)
 										{ SetResource( pOther.GetPtr() ); }
+
+				virtual	i32				ClearResource() xst_implement;
 
             protected:
 

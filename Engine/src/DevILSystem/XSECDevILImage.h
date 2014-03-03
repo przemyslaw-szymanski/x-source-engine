@@ -22,7 +22,7 @@ namespace XSE
 											CImage(CImageSystem* pIS, XSE_IRESOURCE_DECL_PARAMS);
 				virtual						~CImage();
 
-						void				DestroyData();
+						i32					ClearResource() xst_implement;
 
 						ImagePtr			Clone() const;
 

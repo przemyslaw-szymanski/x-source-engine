@@ -18,10 +18,10 @@ namespace XSE
 
             typedef XST::TCObjectSmartPointer< IResourceGroup > GroupPtr;
             typedef XST::TCWeakPointer< IResourceGroup >        GroupWeakPtr;
-			//typedef GroupPtr GroupWeakPtr;
             typedef IResourceGroup::ResourceHandle              ResourceHandle;
             typedef IResourceGroup::Handle                      GroupHandle;
             typedef xst_hash_table< GroupHandle, GroupPtr >     ResGroupMap;
+			typedef xst_stack< ResourcePtr >					ResStack;
             typedef ResGroupMap::iterator                       ResGroupMapItr;
             typedef ResGroupMap::const_iterator                 ResGroupMapConstItr;
             typedef std::function< void ( ResourcePtr, GroupWeakPtr ) >   ResourceCallback;
@@ -34,9 +34,10 @@ namespace XSE
 
         virtual     i32             Init();
 
-        ResourcePtr				CreateResource(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
+		virtual		void			Destroy();
 
-					ResourcePtr				CreateResource(xst_castring& strName, GroupWeakPtr pGroup);
+        ResourceWeakPtr				CreateResource(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
+		ResourceWeakPtr				CreateResource(xst_castring& strName, GroupWeakPtr pGroup);
 
         virtual i32         AddResource(xst_castring& strName, ResourceWeakPtr pRes, xst_castring& strGroupName, bool bCreateGroup = true);
         virtual i32         AddResource(xst_castring& strName, ResourceWeakPtr pRes, GroupWeakPtr pGr);
@@ -75,6 +76,12 @@ namespace XSE
         virtual i32 DestroyResource(xst_castring& strName, xst_castring& strGroup);
         virtual i32 DestroyResource(const ResourceHandle& Handle, const GroupHandle& GroupHandle);
 
+		virtual i32 ManageUnusedResources();
+
+		virtual ResourcePtr GrabUnusedResource();
+
+		virtual bool IsUnusedResourceAvailable();
+
 		virtual void				DestroyResources() {}
 
         virtual	xst_fi ResourceWeakPtr				CloneResource(ResourceWeakPtr pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true)
@@ -82,23 +89,22 @@ namespace XSE
 
 			virtual ResourceWeakPtr				CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true);
 
-        virtual	ResourcePtr				LoadResource(xst_castring& strName, xst_castring& strGroupName = ALL_GROUPS);
+        virtual	ResourceWeakPtr				LoadResource(xst_castring& strName, xst_castring& strGroupName = ALL_GROUPS);
 
-			virtual ResourcePtr				LoadResource(xst_castring &strFileName, xst_castring& strResName, xst_castring &strGroupName);
+			virtual ResourceWeakPtr				LoadResource(xst_castring &strFileName, xst_castring& strResName, xst_castring &strGroupName);
 
 			virtual i32						LoadResource(ResourcePtr pRes, xst_castring& strGroupName = ALL_GROUPS);
 			virtual i32						LoadResource(ResourcePtr pRes, xst_castring& strFileName, xst_castring& strGroupName);
 
-			virtual ResourcePtr				PrepareResource(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
-            virtual ResourcePtr				PrepareResource(xst_castring& strName, GroupWeakPtr pGroup);
+			virtual ResourceWeakPtr				PrepareResource(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
+            virtual ResourceWeakPtr				PrepareResource(xst_castring& strName, GroupWeakPtr pGroup);
             virtual i32						PrepareResource(ResourcePtr pRes) { return XST_OK; };
 
-            ResourcePtr				GetResource(xst_castring& strName, GroupWeakPtr pGroup);
-            ResourcePtr				GetResource(xst_castring& strName, xst_castring& strGroupName = ALL_GROUPS);
+            ResourceWeakPtr				GetResource(xst_castring& strName, GroupWeakPtr pGroup);
+            ResourceWeakPtr				GetResource(xst_castring& strName, xst_castring& strGroupName = ALL_GROUPS);
 
-            ResourcePtr				GetOrCreateResource(xst_castring& strName, xst_castring& strGroupName = ALL_GROUPS, bool* pbCreatedOut = xst_null);
-
-					ResourcePtr				GetOrCreateResource(xst_castring& strName, GroupWeakPtr pGroup, bool* pbCreatedOut = xst_null);
+            ResourceWeakPtr				GetOrCreateResource(xst_castring& strName, xst_castring& strGroupName = ALL_GROUPS, bool* pbCreatedOut = xst_null);
+			ResourceWeakPtr				GetOrCreateResource(xst_castring& strName, GroupWeakPtr pGroup, bool* pbCreatedOut = xst_null);
 
             virtual i32                 CreateMemoryPool(cul32& ulMemorySize);
 
@@ -119,15 +125,21 @@ namespace XSE
             
             virtual void                    _DestroyMemoryManager(XST::IAllocator** ppMemMgr);
 
+			virtual void					_OnBeforeResourcesDestroyed() {}
+
+			virtual void					_OnDestroy() {}
+
         protected:
 
             ResGroupMap         m_mGroups;
+			ResStack			m_sUnusedResources;
             xst_stringstream    m_ssTmpName;
             XST::IAllocator*    m_pMemoryMgr = xst_null;
             XST::CFileManager*	m_pFileMgr = xst_null;
             lpcastr             m_pStrTmp = "";
             GroupWeakPtr        m_pLastUsedGroup;
             ul32                m_LastUsedGroupHandle = XSE_INVALID_HANDLE;
+			bool				m_bDestroyed = false;
     };
 
 	class XST_API IResourceManager2 : public XST::TCResourceManager< ResourcePtr >
