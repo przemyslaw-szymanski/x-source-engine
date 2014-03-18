@@ -220,7 +220,7 @@ namespace XSE
 
 	MeshWeakPtr	CMeshManager::CreateMesh(xst_castring& strName, IInputLayout* pIL, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName)
 	{
-		MeshPtr pMesh = CreateMesh( strName, pIL, strGroupName );
+		MeshWeakPtr pMesh = CreateMesh( strName, pIL, strGroupName );
 		if( pMesh->m_bIsCloned )
 		{
 			return pMesh;
@@ -305,7 +305,7 @@ namespace XSE
 	MeshWeakPtr	CMeshManager::CreateMesh(xst_castring& strName, IInputLayout* pIL,  xst_castring& strGroupName)
 	{
 		bool bCreated = true;
-		ResourcePtr pRes = this->GetOrCreateResource( strName, strGroupName, &bCreated );//this->CreateResource( strName, strGroupName );
+		ResourceWeakPtr pRes = this->GetOrCreateResource( strName, strGroupName, &bCreated );//this->CreateResource( strName, strGroupName );
 		if( pRes.IsNull() )
 		{
 			return MeshPtr();
@@ -334,16 +334,16 @@ namespace XSE
 		xst_assert( pGroup != xst_null, "(CMeshManager::CreateMesh)" );
 		
 		bool bCreated = true;
-		ResourcePtr pRes;
+		ResourceWeakPtr pRes;
 		//{ XSTSimpleProfiler2( "CMeshManager: get or create resource" );
 		pRes = this->GetOrCreateResource( strName, pGroup, &bCreated );
 		//}
 		if( pRes.IsNull() )
 		{
-			return MeshPtr();
+			return MeshWeakPtr();
 		}
 
-		MeshPtr pMesh( pRes );
+		MeshWeakPtr pMesh( pRes );
 
 		if( !bCreated )
 		{
@@ -357,7 +357,7 @@ namespace XSE
 	{
 		//Try to get the mesh
 		bool bCreated = true;
-		MeshPtr pMesh = this->GetOrCreateResource( strName, strGroup, &bCreated );
+		MeshWeakPtr pMesh = this->GetOrCreateResource( strName, strGroup, &bCreated );
 		if( pMesh.IsNull() )
 		{
 			//Load

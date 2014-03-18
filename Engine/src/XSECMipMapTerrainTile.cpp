@@ -24,20 +24,20 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32	CMipMapTerrainTile::Lock(MeshPtr pMesh, ul32 ulVertexCount)
+	i32	CMipMapTerrainTile::Lock(MeshWeakPtr pMesh, ul32 ulVertexCount)
 	{
 		m_pMesh = pMesh;
 		VertexBufferPtr pVB;
 		{
-			//XSTSimpleProfiler2("-CreateVertexBuffer"); //~0.002sec in debug
-			pVB = m_pMesh->CreateVertexBuffer();
+			XSTSimpleProfiler2("-CreateVertexBuffer"); //~0.002sec in debug
+			pVB = pMesh->CreateVertexBuffer();
 		}
 		pVB->SetVertexCount( ulVertexCount );
 		pVB->SetTopologyType( XSE::TopologyTypes::TRIANGLE_LIST );
 		pVB->SetUsage( XSE::BufferUsages::STATIC );
 		{
-			//XSTSimpleProfiler2("-Lock"); //~0.001sec in debug
-		if( XST_FAILED( m_pMesh->GetVertexBuffer()->Lock() ) )
+			XSTSimpleProfiler2("-Lock"); //~0.001sec in debug
+		if( XST_FAILED( pMesh->GetVertexBuffer()->Lock() ) )
 		{
 			return XST_FAIL;
 		}

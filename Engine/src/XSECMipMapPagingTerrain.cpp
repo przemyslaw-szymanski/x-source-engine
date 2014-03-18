@@ -423,7 +423,7 @@ namespace XSE
 				xst_sprintf( strTileName, "%s_%d_%d", strTerrName.data(), x, y);
 				strFullName = strTileName;
 			
-				MeshPtr pMesh; 
+				MeshWeakPtr pMesh; 
 				{
 					//XSTSimpleProfiler2("Create Tile Mesh"); //~0.003sec in debug
 					pMesh = pMeshMgr->CreateMesh( strFullName, m_pInputLayout, m_pSceneMgr->GetName() );

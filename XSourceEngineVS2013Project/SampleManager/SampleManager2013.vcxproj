@@ -11,17 +11,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Samples\SampleMgr\CRenderThread.cpp" />
     <ClCompile Include="..\..\Samples\SampleMgr\CSampleMgr.cpp" />
     <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\cdebugdialog.cpp" />
     <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\CMainWindow.cpp" />
     <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\main.cpp" />
     <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\moc_cdebugdialog.cpp" />
     <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\moc_CMainWindow.cpp" />
+    <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\moc_CRenderThread.cpp" />
     <ClCompile Include="..\..\Samples\SampleMgr\ui\CRenderWidget.cpp" />
     <ClCompile Include="..\..\Samples\SimpleSample\CSimpleSample.cpp" />
     <ClCompile Include="..\..\Samples\Terrain\CTerrain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Samples\SampleMgr\CRenderThread.h" />
     <ClInclude Include="..\..\Samples\SampleMgr\CSampleMgr.h" />
     <ClInclude Include="..\..\Samples\SampleMgr\IncludeSamples.h" />
     <ClInclude Include="..\..\Samples\SampleMgr\ISample.h" />

@@ -79,11 +79,11 @@ namespace XSE
                 xst_fi  Handle              GetObjectHandle() const xst_implement
                                             { return this->GetResourceHandle(); }
 
-						VertexBufferPtr		CreateVertexBuffer();
+						VertexBufferPtr		CreateVertexBuffer(bool bUseAsDefault = true);
 						
 						void				SetVertexBuffer(VertexBufferPtr pVB, cu32& uiLODId = 0);
 
-						IndexBufferPtr		CreateIndexBuffer();
+						IndexBufferPtr		CreateIndexBuffer(bool bUseAsDefault = true);
 						
 						void				SetIndexBuffer(IndexBufferPtr pIB, cu32& uiLODId = 0);
 

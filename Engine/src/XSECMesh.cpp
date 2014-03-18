@@ -59,7 +59,7 @@ namespace XSE
 			IRenderableObject::Update(fTime);
 		}
 
-		VertexBufferPtr CMesh::CreateVertexBuffer()
+		VertexBufferPtr CMesh::CreateVertexBuffer(bool bUseAsDefault)
 		{
 			VertexBufferPtr pVB( m_pRS->CreateVertexBuffer() ); //~0.002sec in debug
 			if( m_pInputLayout != xst_null )
@@ -67,17 +67,14 @@ namespace XSE
 				pVB->SetInputLayout( m_pInputLayout );
 			}
 		
-			if( m_vLODs.empty() )
+			if( bUseAsDefault )
 			{
-				//m_vLODs.push_back( xst_new SMeshLOD() );
-				/*m_vLODs.push_back( SMeshLOD() );
-				m_pCurrentLOD = &m_vLODs[ 0 ];
-				m_pCurrentLOD->byID = 0;*/
-				m_pCurrentLOD = &AddLOD();
-			}
+				if( m_vLODs.empty() )
+				{
+					m_pCurrentLOD = &AddLOD();
+				}
 
-			if( m_vLODs[ 0 ].pVertexBuffer == xst_null )
-			{
+				xst_assert( m_vLODs[ 0 ].pVertexBuffer.IsNull(), "(CMesh::CreateVertexBuffer) Vertex buffer should not be used" );
 				m_vLODs[ 0 ].pVertexBuffer = pVB;
 			}
 
@@ -95,27 +92,29 @@ namespace XSE
 			}
 		}
 
-		IndexBufferPtr CMesh::CreateIndexBuffer()
+		IndexBufferPtr CMesh::CreateIndexBuffer(bool bUseAsDefault)
 		{
 			IndexBufferPtr pIB( m_pRS->CreateIndexBuffer() );
 
-			if( m_vLODs.empty() )
+			if( bUseAsDefault )
 			{
-				//Ptr lod
-				/*m_vLODs.push_back( xst_new SMeshLOD() );
-				m_pCurrentLOD = &m_vLODs[ 0 ];*/
-				//Obj lod
-				m_pCurrentLOD = &AddLOD();
-			}
-		
-			if( m_vLODs[ 0 ].pIndexBuffer == xst_null )
-			{
-				m_vLODs[ 0 ].pIndexBuffer = pIB;
-				m_bIndexedGeometry = true;
-				//Change render method to render as indexed geometry
-				m_RenderMethod = &CMesh::_RenderIndexed;
-			}
+				if( m_vLODs.empty() )
+				{
+					//Ptr lod
+					/*m_vLODs.push_back( xst_new SMeshLOD() );
+					m_pCurrentLOD = &m_vLODs[ 0 ];*/
+					//Obj lod
+					m_pCurrentLOD = &AddLOD();
+				}
 
+				xst_assert( m_vLODs[ 0 ].pIndexBuffer.IsNull(), "(CMesh::CreateIndexBuffer) Zero-LOD index buffer must not be null" );
+				{
+					m_vLODs[ 0 ].pIndexBuffer = pIB;
+					m_bIndexedGeometry = true;
+					//Change render method to render as indexed geometry
+					m_RenderMethod = &CMesh::_RenderIndexed;
+				}
+			}
 			return pIB;
 		}
 

@@ -69,6 +69,12 @@
     <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\moc_cdebugdialog.cpp">
       <Filter>ui\moc</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Samples\SampleMgr\CRenderThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Samples\SampleMgr\Qt\SampleManager\moc_CRenderThread.cpp">
+      <Filter>ui\moc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Samples\Terrain\CTerrain.h">
@@ -100,6 +106,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Samples\SampleMgr\Qt\SampleManager\cdebugdialog.h">
       <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Samples\SampleMgr\CRenderThread.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

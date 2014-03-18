@@ -1,5 +1,8 @@
 #include "CSampleMgr.h"
 #include "IncludeSamples.h"
+#include "CRenderThread.h"
+
+CRenderThread g_RenderThread;
 
 CSampleMgr::CSampleMgr()
 {
@@ -69,11 +72,16 @@ i32 CSampleMgr::InitEngine(u32 uiWindowHandle)
 		return XST_FAIL;
 	}
 
+	g_RenderThread.Init( m_pEngine );
+	g_RenderThread.start();
+
 	return XST_OK;
 }
 
 void CSampleMgr::DestroyEngine()
 {
+	g_RenderThread.StartRendering( false );
+	g_RenderThread.terminate();
 	XSEDestroyEngine( &m_pEngine );
 }
 
@@ -112,6 +120,7 @@ void CSampleMgr::UnregisterSample(ISample* pSample)
 		return;
 	}
 
+	g_RenderThread.StartRendering( false );
 	m_pRenderWnd->GetKeyboard()->RemoveListener( m_pCurrSample, false );
 	m_pRenderWnd->GetMouse()->RemoveListener( m_pCurrSample, false );
 	m_pCurrSample->Destroy();
@@ -131,13 +140,15 @@ ISample* CSampleMgr::GetSample(xst_castring& strName)
 
 void CSampleMgr::RenderSample()
 {
+	//g_RenderThread.Lock();
 	if( m_pCurrSample != xst_null/* && m_pCurrSample->IsReady()*/ )
 	{
-		m_pRenderWnd->BeginRenderFrame();
-		m_pRenderWnd->EndRenderFrame();
+		//m_pRenderWnd->BeginRenderFrame();
+		//m_pRenderWnd->EndRenderFrame();
 		//bool b = m_pRenderWnd->GetKeyboard()->IsKeyPressed( XSE::KeyCodes::CAPITAL_W );
-		m_pCurrSample->Update();
+		//m_pCurrSample->Update();
 	}
+	//g_RenderThread.Unlock();
 }
 
 bool CSampleMgr::RunSample(xst_castring& strName)
@@ -169,6 +180,10 @@ bool CSampleMgr::RunSample(xst_castring& strName)
 	m_pRenderWnd->GetMouse()->AddListener( m_pCurrSample );
 	m_pRenderWnd->Show( true );
     m_pCurrSample->SetReady( true );
+
+	g_RenderThread.SetSample( m_pCurrSample );
+	g_RenderThread.StartRendering( true );
+	
 	return m_pCurrSample->Run() == XST_OK;
 }
 

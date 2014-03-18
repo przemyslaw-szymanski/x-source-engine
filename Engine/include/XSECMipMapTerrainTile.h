@@ -70,7 +70,7 @@ namespace XSE
 			xst_fi	u32						GetPoolId() const
 											{ return m_uiPoolId; }
 
-			i32								Lock(MeshPtr pMesh, ul32 ulVertexCount);
+			i32								Lock(MeshWeakPtr pMesh, ul32 ulVertexCount);
 
 			i32								CalcVertexData(const SInfo& Info);
 
