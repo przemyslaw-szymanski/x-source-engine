@@ -244,8 +244,9 @@ namespace XSE
 						i32			_CreatePixelShader(CPixelShader* pShader);
 						i32			_CreateIndexBuffer(CIndexBuffer* pIB);
 
-				XST::IAllocator*	_CreateVertexShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator);
-				XST::IAllocator*	_CreatePixelShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator);
+				//XST::IAllocator*	_CreateVertexShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator);
+				//XST::IAllocator*	_CreatePixelShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator);
+						i32			_CreateMemoryPools(void* pMemOptions);
 
 						i32			_CreateVertexBuffer(CVertexBuffer* pVB);
 						i32			_CreateInputLayout(CInputLayout* pIL);
@@ -297,6 +298,8 @@ namespace XSE
 				//Allocators
 				XST::IAllocator*		m_pVSMemMgr;
 				XST::IAllocator*		m_pPSMemMgr;
+				XST::IAllocator*		m_pVBMemMgr;
+				XST::IAllocator*		m_pIBMemMgr;
 		};
 
 	}//d3d11

@@ -43,6 +43,35 @@ namespace XST
 			virtual void	Deallocate(void* _pPtr, u32 _uiElementCount, u32 _uiElementSize) { xst_free(_pPtr); }
 	};
 
+	class IAllocable
+	{
+		public:
+
+							IAllocable( IAllocator* pAlloc ) : m_pAllocator( pAlloc )
+							{}
+			virtual			~IAllocable()
+							{}
+
+			void*			operator new(std::size_t uSize, IAllocator* pAlloc)
+			{
+				xst_assert( pAlloc, "(IAllocable::new) pAlloc is null" );
+				return pAlloc->Allocate( uSize );
+			}
+
+			void			operator delete(void* pPtr)
+			{
+				if( pPtr )
+				{
+					IAllocable* pObj = static_cast< IAllocable* >( pPtr );
+					xst_assert( pObj->m_pAllocator, "(IAllocable::delete) Allocator is not set" );
+					pObj->m_pAllocator->Deallocate( &pPtr );
+				}
+			}
+
+		protected:
+
+			IAllocator*		m_pAllocator = xst_null;
+	};
 	
 }//XST
 

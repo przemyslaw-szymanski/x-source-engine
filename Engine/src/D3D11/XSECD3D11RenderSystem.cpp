@@ -9,6 +9,8 @@
 #include "XSECD3D11CGShaderSystem.h"
 #include "XSECD3D11HLSLShaderSystem.h"
 
+#include "XSECEngine.h"
+
 //#include <DirectXCollision.h>
 
 #if defined (XST_WINDOWS)
@@ -1385,7 +1387,12 @@ namespace XSE
 			return XST_OK;
 		}
 
-		XST::IAllocator*	CRenderSystem::_CreateVertexShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator) 
+		i32 CRenderSystem::_CreateMemoryPools(void* pMemOptions)
+		{
+			SMemoryOptions* pOptions = static_cast< SMemoryOptions* >( pMemOptions );
+		}
+
+		/*XST::IAllocator*	CRenderSystem::_CreateVertexShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator) 
 		{
 			xst_assert2( m_pVSMemMgr == xst_null );
 			XST::IAllocator* pAlloc = xst_null;
@@ -1429,7 +1436,7 @@ namespace XSE
 
 			m_pPSMemMgr = pAlloc;
 			return pAlloc;
-		}
+		}*/
 
 		i32 CRenderSystem::_CreateVertexBuffer(CVertexBuffer* pVB)
 		{

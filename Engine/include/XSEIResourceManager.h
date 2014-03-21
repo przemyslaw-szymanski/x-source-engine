@@ -106,7 +106,7 @@ namespace XSE
             ResourceWeakPtr				GetOrCreateResource(xst_castring& strName, xst_castring& strGroupName = ALL_GROUPS, bool* pbCreatedOut = xst_null);
 			ResourceWeakPtr				GetOrCreateResource(xst_castring& strName, GroupWeakPtr pGroup, bool* pbCreatedOut = xst_null);
 
-            virtual i32                 CreateMemoryPool(cul32& ulMemorySize);
+            virtual i32                 CreateMemoryPool(void* pMemMgr);
 
             virtual void                ForEachResource(ResourceCallback Callback);
 
@@ -121,7 +121,7 @@ namespace XSE
             virtual i32                     _OnGroupDestroy(GroupWeakPtr pGroup)
                                             { return XST_OK; }
 
-            virtual XST::IAllocator*        _CreateMemoryManager(cul32& ulMemorySize);
+            virtual XST::IAllocator*        _CreateMemoryManager(void* pMemOptions);
             
             virtual void                    _DestroyMemoryManager(XST::IAllocator** ppMemMgr);
 

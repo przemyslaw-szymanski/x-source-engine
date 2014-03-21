@@ -10,9 +10,16 @@ namespace XSE
 		//void WriteVerticesToByteBuffer(u8* pVertexData, ul32 ulDataSize, const Vertex* aVertices, ul32 ulVertexCount, IInputLayout* pIL);
 		ul32 CalcVertexSize(IInputLayout* pIL);
 
-		CVertexBuffer::CVertexBuffer(CRenderSystem* pRS) :	m_pRS( pRS ), m_eD3DTopologyType( D3D_PRIMITIVE_TOPOLOGY_UNDEFINED ), m_eD3DBufferUsage( D3D11_USAGE_DEFAULT ),
-															m_eTopologyType( (XSE::TOPOLOGY_TYPE)0 ), m_eUsage( (XSE::BUFFER_USAGE)0 ),
-															m_pD3DBuffer( xst_null ), m_pInputLayout( xst_null ), m_ulVertexCount( 0 )
+		CVertexBuffer::CVertexBuffer(CRenderSystem* pRS, XST::IAllocator* pAlloc) :	
+			XST::IAllocable( pAlloc ),
+			m_pRS( pRS ), 
+			m_eD3DTopologyType( D3D_PRIMITIVE_TOPOLOGY_UNDEFINED ), 
+			m_eD3DBufferUsage( D3D11_USAGE_DEFAULT ),
+			m_eTopologyType( (XSE::TOPOLOGY_TYPE)0 ),
+			m_eUsage( (XSE::BUFFER_USAGE)0 ),
+			m_pD3DBuffer( xst_null ), 
+			m_pInputLayout( xst_null ), 
+			m_ulVertexCount( 0 )
 		{
 		}
 

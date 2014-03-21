@@ -36,6 +36,19 @@ namespace XSE
 
 	};
 
+	struct SMemoryOptions
+	{
+		ul32	ulVertexBufferCount = 3000;
+		ul32	ulIndexBufferCount = 3000;
+		ul32	ulMeshCount = 3000;
+		ul32	ulModelCount = 3000;
+		ul32	ulTextureCount = 3000;
+		ul32	ulVertexShaderCount = 100;
+		ul32	ulPixelShaderCount = 100;
+		ul32	ulMaterialCount = 100;
+		ul32	ulLuaScriptCount = 1000;
+	};
+
 	class XST_API CEngineOptions
 	{
 		public:
@@ -44,6 +57,7 @@ namespace XSE
 			xst_astring strRenderSystem;
 			xst_astring strRenderSystemPlugin;
 			SRenderSystemOptions	RSOptions;
+			SMemoryOptions			MemOptions;
 	};
 
 	class XST_API CEngine : public XST::TCSingleton< CEngine >, public XST::IObject

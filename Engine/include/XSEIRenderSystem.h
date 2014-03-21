@@ -166,8 +166,9 @@ namespace XSE
 					void				_SetShaderSystem(Resources::IShader* pShader, IShaderSystem* pShaderSystem)
 										{ pShader->m_pShaderSystem = pShaderSystem; }
 
-			virtual	XST::IAllocator*	_CreateVertexShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null) = 0;
-			virtual XST::IAllocator*	_CreatePixelShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null) = 0;
+			//virtual	XST::IAllocator*	_CreateVertexShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null) = 0;
+			//virtual XST::IAllocator*	_CreatePixelShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null) = 0;
+			virtual	i32					_CreateMemoryPools(void* pMemOptions) = 0;
 
 		protected:
 

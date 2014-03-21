@@ -10,13 +10,13 @@ namespace XSE
 	namespace D3D11
 	{
 
-		class CVertexBuffer : public IVertexBuffer
+		class CVertexBuffer : public IVertexBuffer, public XST::IAllocable
 		{
 			friend class CRenderSystem;
 
 			public:	
 
-										CVertexBuffer(CRenderSystem* pRS);
+										CVertexBuffer(CRenderSystem* pRS, XST::IAllocator* pAlloc);
 
 				virtual					~CVertexBuffer();
 

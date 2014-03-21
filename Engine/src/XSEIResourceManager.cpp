@@ -416,10 +416,10 @@ namespace XSE
 	}
 
 
-    i32 IResourceManager::CreateMemoryPool(cul32& ulMemSize)
+    i32 IResourceManager::CreateMemoryPool(void* pMemMgr)
     {
         xst_assert( m_pMemoryMgr == xst_null, "(IResourceManager::CreateMemoryManager) Memory manager is already created" );
-        m_pMemoryMgr = _CreateMemoryManager( ulMemSize );
+        m_pMemoryMgr = _CreateMemoryManager( pMemMgr );
         if( !m_pMemoryMgr )
         {
             XST_LOG_ERR( "Memory manager creation failed" );
@@ -428,7 +428,7 @@ namespace XSE
         return XST_OK;
     }
 
-    XST::IAllocator* IResourceManager::_CreateMemoryManager(cul32& ulMemSize)
+    XST::IAllocator* IResourceManager::_CreateMemoryManager(void* pMemMgr)
     {
         return xst_new XST::CDefaultAllocator();
     }
