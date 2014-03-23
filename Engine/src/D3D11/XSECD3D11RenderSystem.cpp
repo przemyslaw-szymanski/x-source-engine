@@ -672,7 +672,7 @@ namespace XSE
 
 		XSE::IVertexBuffer* CRenderSystem::CreateVertexBuffer()
 		{
-			CVertexBuffer* pVB = xst_new CVertexBuffer( this );
+			CVertexBuffer* pVB = xst_new CVertexBuffer( this, m_pVBMemMgr );
 			return pVB;
 		}
 
@@ -1390,6 +1390,7 @@ namespace XSE
 		i32 CRenderSystem::_CreateMemoryPools(void* pMemOptions)
 		{
 			SMemoryOptions* pOptions = static_cast< SMemoryOptions* >( pMemOptions );
+			return XST_OK;
 		}
 
 		/*XST::IAllocator*	CRenderSystem::_CreateVertexShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator) 

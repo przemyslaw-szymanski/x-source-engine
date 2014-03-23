@@ -11,7 +11,6 @@ namespace XSE
 		ul32 CalcVertexSize(IInputLayout* pIL);
 
 		CVertexBuffer::CVertexBuffer(CRenderSystem* pRS, XST::IAllocator* pAlloc) :	
-			XST::IAllocable( pAlloc ),
 			m_pRS( pRS ), 
 			m_eD3DTopologyType( D3D_PRIMITIVE_TOPOLOGY_UNDEFINED ), 
 			m_eD3DBufferUsage( D3D11_USAGE_DEFAULT ),

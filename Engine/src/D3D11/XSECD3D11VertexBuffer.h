@@ -3,6 +3,7 @@
 
 #include "XSEIVertexBuffer.h"
 #include "XSED3D11Common.h"
+#include "../XSETCFreeListAllocator.h"
 
 #if defined (XST_WINDOWS)
 namespace XSE
@@ -10,7 +11,7 @@ namespace XSE
 	namespace D3D11
 	{
 
-		class CVertexBuffer : public IVertexBuffer, public XST::IAllocable
+		class CVertexBuffer : public IVertexBuffer, public XST::TIAllocableObject< TCFreeListAllocator< CVertexBuffer > >
 		{
 			friend class CRenderSystem;
 

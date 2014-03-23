@@ -68,13 +68,13 @@ namespace XSE
 		//	
 		//}
 
-		m_pVSMemMgr = this->m_pRenderSystem->_CreateVertexShaderMemoryPool( ulObjCount, pAllocator );
-		m_pPSMemMgr = this->m_pRenderSystem->_CreatePixelShaderMemoryPool( ulObjCount, pAllocator );
+		//m_pVSMemMgr = this->m_pRenderSystem->_CreateVertexShaderMemoryPool( ulObjCount, pAllocator );
+		//m_pPSMemMgr = this->m_pRenderSystem->_CreatePixelShaderMemoryPool( ulObjCount, pAllocator );
 
-		if( m_pVSMemMgr == xst_null || m_pPSMemMgr == xst_null )
-		{
-			return XST_FAIL;
-		}
+		//if( m_pVSMemMgr == xst_null || m_pPSMemMgr == xst_null )
+		//{
+		//	return XST_FAIL;
+		//}
 
 		return XST_OK;
 	}
@@ -93,22 +93,22 @@ namespace XSE
 
 	i32 CShaderManager::_CreateVSMemoryPool(cul32 &ulObjCount, XST::IAllocator *pAllocator)
 	{
-		this->m_pVSMemMgr = m_pRenderSystem->_CreateVertexShaderMemoryPool( ulObjCount, pAllocator );
+		/*this->m_pVSMemMgr = m_pRenderSystem->_CreateVertexShaderMemoryPool( ulObjCount, pAllocator );
 		if( this->m_pVSMemMgr == xst_null )
 		{
 			return XST_FAIL;
-		}
+		}*/
 
 		return XST_OK;
 	}
 
 	i32 CShaderManager::_CreatePSMemoryPool(cul32 &ulObjCount, XST::IAllocator *pAllocator)
 	{
-		this->m_pVSMemMgr = m_pRenderSystem->_CreateVertexShaderMemoryPool( ulObjCount, pAllocator );
+		/*this->m_pVSMemMgr = m_pRenderSystem->_CreateVertexShaderMemoryPool( ulObjCount, pAllocator );
 		if( this->m_pVSMemMgr == xst_null )
 		{
 			return XST_FAIL;
-		}
+		}*/
 
 		return XST_OK;
 	}

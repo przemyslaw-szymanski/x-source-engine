@@ -277,6 +277,7 @@
     <ClInclude Include="..\..\Engine\src\XSECRenderLayer.h" />
     <ClInclude Include="..\..\Engine\src\XSECShaderSystemFactory.h" />
     <ClInclude Include="..\..\Engine\src\XSECTechnique.h" />
+    <ClInclude Include="..\..\Engine\src\XSETCFreeListAllocator.h" />
     <ClInclude Include="..\..\Engine\src\XST\ThirdParty\zlib\zconf.h" />
     <ClInclude Include="..\..\Engine\src\XST\ThirdParty\zlib\zlib.h" />
     <ClInclude Include="..\..\Engine\src\XST\XSTCAsmScript.h" />

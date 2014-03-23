@@ -162,6 +162,11 @@ namespace XST
 				return Alloc(); 
 			}
 
+			virtual void*			Allocate(size_t uiSize, u32 uiBlock, const char* lpszFile, u32 uiLine)
+			{
+				return Alloc();
+			}
+
 			virtual void			Deallocate(void* pPtr) 
 			{ 
 				Delete( (_T_*)pPtr );

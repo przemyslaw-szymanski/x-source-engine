@@ -42,7 +42,7 @@ namespace XST
 
 			void	operator delete(void* pPtr)
 			{
-				return _ALLOC_::Deallocate( pPtr );
+				_ALLOC_::Deallocate( pPtr );
 			}
 	};
 
