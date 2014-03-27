@@ -357,6 +357,7 @@ namespace XSE
 		m_pResFileMgr->AddExtension( "lua", XST::ResourceType::LUA_SCRIPT, iLoadingOrder, m_pLuaScriptMgr );
 		++iLoadingOrder;
 		
+		m_EngineTimer.Start();
 
 		return RESULT::OK;
 	}

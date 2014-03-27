@@ -171,6 +171,8 @@ namespace XSE
 			xst_unknown				m_hRenderSystemDll;
 
 			SFeatures				m_Features;
+
+			XST::CTimer				m_EngineTimer;
 	};
 
 }//xse

@@ -492,12 +492,12 @@ namespace XSE
 
 		i32 CRenderWindow::RenderFrame()
 		{
-			if( Update() != RESULT::OK )
+			if( BeginRenderFrame() != RESULT::OK )
 			{
 				return RESULT::FAILED;
 			}
 
-			if( BeginRenderFrame() != RESULT::OK )
+			if( Update() != RESULT::OK )
 			{
 				return RESULT::FAILED;
 			}
