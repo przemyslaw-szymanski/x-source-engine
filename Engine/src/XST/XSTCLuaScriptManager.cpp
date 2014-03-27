@@ -8,7 +8,7 @@ namespace XST
 	CLuaScriptManager::CLuaScriptManager() : m_pDefaultLuaApi( xst_null )
 	{
 		//Create allocator
-		m_pScriptAllocator = xst_new TCFreeListMemoryManager< Resources::CLuaScript >( 100 );
+	//	m_pScriptAllocator = xst_new TCFreeListMemoryManager< Resources::CLuaScript >( 100 );
 	}
 
 	CLuaScriptManager::~CLuaScriptManager()

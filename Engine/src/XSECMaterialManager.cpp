@@ -74,7 +74,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32 CMaterialManager::_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator)
+	/*i32 CMaterialManager::_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator)
 	{
 		xst_delete( this->m_pMemoryMgr );
 
@@ -95,7 +95,7 @@ namespace XSE
 		}
 
 		return RESULT::OK;
-	}
+	}*/
 
 	MaterialPtr CMaterialManager::CreateMaterial(xst_castring &strName, xst_castring &strGroupName)
 	{

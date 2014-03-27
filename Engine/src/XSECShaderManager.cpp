@@ -49,35 +49,10 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32 CShaderManager::_CreateMemoryPool(cul32 &ulObjCount, XST::IAllocator *pAllocator)
+	/*i32 CShaderManager::_CreateMemoryPool(cul32 &ulObjCount, XST::IAllocator *pAllocator)
 	{
-		//if( pAllocator )
-		//{
-		//	xst_delete( this->m_pMemoryMgr );
-		//	this->m_pMemoryMgr = pAllocator;
-		//	if( !this->m_pMemoryMgr->AllocatePool( sizeof( this->m_pRenderSystem->GetShaderMaxSize() ), ulObjCount ) )
-		//	{
-		//		XST_LOG_ERR( "Create memory pool failed in CLuaScriptManager" );
-		//		return RESULT::FAILED;
-		//	}
-		//}
-		//else
-		//{
-		//	xst_delete( this->m_pMemoryMgr );
-		//	//this->m_pMemoryMgr = xst_new XST::TCFreeListMemoryManager< Resources::CLuaScript >( ulObjCount );
-		//	
-		//}
-
-		//m_pVSMemMgr = this->m_pRenderSystem->_CreateVertexShaderMemoryPool( ulObjCount, pAllocator );
-		//m_pPSMemMgr = this->m_pRenderSystem->_CreatePixelShaderMemoryPool( ulObjCount, pAllocator );
-
-		//if( m_pVSMemMgr == xst_null || m_pPSMemMgr == xst_null )
-		//{
-		//	return XST_FAIL;
-		//}
-
 		return XST_OK;
-	}
+	}*/
 
 	void CShaderManager::SetShaderConstantName(SHADER_CONSTANT eConstant, xst_castring& strName)
 	{
@@ -91,27 +66,15 @@ namespace XSE
 		return m_pRenderSystem->ApplyShaderConstantNames();
 	}
 
-	i32 CShaderManager::_CreateVSMemoryPool(cul32 &ulObjCount, XST::IAllocator *pAllocator)
+	/*i32 CShaderManager::_CreateVSMemoryPool(cul32 &ulObjCount, XST::IAllocator *pAllocator)
 	{
-		/*this->m_pVSMemMgr = m_pRenderSystem->_CreateVertexShaderMemoryPool( ulObjCount, pAllocator );
-		if( this->m_pVSMemMgr == xst_null )
-		{
-			return XST_FAIL;
-		}*/
-
 		return XST_OK;
 	}
 
 	i32 CShaderManager::_CreatePSMemoryPool(cul32 &ulObjCount, XST::IAllocator *pAllocator)
 	{
-		/*this->m_pVSMemMgr = m_pRenderSystem->_CreateVertexShaderMemoryPool( ulObjCount, pAllocator );
-		if( this->m_pVSMemMgr == xst_null )
-		{
-			return XST_FAIL;
-		}*/
-
 		return XST_OK;
-	}
+	}*/
 
 	VertexShaderPtr CShaderManager::CompileVertexShader(xst_castring& strName, xst_castring& strEntryPoint, xst_castring& strCode, xst_castring& strGroupName)
 	{

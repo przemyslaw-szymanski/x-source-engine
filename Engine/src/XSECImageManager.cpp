@@ -50,7 +50,7 @@ namespace XSE
 		return m_pImgSystem->CreateImageData( pImg.GetPtr() );
 	}
 
-	i32	CImageManager::_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator)
+	/*i32	CImageManager::_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator)
 	{
 		xst_assert2( m_pImgSystem );
 
@@ -72,7 +72,7 @@ namespace XSE
 		}
 
 		return RESULT::OK;
-	}
+	}*/
 
 	IResource*	CImageManager::_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup)
 	{

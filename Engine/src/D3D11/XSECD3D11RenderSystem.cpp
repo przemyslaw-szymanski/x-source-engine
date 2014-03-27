@@ -175,6 +175,12 @@ namespace XSE
 			xst_release( m_pD3DFactory );
 
 			_UnloadLibraries();
+
+			TCFreeListAllocator< CVertexBuffer >::Destroy();
+			TCFreeListAllocator< CIndexBuffer >::Destroy();
+			TCFreeListAllocator< CVertexShader >::Destroy();
+			TCFreeListAllocator< CPixelShader >::Destroy();
+
 		}
 
 		void CRenderSystem::_UnloadLibraries()
@@ -363,7 +369,13 @@ namespace XSE
 				return XST_FAIL;
 			}
 
-			m_pCurrentShaderSystem = GetShaderSystem( );
+			m_pCurrentShaderSystem = GetShaderSystem();
+
+			if( XST_FAILED( this->_CreateMemoryPools( (void*)&Options.MemOptions ) ) )
+			{
+				return XST_FAIL;
+			}
+
 			return RESULT::OK;
 		}
 
@@ -1389,55 +1401,32 @@ namespace XSE
 
 		i32 CRenderSystem::_CreateMemoryPools(void* pMemOptions)
 		{
-			SMemoryOptions* pOptions = static_cast< SMemoryOptions* >( pMemOptions );
+			SRenderSystemMemoryOptions* pOptions = static_cast< SRenderSystemMemoryOptions* >( pMemOptions );
+			if( XST_FAILED( TCFreeListAllocator< CVertexBuffer >::Create( pOptions->uiVertexBufferCount ) ) )
+			{
+				XST_LOG_ERR( "Failed to create memory buffer for vertex buffers" );
+				return XST_FAIL;
+			}
+
+			if( XST_FAILED( TCFreeListAllocator< CIndexBuffer >::Create( pOptions->uiIndexBufferCount ) ) )
+			{
+				XST_LOG_ERR( "Failed to create memory buffer for index buffers" );
+				return XST_FAIL;
+			}
+
+			if( XST_FAILED( TCFreeListAllocator< CVertexShader >::Create( pOptions->uiVertexShaderCount ) ) )
+			{
+				XST_LOG_ERR( "Failed to create memory buffer for vertex shaders" );
+				return XST_FAIL;
+			}
+
+			if( XST_FAILED( TCFreeListAllocator< CPixelShader >::Create( pOptions->uiPixelShaderCount ) ) )
+			{
+				XST_LOG_ERR( "Failed to create memory buffer for pixel shaders" );
+				return XST_FAIL;
+			}
 			return XST_OK;
 		}
-
-		/*XST::IAllocator*	CRenderSystem::_CreateVertexShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator) 
-		{
-			xst_assert2( m_pVSMemMgr == xst_null );
-			XST::IAllocator* pAlloc = xst_null;
-
-			if( pAllocator )
-			{
-				pAlloc = pAllocator;
-				if( !pAlloc->AllocatePool( sizeof( CVertexShader ), ulObjCount ) )
-				{
-					XST_LOG_ERR( "Create memory pool failed in CLuaScriptManager" );
-					return xst_null;
-				}
-			}
-			else
-			{
-				pAlloc = xst_new XST::TCFreeListMemoryManager< CVertexShader >( ulObjCount );
-			}
-
-			m_pVSMemMgr = pAlloc;
-			return pAlloc;
-		}
-
-		XST::IAllocator*	CRenderSystem::_CreatePixelShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator) 
-		{
-			xst_assert2( m_pPSMemMgr == xst_null );
-			XST::IAllocator* pAlloc = xst_null;
-
-			if( pAllocator )
-			{
-				pAlloc = pAllocator;
-				if( !pAlloc->AllocatePool( sizeof( CPixelShader ), ulObjCount ) )
-				{
-					XST_LOG_ERR( "Create memory pool failed in CLuaScriptManager" );
-					return xst_null;
-				}
-			}
-			else
-			{
-				pAlloc = xst_new XST::TCFreeListMemoryManager< CPixelShader >( ulObjCount );
-			}
-
-			m_pPSMemMgr = pAlloc;
-			return pAlloc;
-		}*/
 
 		i32 CRenderSystem::_CreateVertexBuffer(CVertexBuffer* pVB)
 		{

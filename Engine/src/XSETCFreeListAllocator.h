@@ -50,9 +50,9 @@ namespace XSE
 	template< class _T_ >
 	int TCFreeListAllocator< _T_ >::Create(unsigned uCount)
 	{
-		xst_assert( m_pMemMgr, "(TCFreeListAllocator::Init)" );
+		xst_assert( m_pMemMgr == xst_null, "(TCFreeListAllocator::Init)" );
 		m_pMemMgr = xst_new XST::TCFreeListMemoryManager< _T_ >( uCount );
-		if( !pMemMgr )
+		if( !m_pMemMgr )
 		{
 			return XST_FAIL;
 		}
@@ -65,6 +65,45 @@ namespace XSE
 	{
 		xst_delete( m_pMemMgr );
 	}
+
+	template< class _T_ >
+	class TCDefaultAllocator
+	{
+		public:
+
+			virtual			~TCDefaultAllocator()
+			{}
+
+			static int		Create( unsigned uCount )
+							{ return XST_OK; }
+
+			static void		Destroy()
+			{}
+
+			xst_fi static 
+			void*			Allocate()
+							{ return xst_malloc( sizeof( _T_ ) ); }
+			xst_fi static 
+			void*			Allocate(const std::size_t& uiSize)
+							{ return xst_malloc( uiSize ); }
+			xst_fi static 
+			void*			Allocate(const std::size_t& uiSize, const char* lpszFile, unsigned uiLine)
+							{ return xst_malloc( uiSize ); }
+			xst_fi static 
+			void*			Allocate(const std::size_t& uiSize, u32 uiBlock, const char* lpszFile, unsigned uiLine)
+							{ return xst_malloc( uiSize ); }
+			xst_fi static 
+			void*			Allocate(const std::size_t& uiSize, void* pPtr)
+							{ return xst_malloc( uiSize ); }
+			xst_fi static 
+			void*			Allocate(const std::size_t& uiSize, const std::nothrow_t& nt)
+							{ return xst_malloc( uiSize ); }
+
+			xst_fi static
+			void			Deallocate(void* pPtr)
+							{ return xst_free( pPtr ); }
+
+	};
 
 } // XSE
 

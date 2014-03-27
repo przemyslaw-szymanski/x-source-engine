@@ -18,6 +18,7 @@ namespace XSE
 	class IRenderSystem
 	{
 		friend class CShaderManager;
+		friend class CEngine;
 
 		protected:
 

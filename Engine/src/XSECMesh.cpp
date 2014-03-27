@@ -61,7 +61,13 @@ namespace XSE
 
 		VertexBufferPtr CMesh::CreateVertexBuffer(bool bUseAsDefault)
 		{
-			VertexBufferPtr pVB( m_pRS->CreateVertexBuffer() ); //~0.002sec in debug
+			IVertexBuffer* pVB;
+			{
+			//XSTSimpleProfiler2( "---Create Vertex buffer memory" );
+				pVB = m_pRS->CreateVertexBuffer();
+			}
+			//VertexBufferPtr pVB( m_pRS->CreateVertexBuffer() ); //~0.002sec in debug
+			
 			if( m_pInputLayout != xst_null )
 			{
 				pVB->SetInputLayout( m_pInputLayout );
@@ -77,12 +83,10 @@ namespace XSE
 				xst_assert( m_vLODs[ 0 ].pVertexBuffer.IsNull(), "(CMesh::CreateVertexBuffer) Vertex buffer should not be used" );
 				m_vLODs[ 0 ].pVertexBuffer = pVB;
 			}
-
-			return pVB;
-
+			return VertexBufferPtr( pVB );
 		}
 
-		void CMesh::SetVertexBuffer(VertexBufferPtr pVB, cu32& uiLODId)
+		void CMesh::SetVertexBuffer(const VertexBufferWeakPtr& pVB, cu32& uiLODId)
 		{
 			xst_assert( pVB != xst_null, "Vertex buffer is null" );
 			m_vLODs[ uiLODId ].pVertexBuffer = pVB;
@@ -118,7 +122,7 @@ namespace XSE
 			return pIB;
 		}
 
-		void CMesh::SetIndexBuffer(IndexBufferPtr pIB, cu32& uiLODId)
+		void CMesh::SetIndexBuffer(const IndexBufferWeakPtr& pIB, cu32& uiLODId)
 		{
 			xst_assert( pIB != xst_null, "Vertex buffer is null" );
 			m_vLODs[ uiLODId ].pIndexBuffer = pIB;
@@ -198,44 +202,6 @@ namespace XSE
 			}
 		}
 
-		//SMeshLOD* CMesh::CreateLOD()
-		//{
-		//	SMeshLOD* pLOD = xst_new SMeshLOD();
-		//	//m_vLODs.push_back( pLOD );
-		//	return pLOD;
-		//}
-
-
-		//u32 CMesh::AddLOD(SMeshLOD* pLOD)
-		//{
-		//	u32 uiID = m_vLODs.size();
-		//	pLOD->byID = uiID;
-
-		//	if( m_vLODs.empty() )
-		//	{
-		//		m_vLODs.push_back( pLOD );
-		//		return uiID;
-		//	}
-
-		//	//If there is no first lod set it
-		//	if( m_vLODs[ 0 ].pIndexBuffer == xst_null && m_vLODs[ 0 ].pVertexBuffer == xst_null )
-		//	{
-		//		m_vLODs[ 0 ] = pLOD;
-		//		return uiID;
-		//	}
-
-		//	if( pLOD->pIndexBuffer == xst_null ) 
-		//		pLOD->pIndexBuffer = m_vLODs[ 0 ].pIndexBuffer;
-		//	if( pLOD->pVertexBuffer == xst_null ) 
-		//		pLOD->pVertexBuffer = m_vLODs[ 0 ].pVertexBuffer;
-		//	if( pLOD->pMaterial == xst_null ) 
-		//		pLOD->pMaterial = m_vLODs[ 0 ].pMaterial;
-
-		//	m_vLODs.push_back( pLOD );
-		//	//DebugPrintIndexData( m_vLODs[ 0 ].pIndexBuffer->GetIndexData() );
-		//	return uiID;
-		//}
-
 		SMeshLOD& CMesh::AddLOD()
 		{
 			SMeshLOD LOD;
@@ -273,11 +239,11 @@ namespace XSE
 			//m_vLODs.reserve( uiLODCount );
 			SMeshLOD LOD;
 			m_vLODs.resize( uiLODCount, LOD );
-			for( u32 i = 0; i < m_vLODs.size(); ++i )
+			/*for( u32 i = 0; i < m_vLODs.size(); ++i )
 			{
 				m_vLODs[ i ] = m_vLODs[ 0 ];
 				m_vLODs[ i ].byID = i;
-			}
+			}*/
 		}
 
 		void CMesh::SetLOD(cu32& uiLOD, const SMeshLOD& LOD)
@@ -287,10 +253,10 @@ namespace XSE
 
 		void CMesh::SetLOD(cu8& uiLOD)
 		{
-			m_pCurrentLOD = &m_vLODs[ Math::Max< u8 >( 0, uiLOD ) ];
+			xst_assert( uiLOD >= 0 && uiLOD < m_vLODs.size(), "(CMesh::SetLOD) uiLOD out of bounds" );
+			m_pCurrentLOD = &m_vLODs[ uiLOD ];
 			xst_assert( m_pCurrentLOD, "(CMesh::SetLOD)" );
-			xst_assert( m_pCurrentLOD->pVertexBuffer.IsValid(), "(CMesh::SetLOD)" );
-			xst_assert( m_pCurrentLOD->pIndexBuffer.IsValid(), "(CMesh::SetLOD)" );
+			// TODO: log warnings if there is no material, vertex buffer, index buffer setl
 			//DebugPrintIndexData( m_pCurrentLOD->pIndexBuffer->GetIndexData() );
 			//Todo
 			//If previous material is different to new lod force update render queue

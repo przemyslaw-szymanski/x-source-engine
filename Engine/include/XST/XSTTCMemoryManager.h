@@ -86,7 +86,7 @@ namespace XST
 	};
 
 	template<class _T_>
-	class TCFreeListMemoryManager : public IAllocator, public TCSingleton< TCFreeListMemoryManager< _T_ > >
+	class TCFreeListMemoryManager : /*public IAllocator,*/ public TCSingleton< TCFreeListMemoryManager< _T_ > >
 	{
 		public:
 
@@ -137,72 +137,51 @@ namespace XST
 				xst_deletea( m_pMemoryPool );
 			}
 
-			virtual void*			Allocate() 
-			{ 
-				return Alloc(); 
-			}
+			void*			Allocate()
+							{ return Alloc(); }
 
-			virtual void*			Allocate(u32 uiSize) 
-			{ 
-				return Alloc(); 
-			}
+			void*			Allocate(u32 uiSize)
+							{ return Alloc(); }
 
-			virtual void*			Allocate(void* pData) 
-			{ 
-				return Alloc(); 
-			}
+			void*			Allocate(void* pData)
+							{ return Alloc(); }
 
-			virtual void*			Allocate(void* pData, u32 uiDataSize) 
-			{ 
-				return Alloc(); 
-			}
+			void*			Allocate(void* pData, u32 uiDataSize)
+							{ return Alloc(); }
 
-			virtual void*			Allocate(u32 _uiElementCount, u32 _uiElementSize) 
-			{ 
-				return Alloc(); 
-			}
+			void*			Allocate(u32 _uiElementCount, u32 _uiElementSize)
+							{ return Alloc(); }
 
-			virtual void*			Allocate(size_t uiSize, u32 uiBlock, const char* lpszFile, u32 uiLine)
+			void*			Allocate(size_t uiSize, u32 uiBlock, const char* lpszFile, u32 uiLine)
+							{ return Alloc(); }
+
+			void			Deallocate(void* pPtr)
+							{ Delete( (_T_*)pPtr ); }
+
+			void			Deallocate(void** pPtr)
+							{ Delete( (_T_*)*pPtr ); }
+
+			void			Deallocate(void* pPtr, u32 uiSize)
+							{ Delete( (_T_*)pPtr ); }
+
+			void			Deallocate(void* pPtr, u32 uiElementCount, u32 uiElementSize)
+							{ Delete( (_T_*)pPtr ); }
+
+			xst_i	_T_*	Alloc() 
 			{
-				return Alloc();
-			}
-
-			virtual void			Deallocate(void* pPtr) 
-			{ 
-				Delete( (_T_*)pPtr );
-			}
-
-			virtual void			Deallocate(void** pPtr) 
-			{ 
-				Delete( (_T_*)*pPtr );
-			}
-
-			virtual void			Deallocate(void* pPtr, u32 uiSize) 
-			{
-				Delete( (_T_*)pPtr );
-			}
-
-			virtual void			Deallocate(void* pPtr, u32 uiElementCount, u32 uiElementSize) 
-			{ 
-				Delete( (_T_*)pPtr );
-			}
-
-			virtual xst_fi	_T_*	Alloc()
-			{
-				if( m_pFirstFreeBlock == xst_null )
+				if( m_pFirstFreeBlock != xst_null )
 				{
-					return xst_null;
+					_T_* pPtr = ( _T_* )( m_pFirstFreeBlock );
+					m_pFirstFreeBlock = m_pFirstFreeBlock->pNext;
+					--m_uiFreeBlockCount;
+					return pPtr;
 				}
-
-				_T_* pPtr = (_T_*)m_pFirstFreeBlock;
-				m_pFirstFreeBlock = m_pFirstFreeBlock->pNext;
-				--m_uiFreeBlockCount;
-				return pPtr;
+				return xst_null;				
 			}
 
-			virtual xst_fi	void	Delete(_T_* pPtr)
+			xst_i	void	Delete(_T_* pPtr)
 			{
-				SFreeBlock* pFreeBlock = (SFreeBlock*)pPtr;
+				SFreeBlock* pFreeBlock = ( SFreeBlock* )( pPtr );
 				pFreeBlock->pNext = m_pFirstFreeBlock;
 				m_pFirstFreeBlock = pFreeBlock;
 				++m_uiFreeBlockCount;
@@ -211,11 +190,11 @@ namespace XST
 		protected:
 
 			MemoryPool	m_pMemoryPool;
-			bool		m_bMemoryPoolCreated;
+			SFreeBlock*	m_pFirstFreeBlock;
 			u32			m_uiMemorySize;
 			u32			m_uiElementCount;
-			SFreeBlock*	m_pFirstFreeBlock;
 			u32			m_uiFreeBlockCount;
+			bool		m_bMemoryPoolCreated;
 	};
 
 }//XST

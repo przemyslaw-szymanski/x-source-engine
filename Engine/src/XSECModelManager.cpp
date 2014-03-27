@@ -22,7 +22,7 @@ namespace XSE
 		
 	}
 
-	i32	CModelManager::_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator)
+	/*i32	CModelManager::_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator)
 	{ 
 		if( pAllocator )
 		{
@@ -41,7 +41,7 @@ namespace XSE
 		}
 
 		return RESULT::OK; 
-	}
+	}*/
 
 	i32 CModelManager::DestroyModel(XSE::ModelPtr &pModel, bool bDestroySceneNodeIfEmpty, xst_castring& strGroupName)
 	{

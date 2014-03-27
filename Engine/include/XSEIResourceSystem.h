@@ -13,8 +13,8 @@ namespace XSE
 			virtual							~IResourceSystem() {}
 
 			virtual i32						Init() { return 0; }
-			virtual	XST::IAllocator*		CreateMemoryManager(ul32 ulObjCount) = 0;
-			virtual void					DestroyMemoryManager(XST::IAllocator* pAllocator) = 0;  
+			//virtual	XST::IAllocator*		CreateMemoryManager(ul32 ulObjCount) = 0;
+			//virtual void					DestroyMemoryManager(XST::IAllocator* pAllocator) = 0;  
 			virtual	Resources::IResource*	CreateResource(IResourceManager* pCreator, ul32 ulResHandle, xst_castring& strResName, XST::IAllocator* pAllocator) = 0;
 			virtual void					DestroyResource(Resources::IResource* pResource) = 0;
 			virtual i32						PrepareResource(Resources::IResource* pResource) = 0;

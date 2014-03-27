@@ -27,22 +27,19 @@ namespace XSE
 	i32	CMipMapTerrainTile::Lock(MeshWeakPtr pMesh, ul32 ulVertexCount)
 	{
 		m_pMesh = pMesh;
-		VertexBufferPtr pVB;
+		IVertexBuffer* pVB;
 		{
-			XSTSimpleProfiler2("-CreateVertexBuffer"); //~0.002sec in debug
-			pVB = pMesh->CreateVertexBuffer();
+			//XSTSimpleProfiler2("-CreateVertexBuffer"); //~0.002sec in debug
+			VertexBufferPtr pBuff( pMesh->CreateVertexBuffer( false ) );
+			pMesh->SetVertexBuffer( pBuff, 0 );
+			pMesh->SetLOD( 0 );
+			pVB = pBuff.GetPtr();
 		}
 		pVB->SetVertexCount( ulVertexCount );
 		pVB->SetTopologyType( XSE::TopologyTypes::TRIANGLE_LIST );
 		pVB->SetUsage( XSE::BufferUsages::STATIC );
-		{
-			XSTSimpleProfiler2("-Lock"); //~0.001sec in debug
-		if( XST_FAILED( pMesh->GetVertexBuffer()->Lock() ) )
-		{
-			return XST_FAIL;
-		}
-		}
-		return XST_OK;
+
+		return pMesh->GetVertexBuffer()->Lock();
 	}	
 
 	i32 CMipMapTerrainTile::SetVertexData(const CVertexData& SrcData)

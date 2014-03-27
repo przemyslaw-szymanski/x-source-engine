@@ -14,7 +14,7 @@ namespace XSE
 		xst_delete( m_pDefaultApi );
 	}
 
-	i32 CLuaScriptManager::_CreateMemoryPool(cul32 &ulObjCount, XST::IAllocator *pAllocator)
+	/*i32 CLuaScriptManager::_CreateMemoryPool(cul32 &ulObjCount, XST::IAllocator *pAllocator)
 	{
 		if( pAllocator )
 		{
@@ -33,7 +33,7 @@ namespace XSE
 		}
 
 		return RESULT::OK;
-	}
+	}*/
 
 	i32	CLuaScriptManager::PrepareResource(ResourcePtr pRes)
 	{

@@ -43,7 +43,7 @@ namespace XSE
 		_OnBeforeResourcesDestroyed();
 		m_mGroups.clear();
 		_OnDestroy();
-		_DestroyMemoryManager( &m_pMemoryMgr );
+		//_DestroyMemoryManager( &m_pMemoryMgr );
 		m_bDestroyed = true;
 	}
 
@@ -416,7 +416,7 @@ namespace XSE
 	}
 
 
-    i32 IResourceManager::CreateMemoryPool(void* pMemMgr)
+    /*i32 IResourceManager::CreateMemoryPool(void* pMemMgr)
     {
         xst_assert( m_pMemoryMgr == xst_null, "(IResourceManager::CreateMemoryManager) Memory manager is already created" );
         m_pMemoryMgr = _CreateMemoryManager( pMemMgr );
@@ -436,7 +436,7 @@ namespace XSE
     void IResourceManager::_DestroyMemoryManager(XST::IAllocator** ppMemMgr)
     {
         xst_delete( *ppMemMgr );
-    }
+    }*/
 
     i32 IResourceManager::AddResource( xst_castring& strName, ResourceWeakPtr pRes, xst_castring& strGroupName, bool bCreateGroup )
     {

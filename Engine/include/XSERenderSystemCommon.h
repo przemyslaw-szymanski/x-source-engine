@@ -408,6 +408,14 @@ namespace XSE
 		bool			bScissor = false;
 	};
 
+	struct XST_API SRenderSystemMemoryOptions
+	{
+		u32 uiVertexBufferCount = 2000;
+		u32 uiIndexBufferCount = 2000;
+		u32 uiPixelShaderCount = 100;
+		u32 uiVertexShaderCount = 100;
+	};
+
 	struct XST_API SRenderSystemOptions : public SViewportOptions
 	{
 
@@ -422,6 +430,7 @@ namespace XSE
 		bool			bFullScreen = false;
 		bool			bDebugMode = false;
 		bool			bVSync = false;
+		SRenderSystemMemoryOptions	MemOptions;
 	};
 
 	struct XST_API SResolution

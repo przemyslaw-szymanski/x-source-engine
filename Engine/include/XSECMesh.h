@@ -81,11 +81,11 @@ namespace XSE
 
 						VertexBufferPtr		CreateVertexBuffer(bool bUseAsDefault = true);
 						
-						void				SetVertexBuffer(VertexBufferPtr pVB, cu32& uiLODId = 0);
+						void				SetVertexBuffer(const VertexBufferWeakPtr& pVB, cu32& uiLODId = 0);
 
 						IndexBufferPtr		CreateIndexBuffer(bool bUseAsDefault = true);
 						
-						void				SetIndexBuffer(IndexBufferPtr pIB, cu32& uiLODId = 0);
+						void				SetIndexBuffer(const IndexBufferWeakPtr& pIB, cu32& uiLODId = 0);
 
 				xst_fi	SMeshLOD*			GetLOD(cu32& uiId)
 											{ return &m_vLODs[ uiId ]; }

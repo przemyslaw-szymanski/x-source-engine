@@ -97,7 +97,7 @@ namespace XSE
 
 		CImageSystem::~CImageSystem()
 		{
-			DestroyMemoryManager( m_pMemMgr );
+			//DestroyMemoryManager( m_pMemMgr );
 			_UnloadLibraries();
 		}
 
@@ -175,16 +175,16 @@ namespace XSE
 			pImg->m_ulDataSize = ilGetInteger( IL_IMAGE_SIZE_OF_DATA );
 		}
 
-		XST::IAllocator* CImageSystem::CreateMemoryManager(ul32 ulObjCount)
+		/*XST::IAllocator* CImageSystem::CreateMemoryManager(ul32 ulObjCount)
 		{
 			return xst_new XST::TCFreeListMemoryManager< CImage >( ulObjCount );
-		}
+		}*/
 						
-		void CImageSystem::DestroyMemoryManager(XST::IAllocator* pAllocator)
+		/*void CImageSystem::DestroyMemoryManager(XST::IAllocator* pAllocator)
 		{
 			XST::TCFreeListMemoryManager< CImage >* pMgr = (XST::TCFreeListMemoryManager< CImage >*)pAllocator;
 			xst_delete( pMgr );
-		}
+		}*/
 
 		ImagePtr CImageSystem::CloneImage(const XSE::Resources::IImage *pImg)
 		{

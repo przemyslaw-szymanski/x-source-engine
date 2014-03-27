@@ -56,7 +56,7 @@ namespace XSE
 			xst_fi	void				_SetRenderSystem(IRenderSystem* pRS)
 										{ m_pRenderSystem = pRS; }
 
-				i32						_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null);
+				//i32						_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null);
 
 
 		protected:

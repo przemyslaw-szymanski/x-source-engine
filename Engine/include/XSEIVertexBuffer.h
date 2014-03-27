@@ -45,6 +45,8 @@ namespace XSE
 
 	typedef XST::TCObjectSmartPointer< IVertexBuffer >	VertexBufferPtr;
 	XST_TEMPLATE_CLASS XST::TCObjectSmartPointer< IVertexBuffer >;
+	typedef XST::TCWeakPointer< IVertexBuffer >	VertexBufferWeakPtr;
+	XST_TEMPLATE_CLASS XST::TCWeakPointer< IVertexBuffer >;
 
 }//xse
 

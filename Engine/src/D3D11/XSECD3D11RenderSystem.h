@@ -246,7 +246,7 @@ namespace XSE
 
 				//XST::IAllocator*	_CreateVertexShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator);
 				//XST::IAllocator*	_CreatePixelShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator);
-						i32			_CreateMemoryPools(void* pMemOptions);
+						i32			_CreateMemoryPools(void* pMemOptions) xst_implement;
 
 						i32			_CreateVertexBuffer(CVertexBuffer* pVB);
 						i32			_CreateInputLayout(CInputLayout* pIL);

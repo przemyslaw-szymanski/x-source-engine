@@ -187,7 +187,7 @@ namespace XSE
 		//XST::CMath::EnableFullSSE2();
 		IResourceManager* pTmpMgr = xst_null;
 		pTmpMgr = m_pLuaScriptMgr;
-		if( pTmpMgr->CreateMemoryPool( (void*)&Options.MemOptions ) != RESULT::OK )
+		/*if( pTmpMgr->CreateMemoryPool( (void*)&Options.MemOptions ) != RESULT::OK )
 		{
 			return RESULT::FAILED;
 		}
@@ -215,7 +215,7 @@ namespace XSE
 		if( XST_FAILED( pTmpMgr->CreateMemoryPool( (void*)&Options.MemOptions ) ) )
 		{
 			return XST_FAIL;
-		}
+		}*/
 		
 
 		//Init render system
@@ -225,7 +225,7 @@ namespace XSE
 		//Use render system plugin ONLY if render system from engine is not set
 		if( Options.strRenderSystemPlugin.length() > 0 && Options.strRenderSystem.length() == 0 )
 		{
-			m_pRenderSystem = CreateRenderSystemFromPlugin( Options.strRenderSystemPlugin );
+			m_pRenderSystem = CreateRenderSystemFromPlugin( Options.strRenderSystemPlugin ); // deprecated
 		}
 		else if( Options.strRenderSystem.length() > 0 )
 		{
@@ -241,7 +241,9 @@ namespace XSE
 			return RESULT::FAILED;
 		}
 
-		if( m_pRenderSystem->Init( Options.RSOptions ) != RESULT::OK )
+		SRenderSystemOptions RSOptions = Options.RSOptions;
+		RSOptions.MemOptions = *(SRenderSystemMemoryOptions*)&Options.RSOptions.MemOptions;
+		if( m_pRenderSystem->Init( RSOptions ) != RESULT::OK )
 		{
 			return RESULT::FAILED;
 		}
@@ -266,10 +268,10 @@ namespace XSE
 
 		//Shader manager uses render system to create memory pools for different shader types
 		pTmpMgr = m_pShaderMgr;
-		if( XST_FAILED( pTmpMgr->CreateMemoryPool( (void*)&Options.MemOptions ) ) )
+		/*if( XST_FAILED( pTmpMgr->CreateMemoryPool( (void*)&Options.MemOptions ) ) )
 		{
 			return XST_FAIL;
-		}
+		}*/
 
 		//Create input layouts
 		typedef InputLayoutElements ILE;

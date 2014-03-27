@@ -60,11 +60,11 @@ namespace XSE
 			xst_fi	void				_SetRenderSystem(IRenderSystem* pRS)
 										{ m_pRenderSystem = pRS; }
 
-					i32					_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null);
+					/*i32					_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null);
 
 					i32					_CreateVSMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null);
 
-					i32					_CreatePSMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null);
+					i32					_CreatePSMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null);*/
 
 					ShaderPtr			_LoadShader(SHADER_TYPE eType, xst_castring& strFileName, xst_castring& strShaderName, xst_castring& strEntryPoint, xst_castring& strGroupName);
 

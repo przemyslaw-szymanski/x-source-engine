@@ -427,6 +427,8 @@ namespace XSE
 				{
 					//XSTSimpleProfiler2("Create Tile Mesh"); //~0.003sec in debug
 					pMesh = pMeshMgr->CreateMesh( strFullName, m_pInputLayout, m_pSceneMgr->GetName() );
+					xst_assert( pMesh.IsValid( ), "(CMipMapPagingTerrain::LockTiles) No memory for mesh object" );
+					pMesh->SetLODCount( m_Options.uiLODCount * MipMapTerrainStitchTypes::_MAX_COUNT ); // empty lods are created here vertex and index buffers should be set in CreateTilesLODs
 				}
 				CMipMapTerrainTile* pTile = m_vTiles[ ulCurrTile++ ];
 
@@ -766,7 +768,8 @@ namespace XSE
 		{
 			pCurrTile = m_vTiles[t];
 			pCurrMesh = pCurrTile->m_pMesh.GetPtr();
-			pCurrMesh->SetLODCount( iMaxLODCount );
+			const SMeshLOD* pFirstLOD = pCurrMesh->GetLOD( 0 );
+			//pCurrMesh->SetLODCount( iMaxLODCount );
 			iCurrLOD = 0;
 
 			for(u32 i = 0; i < m_Options.uiLODCount; ++i)
@@ -783,6 +786,7 @@ namespace XSE
 						// LOD levels are created in a batch it is need to fill them properly now
 						SMeshLOD* pLOD = pCurrMesh->GetLOD( iCurrLOD );
 						pLOD->pIndexBuffer = IBuffer.pIndexBuffer;
+						pLOD->pVertexBuffer = pFirstLOD->pVertexBuffer; // Empty lods was created during mesh creation now it is time to set vertex buffer for each lod
 
 						//SMeshLOD& LOD = m_vTiles[ t ]->m_pMesh->AddLOD( iCurrLOD++ );
 						//LOD.pIndexBuffer = IBuffer.pIndexBuffer;

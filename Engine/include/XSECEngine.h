@@ -36,15 +36,11 @@ namespace XSE
 
 	};
 
-	struct SMemoryOptions
+	struct SMemoryOptions : public SRenderSystemMemoryOptions
 	{
-		ul32	ulVertexBufferCount = 3000;
-		ul32	ulIndexBufferCount = 3000;
 		ul32	ulMeshCount = 3000;
 		ul32	ulModelCount = 3000;
 		ul32	ulTextureCount = 3000;
-		ul32	ulVertexShaderCount = 100;
-		ul32	ulPixelShaderCount = 100;
 		ul32	ulMaterialCount = 100;
 		ul32	ulLuaScriptCount = 1000;
 	};

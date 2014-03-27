@@ -26,9 +26,9 @@ namespace XSE
 
 						void					ScaleImage(Resources::IImage* pImage, cu32& uiWidth, cu32& uiHeight);
 
-						XST::IAllocator*		CreateMemoryManager(ul32 ulObjCount);
+						//XST::IAllocator*		CreateMemoryManager(ul32 ulObjCount);
 						
-						void					DestroyMemoryManager(XST::IAllocator* pAllocator);  
+						//void					DestroyMemoryManager(XST::IAllocator* pAllocator);  
 						
 						Resources::IResource*	CreateResource(IResourceManager* pCreator, ul32 ulResHandle, xst_castring& strResName, XST::IAllocator* pAllocator);
 						

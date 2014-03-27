@@ -41,6 +41,8 @@ namespace XSE
 
 	typedef XST::TCObjectSmartPointer< IIndexBuffer >	IndexBufferPtr;
 	XST_TEMPLATE_CLASS XST::TCObjectSmartPointer< IIndexBuffer >;
+	typedef XST::TCWeakPointer< IIndexBuffer >	IndexBufferWeakPtr;
+	XST_TEMPLATE_CLASS XST::TCWeakPointer< IIndexBuffer >;
 
 	static void DebugPrintIndexData(CIndexData& Data)
 	{
