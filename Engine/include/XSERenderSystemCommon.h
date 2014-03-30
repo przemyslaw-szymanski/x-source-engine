@@ -361,14 +361,16 @@ namespace XSE
 
 	struct SRSDiagnostics
 	{
-		ul64	ulDrawCallCount;
-		ul64	ulIndexedDrawCallCount;
-		ul64	ulSetPixelShaderCount;
-		ul64	ulSetVertexShaderCount;
-		ul64	ulSetGeometryShaderCount;
-		ul64	ulSetInputLayoutCount;
-		ul64	ulSetVertexBufferCount;
-		ul64	ulSetIndexBufferCount;
+		ul32	ulDrawCallCount = 0;
+		ul32	ulIndexedDrawCallCount = 0;
+		ul32	ulSetPixelShaderCount = 0;
+		ul32	ulSetVertexShaderCount = 0;
+		ul32	ulSetGeometryShaderCount = 0;
+		ul32	ulSetInputLayoutCount = 0;
+		ul32	ulSetVertexBufferCount = 0;
+		ul32	ulSetIndexBufferCount = 0;
+        ul32    ulCreatedVertexBufferCount = 0;
+        ul32    ulCreatedIndexBufferCount = 0;
 	};
 
 	struct FillModes

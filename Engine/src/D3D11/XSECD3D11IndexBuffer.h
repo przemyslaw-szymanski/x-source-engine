@@ -67,7 +67,7 @@ namespace XSE
 			protected:
 
 				//TCData< u16 >			m_aIndexBuffer;
-				ID3D11Buffer*			m_pD3DIndexBuffer;
+				ID3D11Buffer*			m_pD3DBuffer;
 				D3D11_SUBRESOURCE_DATA	m_D3DInitData;
 				D3D11_USAGE				m_eD3DBufferUsage;
 				DXGI_FORMAT				m_eD3DDataFormat;

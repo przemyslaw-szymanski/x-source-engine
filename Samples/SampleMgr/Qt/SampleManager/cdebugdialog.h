@@ -17,6 +17,7 @@ public:
 
 	void SetDrawCallCount(int iCount);
 	void SetIndexedDrawCallCount(int iCount);
+    void SetFrameTime(float iCount);
 
 private:
     Ui::CDebugDialog *ui;

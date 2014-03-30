@@ -35,6 +35,8 @@ public:
     QLabel *DrawCallLabel;
     QLabel *label_2;
     QLabel *IndexedDrawCallLabel;
+    QLabel *label_3;
+    QLabel *FrameTimeLabel;
     QDialogButtonBox *buttonBox;
 
     void setupUi(QDialog *CDebugDialog)
@@ -50,6 +52,7 @@ public:
         horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
         formLayout = new QFormLayout();
         formLayout->setObjectName(QStringLiteral("formLayout"));
+        formLayout->setFieldGrowthPolicy(QFormLayout::AllNonFixedFieldsGrow);
         label = new QLabel(MainWidget);
         label->setObjectName(QStringLiteral("label"));
         label->setMinimumSize(QSize(80, 0));
@@ -71,6 +74,16 @@ public:
         IndexedDrawCallLabel->setObjectName(QStringLiteral("IndexedDrawCallLabel"));
 
         formLayout->setWidget(1, QFormLayout::FieldRole, IndexedDrawCallLabel);
+
+        label_3 = new QLabel(MainWidget);
+        label_3->setObjectName(QStringLiteral("label_3"));
+
+        formLayout->setWidget(2, QFormLayout::LabelRole, label_3);
+
+        FrameTimeLabel = new QLabel(MainWidget);
+        FrameTimeLabel->setObjectName(QStringLiteral("FrameTimeLabel"));
+
+        formLayout->setWidget(2, QFormLayout::FieldRole, FrameTimeLabel);
 
 
         horizontalLayout->addLayout(formLayout);
@@ -100,6 +113,8 @@ public:
         DrawCallLabel->setText(QApplication::translate("CDebugDialog", "0", 0));
         label_2->setText(QApplication::translate("CDebugDialog", "Indexed Draw Calls", 0));
         IndexedDrawCallLabel->setText(QApplication::translate("CDebugDialog", "0", 0));
+        label_3->setText(QApplication::translate("CDebugDialog", "FrameTime:", 0));
+        FrameTimeLabel->setText(QApplication::translate("CDebugDialog", "0", 0));
     } // retranslateUi
 
 };

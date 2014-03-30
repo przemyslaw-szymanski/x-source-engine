@@ -25,3 +25,8 @@ void CDebugDialog::SetIndexedDrawCallCount(int iCount)
 {
 	this->ui->IndexedDrawCallLabel->setText(QString( "%1" ).arg( iCount ));
 }
+
+void CDebugDialog::SetFrameTime(float iCount)
+{
+	this->ui->FrameTimeLabel->setText(QString( "%1" ).arg( iCount ));
+}

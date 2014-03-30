@@ -244,6 +244,9 @@ namespace XSE
 						i32			_CreatePixelShader(CPixelShader* pShader);
 						i32			_CreateIndexBuffer(CIndexBuffer* pIB);
 
+                        void        _DestroyVertexBuffer(CVertexBuffer* pVB);
+                        void        _DestroyIndexBuffer(CIndexBuffer* pIB);
+
 				//XST::IAllocator*	_CreateVertexShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator);
 				//XST::IAllocator*	_CreatePixelShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator);
 						i32			_CreateMemoryPools(void* pMemOptions) xst_implement;

@@ -685,6 +685,9 @@ namespace XSE
 		XSE::IVertexBuffer* CRenderSystem::CreateVertexBuffer()
 		{
 			CVertexBuffer* pVB = xst_new CVertexBuffer( this, m_pVBMemMgr );
+#if defined( XSE_RENDERER_DEBUG )
+            ++m_Diagnostics.ulCreatedVertexBufferCount;
+#endif
 			return pVB;
 		}
 
@@ -862,8 +865,8 @@ namespace XSE
 			xst_assert( pBuff, "(CRenderSystem::SetIndexBuffer)" );
 			const CIndexBuffer* pIB = (CIndexBuffer*)pBuff;
 			m_Current.pIndexBuffer = pIB;
-			xst_assert( pIB->m_pD3DIndexBuffer, "(CRenderSystem::SetIndexBuffer)" );
-			m_pDeviceContext->IASetIndexBuffer( pIB->m_pD3DIndexBuffer, pIB->m_eD3DDataFormat, 0 );
+			xst_assert( pIB->m_pD3DBuffer, "(CRenderSystem::SetIndexBuffer)" );
+			m_pDeviceContext->IASetIndexBuffer( pIB->m_pD3DBuffer, pIB->m_eD3DDataFormat, 0 );
 #if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulSetIndexBufferCount;
 #endif
@@ -879,8 +882,8 @@ namespace XSE
 				return XST_OK;
 			}
 			m_Current.pIndexBuffer = pIB;
-			xst_assert( pIB->m_pD3DIndexBuffer, "(CRenderSystem::SetIndexBuffer)" );
-			m_pDeviceContext->IASetIndexBuffer( pIB->m_pD3DIndexBuffer, pIB->m_eD3DDataFormat, 0 );
+			xst_assert( pIB->m_pD3DBuffer, "(CRenderSystem::SetIndexBuffer)" );
+			m_pDeviceContext->IASetIndexBuffer( pIB->m_pD3DBuffer, pIB->m_eD3DDataFormat, 0 );
 #if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulSetIndexBufferCount;
 #endif
@@ -1164,13 +1167,16 @@ namespace XSE
 		IIndexBuffer* CRenderSystem::CreateIndexBuffer()
 		{
 			CIndexBuffer* pIB = xst_new CIndexBuffer( this );
+#if defined( XSE_RENDERER_DEBUG )
+            ++m_Diagnostics.ulCreatedIndexBufferCount;
+#endif
 			return pIB;
 		}
 
 		i32	CRenderSystem::_CreateIndexBuffer(CIndexBuffer* pIB)
 		{
 			xst_assert( pIB, "(CRenderSystem::_CreateIndexBuffer)" );
-			HRESULT hr = m_pDevice->CreateBuffer( &pIB->m_D3DBufferDesc, &pIB->m_D3DInitData, &pIB->m_pD3DIndexBuffer );
+			HRESULT hr = m_pDevice->CreateBuffer( &pIB->m_D3DBufferDesc, &pIB->m_D3DInitData, &pIB->m_pD3DBuffer );
 			if( FAILED( hr ) )
 			{
 				XST_LOG_ERR( "[D3D11]: Failed to create index buffer: " << _ErrorToString( hr ) );
@@ -1179,6 +1185,26 @@ namespace XSE
 
 			return XST_OK;
 		}
+
+        void CRenderSystem::_DestroyVertexBuffer(CVertexBuffer* pVB)
+        {
+            xst_assert( pVB, "(CRenderSystem::_DestroyVertexBuffer) Vertex buffer is null" );
+            pVB->m_pD3DBuffer->Release();
+            pVB->m_pD3DBuffer = xst_null;
+#if defined( XSE_RENDERER_DEBUG )
+            --m_Diagnostics.ulCreatedVertexBufferCount;
+#endif
+        }
+
+        void CRenderSystem::_DestroyIndexBuffer(CIndexBuffer* pIB)
+        {
+            xst_assert( pIB, "(CRenderSystem::_DestroyVertexBuffer) Vertex buffer is null" );
+            pIB->m_pD3DBuffer->Release();
+            pIB->m_pD3DBuffer = xst_null;
+#if defined( XSE_RENDERER_DEBUG )
+            --m_Diagnostics.ulCreatedIndexBufferCount;
+#endif
+        }
 
 		i32 CRenderSystem::CreateShaderSystem(xst_castring& strName)
 		{

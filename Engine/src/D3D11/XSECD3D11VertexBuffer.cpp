@@ -24,7 +24,8 @@ namespace XSE
 
 		CVertexBuffer::~CVertexBuffer()
 		{
-			xst_release( m_pD3DBuffer );
+            m_pRS->_DestroyVertexBuffer( this );
+			//xst_release( m_pD3DBuffer );
 			m_pRS = xst_null;
 			m_pInputLayout = xst_null;
 		}

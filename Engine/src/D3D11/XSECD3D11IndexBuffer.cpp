@@ -8,7 +8,7 @@ namespace XSE
 	{
 		CIndexBuffer::CIndexBuffer(CRenderSystem* pRS) :
 			m_eUsage( BufferUsages::DEFAULT ), 
-			m_pD3DIndexBuffer( xst_null ), 
+			m_pD3DBuffer( xst_null ), 
 			m_eD3DBufferUsage( D3D11_USAGE_DEFAULT ), 
 			m_ulIndexCount( 0 ), 
 			m_pRS( pRS ), 
@@ -27,7 +27,8 @@ namespace XSE
 		void CIndexBuffer::Destroy()
 		{
 			m_IndexData.Delete();
-			xst_release( m_pD3DIndexBuffer );
+			//xst_release( m_pD3DBuffer );
+            m_pRS->_DestroyIndexBuffer( this );
 			m_pRS = xst_null;
 		}
 
@@ -70,7 +71,7 @@ namespace XSE
 
 		i32 CIndexBuffer::Create()
 		{
-			if( m_pD3DIndexBuffer != xst_null )
+			if( m_pD3DBuffer != xst_null )
 			{
 				return XST_OK;
 			}

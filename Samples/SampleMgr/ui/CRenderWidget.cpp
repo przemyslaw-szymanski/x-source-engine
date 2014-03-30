@@ -53,6 +53,7 @@ void CRenderWidget::paintEvent(QPaintEvent *pEvent)
 			XSE::CCamera* pCam = m_pSampleMgr->GetEngine()->GetSceneManager()->GetCurrentCamera();
 			m_pDbgDlg->SetDrawCallCount( m_pSampleMgr->GetEngine()->GetRenderSystem()->GetDiagnostics().ulDrawCallCount );
 			m_pDbgDlg->SetIndexedDrawCallCount( m_pSampleMgr->GetEngine()->GetRenderSystem()->GetDiagnostics().ulIndexedDrawCallCount );
+            m_pDbgDlg->SetFrameTime( m_pSampleMgr->GetEngine()->GetRenderWindow( 0 )->GetFrameTime() );
 		}
 	}
 	
