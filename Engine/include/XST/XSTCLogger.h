@@ -52,7 +52,7 @@ namespace XST
 			template<typename _T_>
 			xst_fi CLogger&	operator<<(const _T_& tMsg)
 			{
-				m_StrStream << tMsg;
+				if( m_bEnabled ) m_StrStream << tMsg;
 				return *this;
 			}
 
@@ -114,6 +114,7 @@ namespace XST
 			ILogger*	m_pEmptyLogger;
 			ILogger*	m_pDisabledLogger;
 			bool		m_bAutoDestroyLogger;
+			bool		m_bEnabled = true;
 			std::stringstream	m_StrStream;
 			ul32		m_ulLogMode;
 	};
@@ -197,7 +198,9 @@ namespace XST
 //
 //#define XST_LOG_LAST_ERROR(_strStream) XST_LOG_STREAM(_strStream); XST_LOGGER_FLUSH2()// ( XST::CLogger::LAST_ERROR )
 
+
 #if defined (XST_ENABLE_FILE_LOGGER)
+#	define XST_LOGGER 1
 #	if	defined (XST_ENABLE_CONSOLE_LOGGER)
 #		define XST_LOG(_strStream)		XST_LOG_BASE_INFO(	_strStream,	XST::CLogger::FILE | XST::CLogger::CONSOLE | XST::CLogger::LAST_ERROR )
 #		define XST_LOG_ERR(_strStream)	XST_LOG_BASE_ERR(	_strStream,	XST::CLogger::FILE | XST::CLogger::CONSOLE | XST::CLogger::LAST_ERROR )
@@ -208,15 +211,24 @@ namespace XST
 #		define XST_LOG_WRN(_strStream)	XST_LOG_BASE_WARN(	_strStream,	XST::CLogger::FILE | XST::CLogger::LAST_ERROR )
 #	endif
 #elif defined (XST_ENABLE_CONSOLE_LOGGER)
+#		define XST_LOGGER 1
 #		define XST_LOG(_strStream)		XST_LOG_BASE_INFO(	_strStream, XST::CLogger::CONSOLE | XST::CLogger::LAST_ERROR )
 #		define XST_LOG_ERR(_strStream)	XST_LOG_BASE_ERR(	_strStream,	XST::CLogger::CONSOLE | XST::CLogger::LAST_ERROR )
 #		define XST_LOG_WRN(_strStream)	XST_LOG_BASE_WARN(	_strStream, XST::CLogger::CONSOLE | XST::CLogger::LAST_ERROR )
-#else
-#		define XST_LOG(_strStream)		XST_LOG_BASE_INFO(	_strStream,	XST::CLogger::LAST_ERROR )
-#		define XST_LOG_ERR(_strStream)	XST_LOG_BASE_ERR(	_strStream,	XST::CLogger::LAST_ERROR )
 #		define XST_LOG_WRN(_strStream)	XST_LOG_BASE_WARN(	_strStream,	XST::CLogger::LAST_ERROR )
+#else
+#		define XST_LOG(_strStream)		
+#		define XST_LOG_ERR(_strStream)	
+#		define XST_LOG_WRN(_strStream)	
 #endif
 
+#if defined( XST_LOGGER )
+#	define XST_LOGGER_ENABLE()	XST::CLogger::GetSingleton().Enable()
+#	define XST_LOGGER_DISABLE()	XST::CLogger::GetSingleton().Disable()
+#else
+#	define XST_LOGGER_ENABLE()
+#	define XST_LOGGER_DISABLE()
+#endif
 
 }//xst
 

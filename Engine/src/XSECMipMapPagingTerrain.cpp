@@ -425,9 +425,12 @@ namespace XSE
 			
 				MeshWeakPtr pMesh; 
 				{
-					//XSTSimpleProfiler2("Create Tile Mesh"); //~0.003sec in debug
+					//XSTSimpleProfiler2("Create Tile Mesh"); //~0.006sec in debug
 					pMesh = pMeshMgr->CreateMesh( strFullName, m_pInputLayout, m_pSceneMgr->GetName() );
-					xst_assert( pMesh.IsValid( ), "(CMipMapPagingTerrain::LockTiles) No memory for mesh object" );
+				}
+				xst_assert( pMesh.IsValid( ), "(CMipMapPagingTerrain::LockTiles) No memory for mesh object" );
+				{
+					//XSTSimpleProfiler2("Set lod count"); //~0.014sec in debug
 					pMesh->SetLODCount( m_Options.uiLODCount * MipMapTerrainStitchTypes::_MAX_COUNT ); // empty lods are created here vertex and index buffers should be set in CreateTilesLODs
 				}
 				CMipMapTerrainTile* pTile = m_vTiles[ ulCurrTile++ ];

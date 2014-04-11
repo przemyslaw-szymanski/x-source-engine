@@ -885,8 +885,8 @@
     <ClInclude Include="..\..\Engine\include\XSEIResourceGroup.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Engine\src\XSETCFreeListAllocator.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\..\Engine\include\XSETCFreeListAllocator.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

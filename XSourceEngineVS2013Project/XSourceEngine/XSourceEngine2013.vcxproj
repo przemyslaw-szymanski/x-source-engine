@@ -99,6 +99,7 @@
     <ClInclude Include="..\..\Engine\include\XSEMemoryAllocators.h" />
     <ClInclude Include="..\..\Engine\include\XSERenderSystemCommon.h" />
     <ClInclude Include="..\..\Engine\include\XSETCData.h" />
+    <ClInclude Include="..\..\Engine\include\XSETCFreeListAllocator.h" />
     <ClInclude Include="..\..\Engine\include\XSourceEngine.h" />
     <ClInclude Include="..\..\Engine\include\XSEIResourceGroup.h" />
     <ClInclude Include="..\..\Engine\include\XST\mtrand.h" />
@@ -277,7 +278,6 @@
     <ClInclude Include="..\..\Engine\src\XSECRenderLayer.h" />
     <ClInclude Include="..\..\Engine\src\XSECShaderSystemFactory.h" />
     <ClInclude Include="..\..\Engine\src\XSECTechnique.h" />
-    <ClInclude Include="..\..\Engine\src\XSETCFreeListAllocator.h" />
     <ClInclude Include="..\..\Engine\src\XST\ThirdParty\zlib\zconf.h" />
     <ClInclude Include="..\..\Engine\src\XST\ThirdParty\zlib\zlib.h" />
     <ClInclude Include="..\..\Engine\src\XST\XSTCAsmScript.h" />

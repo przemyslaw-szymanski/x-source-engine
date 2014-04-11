@@ -50,7 +50,7 @@ namespace XSE
 			xst_fi	bool				IsDebugModeEnabled()
 										{ return m_Options.bDebugMode; }
 
-			virtual	i32					Init(const SRenderSystemOptions& Options) = 0;
+			virtual	i32					Init(const SRenderSystemSettings& Options) = 0;
 			virtual	i32					BeginRender() = 0;
 			virtual i32					EndRender() = 0;
 			virtual i32					ClearScene(const XST::CColor& Color) = 0;
@@ -153,15 +153,15 @@ namespace XSE
 			virtual void*				GetDeviceContext() = 0;
 
 
-			virtual UPDATE_OPTIONS_RESULT				UpdateOptions(const SRenderSystemOptions& Options) = 0;
+			virtual UPDATE_OPTIONS_RESULT				UpdateOptions(const SRenderSystemSettings& Options) = 0;
 			virtual UPDATE_OPTIONS_RESULT				UpdateOptions() = 0;
 
-					SRenderSystemOptions&	GetOptions()
+					SRenderSystemSettings&	GetOptions()
 											{ return m_Options; }
 			
 		protected:
 
-					void				_Init(const SRenderSystemOptions& Options)
+					void				_Init(const SRenderSystemSettings& Options)
 										{ m_Options = Options; }
 
 					void				_SetShaderSystem(Resources::IShader* pShader, IShaderSystem* pShaderSystem)
@@ -174,7 +174,7 @@ namespace XSE
 		protected:
 
 			xst_astring					m_strName;
-			SRenderSystemOptions		m_Options;
+			SRenderSystemSettings		m_Options;
             SRSCapapiblities			m_Caps;
 			ShaderSystemMap				m_mpShaderSystems;
 			//RSFeatures					m_Features;

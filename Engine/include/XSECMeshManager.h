@@ -81,6 +81,8 @@ namespace XSE
 
 					void				_DestroyMeshBuffers(ResourcePtr pRes);
 
+					void				_OnDestroy() xst_implement;
+
 		protected:
 
 			IRenderSystem*		m_pRenderSystem;

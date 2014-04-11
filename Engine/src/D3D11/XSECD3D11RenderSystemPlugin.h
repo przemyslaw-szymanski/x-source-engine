@@ -31,7 +31,7 @@ namespace XSE
 									CRenderSystem(xst_castring& strName);
 				virtual				~CRenderSystem();
 
-						i32			Init(const SRenderSystemOptions& Options);
+						i32			Init(const SRenderSystemSettings& Options);
 
 			protected:
 

@@ -65,7 +65,7 @@ namespace XSE
 										CRenderSystem(xst_castring& strName);
 				virtual					~CRenderSystem();
 
-						i32				Init(const SRenderSystemOptions& Options);
+						i32				Init(const SRenderSystemSettings& Options);
 						
 						i32				BeginRender();
 						
@@ -148,7 +148,7 @@ namespace XSE
 
 						void				UpdateVertexBuffer(IVertexBuffer* pVB, cul32& ulStartVertex, cul32& ulVertexCount, const CVertexData& DstData);
 
-						IRenderSystem::UPDATE_OPTIONS_RESULT	UpdateOptions(const SRenderSystemOptions& Options);
+						IRenderSystem::UPDATE_OPTIONS_RESULT	UpdateOptions(const SRenderSystemSettings& Options);
 						IRenderSystem::UPDATE_OPTIONS_RESULT	UpdateOptions();
 						
 						void				SetPerspectiveFOV(cf32& fAngle, cf32& fAspectRation, cf32& fNear, cf32& fFar);

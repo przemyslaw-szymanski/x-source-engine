@@ -5,6 +5,7 @@
 #include "XSEIInputLayout.h"
 #include "XSEIVertexBuffer.h"
 #include "XSEIIndexBuffer.h"
+#include "XSECEngine.h"
 #include <XST/XSTCToString.h>
 
 namespace XSE
@@ -41,17 +42,6 @@ namespace XSE
 
 	CMeshManager::~CMeshManager()
 	{		
-		m_pDefaultMesh = xst_null;
-		m_pDefaultIL = xst_null;
-
-		/*CMeshManager::_GroupIterator GrItr;
-		for(GrItr = m_mResources.begin(); GrItr != m_mResources.end(); ++GrItr)
-		{
-			CMeshManager::ResourceIterator Itr;
-			//GrItr->second->DestroyResources();
-		}*/
-
-		//m_mResources.clear();
 	}
 
 
@@ -73,26 +63,11 @@ namespace XSE
 		//xst_release( pMesh );
 	}
 
-	/*i32 CMeshManager::_CreateMemoryPool(cul32 &ulObjCount, XST::IAllocator *pAllocator)
+	void CMeshManager::_OnDestroy()
 	{
-		if( pAllocator )
-		{
-			xst_delete( this->m_pMemoryMgr );
-			this->m_pMemoryMgr = pAllocator;
-			if( !this->m_pMemoryMgr->AllocatePool( sizeof( Resources::CMesh ), ulObjCount ) )
-			{
-				XST_LOG_ERR( "Create memory pool failed in CMeshManager" );
-				return RESULT::FAILED;
-			}
-		}
-		else
-		{
-			xst_delete( this->m_pMemoryMgr );
-			this->m_pMemoryMgr = xst_new XST::TCFreeListMemoryManager< Resources::CMesh >( ulObjCount );
-		}
-
-		return RESULT::OK;
-	}*/
+		m_pDefaultMesh = xst_null;
+		TCFreeListAllocator< CMesh >::Destroy();
+	}
 
 	ResourceWeakPtr CMeshManager::CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName /* = XST::StringUtil::EmptyAString */, bool bFullClone /* = true */)
 	{
@@ -187,6 +162,8 @@ namespace XSE
 	{
 		xst_assert( m_pRenderSystem ,"(CMeshManager::Init()" );
 		m_pDefaultIL = m_pRenderSystem->GetInputLayout( ILEs::POSITION );
+
+		TCFreeListAllocator< CMesh >::Create( CEngine::GetSingletonPtr()->GetSettings().MemSettings.ulMeshCount );
 
 		SBoxOptions Options;
 		m_pDefaultMesh = CreateMesh( "xse_default_mesh", m_pDefaultIL, BasicShapes::BOX, &Options );
@@ -305,13 +282,17 @@ namespace XSE
 	MeshWeakPtr	CMeshManager::CreateMesh(xst_castring& strName, IInputLayout* pIL,  xst_castring& strGroupName)
 	{
 		bool bCreated = true;
-		ResourceWeakPtr pRes = this->GetOrCreateResource( strName, strGroupName, &bCreated );//this->CreateResource( strName, strGroupName );
+		ResourceWeakPtr pRes;
+		{
+			//XSTSimpleProfiler2( "--GetOrCreateResource" );
+		pRes = this->GetOrCreateResource( strName, strGroupName, &bCreated );//this->CreateResource( strName, strGroupName );
+		}
 		if( pRes.IsNull() )
 		{
-			return MeshPtr();
+			return MeshWeakPtr();
 		}
 
-		MeshPtr pMesh( pRes );
+		MeshWeakPtr pMesh( pRes );
 		pMesh->m_pInputLayout = pIL;
 
 		if( !bCreated )

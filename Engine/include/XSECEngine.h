@@ -36,7 +36,7 @@ namespace XSE
 
 	};
 
-	struct SMemoryOptions : public SRenderSystemMemoryOptions
+	struct SMemorySettings : public SRenderSystemMemorySettings
 	{
 		ul32	ulMeshCount = 3000;
 		ul32	ulModelCount = 3000;
@@ -45,15 +45,12 @@ namespace XSE
 		ul32	ulLuaScriptCount = 1000;
 	};
 
-	class XST_API CEngineOptions
+	class XST_API SEngineSettings
 	{
 		public:
-			CEngineOptions() : strRenderSystem( "" ), strRenderSystemPlugin( "" ) {}
-
-			xst_astring strRenderSystem;
-			xst_astring strRenderSystemPlugin;
-			SRenderSystemOptions	RSOptions;
-			SMemoryOptions			MemOptions;
+		xst_astring strRenderSystem = XST::StringUtil::EmptyAString;
+		SRenderSystemSettings	RSSettings;
+		SMemorySettings			MemSettings;
 	};
 
 	class XST_API CEngine : public XST::TCSingleton< CEngine >, public XST::IObject
@@ -68,14 +65,14 @@ namespace XSE
 			static xst_castring		DIRECT3D11;
 			static xst_castring		DIRECT3D9;
 			static xst_castring		BEST_RENDER_SYSTEM;
-			static CEngineOptions	DEFAULT_OPTIONS;
+			static SEngineSettings	DEFAULT_SETTINGS;
 
 		public:
 
 									CEngine();
 			virtual					~CEngine();
 
-					i32				Init(const CEngineOptions& Options = DEFAULT_OPTIONS);
+					i32				Init(const SEngineSettings& Options = DEFAULT_SETTINGS);
 
 					void			Update(cf32& fFrameTime);
 
@@ -145,6 +142,10 @@ namespace XSE
 
 					i32					SetScreenResolution(u32 uiWidth, u32 uiHeight, u32 uiRefreshRate);
 
+			xst_fi
+			const	SEngineSettings&	GetSettings() const
+										{ return m_Settings; }
+
 		protected:
 
 					void				_DestroySceneManager(CSceneManager* pMgr);
@@ -171,6 +172,7 @@ namespace XSE
 			xst_unknown				m_hRenderSystemDll;
 
 			SFeatures				m_Features;
+			SEngineSettings			m_Settings;
 
 			XST::CTimer				m_EngineTimer;
 	};

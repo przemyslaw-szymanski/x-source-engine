@@ -49,7 +49,6 @@ namespace XSE
 
     i32 IResourceManager::Init()
     {
-        m_pFileMgr = CFileManager::GetSingletonPtr();
 		m_bDestroyed = false;
         xst_assert( m_pFileMgr, "(IResourceManager::Init) File manager singleton not created" );
         return XST_OK;
@@ -195,7 +194,8 @@ namespace XSE
 		pBaseRes->m_ResourceGroupHandle = pGroup->GetHandle();
 		//pBaseRes->m_strResourceName = strName;
 		pBaseRes->m_ResourceHandle = Handle;
-        ResourcePtr pRes( pBaseRes );
+        ResourceWeakPtr pRes( pBaseRes );
+		pBaseRes->RemoveRef();
 		{ 
 			//XSTSimpleProfiler2( "CreateResource::AddResourceByHandle" ); //~0.0007sec in debug
 		if( pGroup->AddResource( Handle, pRes ) != RESULT::OK )
@@ -211,24 +211,35 @@ namespace XSE
 
     ResourceWeakPtr IResourceManager::GetOrCreateResource(xst_castring &strName, xst_castring &strGroupName, bool* pbCreatedOut)
 	{
-		GroupPtr pGr = this->GetOrCreateGroup( strGroupName );
+		GroupPtr pGr;
+		{
+			//XSTSimpleProfiler2( "---GetOrCreateGroup" );
+		pGr	= this->GetOrCreateGroup( strGroupName );
+		}
         GroupWeakPtr p( pGr );
 		return GetOrCreateResource( strName, pGr, pbCreatedOut );
 	}
 
 	ResourceWeakPtr IResourceManager::GetOrCreateResource(xst_castring &strName, GroupWeakPtr pGroup, bool* pbCreatedOut)
 	{
-        ResourcePtr pRes = pGroup->GetResource( strName );
+		// Disable log warnings
+		XST_LOGGER_DISABLE();
+		ResourceWeakPtr pRes;
+		{
+			//XSTSimpleProfiler2( "---GetResource" ); // ~0.0000250415957326 in debug, map find ~0.0000180627903645
+		pRes	= pGroup->GetResource( strName );
+		}
+		XST_LOGGER_ENABLE();
 		if( pRes.IsValid() )
 		{
-			//If resource with given name already exists return it
+			// If resource with given name already exists return it
 			if( pbCreatedOut ) *pbCreatedOut = false;
 			return pRes;
 		}
 		
 		//If not exists create it
 		{ 
-			//XSTSimpleProfiler2( "ResourceGroup::CreateResource" );
+			//XSTSimpleProfiler2( "---CreateResource" ); // ~0.0047267038240159 in debug
 		pRes = CreateResource( strName, pGroup );
 		}
 		

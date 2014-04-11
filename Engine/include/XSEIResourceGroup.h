@@ -47,12 +47,12 @@ namespace XSE
         IResourceGroup( xst_castring& strName, const Handle& Handle );
         virtual             ~IResourceGroup();
 
-        virtual i32         AddResource( xst_castring& strName, ResourcePtr pRes );
-        virtual i32         AddResource( const ResourceHandle& Handle, ResourcePtr pRes );
+        virtual i32         AddResource( xst_castring& strName, ResourceWeakPtr pRes );
+        virtual i32         AddResource( const ResourceHandle& Handle, ResourceWeakPtr pRes );
 
-        virtual ResourcePtr   GetResource( xst_castring& strName );
+        virtual ResourceWeakPtr   GetResource( xst_castring& strName );
 
-        virtual ResourcePtr  GetResource( const ResourceHandle& ulResourceHandle );
+        virtual ResourceWeakPtr  GetResource( const ResourceHandle& ulResourceHandle );
 
         virtual ResourcePtr      RemoveResource( xst_castring& strName );
         virtual ResourcePtr      RemoveResource( const ResourceHandle& ulResourceHandle );

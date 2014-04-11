@@ -148,10 +148,10 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	Options.vHeightmaps.push_back( "heightmap04.jpg" );
 	//Options.PageVertexCount = XSE::CPoint( 32 * 1 + 1 );
 	//Options.TileVertexCount = XSE::CPoint( 16 * 1 + 1 );
-	Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
-	Options.TileVertexCount = XSE::CPoint( 16 + 1 );
-	//Options.PageVertexCount = XSE::CPoint( 32 * 32 + 1 );
-	//Options.TileVertexCount = XSE::CPoint( 16 + 16 + 1 );
+	//Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
+	//Options.TileVertexCount = XSE::CPoint( 16 + 1 );
+	Options.PageVertexCount = XSE::CPoint( 32 * 32 + 1 );
+	Options.TileVertexCount = XSE::CPoint( 16 + 16 + 1 );
 	Options.uiLODCount = 3;
 	Options.bColor = true;
 	Options.bBinormal = Options.bNormal = Options.bTangent = Options.bTexCoord = false;

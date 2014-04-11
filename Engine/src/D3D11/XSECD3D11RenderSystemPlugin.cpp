@@ -44,7 +44,7 @@ namespace XSE
 			}
 		}
 
-		i32 CRenderSystem::Init(const SRenderSystemOptions& Options)
+		i32 CRenderSystem::Init(const SRenderSystemSettings& Options)
 		{
 			
 			HRESULT hr = S_OK;

@@ -61,7 +61,7 @@ namespace XSE
 	xst_castring CEngine::DIRECT3D11 = "Direct3D11";
 	xst_castring CEngine::DIRECT3D9 = "Direct3D9";
 	xst_castring CEngine::BEST_RENDER_SYSTEM = "BEST";
-	CEngineOptions CEngine::DEFAULT_OPTIONS = CEngineOptions();
+	SEngineSettings CEngine::DEFAULT_SETTINGS = SEngineSettings();
 
 	
 
@@ -101,11 +101,11 @@ namespace XSE
 		m_pRenderSystemFactory->RegisterRenderSystem( CEngine::DIRECT3D9, &CreateD3D9RenderSystem );
 
 		//Set default options
-		DEFAULT_OPTIONS.RSOptions.bFullScreen = false;
-		DEFAULT_OPTIONS.RSOptions.uiBitsPerPixel = 24;
-		DEFAULT_OPTIONS.RSOptions.uiRefreshRate = 60;
-		DEFAULT_OPTIONS.RSOptions.uiResolutionWidth = 800;
-		DEFAULT_OPTIONS.RSOptions.uiResolutionHeight = 600;
+		DEFAULT_SETTINGS.RSSettings.bFullScreen = false;
+		DEFAULT_SETTINGS.RSSettings.uiBitsPerPixel = 24;
+		DEFAULT_SETTINGS.RSSettings.uiRefreshRate = 60;
+		DEFAULT_SETTINGS.RSSettings.uiResolutionWidth = 800;
+		DEFAULT_SETTINGS.RSSettings.uiResolutionHeight = 600;
 
 		xst_zero( &m_Features, sizeof( SFeatures ) );
 
@@ -175,7 +175,7 @@ namespace XSE
 		m_mWindows.clear();
 	}
 
-	i32 CEngine::Init(const CEngineOptions& Options)
+	i32 CEngine::Init(const SEngineSettings& Options)
 	{
 		//Check capabilities
 		if( !CheckCaps() )
@@ -223,11 +223,7 @@ namespace XSE
 		
 		//Create render system
 		//Use render system plugin ONLY if render system from engine is not set
-		if( Options.strRenderSystemPlugin.length() > 0 && Options.strRenderSystem.length() == 0 )
-		{
-			m_pRenderSystem = CreateRenderSystemFromPlugin( Options.strRenderSystemPlugin ); // deprecated
-		}
-		else if( Options.strRenderSystem.length() > 0 )
+		if( Options.strRenderSystem.length() > 0 )
 		{
 			m_pRenderSystem = CreateRenderSystem( Options.strRenderSystem );
 		}
@@ -241,9 +237,9 @@ namespace XSE
 			return RESULT::FAILED;
 		}
 
-		SRenderSystemOptions RSOptions = Options.RSOptions;
-		RSOptions.MemOptions = *(SRenderSystemMemoryOptions*)&Options.RSOptions.MemOptions;
-		if( m_pRenderSystem->Init( RSOptions ) != RESULT::OK )
+		SRenderSystemSettings RSSettings = Options.RSSettings;
+		RSSettings.MemOptions = *(SRenderSystemMemorySettings*)&Options.RSSettings.MemOptions;
+		if( m_pRenderSystem->Init( RSSettings ) != RESULT::OK )
 		{
 			return RESULT::FAILED;
 		}
@@ -252,9 +248,9 @@ namespace XSE
 		{
 			Itr->second->_SetRenderSystem( m_pRenderSystem );
 
-			if( !Options.RSOptions.bFullScreen )
+			if( !Options.RSSettings.bFullScreen )
 			{
-				Itr->second->SetSize( Options.RSOptions.uiResolutionWidth, Options.RSOptions.uiResolutionHeight + 1 );
+				Itr->second->SetSize( Options.RSSettings.uiResolutionWidth, Options.RSSettings.uiResolutionHeight + 1 );
 			}
 		}
 

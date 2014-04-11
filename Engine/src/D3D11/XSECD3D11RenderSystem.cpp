@@ -222,7 +222,7 @@ namespace XSE
 			return RESULT::OK;
 		}
 
-		i32 CRenderSystem::Init(const SRenderSystemOptions& Options)
+		i32 CRenderSystem::Init(const SRenderSystemSettings& Options)
 		{
 			//Init base class
 			IRenderSystem::_Init( Options );
@@ -1022,7 +1022,7 @@ namespace XSE
 			g_aMatrices[ MatrixTypes::VIEW ] = XMMatrixLookAtLH( VecToXMVec( vecPosition ), VecToXMVec( vecPoint ), VecToXMVec( vecUp ) );
 		}
 
-		IRenderSystem::UPDATE_OPTIONS_RESULT CRenderSystem::UpdateOptions(const SRenderSystemOptions& Options)
+		IRenderSystem::UPDATE_OPTIONS_RESULT CRenderSystem::UpdateOptions(const SRenderSystemSettings& Options)
 		{
 			return IRenderSystem::UpdateOptionsResults::OK;
 		}
@@ -1427,7 +1427,7 @@ namespace XSE
 
 		i32 CRenderSystem::_CreateMemoryPools(void* pMemOptions)
 		{
-			SRenderSystemMemoryOptions* pOptions = static_cast< SRenderSystemMemoryOptions* >( pMemOptions );
+			SRenderSystemMemorySettings* pOptions = static_cast< SRenderSystemMemorySettings* >( pMemOptions );
 			if( XST_FAILED( TCFreeListAllocator< CVertexBuffer >::Create( pOptions->uiVertexBufferCount ) ) )
 			{
 				XST_LOG_ERR( "Failed to create memory buffer for vertex buffers" );

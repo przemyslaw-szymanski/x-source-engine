@@ -6,6 +6,7 @@
 #include "XSECMaterial.h"
 #include "XSEIVertexBuffer.h"
 #include "XSEIIndexBuffer.h"
+#include "XSETCFreeListAllocator.h"
 
 namespace XSE
 {
@@ -38,7 +39,7 @@ namespace XSE
 
 	namespace Resources
 	{
-		class XST_API CMesh : public IRenderableObject, public IResource
+		class XST_API CMesh : public IRenderableObject, public IResource, public XST::TIAllocableObject< TCFreeListAllocator< CMesh > >
 		{
 			friend class CMeshManager;
 			friend class CModel;

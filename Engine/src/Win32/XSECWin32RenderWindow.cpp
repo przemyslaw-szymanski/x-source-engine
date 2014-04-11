@@ -486,7 +486,15 @@ namespace XSE
 
 			//m_Timer.StopQPerf();
 			i32 iResult = m_pRenderSystem->EndRender();
-			m_fFrameTime = m_Timer.GetQPerfElapsedTime();
+			static i32 iFrameCount = 0;
+			static f32 fTimeAccum = 0.0f;
+			fTimeAccum += m_Timer.GetQPerfElapsedTime();
+			if( iFrameCount++ > 10 )
+			{
+				m_fFrameTime = fTimeAccum / iFrameCount;
+				fTimeAccum = 0;
+				iFrameCount = 0;
+			}
 			return iResult;
 		}
 

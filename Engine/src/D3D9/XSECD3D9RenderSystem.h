@@ -25,7 +25,7 @@ namespace XSE
 									CRenderSystem(xst_castring& strName);
 				virtual				~CRenderSystem();
 
-						i32			Init(const SRenderSystemOptions& Options);
+						i32			Init(const SRenderSystemSettings& Options);
 
 						i32			BeginRender();
 
@@ -109,7 +109,7 @@ namespace XSE
 						virtual void*				GetDevice() { return 0; }
 						virtual void*				GetDeviceContext() { return 0; }
 
-						IRenderSystem::UPDATE_OPTIONS_RESULT	UpdateOptions(const SRenderSystemOptions& Options) { return IRenderSystem::UpdateOptionsResults::OK; }
+						IRenderSystem::UPDATE_OPTIONS_RESULT	UpdateOptions(const SRenderSystemSettings& Options) { return IRenderSystem::UpdateOptionsResults::OK; }
 						IRenderSystem::UPDATE_OPTIONS_RESULT	UpdateOptions() { return IRenderSystem::UpdateOptionsResults::OK; }
 			
 						void				SetPerspectiveFOV(cf32& fAngle, cf32& fAspectRation, cf32& fNear, cf32& fFar) {}

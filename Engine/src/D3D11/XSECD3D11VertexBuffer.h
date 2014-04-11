@@ -3,7 +3,7 @@
 
 #include "XSEIVertexBuffer.h"
 #include "XSED3D11Common.h"
-#include "../XSETCFreeListAllocator.h"
+#include "XSETCFreeListAllocator.h"
 
 #if defined (XST_WINDOWS)
 namespace XSE

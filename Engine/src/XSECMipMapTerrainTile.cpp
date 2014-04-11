@@ -29,7 +29,7 @@ namespace XSE
 		m_pMesh = pMesh;
 		IVertexBuffer* pVB;
 		{
-			//XSTSimpleProfiler2("-CreateVertexBuffer"); //~0.002sec in debug
+			//XSTSimpleProfiler2("-CreateVertexBuffer"); //~0.0007sec in debug
 			VertexBufferPtr pBuff( pMesh->CreateVertexBuffer( false ) );
 			pMesh->SetVertexBuffer( pBuff, 0 );
 			pMesh->SetLOD( 0 );

@@ -13,10 +13,10 @@ namespace XSE
 
     IResourceGroup::~IResourceGroup()
     {
-        for( auto& Itr : m_mResources )
+        /*for( auto& Itr : m_mResources )
         {
             XST::CDebug::PrintDebugLN( Itr.second->GetResourceName() + ", " + std::to_string( Itr.second->GetRefCount() ) );
-        }
+        }*/
         m_mResources.clear();
     }
 
@@ -28,14 +28,14 @@ namespace XSE
         }
     }
 
-    i32 IResourceGroup::AddResource(xst_castring& strName, ResourcePtr pRes)
+    i32 IResourceGroup::AddResource(xst_castring& strName, ResourceWeakPtr pRes)
     {
         m_pTmpStr = strName.c_str();
         ResourceHandle Handle = XSE_HASH( strName );
         return AddResource( Handle, pRes );
     }
 
-    i32 IResourceGroup::AddResource(const ResourceHandle& Handle, ResourcePtr pRes)
+    i32 IResourceGroup::AddResource(const ResourceHandle& Handle, ResourceWeakPtr pRes)
     {
         if( m_LastUsedHandle == Handle )
         {
@@ -59,23 +59,23 @@ namespace XSE
         return XST_OK;
     }
     
-    ResourcePtr IResourceGroup::GetResource(xst_castring& strName)
+    ResourceWeakPtr IResourceGroup::GetResource(xst_castring& strName)
     {
         m_pTmpStr = strName.c_str();
         ResourceHandle Handle = XSE_HASH( strName );
-        return GetResource( Handle );
+		return GetResource( Handle ); // ~0.000018592358536536 in debug;
     }
 
-    ResourcePtr IResourceGroup::GetResource(const ResourceHandle& Handle)
+    ResourceWeakPtr IResourceGroup::GetResource(const ResourceHandle& Handle)
     {
         if( m_LastUsedHandle == Handle )
             return m_pLastUsedResource;
         ResMapItr Itr = m_mResources.find( Handle );
         if( Itr == m_mResources.end() )
         {
-            XST_LOG_ERR( "Resource: " << m_pTmpStr << " does not exists in group: " << GetName() );
+            //XST_LOG_ERR( "Resource: " << m_pTmpStr << " does not exists in group: " << GetName() );
             m_pTmpStr = "";
-            return ResourcePtr();
+            return ResourceWeakPtr();
         }
         m_LastUsedHandle = Handle;
         m_pLastUsedResource = Itr->second;

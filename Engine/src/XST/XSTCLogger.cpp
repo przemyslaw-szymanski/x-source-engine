@@ -39,6 +39,8 @@ namespace XST
 			m_pDisabledLogger = 0;
 			return;
 		}
+
+		m_bEnabled = true;
 	}
 
 	void CLogger::Disable()
@@ -47,30 +49,33 @@ namespace XST
 			m_pDisabledLogger = m_pLogger;
 
 		m_pLogger = m_pEmptyLogger;
-
+		m_bEnabled = false;
 	}
 
 	//Flush to other logger
 	void	CLogger::FlushStream(ILogger* pLogger, const u32& uiMode)
 	{
-		xst_castring& str = m_StrStream.str();
+		if( m_bEnabled )
+		{
+			xst_castring& str = m_StrStream.str();
 
-		if( uiMode & LAST_ERROR )
-		{
-			XST::CLastError::Set( str );
-		}
-		
-		if( uiMode & FILE )
-		{
-			if( pLogger )
+			if( uiMode & LAST_ERROR )
 			{
-				pLogger->Write( str );
+				XST::CLastError::Set( str );
 			}
-		}
-		
-		if( uiMode & CONSOLE )
-		{
-			XST::CDebug::PrintDebugLN( str );
+
+			if( uiMode & FILE )
+			{
+				if( pLogger )
+				{
+					pLogger->Write( str );
+				}
+			}
+
+			if( uiMode & CONSOLE )
+			{
+				XST::CDebug::PrintDebugLN( str );
+			}
 		}
 
 		ClearStream();
@@ -78,24 +83,27 @@ namespace XST
 
 	void	CLogger::FlushStreamError(ILogger* pLogger, const u32& uiMode)
 	{
-		xst_castring& str = m_StrStream.str();
+		if( m_bEnabled )
+		{
+			xst_castring& str = m_StrStream.str();
 
-		if( uiMode & LAST_ERROR )
-		{
-			XST::CLastError::Set( str );
-		}
-		
-		if( uiMode & FILE )
-		{
-			if( pLogger )
+			if( uiMode & LAST_ERROR )
 			{
-				pLogger->WriteError( str );
+				XST::CLastError::Set( str );
 			}
-		}
-		
-		if( uiMode & CONSOLE )
-		{
-			XST::CDebug::PrintDebugLN( str );
+
+			if( uiMode & FILE )
+			{
+				if( pLogger )
+				{
+					pLogger->WriteError( str );
+				}
+			}
+
+			if( uiMode & CONSOLE )
+			{
+				XST::CDebug::PrintDebugLN( str );
+			}
 		}
 
 		ClearStream();
@@ -103,26 +111,28 @@ namespace XST
 
 	void	CLogger::FlushStreamWarning(ILogger* pLogger, const u32& uiMode)
 	{
-		xst_castring& str = m_StrStream.str();
+		if( m_bEnabled )
+		{
+			xst_castring& str = m_StrStream.str();
 
-		if( uiMode & LAST_ERROR )
-		{
-			XST::CLastError::Set( str );
-		}
-		
-		if( uiMode & FILE )
-		{
-			if( pLogger )
+			if( uiMode & LAST_ERROR )
 			{
-				pLogger->WriteWarning( str );
+				XST::CLastError::Set( str );
+			}
+
+			if( uiMode & FILE )
+			{
+				if( pLogger )
+				{
+					pLogger->WriteWarning( str );
+				}
+			}
+
+			if( uiMode & CONSOLE )
+			{
+				XST::CDebug::PrintDebugLN( str );
 			}
 		}
-		
-		if( uiMode & CONSOLE )
-		{
-			XST::CDebug::PrintDebugLN( str );
-		}
-
 		ClearStream();
 	}
 

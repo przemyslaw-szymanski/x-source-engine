@@ -33,26 +33,26 @@ i32 CSampleMgr::InitEngine(u32 uiWindowHandle)
 	m_pEngine = XSECreateEngine();
 	m_pRenderWnd = m_pEngine->CreateRenderWindow( "MainWindow", uiWindowHandle );
 
-	XSE::CEngineOptions Opts;
-	Opts.RSOptions.bFullScreen = false;
-	Opts.RSOptions.uiHWND = m_pRenderWnd->GetHandle();
-	Opts.RSOptions.uiResolutionWidth = m_pRenderWnd->GetWidth();
-	Opts.RSOptions.uiResolutionHeight = m_pRenderWnd->GetHeight();
-	Opts.RSOptions.uiRefreshRate = 60;
-	Opts.RSOptions.eMinFeatureLevel = XSE::ShaderModels::SM_3_0;
-	Opts.RSOptions.eMaxFeatureLevel = XSE::ShaderModels::SM_4_0;
+	XSE::SEngineSettings Opts;
+	Opts.RSSettings.bFullScreen = false;
+	Opts.RSSettings.uiHWND = m_pRenderWnd->GetHandle();
+	Opts.RSSettings.uiResolutionWidth = m_pRenderWnd->GetWidth();
+	Opts.RSSettings.uiResolutionHeight = m_pRenderWnd->GetHeight();
+	Opts.RSSettings.uiRefreshRate = 60;
+	Opts.RSSettings.eMinFeatureLevel = XSE::ShaderModels::SM_3_0;
+	Opts.RSSettings.eMaxFeatureLevel = XSE::ShaderModels::SM_4_0;
 	Opts.strRenderSystem = XSE::CEngine::BEST_RENDER_SYSTEM;
-	Opts.RSOptions.bAntialiasing = true;
-	Opts.RSOptions.bMultisampling = true;
-	Opts.RSOptions.eFillMode = XSE::FillModes::SOLID;
-	Opts.RSOptions.bVSync = false;
+	Opts.RSSettings.bAntialiasing = true;
+	Opts.RSSettings.bMultisampling = true;
+	Opts.RSSettings.eFillMode = XSE::FillModes::SOLID;
+	Opts.RSSettings.bVSync = false;
 #if defined (XST_DEBUG)
-	Opts.RSOptions.ulShaderFlags |= XSE::ShaderFlags::DEBUG;
-	Opts.RSOptions.bDebugMode = true;
+	Opts.RSSettings.ulShaderFlags |= XSE::ShaderFlags::DEBUG;
+	Opts.RSSettings.bDebugMode = true;
 #else
-	Opts.RSOptions.ulShaderFlags |= XSE::ShaderFlags::OPTIMIZED;
+	Opts.RSSettings.ulShaderFlags |= XSE::ShaderFlags::OPTIMIZED;
 #endif
-	Opts.RSOptions.ulShaderFlags |= XSE::ShaderFlags::BACKWARD_COMPAPILITY;
+	Opts.RSSettings.ulShaderFlags |= XSE::ShaderFlags::BACKWARD_COMPAPILITY;
 
 	if( XST_FAILED( m_pEngine->Init( Opts ) ) )
 	{
