@@ -379,7 +379,7 @@ namespace XSE
 		xst_assert( m_pRenderSystem, "(CMeshManager::_CreateResource) Render system is not set/created or engine is not initialized" );
 		Resources::CMesh* pMesh;
 		{
-			//XSTSimpleProfiler2("CMeshManager::_CreateResource"); //~0.003sec in debug
+			XSTSimpleProfiler2("CMeshManager::_CreateResource"); //~0.003sec in debug
 			pMesh = xst_new Resources::CMesh( m_pRenderSystem, m_pDefaultIL, this, ulHandle, strName, XST::ResourceType::MESH, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
 		}
 		//Set default material

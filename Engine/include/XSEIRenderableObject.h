@@ -116,6 +116,8 @@ namespace XSE
 
 	typedef XST::TCObjectSmartPointer< IRenderableObject > RenderableObjectPtr;
 	XST_TEMPLATE_CLASS XST::TCObjectSmartPointer< IRenderableObject >;
+	typedef XST::TCWeakPointer< IRenderableObject > RenderableObjectWeakPtr;
+	XST_TEMPLATE_CLASS XST::TCWeakPointer< IRenderableObject >;
 
 }//xse
 

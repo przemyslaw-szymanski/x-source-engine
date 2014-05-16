@@ -13,6 +13,17 @@ namespace XSE
 			return Left.fDistance < Right.fDistance;
 		}
 
+		CMesh::CMesh(IRenderSystem* pRS, IInputLayout* pIL, lpcastr pDbgName) :
+			IRenderableObject( OT::MESH, pIL, pDbgName ),
+			m_pRS( pRS ),
+			m_bIndexedGeometry( false ),
+			m_bIsCloned( false ),
+			m_ulCloneId( 0 ),
+			m_RenderMethod( &CMesh::_Render )
+		{
+
+		}
+
 		CMesh::CMesh(IRenderSystem* pRS, IInputLayout* pIL, XSE_IRESOURCE_DECL_PARAMS) :	
 			XSE_IRESOURCE_CTOR, 
 			IRenderableObject( OT::MESH, pIL, strName.c_str() ), 
@@ -34,6 +45,11 @@ namespace XSE
 			m_pCurrentLOD = xst_null;
 			//DestroyBuffers();
 			m_pRS = xst_null;
+		}
+
+		void CMesh::_Init(XSE::IResourceManager* pCreator, const Handle& Handle, const Name& strName, XST::Types::ci32& iType, XST::Types::ci32& iState)
+		{
+			XSE::Resources::IResource::_Init( pCreator, Handle, strName, iType, iState );
 		}
 
 		void CMesh::DestroyBuffers()

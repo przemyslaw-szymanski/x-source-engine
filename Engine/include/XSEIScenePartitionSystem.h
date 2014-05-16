@@ -27,7 +27,7 @@ namespace XSE
 
 									IScenePartitionSystem(CSceneManager* pSceneMgr) : m_pSceneMgr( pSceneMgr )
 									{
-										m_vObjects.reserve( 1000 );
+										m_vObjects.reserve( 3000 );
 									}
 
 			virtual					~IScenePartitionSystem() 

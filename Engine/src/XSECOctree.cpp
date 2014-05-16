@@ -7,9 +7,24 @@ namespace XSE
 
 	};
 
-	COctree::COctree(f32 fSize, const Vec3& vecCenterPos, IOctreeListener* pListener) : 
-		m_pListener( pListener ), m_fSize( fSize ), m_byCurrDepth( 0 ), m_pParent( xst_null )
+	COctree::COctree() : 
+		m_pParent( xst_null )
+		, m_pListener( xst_null )
 	{
+		
+	}
+
+	/*COctree::COctree(f32 fSize, const Vec3& vecMinCorner, cu8& byCurrDepth, COctree* pParent) : 
+		m_pListener( xst_null ), m_fSize( fSize ), m_byCurrDepth( byCurrDepth ), m_pParent( pParent ),
+		m_vecMinCorner( vecMinCorner )
+	{
+		_Init();
+	}*/
+
+	void COctree::Init(f32 fSize, const Vec3& vecCenterPos, IOctreeListener* pListener)
+	{
+		m_pListener = pListener;
+		m_fSize = fSize;
 		cf32 fHalfSize = m_fSize * 0.5f;
 		m_vecMinCorner = vecCenterPos - fHalfSize;
 		//m_vecMinCorner.y = vecCenterPos.y + fHalfSize;
@@ -17,10 +32,12 @@ namespace XSE
 		_Init();
 	}
 
-	COctree::COctree(f32 fSize, const Vec3& vecMinCorner, cu8& byCurrDepth, COctree* pParent) : 
-		m_pListener( xst_null ), m_fSize( fSize ), m_byCurrDepth( byCurrDepth ), m_pParent( pParent ),
-		m_vecMinCorner( vecMinCorner )
+	void COctree::Init(f32 fSize, const Vec3& vecMinCorner, cu8& byCurrDepth, COctree* pParent)
 	{
+		m_fSize = fSize;
+		cf32 fHalfSize = m_fSize * 0.5f;
+		m_vecMinCorner = vecMinCorner - fHalfSize;
+		m_pParent = pParent;
 		_Init();
 	}
 
@@ -29,15 +46,12 @@ namespace XSE
 		xst_zero( m_apChildren, sizeof( COctree* ) * 8 );
 		xst_zero( m_apNeighbours, sizeof( COctree* ) * 4 );
 		
-		if( m_pParent == xst_null )
-		{
-			if( m_pListener == xst_null ) //If user passed no his own listener create a default one
-				m_pListener = xst_new CEmptyOctListener();
-		}
-		else
+		if( m_pParent != xst_null )
 		{
 			m_pListener = m_pParent->m_pListener;
 		}
+
+		xst_assert( m_pListener, "(COCtree::_Init) Listener is not provided" );
 	}
 
 	COctree::~COctree()
@@ -88,6 +102,11 @@ namespace XSE
 		return AABB;
 	}
 
+	void COctree::CalcAABB(XST::CAABB* pOut) const
+	{
+		pOut->CreateFromLeftBottomFrontCorner( m_vecMinCorner, m_fSize );
+	}
+
 	XSE::CBoundingSphere COctree::CalcBoundingSphere() const
 	{
 		Vec3 vecCenter( CalcCenter() );
@@ -100,7 +119,8 @@ namespace XSE
 		if( pParent->m_byCurrDepth + 1 >= byMaxDepth )
 			return xst_null;
 
-		COctree* pNode = xst_new COctree( fSize, vecMinCorner, pParent->m_byCurrDepth + 1, pParent );
+		COctree* pNode = xst_new COctree();
+		pNode->Init( fSize, vecMinCorner, pParent->m_byCurrDepth + 1, pParent );
 		pParent->m_pListener->OnAddNode( pNode );
 		return pNode;
 	}
@@ -209,21 +229,12 @@ namespace XSE
 
 			return pChildNode;
 		}
-		else
-		{
-			return xst_null;
-		}
 
 		return xst_null;
 	}
 
 	i32 COctree::_AddObject(COctree* pNode, CObject* pObj, cu8& byMaxDepth)
 	{
-		if( strcmp( pObj->_GetDbgName(), "Terrain_1_1" ) == 0 )
-		{
-			int i = 0;
-		}
-
 		if( pNode->m_byCurrDepth >= byMaxDepth )
 		{
 			pNode->_AddObject( pObj );
@@ -242,30 +253,34 @@ namespace XSE
 		}
 
 		//Check whether this object fits to this node
-		const XST::CAABB NodeAABB( pNode->CalcAABB() );
-		if( !NodeAABB.Includes( ObjVolume.GetAABB() ) )
+		//const XST::CAABB NodeAABB( pNode->CalcAABB() );
+		XST::CAABB NodeAABB;
+		pNode->CalcAABB( &NodeAABB );
+		if( NodeAABB.Includes( ObjVolume.GetAABB() ) )
 		{
-			return Results::NOT_IN_NODE; //if not fits do not add any child nodes
-		}
+			COctree* pChildNode = _CalcNodeForObject( pNode, pObj, byMaxDepth );
+			//If node is null put object in this node, otherwise put it in child node
+			if( pChildNode == xst_null )
+			{
+				pNode->_AddObject( pObj );
+			}
+			else
+			{
+				i32 iResult = _AddObject( pChildNode, pObj, byMaxDepth );
+				if( iResult == Results::NOT_IN_NODE ) //if this object does not fit to this child node add to the parent node
+				{
+					pNode->_AddObject( pObj );
+					return XST_OK;
+				}
 
-		COctree* pChildNode = _CalcNodeForObject( pNode, pObj, byMaxDepth );
-		//If node is null put object in this node, otherwise put it in child node
-		if( pChildNode == xst_null )
-		{
-			pNode->_AddObject( pObj );
+				return iResult;
+			}
 		}
 		else
 		{
-			i32 iResult = _AddObject( pChildNode, pObj, byMaxDepth );
-			if( iResult == Results::NOT_IN_NODE ) //if this object does not fit to this child node add to the parent node
-			{
-				pNode->_AddObject( pObj );
-				return XST_OK;
-			}
-
-			return iResult;
+			return Results::NOT_IN_NODE; //if not fits do not add any child nodes
 		}
-
+		
 		return XST_OK;
 	}
 

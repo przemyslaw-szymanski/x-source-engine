@@ -66,10 +66,12 @@ namespace XSE
 					i32				DestroyChildNode(cul32& ulHandle);
 					i32				DestroyChildNode(CSceneNode* pNode);
 
-					i32				AddObject(RenderableObjectPtr pObject);
+					i32				AddObject(RenderableObjectWeakPtr pObject);
+					i32				AddUniqueObject(RenderableObjectWeakPtr pObject);
 					i32				AddObject(CObject* pObject);
+					i32				AddUniqueObject(CObject* pObject);
 
-					i32				RemoveObject(RenderableObjectPtr pObject);
+					i32				RemoveObject(RenderableObjectWeakPtr pObject);
 					i32				RemoveObject(const CObject* pObject);
 
 					void			Reorganize();
@@ -84,6 +86,8 @@ namespace XSE
 					void			DestroyChildren();
 
 					void			Destroy(); //destroy itself
+
+					void			ReserveObjects(cu32& uiCount);
 
 			xst_fi	bool			IsEmpty() const
 									{ return m_vObjects.size() == 0 && m_lChildNodes.size() == 0; }

@@ -74,7 +74,9 @@ namespace XSE
 	{
 		m_vOctNodes.reserve( 2000 );
 
-		m_pOctree = xst_new COctree( m_pSceneMgr->GetSize(), Vec3::ZERO, m_pOctListener );
+		//m_pOctree = xst_new COctree( m_pSceneMgr->GetSize(), Vec3::ZERO, m_pOctListener );
+		m_pOctree = xst_new COctree();
+		m_pOctree->Init( m_pSceneMgr->GetSize(), Vec3::ZERO, m_pOctListener );
 		m_pSceneMgr->CreateNode( m_strSceneNodeName )->AddObject( m_pOctModel );
 		m_pOctListener->OnAddNode( m_pOctree );
 		return XST_OK;

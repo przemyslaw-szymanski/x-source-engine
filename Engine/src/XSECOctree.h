@@ -63,9 +63,12 @@ namespace XSE
 
 		public:
 
-									COctree(f32 fSize, const Vec3& vecCenterPos, IOctreeListener* pListener = xst_null);
+									COctree();
 
 			virtual					~COctree();
+
+					void			Init(f32 fSize, const Vec3& vecCenterPos, IOctreeListener* pListener = xst_null);
+					void			Init(f32 fSize, const Vec3& vecMinCorner, cu8& byCurrDepth, COctree* pParent);
 
 					i32				AddObject(CObject* pObj, cu8& byMaxDepth);
 
@@ -112,6 +115,7 @@ namespace XSE
 									{ return CBoundingVolume( CalcBoundingSphere(), CalcAABB() ); }
 
 			XST::CAABB				CalcAABB() const;
+			void					CalcAABB(XST::CAABB* pOut) const;
 
 			XSE::CBoundingSphere	CalcBoundingSphere() const;
 

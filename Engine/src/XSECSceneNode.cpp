@@ -199,30 +199,17 @@ namespace XSE
 
 	CObject* CSceneNode::GetObject(cul32& ulHandle) const
 	{
-		ObjectVector::const_iterator Itr;
-		xst_stl_foreach( Itr, m_vObjects )
+		for( u32 i = 0; i < m_vObjects.size(); ++i )
 		{
-			if( (*Itr)->GetObjectHandle() == ulHandle )
-			{
-				return (*Itr);
-			}
+			if( m_vObjects[ i ]->GetObjectHandle() == ulHandle )
+				return m_vObjects[ i ];
 		}
 		return xst_null;
 	}
 
-	i32 CSceneNode::AddObject(CObject* pObject)
+	i32 CSceneNode::AddUniqueObject(CObject* pObject)
 	{
-		xst_assert( pObject, "" );
-		ObjectMap::iterator Itr;
-		ul32 ulId = pObject->GetObjectHandle();//XST::CHash::GetCRC( pObject->GetObjectName() );
-		//if( !XST_FAILED( XST::MapUtils::Insert( m_mObjects, ulId, pObject, &Itr ) ) )
-		i32 iResult = XST_OK;
-		if( GetObject( pObject->GetObjectHandle() ) != xst_null )
-		{
-			XST_LOG_ERR( "Object: " << XST_GET_DBG_NAME( pObject ) << " is already in scene node: " << XST_GET_DBG_NAME( this ) );
-			return XST_FAIL;
-		}
-
+		xst_assert( pObject != xst_null, "(CSceneNode::AddUniqueObject)" );
 		{
 			switch( pObject->GetObjectType() )
 			{
@@ -262,21 +249,44 @@ namespace XSE
 			m_vObjects.push_back( pObject );
 			return XST_OK;
 		}
-		
 		XST_LOG_ERR( "Unable to add renderable object: " << XST_GET_DBG_NAME( pObject ) << " to the scene node: " << XST_GET_DBG_NAME( this ) );
 		return XST_FAIL;
 	}
 
-	i32 CSceneNode::AddObject(RenderableObjectPtr pObject)
+	i32 CSceneNode::AddObject(CObject* pObject)
+	{
+		xst_assert( pObject, "" );
+		ObjectMap::iterator Itr;
+		ul32 ulId = pObject->GetObjectHandle();//XST::CHash::GetCRC( pObject->GetObjectName() );
+		//if( !XST_FAILED( XST::MapUtils::Insert( m_mObjects, ulId, pObject, &Itr ) ) )
+		i32 iResult = XST_OK;
+		if( GetObject( ulId ) != xst_null )
+		{
+			XST_LOG_ERR( "Object: " << XST_GET_DBG_NAME( pObject ) << " is already in scene node: " << XST_GET_DBG_NAME( this ) );
+			return XST_FAIL;
+		}
+
+		return AddUniqueObject( pObject );
+	}
+
+	i32 CSceneNode::AddObject(RenderableObjectWeakPtr pObject)
 	{
 		xst_assert( !pObject.IsNull(), "(CSceneNode::AddObject) Object is nul" );
 
 		IRenderableObject* pObj = pObject.GetPtr();
-		pObj->_SetSceneNode( this );;
+		pObj->_SetSceneNode( this );
 		return AddObject( pObj );
 	}
 
-	i32 CSceneNode::RemoveObject(RenderableObjectPtr pObject)
+	i32 CSceneNode::AddUniqueObject(RenderableObjectWeakPtr pObject)
+	{
+		xst_assert( !pObject.IsNull(), "(CSceneNode::AddObject) Object is nul" );
+		IRenderableObject* pObj = pObject.GetPtr();
+		pObj->_SetSceneNode( this );
+		return AddUniqueObject( pObj );
+	}
+
+	i32 CSceneNode::RemoveObject(RenderableObjectWeakPtr pObject)
 	{
 		return RemoveObject( pObject.GetPtr() );
 	}
@@ -306,6 +316,11 @@ namespace XSE
 		{
 			pObj->IsDirty( true );
 		}
+	}
+
+	void CSceneNode::ReserveObjects(cu32& uiCount)
+	{
+		m_vObjects.reserve( uiCount );
 	}
 
 }//xse

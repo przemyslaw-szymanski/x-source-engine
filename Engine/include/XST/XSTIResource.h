@@ -58,7 +58,7 @@ namespace XST
 		{
 			public:
 
-				typedef xst_castring	Name;
+				typedef xst_astring	Name;
 
 			public:
 
@@ -93,6 +93,16 @@ namespace XST
 									{ return m_iResourceState; }
 
 			virtual	i32				ClearResource() { return XST_OK; }
+
+			protected:
+
+			xst_fi	void			_Init(const Name& strName, XST::Types::ci32& iType, XST::Types::ci32& iState)
+									{
+										m_strResourceName = strName;
+										m_iResourceType = iType;
+										m_iResourceState = iState;
+										XST_SET_DBG_NAME( this, strName.c_str() );
+									}
 
 			protected:
 

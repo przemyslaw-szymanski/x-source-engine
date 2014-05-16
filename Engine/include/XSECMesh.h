@@ -66,6 +66,7 @@ namespace XSE
 
 			public:
 
+											CMesh(IRenderSystem* pRS, IInputLayout* pIL, lpcastr pDbgName);
 											CMesh(IRenderSystem* pRS, IInputLayout* pIL, XSE_IRESOURCE_DECL_PARAMS_DEFAULT);
 				virtual						~CMesh();
 
@@ -143,6 +144,8 @@ namespace XSE
 						void				SetInputLayout(IInputLayout* pIL);
 
 			protected:
+
+						void				_Init(XSE::IResourceManager* pCreator, const Handle& Handle, const Name& strName, XST::Types::ci32& iType, XST::Types::ci32& iState);
 					
 						void				_SetSceneNode(CSceneNode* pNode);
 

@@ -68,6 +68,13 @@ namespace XSE
 
             protected:
 
+				xst_fi	void			_Init(XSE::IResourceManager* pCreator, const Handle& Handle, const Name& strName, XST::Types::ci32& iType, XST::Types::ci32& iState)
+				{
+					XST::Resources::IResource::_Init( strName, iType, iState );
+					m_pResourceCreator = pCreator;
+					m_ResourceHandle = Handle;
+				}
+
                 xst_fi  void            _SetResourceState(ci32& iState)
                 {
                      this->m_iResourceState = iState;

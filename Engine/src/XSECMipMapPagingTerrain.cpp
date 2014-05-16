@@ -865,10 +865,11 @@ namespace XSE
 	{
 		XSTSimpleProfiler();
 		IRenderableObject::_SetSceneNode( pNode );
+		pNode->ReserveObjects( m_vTiles.size() + 16 );
 		for(u32 i = 0; i < m_vTiles.size(); ++i)
 		{
 			//m_vTiles[ i ]->m_pMesh->_SetSceneNode( pNode );
-			pNode->AddObject( m_vTiles[ i ]->m_pMesh );
+			pNode->AddUniqueObject( m_vTiles[ i ]->m_pMesh );
 		}
 	}
 
