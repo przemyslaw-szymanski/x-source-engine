@@ -219,7 +219,7 @@ namespace XSE
 		//Write version
 		Writer.Write( (u16)XSE_BIN_MAT_VER_1_0 );
 		//Write name
-		Writer.Write( pMat->GetResourceName() );
+		Writer.Write( pMat->GetResourceName().c_str(), pMat->GetResourceName().length() );
 		//Write ambient
 		//Writer.Write( pMat->GetAmbient().x );
 		//Writer.Write( pMat->GetAmbient().y );

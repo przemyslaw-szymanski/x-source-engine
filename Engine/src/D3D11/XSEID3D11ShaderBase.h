@@ -3,6 +3,7 @@
 
 #include "XSEIShader.h"
 #include "XSED3D11Common.h"
+#include "XSTCString.h"
 
 #if defined (XST_WINDOWS)
 namespace XSE
@@ -15,10 +16,14 @@ namespace XSE
 
 			public:
 
+				typedef XST::xst_resource_name Name;
+
+			public:
+
 										IShaderBase(CRenderSystem* pRS);
 				virtual					~IShaderBase();
 
-				virtual xst_castring&	GetShaderName() const = 0;
+				virtual const Name&		GetShaderName() const = 0;
 
 			protected:
 

@@ -28,6 +28,8 @@ namespace XSE
 			typedef CSceneNode*	SceneNodePtr;
 
 		public:
+										IRenderableObject()
+										{}
 
 										IRenderableObject(ul32 ulType, IInputLayout* pIL, lpcastr strDbgName, bool bManualRendering = false) : 
 											CObject( ulType, strDbgName ), m_pInputLayout( pIL ), m_pSceneNode( xst_null ), 

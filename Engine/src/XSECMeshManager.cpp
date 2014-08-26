@@ -373,17 +373,31 @@ namespace XSE
 		return XST_FAIL;
 	}*/
 
+	class Tmp : public XST::TIAllocableObject< TCFreeListAllocator< Tmp > >
+	{
+		public:
+		
+		ch8 a[128], b[128];
+	};
+
 	Resources::IResource* CMeshManager::_CreateResource(xst_castring &strName, cul32 &ulHandle, IResourceManager::GroupWeakPtr pGroup)
 	{
 		//XSTSimpleProfiler();
 		xst_assert( m_pRenderSystem, "(CMeshManager::_CreateResource) Render system is not set/created or engine is not initialized" );
 		Resources::CMesh* pMesh;
 		{
-			XSTSimpleProfiler2("CMeshManager::_CreateResource"); //~0.003sec in debug
-			pMesh = xst_new Resources::CMesh( m_pRenderSystem, m_pDefaultIL, this, ulHandle, strName, XST::ResourceType::MESH, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
+			XSTSimpleProfiler2("CMeshManager::_CreateResource"); //0.002 - 0.005 sec in debug
+			//pMesh = xst_new Resources::CMesh( m_pRenderSystem, m_pDefaultIL, this, ulHandle, strName, XST::ResourceType::MESH, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
+			pMesh = xst_new Resources::CMesh();
 		}
 		//Set default material
 		pMesh->SetMaterial( m_pMatMgr->GetDefaultMaterial() );
+		{
+			XSTSimpleProfiler2("CMeshManager::_CreateResource2"); //0.002 - 0.005 sec in debug
+			//pMesh = xst_new Resources::CMesh( m_pRenderSystem, m_pDefaultIL, this, ulHandle, strName, XST::ResourceType::MESH, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
+			//IResource* p = xst_new IResource();
+			Tmp* p = ::new Tmp();
+		}
 		return pMesh;
 	}
 

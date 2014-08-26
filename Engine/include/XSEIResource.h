@@ -30,7 +30,7 @@ namespace XSE
 			
 			public:
 				
-										IResource() { xst_assert( 0, "(IResource::IResource) Do not use this constructor" ); }
+										IResource() { /*xst_assert( 0, "(IResource::IResource) Do not use this constructor" );*/ }
 										IResource(XSE_IRESOURCE_DECL_PARAMS_DEFAULT) : m_ResourceHandle( Handle ), m_pResourceCreator( pCreator ), XST_IRESOURCE_CTOR {}
 				
 				virtual					~IResource() 

@@ -17,3 +17,12 @@ I. CREATE VISUAL STUDIO PROJECT
 			- CG_SDK_INCLUDE_PATH
 			- ..\..\src\include (path to engine_directory\src\include)
 	3.3.2. Multi Procesor Compilation: /MP
+
+II. Run sample manager
+	1. Add QTSDK system environment variable
+	2. Copy QT dlls to bin directory with SampleManager executable
+	3. Install Visual Studio 2012 redist
+	4. Put those QT libs to the bin directory: libEGL
+	5. Copy platforms directory to the bin directory
+	6. Copy DevIL.dll into the bin directory
+	7. Copy DirectX dll into the bin directory

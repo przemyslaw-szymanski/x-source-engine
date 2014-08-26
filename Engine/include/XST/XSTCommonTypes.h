@@ -174,6 +174,18 @@ namespace XST
 		#define xst_sort_ex(_container, _func)	xst_sort( (_container).begin(), (_container).end(), &(_func) )
 		#define xst_find_ex(_container, _value)	xst_find( (_container).begin(), (_container).end(), (_value) )
 
+		#ifndef XST_MAX_OBJ_DBG_NAME_LENGTH
+		#	define XST_MAX_OBJ_DBG_NAME_LENGTH 16
+		#endif
+
+		#ifndef XST_MAX_RESOURCE_NAME_LENGTH
+		#	define XST_MAX_RESOURCE_NAME_LENGTH 32
+		#endif
+
+		#ifndef XST_MAX_FILE_NAME_LENGTH
+		#	define XST_MAX_FILE_NAME_LENGTH 128
+		#endif
+
 		typedef const std::string	xst_castring;
 		typedef const std::wstring	xst_cwstring;
 

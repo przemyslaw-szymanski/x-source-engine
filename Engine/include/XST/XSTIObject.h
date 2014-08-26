@@ -18,7 +18,8 @@ namespace XST
 
 								IObject() {};
 #if defined( XST_OBJ_DEBUG )
-								IObject(xst_castring& strDbgName) : m_strDbgName( strDbgName ) {}
+								IObject(const xst_obj_dbg_name& strDbgName) : m_strDbgName( strDbgName ) {}
+		explicit				IObject(xst_castring& strDbgName) : m_strDbgName( strDbgName ) {}
 #endif
 		virtual					~IObject() 
 								{ 
@@ -79,7 +80,8 @@ namespace XST
 			l32		    m_lRefCounter = 1;
 			bool		m_bIsNull = false;
 		#if defined(XST_OBJ_DEBUG)
-			xst_astring	m_strDbgName;
+			//xst_astring	m_strDbgName;
+			xst_obj_dbg_name m_strDbgName;
 		#endif //XST_OBJ_DEBUG
 	};
 

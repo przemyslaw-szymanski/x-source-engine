@@ -2,6 +2,7 @@
 #include "XSEIVertexBuffer.h"
 #include "XSEIIndexBuffer.h"
 #include "XSEIRenderSystem.h"
+#include "XSECEngine.h"
 
 namespace XSE
 {
@@ -22,6 +23,11 @@ namespace XSE
 			m_RenderMethod( &CMesh::_Render )
 		{
 
+		}
+
+		CMesh::CMesh() :
+			m_pRS( XSE::CEngine::GetSingletonPtr()->GetRenderSystem() )
+		{
 		}
 
 		CMesh::CMesh(IRenderSystem* pRS, IInputLayout* pIL, XSE_IRESOURCE_DECL_PARAMS) :	

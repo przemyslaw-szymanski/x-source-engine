@@ -12,7 +12,7 @@ namespace XSE
 
 	CObject::CObject(ul32 ulType, lpcastr strDbgName, CObject* pParent) : 
 #if defined( XST_OBJ_DEBUG )
-		XST::IObject( strDbgName )
+		XST::IObject( XST::xst_obj_dbg_name( strDbgName ) )
 #endif
 		, m_ulObjType( ulType )
 		, m_pObjListener( &g_EmptyListener )

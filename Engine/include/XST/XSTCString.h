@@ -50,6 +50,10 @@ namespace XST
 	typedef CConstLengthUnicodeString< XST_STR_TEXT >		xst_unicode_text;
 	typedef CConstLengthUnicodeString< XST_STR_LONG_TEXT >	xst_long_unicode_text;
 
+	typedef CConstLengthAsciiString< XST_MAX_OBJ_DBG_NAME_LENGTH >	xst_obj_dbg_name;
+	typedef CConstLengthAsciiString< XST_MAX_RESOURCE_NAME_LENGTH >	xst_resource_name;
+	typedef CConstLengthAsciiString< XST_MAX_FILE_NAME_LENGTH >		xst_file_name;
+
 	typedef xst_short_name_ascii_string		xst_astr8;
 	typedef xst_name_ascii_string			xst_astr16;
 	typedef xst_long_name_ascii_string		xst_astr32;
@@ -94,7 +98,6 @@ namespace XST
 	typedef const xst_wstr1024				xst_cwstr1024;
 	typedef const xst_wstr2048				xst_cwstr2048;
 
-	typedef xst_astr64						xst_file_name;
 	typedef xst_castr64						xst_cfile_name;
 	typedef xst_file_name					xst_fname;
 	typedef xst_cfile_name					xst_cfname;
@@ -765,6 +768,11 @@ namespace XST
 			xst_fi bool			operator==(const CConstLengthAsciiString& _strRight)
 			{
 				return this->equals( _strRight );
+			}
+
+			xst_fi operator xst_astring() const
+			{
+				return xst_astring( c_str() );
 			}
 
 			xst_fi operator size_t() const

@@ -169,6 +169,7 @@ namespace XST
 
 			xst_i	_T_*	Alloc() 
 			{
+				// ~0.000004 sec in debug
 				if( m_pFirstFreeBlock != xst_null )
 				{
 					_T_* pPtr = ( _T_* )( m_pFirstFreeBlock );

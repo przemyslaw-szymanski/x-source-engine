@@ -16,6 +16,10 @@ namespace XSE
 
 			public:
 
+				using IShaderBase::Name;
+
+			public:
+
 										CPixelShader(CRenderSystem* pRS, IShaderSystem* pSS, XSE_IRESOURCE_DECL_PARAMS);
 				virtual					~CPixelShader();
 
@@ -29,7 +33,7 @@ namespace XSE
 						bool			IsCompiled()
 										{ return m_bIsCompiled; }
 
-						xst_castring&	GetShaderName() const
+						const Name&	GetShaderName() const
 										{ return this->GetResourceName(); }
 
 			protected:

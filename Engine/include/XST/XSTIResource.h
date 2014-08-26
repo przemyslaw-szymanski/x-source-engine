@@ -58,7 +58,8 @@ namespace XST
 		{
 			public:
 
-				typedef xst_astring	Name;
+				//typedef xst_astring	Name;
+				typedef xst_resource_name Name;
 
 			public:
 

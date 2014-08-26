@@ -15,6 +15,8 @@ namespace XSE
 			friend class CCGShaderSystem;
 			friend class CInputLayout;
 
+			using IShaderBase::Name;
+
 			public:
 
 										CVertexShader(CRenderSystem* pRS, IShaderSystem* pSS, IInputLayout* pIL, XSE_IRESOURCE_DECL_PARAMS);
@@ -30,8 +32,8 @@ namespace XSE
 						bool			IsCompiled()
 										{ return m_bIsCompiled; }
 
-						xst_castring&	GetShaderName() const
-										{ return this->GetResourceName(); }
+						const Name&	GetShaderName() const
+											{ return this->GetResourceName(); }
 
 
 			

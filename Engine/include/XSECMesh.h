@@ -65,7 +65,7 @@ namespace XSE
 				//typedef XST::TCConstIterator< MeshVector >	ConstMeshIterator;
 
 			public:
-
+											CMesh();
 											CMesh(IRenderSystem* pRS, IInputLayout* pIL, lpcastr pDbgName);
 											CMesh(IRenderSystem* pRS, IInputLayout* pIL, XSE_IRESOURCE_DECL_PARAMS_DEFAULT);
 				virtual						~CMesh();
