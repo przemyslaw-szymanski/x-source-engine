@@ -24,6 +24,21 @@ namespace XST
 								{
 								}
 
+								TIConstantContainer(const TIConstantContainer& Container)
+								{
+									cu32 uMinSize = std::min<u32>( Container.size(), MAX_SIZE );
+									xst_memcpy( m_pData, MAX_SIZE, Container.data(), uMinSize );
+									m_uiSize = uMinSize;
+								}
+
+								template<class _A_, cu32 _MAX_SIZEA_>
+								TIConstantContainer(const TIConstantContainer< _A_, _MAX_SIZEA_ >& Container)
+								{
+									cu32 uMinSize = std::min<u32>( Container.size(), MAX_SIZE );
+									xst_memcpy( m_pData, MAX_SIZE, Container.data(), uMinSize );
+									m_uiSize = uMinSize;
+								}
+
 				virtual			~TIConstantContainer()
 								{
 								}
@@ -83,6 +98,21 @@ namespace XST
 				xst_fi	
 				const	_T_*	data() const
 								{ return m_pData; }
+
+				xst_fi	_T_&	front() 
+								{ return m_pData[ 0 ]; }
+				xst_fi	
+				const	_T_&	front() const
+								{ return m_pData[ 0 ]; }
+
+				xst_fi	_T_&	back() 
+								{ return m_pData[ m_uiSize - 1 ]; }
+				xst_fi	
+				const	_T_&	back() const
+								{ return m_pData[ m_uiSize - 1 ]; }
+
+				xst_fi	bool	empty() const
+								{ return m_uiSize == 0; }
 
 				xst_i	i32		find(const _T_& tElement)
 								{ for(u32 i = m_uiSize; i -->0; ) if( m_pData[ i ] == tElement ) return i; return -1; }

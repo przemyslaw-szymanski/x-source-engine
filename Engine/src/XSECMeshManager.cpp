@@ -153,7 +153,7 @@ namespace XSE
 		if( pMesh->GetResourceState() != ResourceStates::CREATED )
 			return XST_FAIL;
 
-		pMesh->m_vLODs.reserve( GetDefaultMeshLODCount() );
+		//pMesh->m_vLODs.reserve( GetDefaultMeshLODCount() );
 		pMesh->_SetResourceState( ResourceStates::PREPARED );
 		return XST_OK;
 	}
@@ -373,12 +373,28 @@ namespace XSE
 		return XST_FAIL;
 	}*/
 
-	class Tmp : public XST::TIAllocableObject< TCFreeListAllocator< Tmp > >
+	class Tmp : public XSE::IRenderableObject, public XSE::Resources::IResource, public XST::TIAllocableObject< TCFreeListAllocator< Tmp > >
 	{
 		public:
-		
-		ch8 a[128], b[128];
+
+		ul32 GetObjectHandle() const
+		{ return 0;}
+
+		void Render( XSE::IRenderSystem * )
+		{}
+		typedef xst_vector< SMeshLOD >	LODVec;
+		typedef i32 (CMesh::*pfnRender)();
+		//LODVec			m_vLODs;
+				SMeshLOD*		m_pCurrentLOD;
+				IRenderSystem*	m_pRS;
+				//MeshVector		m_vSubMeshes;
+				pfnRender		m_RenderMethod;
+
+				ul32			m_ulCloneId;
+				bool			m_bIndexedGeometry;
+				bool			m_bIsCloned;
 	};
+	bool bCreated = false;
 
 	Resources::IResource* CMeshManager::_CreateResource(xst_castring &strName, cul32 &ulHandle, IResourceManager::GroupWeakPtr pGroup)
 	{
@@ -390,13 +406,17 @@ namespace XSE
 			//pMesh = xst_new Resources::CMesh( m_pRenderSystem, m_pDefaultIL, this, ulHandle, strName, XST::ResourceType::MESH, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
 			pMesh = xst_new Resources::CMesh();
 		}
+		if( !bCreated ){
+			TCFreeListAllocator< Tmp >::Create( 2000 );
+			bCreated = true;
+		}
 		//Set default material
 		pMesh->SetMaterial( m_pMatMgr->GetDefaultMaterial() );
 		{
 			XSTSimpleProfiler2("CMeshManager::_CreateResource2"); //0.002 - 0.005 sec in debug
 			//pMesh = xst_new Resources::CMesh( m_pRenderSystem, m_pDefaultIL, this, ulHandle, strName, XST::ResourceType::MESH, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
 			//IResource* p = xst_new IResource();
-			Tmp* p = ::new Tmp();
+			Tmp* p = xst_new Tmp();
 		}
 		return pMesh;
 	}

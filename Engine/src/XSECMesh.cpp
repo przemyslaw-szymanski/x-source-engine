@@ -260,7 +260,8 @@ namespace XSE
 		{
 			//m_vLODs.reserve( uiLODCount );
 			SMeshLOD LOD;
-			m_vLODs.resize( uiLODCount, LOD );
+			//m_vLODs.resize( uiLODCount, LOD );
+			
 			/*for( u32 i = 0; i < m_vLODs.size(); ++i )
 			{
 				m_vLODs[ i ] = m_vLODs[ 0 ];

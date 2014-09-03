@@ -8,6 +8,8 @@
 #include "XSEIIndexBuffer.h"
 #include "XSETCFreeListAllocator.h"
 
+#include <array>
+
 namespace XSE
 {
 	struct XST_API SMeshLOD
@@ -59,7 +61,9 @@ namespace XSE
 				//typedef MeshVector::iterator	MeshIterator;
 				typedef i32 (CMesh::*pfnRender)();
 
-				typedef xst_vector< SMeshLOD >	LODVec;
+				//typedef xst_vector< SMeshLOD >	LODVec;
+				//typedef std::array< SMeshLOD, 20 > LODVec;
+				typedef XST::TCConstantArray< SMeshLOD, 20 > LODVec;
 
 				//typedef XST::TCIterator< MeshVector >		MeshIterator;
 				//typedef XST::TCConstIterator< MeshVector >	ConstMeshIterator;
