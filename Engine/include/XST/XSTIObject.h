@@ -18,7 +18,8 @@ namespace XST
 
 								IObject() {};
 #if defined( XST_OBJ_DEBUG )
-								IObject(const xst_obj_dbg_name& strDbgName) : m_strDbgName( strDbgName ) {}
+                                IObject(lpcastr strDbgName) : m_strDbgName( strDbgName ) {}
+		explicit				IObject(const xst_obj_dbg_name& strDbgName) : m_strDbgName( strDbgName ) {}
 		explicit				IObject(xst_castring& strDbgName) : m_strDbgName( strDbgName ) {}
 #endif
 		virtual					~IObject() 

@@ -382,17 +382,18 @@ namespace XSE
 
 		void Render( XSE::IRenderSystem * )
 		{}
-		typedef xst_vector< SMeshLOD >	LODVec;
+		typedef XST::TCConstantArray< SMeshLOD, 20 >	LODVec;
 		typedef i32 (CMesh::*pfnRender)();
 		//LODVec			m_vLODs;
-				SMeshLOD*		m_pCurrentLOD;
-				IRenderSystem*	m_pRS;
-				//MeshVector		m_vSubMeshes;
-				pfnRender		m_RenderMethod;
+        SMeshLOD arr[ 200 ];
+		SMeshLOD*		m_pCurrentLOD;
+		IRenderSystem*	m_pRS;
+		//MeshVector		m_vSubMeshes;
+		pfnRender		m_RenderMethod;
 
-				ul32			m_ulCloneId;
-				bool			m_bIndexedGeometry;
-				bool			m_bIsCloned;
+		ul32			m_ulCloneId;
+		bool			m_bIndexedGeometry;
+		bool			m_bIsCloned;
 	};
 	bool bCreated = false;
 
@@ -402,22 +403,27 @@ namespace XSE
 		xst_assert( m_pRenderSystem, "(CMeshManager::_CreateResource) Render system is not set/created or engine is not initialized" );
 		Resources::CMesh* pMesh;
 		{
-			XSTSimpleProfiler2("CMeshManager::_CreateResource"); //0.002 - 0.005 sec in debug
-			//pMesh = xst_new Resources::CMesh( m_pRenderSystem, m_pDefaultIL, this, ulHandle, strName, XST::ResourceType::MESH, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
-			pMesh = xst_new Resources::CMesh();
+			//XSTSimpleProfiler2("CMeshManager::_CreateResource"); //0.002 - 0.005 sec in debug
+			pMesh = xst_new Resources::CMesh( m_pRenderSystem, m_pDefaultIL, this, ulHandle, strName, XST::ResourceType::MESH, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
+            if( !pMesh )
+            {
+                XST_LOG_ERR( "Unable to create Mesh object: " << strName << ". No memory." );
+                return xst_null;
+            }
 		}
-		if( !bCreated ){
+        pMesh->SetMaterial( m_pMatMgr->GetDefaultMaterial() );
+        // MEMORY ALLOCATION DEBUG
+		/*if( !bCreated ){
 			TCFreeListAllocator< Tmp >::Create( 2000 );
 			bCreated = true;
 		}
 		//Set default material
-		pMesh->SetMaterial( m_pMatMgr->GetDefaultMaterial() );
 		{
 			XSTSimpleProfiler2("CMeshManager::_CreateResource2"); //0.002 - 0.005 sec in debug
 			//pMesh = xst_new Resources::CMesh( m_pRenderSystem, m_pDefaultIL, this, ulHandle, strName, XST::ResourceType::MESH, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
 			//IResource* p = xst_new IResource();
 			Tmp* p = xst_new Tmp();
-		}
+		}*/
 		return pMesh;
 	}
 

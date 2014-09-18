@@ -13,12 +13,14 @@ namespace XSE
 	CObject::CObject(ul32 ulType, lpcastr strDbgName, CObject* pParent) : 
 #if defined( XST_OBJ_DEBUG )
 		XST::IObject( XST::xst_obj_dbg_name( strDbgName ) )
+#else
+        XST::IObject()
 #endif
 		, m_ulObjType( ulType )
 		, m_pObjListener( &g_EmptyListener )
 		, m_pParent( pParent )
 	{
-		//XST_SET_DBG_NAME( this, strDbgName );
+		XST_SET_DBG_NAME( this, strDbgName );
 	}
 
 	CObject::CObject(ul32 ulType, ul32 ulHandle, lpcastr strDbgName, CObject* pParent) : CObject( ulType, strDbgName, pParent )

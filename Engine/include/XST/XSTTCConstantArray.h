@@ -6,7 +6,7 @@
 
 namespace XST
 {
-	template<class _T_, cu32 _MAX_SIZE_>
+	template<class _T_, cu32 _MAX_SIZE_ = 32>
 	class TIConstantContainer 
 	{
 		public:
@@ -45,13 +45,13 @@ namespace XST
 
 				xst_fi	_T_&	operator[](cu32& _uiID)
 				{
-					xst_assert( _uiID < m_uiSize, "(IConstantContainer::operator[]) This array has not that number of elements." );
+					xst_assert( _uiID < m_uiSize, "(IConstantContainer::operator[]) Index out of bounds" );
 					return m_pData[ _uiID ];
 				}
 
 				xst_fi	const _T_&	operator[](cu32& _uiID) const
 				{
-					xst_assert( _uiID < m_uiSize, "(IConstantContainer::operator[]) This array has not that number of elements." );
+					xst_assert( _uiID < m_uiSize, "(IConstantContainer::operator[]) Index out of bounds" );
 					return m_pData[ _uiID ];
 				}
 
@@ -75,10 +75,18 @@ namespace XST
 					return m_uiSize >= _Left.m_uiSize;
 				}
 
-				xst_fi	bool	operator==(const TIConstantContainer& _Left)
-				{
-					return m_uiSize == _Left.m_uiSize;
-				}
+                template<class _A_, cu32 _MAX_SIZEA_>
+                xst_fi void operator=(const TIConstantContainer<_A_, _MAX_SIZEA_>& Left)
+                {
+                    cu32 uMinSize = std::min<u32>( Container.size(), MAX_SIZE );
+					xst_memcpy( m_pData, MAX_SIZE, Container.data(), uMinSize );
+					m_uiSize = uMinSize;
+                }
+
+                xst_fi void operator=(const TIConstantContainer& Left)
+                {
+                    this->operator=( Left );
+                }
 
 				xst_fi	u32		size()
 								{ return m_uiSize; }
@@ -117,13 +125,19 @@ namespace XST
 				xst_i	i32		find(const _T_& tElement)
 								{ for(u32 i = m_uiSize; i -->0; ) if( m_pData[ i ] == tElement ) return i; return -1; }
 
+                xst_i   void    resize(cu32& uiNewSize)
+                                { 
+                                    xst_assert( uiNewSize < MAX_SIZE, "(TIConstantContainer) NewSize too large" );
+                                    m_uiSize = uiNewSize;
+                                }
+
 		protected:
 
 			_T_		m_pData[ MAX_SIZE ];
 			u32		m_uiSize;
 	};
 
-	template<class _T_, cu32 _MAX_SIZE_>
+	template<class _T_, cu32 _MAX_SIZE_ = 32>
 	class TCConstantArray : public virtual TIConstantContainer< _T_, _MAX_SIZE_ >
 	{
 		public:
@@ -137,48 +151,7 @@ namespace XST
 
 		public:
 
-
-
-				xst_fi	_T_&	operator[](cu32& _uiID)
-				{
-					xst_assert( _uiID < m_uiSize, "(TCConstantArray::operator[]) This array has not that number of elements." );
-					return m_pData[ _uiID ];
-				}
-
-				xst_fi	const _T_&	operator[](cu32& _uiID) const
-				{
-					xst_assert( _uiID < m_uiSize, "(TCConstantArray::operator[]) This array has not that number of elements." );
-					return m_pData[ _uiID ];
-				}
-
-				xst_fi	bool	operator<(const TCConstantArray& _Left)
-				{
-					return m_uiSize < _Left.m_uiSize;
-				}
-
-				xst_fi	bool	operator>(const TCConstantArray& _Left)
-				{
-					return m_uiSize > _Left.m_uiSize;
-				}
-
-				xst_fi	bool	operator<=(const TCConstantArray& _Left)
-				{
-					return m_uiSize <= _Left.m_uiSize;
-				}
-
-				xst_fi	bool	operator>=(const TCConstantArray& _Left)
-				{
-					return m_uiSize >= _Left.m_uiSize;
-				}
-
-				xst_fi	bool	operator==(const TCConstantArray& _Left)
-				{
-					return m_uiSize == _Left.m_uiSize;
-				}
-
-		public:
-
-								TCConstantArray() : m_uiSize( 0 )
+								TCConstantArray()
 								{
 								}
 
@@ -227,29 +200,9 @@ namespace XST
 					return this->m_pData[ --this->m_uiSize ];
 				}
 
-				xst_fi	u32		size()
-								{ return m_uiSize; }
-
-				xst_fi	cu32	size() const
-								{ return m_uiSize; }
-
-				xst_fi	u32		capacity()
-								{ return CAPACITY; }
-
-				xst_fi	cu32	capacity() const
-								{ return CAPACITY; }
-
-				xst_fi	void	clear()
-								{ m_uiSize = 0; }
-
-		private:
-
-			_T_		m_pData[ MAX_SIZE ];
-			u32		m_uiSize;
-
 	};
 
-	template<class _T_, cu32 _MAX_SIZE_>
+	template<class _T_, cu32 _MAX_SIZE_ = 32>
 	class TCSortedConstantArray : public TIConstantContainer< _T_, _MAX_SIZE_ >
 	{
 		public:

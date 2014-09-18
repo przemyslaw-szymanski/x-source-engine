@@ -9,7 +9,7 @@
 #include "XSECModelManager.h"
 #include "XSECSceneNode.h"
 #include "XSECImageManager.h"
-
+#include <XSTCToString.h>
 namespace XSE
 {
 	#define CALC_XY(_x, _y, _width) ( (_x) + (_y) * (_width) )
@@ -771,6 +771,7 @@ namespace XSE
 		{
 			pCurrTile = m_vTiles[t];
 			pCurrMesh = pCurrTile->m_pMesh.GetPtr();
+            pCurrMesh->SetLODCount( iMaxLODCount );
 			const SMeshLOD* pFirstLOD = pCurrMesh->GetLOD( 0 );
 			//pCurrMesh->SetLODCount( iMaxLODCount );
 			iCurrLOD = 0;
@@ -790,6 +791,7 @@ namespace XSE
 						SMeshLOD* pLOD = pCurrMesh->GetLOD( iCurrLOD );
 						pLOD->pIndexBuffer = IBuffer.pIndexBuffer;
 						pLOD->pVertexBuffer = pFirstLOD->pVertexBuffer; // Empty lods was created during mesh creation now it is time to set vertex buffer for each lod
+                        //XST::CDebug::PrintDebugLN( XST::ToStr() << iCurrLOD );
 
 						//SMeshLOD& LOD = m_vTiles[ t ]->m_pMesh->AddLOD( iCurrLOD++ );
 						//LOD.pIndexBuffer = IBuffer.pIndexBuffer;

@@ -63,7 +63,7 @@ namespace XSE
 
 				//typedef xst_vector< SMeshLOD >	LODVec;
 				//typedef std::array< SMeshLOD, 20 > LODVec;
-				typedef XST::TCConstantArray< SMeshLOD, 20 > LODVec;
+				typedef XST::TCConstantArray< SMeshLOD, XSE_MESH_MAX_LOD_LEVELS + 30 > LODVec;
 
 				//typedef XST::TCIterator< MeshVector >		MeshIterator;
 				//typedef XST::TCConstIterator< MeshVector >	ConstMeshIterator;

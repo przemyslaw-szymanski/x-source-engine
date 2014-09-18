@@ -16,6 +16,11 @@
 #	define XSE_RENDERER_DEBUG			1
 #endif //XST_DEBUG
 
+// ENGINE COMPILE CONSTANTS
+#ifndef XSE_MESH_MAX_LOD_LEVELS
+#   define XSE_MESH_MAX_LOD_LEVELS 4
+#endif
+
 #pragma warning( disable: 4251 ) //dll-linkage of members
 
 #define XSE_PROP(_type, _name, _var) \

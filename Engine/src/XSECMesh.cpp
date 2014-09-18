@@ -22,12 +22,13 @@ namespace XSE
 			m_ulCloneId( 0 ),
 			m_RenderMethod( &CMesh::_Render )
 		{
-
+            m_vLODs.resize( 1 );
 		}
 
 		CMesh::CMesh() :
 			m_pRS( XSE::CEngine::GetSingletonPtr()->GetRenderSystem() )
 		{
+            m_vLODs.resize( 1 );
 		}
 
 		CMesh::CMesh(IRenderSystem* pRS, IInputLayout* pIL, XSE_IRESOURCE_DECL_PARAMS) :	
@@ -44,6 +45,7 @@ namespace XSE
 			//m_pCurrentLOD = m_vLODs[ 0 ];
 			//m_pVertexBuffer = m_pCurrentLOD->pVertexBuffer;
 			//m_pIndexBuffer = m_pCurrentLOD->pIndexBuffer;
+            m_vLODs.resize( 1 );
 		}
 
 		CMesh::~CMesh()
@@ -258,15 +260,7 @@ namespace XSE
 
 		void CMesh::SetLODCount(cu32& uiLODCount)
 		{
-			//m_vLODs.reserve( uiLODCount );
-			SMeshLOD LOD;
-			//m_vLODs.resize( uiLODCount, LOD );
-			
-			/*for( u32 i = 0; i < m_vLODs.size(); ++i )
-			{
-				m_vLODs[ i ] = m_vLODs[ 0 ];
-				m_vLODs[ i ].byID = i;
-			}*/
+			m_vLODs.resize( uiLODCount );
 		}
 
 		void CMesh::SetLOD(cu32& uiLOD, const SMeshLOD& LOD)
