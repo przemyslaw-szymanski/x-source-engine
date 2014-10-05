@@ -72,9 +72,9 @@ namespace XSE
 
 			i32								Lock(MeshWeakPtr pMesh, ul32 ulVertexCount);
 
-			i32								CalcVertexData(const SInfo& Info);
+			//i32								CalcVertexData(const SInfo& Info, const Vec3* aNormals, cul32& ulNormalCount);
 
-			static	i32						CalcVertexData(const SInfo& Info, CVertexData* pData, CBoundingVolume* pVolumeOut = xst_null);
+			static	i32						CalcVertexData(const SInfo& Info, CVertexData* pData, CBoundingVolume* pVolumeOut, const Vec3* aNormals, cul32& ulNormalCount);
 
 			static	xst_fi f32				ColorToHeight(const Vec2& vecHeightRange, cu8& byValue)
 											{

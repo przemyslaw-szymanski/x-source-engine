@@ -888,6 +888,15 @@
     <ClInclude Include="..\..\Engine\include\XSETCFreeListAllocator.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCTaskPool.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCTask.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XST\XSTCTaskGroup.h">
+      <Filter>include\XST</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine\dllmain.cpp">
@@ -1501,6 +1510,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine\src\XSEIResourceGroup.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCTaskPool.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCTask.cpp">
+      <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XST\XSTCTaskGroup.cpp">
+      <Filter>src\XST</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

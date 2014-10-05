@@ -70,7 +70,7 @@ namespace XSE
 			{
 				Info.TilePart.x = x;
 
-				if( XST_FAILED( CalcTileVertexData( Info ) ) )
+				if( XST_FAILED( CalcTileVertexData( Info, aNormals, ulNormalCount ) ) )
 				{
 					return XST_FAIL;
 				}
@@ -80,10 +80,21 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32 CMipMapTerrainPage::CalcTileVertexData(const CMipMapTerrainTile::SInfo& Info)
+	void CMipMapTerrainPage::CalcVertexNormalsForTiles()
+	{
+		//for(u32 i = 0; i < m_ )
+	}
+
+	void CMipMapTerrainPage::CalcTileVertexNormals(const CMipMapTerrainTile::SInfo& Info)
+	{
+		//SVertexData& Data = GetVertexData( Info.TilePart.x, Info.TilePart.y );
+		//CMipMapTerrainTile::CalcVertexNormals( Info, Data.pData );
+	}
+
+	i32 CMipMapTerrainPage::CalcTileVertexData(const CMipMapTerrainTile::SInfo& Info, const Vec3* aNormals, cul32& ulNormalCount)
 	{
 		SVertexData& Data = GetVertexData( Info.TilePart.x, Info.TilePart.y );
-		return CMipMapTerrainTile::CalcVertexData( Info, Data.pData, &Data.Volume );
+		return CMipMapTerrainTile::CalcVertexData( Info, Data.pData, &Data.Volume, aNormals, ulNormalCount );
 	}
 
 }//xse

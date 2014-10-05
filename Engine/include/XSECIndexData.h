@@ -56,6 +56,11 @@ namespace XSE
 			xst_fi	u16			GetIndexSize() const
 								{ return m_usIndexSize; }
 
+			xst_fi	ul32		GetTriangleCount() const
+								{ return m_ulTriangleCount; }
+
+					void		GetTriangle(cu32& uTriangleId, u32 (*ppTriangleIndices)[3]) const;
+
 		protected:
 
 					ul32		_CalcOffset(cul32& ulIndexId) const;

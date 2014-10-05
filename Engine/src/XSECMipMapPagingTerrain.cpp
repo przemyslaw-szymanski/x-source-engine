@@ -14,6 +14,8 @@ namespace XSE
 {
 	#define CALC_XY(_x, _y, _width) ( (_x) + (_y) * (_width) )
 
+	Vec3* g_avecNormals = xst_null;
+
 	void DebugPrintVB(MeshPtr& pMesh)
 	{
 		CVertexData& Data = pMesh->GetVertexBuffer()->GetVertexData();
@@ -490,11 +492,11 @@ namespace XSE
 		CMipMapTerrainTile::SInfo Info;
 		SetTileInfo( &Info );
 
-		//For each visible page set its data
+		//For each page set its data
 		PageVec::iterator Itr;
 		xst_stl_foreach( Itr, m_vPages )
 		{
-			if( XST_FAILED( (*Itr)->CalcVertexData( Info ) ) )
+			if( XST_FAILED( (*Itr)->CalcVerBtexData( Info ) ) )
 			{
 				return XST_FAIL;
 			}
@@ -709,7 +711,90 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32	CMipMapPagingTerrain::SetIndexBufferData(u32 uiLOD)
+	i32 CMipMapPagingTerrain::CalcVertexNormalData()
+	{
+		XSTSimpleProfiler();
+		// Get index data for default lod 0
+		const IIndexBuffer* pIB = GetIndexBuffer( 0, MipMapTerrainStitchTypes::NONE ).pIndexBuffer.GetPtr();
+		xst_assert( pIB, "(CMipMapPagingTerrain::CalcVertexNormalData) Index buffer not created" );
+		const CIndexData& IData = pIB->GetIndexData();
+		cu32 uTriCount = IData.GetTriangleCount();
+		
+		// One normal per each vertex
+		m_vTerrNormals.clear();
+		ul32 ulCount = m_Options.PageVertexCount.x * m_Options.PageVertexCount.y;
+		m_vTerrNormals.resize( ulCount, Vec3::ZERO );
+
+		u32 auTriangle[3];
+		Vec3 avecTriangleVertices[3];
+		CColor aColors[3];
+		int auRs[4];
+		Vec3 avecTriLeft[3];
+		Vec3 avecTriRight[3];
+		Vec3 vecU, vecV;
+		Vec3 avecNormals[2];
+
+		for( auto& pPage : m_vPages )
+		{
+			const IImage* pImg = pPage->GetImage().GetPtr();
+			// For each vertex/texel
+			for( u32 y = 0; y < pImg->GetHeight() - 1; y += 1 )
+			{
+				for( u32 x = 0; x < pImg->GetWidth() - 1; x += 1 )
+				{
+					auRs[ 0 ] = pImg->GetChannelColor( x, y, IImage::CHANNEL::RED ); // top left
+					auRs[ 1 ] = pImg->GetChannelColor( x, y+1, IImage::CHANNEL::RED ); // bottom left
+					auRs[ 2 ] = pImg->GetChannelColor( x+1, y, IImage::CHANNEL::RED ); // top right
+					auRs[ 3 ] = pImg->GetChannelColor( x+1, y+1, IImage::CHANNEL::RED ); // bottom right
+					// Create quad
+					// Left triangle |\.
+					avecTriLeft[ 0 ].Set( x, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[0]), y ); // top left
+					avecTriLeft[ 1 ].Set( x, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[1]), y + 1); // bottom left
+					avecTriLeft[ 2 ].Set( x + 1, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[3]), y + 1 ); // botton right
+
+					vecU = avecTriLeft[ 1 ];
+					vecV = avecTriLeft[ 2 ];
+					vecU.Sub( avecTriLeft[ 0 ] );
+					vecV.Sub( avecTriLeft[ 0 ] );
+					avecNormals[ 0 ].x = ( vecU.y * vecV.z - vecU.z * vecV.y );
+					avecNormals[ 0 ].y = ( vecU.z * vecV.x - vecU.x * vecV.z );
+					avecNormals[ 0 ].z = ( vecU.x * vecV.y - vecU.y * vecV.x );
+					m_vTerrNormals[XST_ARRAY_2D_TO_1D(x, y, m_Options.PageVertexCount.x)] += avecNormals[0];
+					m_vTerrNormals[XST_ARRAY_2D_TO_1D(x, y+1, m_Options.PageVertexCount.x)] += avecNormals[0];
+					m_vTerrNormals[XST_ARRAY_2D_TO_1D(x+1, y+1, m_Options.PageVertexCount.x)] += avecNormals[0];
+
+					// Right triangle \|
+					avecTriRight[ 0 ].Set( x, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[0]), y ); // top left
+					avecTriRight[ 1 ].Set( x + 1, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[3]), y + 1); // bottom right
+					avecTriRight[ 2 ].Set( x + 1, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[2]), y ); // top right
+
+					vecU = avecTriRight[ 1 ];
+					vecV = avecTriRight[ 2 ];
+					vecU.Sub( avecTriRight[ 0 ] );
+					vecV.Sub( avecTriRight[ 0 ] );
+					avecNormals[ 1 ].x = ( vecU.y * vecV.z - vecU.z * vecV.y );
+					avecNormals[ 1 ].y = ( vecU.z * vecV.x - vecU.x * vecV.z );
+					avecNormals[ 1 ].z = ( vecU.x * vecV.y - vecU.y * vecV.x );
+					m_vTerrNormals[XST_ARRAY_2D_TO_1D(x, y, m_Options.PageVertexCount.x)] += avecNormals[1];
+					m_vTerrNormals[XST_ARRAY_2D_TO_1D(x+1, y+1, m_Options.PageVertexCount.x)] += avecNormals[1];
+					m_vTerrNormals[XST_ARRAY_2D_TO_1D(x+1, y, m_Options.PageVertexCount.x)] += avecNormals[1];
+
+					//CDebug::PrintDebugLN( ToStr( avecNormals[0].a, 3 ).Array( avecNormals[1].a, 3 ) );
+				}
+			}
+
+			for( auto& vecNormal : m_vTerrNormals )
+			{
+				vecNormal.Normalize();
+				//CDebug::PrintDebugLN( ToStr( vecNormal.a, 3 ) );
+			}
+			
+		}
+
+		return XST_OK;
+	}
+
+	i32	CMipMapPagingTerrain::CalcIndexBufferData(u32 uiLOD)
 	{
 
 		cu32 uiIBID = GetIndexBuffersID( uiLOD );
@@ -727,12 +812,12 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32	CMipMapPagingTerrain::SetIndexBufferData()
+	i32	CMipMapPagingTerrain::CalcIndexBufferData()
 	{
 
 		for(u32 i = 0; i < m_Options.uiLODCount; ++i)
 		{
-			if( XST_FAILED( SetIndexBufferData( i ) ) )
+			if( XST_FAILED( CalcIndexBufferData( i ) ) )
 			{
 				return XST_FAIL;
 			}

@@ -34,6 +34,10 @@ namespace XSE
 						void				GetColor(cu32& uiX, cu32& uiY, XST::CColor* pColorOut) const
 											{ GetColor( m_uiHeight * uiY + uiX, pColorOut ); }
 
+						u8					GetChannelColor(cu32& uiPosition, const IImage::CHANNEL& eChannel) const;
+						u8					GetChannelColor( cu32& uiX, cu32& uiY, const IImage::CHANNEL& eChannel ) const
+											{ return GetChannelColor( m_uiHeight * uiY + uiX, eChannel ); }
+
 						void				SetColor(cu32& uiPosition, const XST::CColor& Color);
 						void				SetColor(cu32& uiX, cu32& uiY, const XST::CColor& Color)
 											{ SetColor( m_uiHeight * uiY + uiX, Color ); }

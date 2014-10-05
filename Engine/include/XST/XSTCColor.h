@@ -13,7 +13,19 @@ namespace XST
 	{
 		public:
 
-			u8	r, g, b, a;
+			union
+			{
+				struct
+				{
+					u32 r : 8;
+					u32 g : 8;
+					u32 b : 8;
+					u32 a : 8;
+				};
+
+				u32 rgba;
+				u8 channels[4];
+			};
 
 		public:
 

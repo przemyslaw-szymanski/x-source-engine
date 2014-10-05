@@ -237,6 +237,7 @@ namespace XST
 
 		#define XST_TOSTRING(_type) #_type
 		#define XST_ADD(_left, _right) _left##_right
+		#define XST_ARRAY_2D_TO_1D(_x, _y, _width) (ul32)( (_width) * (_y) + (_x) )
 
 		/*typedef union XST_ALIGN(16) _xst_m128 
 		{

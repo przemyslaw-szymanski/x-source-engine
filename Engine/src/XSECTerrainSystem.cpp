@@ -90,6 +90,34 @@ namespace XSE
 		}
 		}
 
+		{ XSTSimpleProfiler2( "CreateIndexBuffers" );
+		if( XST_FAILED( pTerrain->CreateIndexBuffers() ) )
+		{
+			return xst_null;
+		}
+		}
+
+		{ XSTSimpleProfiler2( "LockIndexBuffers" );
+		if( XST_FAILED( pTerrain->LockIndexBuffers() ) )
+		{
+			return xst_null;
+		}
+		}
+
+		{ XSTSimpleProfiler2( "CalcIndexBufferData" );
+		if( XST_FAILED( pTerrain->CalcIndexBufferData() ) )
+		{
+			return xst_null;
+		}
+		}
+
+		{ XSTSimpleProfiler2( "CalcVertexNormalData" );
+		if( XST_FAILED( pTerrain->CalcVertexNormalData() ) )
+		{
+			return xst_null;
+		}
+		}
+
 		{ XSTSimpleProfiler2( "CreatePagesVertexData" );
 		if( XST_FAILED( pTerrain->CreatePagesVertexData() ) )
 		{
@@ -121,27 +149,6 @@ namespace XSE
 
 		{ XSTSimpleProfiler2( "SetTileDataFromPages" );
 		if( XST_FAILED( pTerrain->SetTileDataFromPages() ) )
-		{
-			return xst_null;
-		}
-		}
-
-		{ XSTSimpleProfiler2( "CreateIndexBuffers" );
-		if( XST_FAILED( pTerrain->CreateIndexBuffers() ) )
-		{
-			return xst_null;
-		}
-		}
-
-		{ XSTSimpleProfiler2( "LockIndexBuffers" );
-		if( XST_FAILED( pTerrain->LockIndexBuffers() ) )
-		{
-			return xst_null;
-		}
-		}
-
-		{ XSTSimpleProfiler2( "SetIndexBufferData" );
-		if( XST_FAILED( pTerrain->SetIndexBufferData() ) )
 		{
 			return xst_null;
 		}

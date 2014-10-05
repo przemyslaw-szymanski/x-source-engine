@@ -59,6 +59,19 @@ namespace XSE
 			pPtr += m_uiBytesPerChannel;
 		}
 
+		u8 CImage::GetChannelColor(cu32& uiPos, const IImage::CHANNEL& eChannel) const
+		{
+			xst_assert( m_ulDataSize > ( uiPos * m_uiBytesPerPixel ), "(CImage::GetChannelColor) Color position out of bounds" );
+			xst_assert( m_uiBytesPerChannel > 0, "(CImage::GetChannelColor) Image data not prepared" );
+			xst_assert( (u32)eChannel < m_uiChannelCount, "(CImage::GetChannelColor) Channel out of bounds" );
+
+			//Calc offset position
+			u8* pPtr = m_pData;
+			pPtr += ( uiPos * m_uiBytesPerPixel );
+			pPtr += (u32)eChannel * m_uiBytesPerChannel;
+			return *pPtr;
+		}
+
 		i32 CImage::Save(xst_castring& strFileName)
 		{
 			return this->m_pImageSystem->SaveImage( strFileName, this );

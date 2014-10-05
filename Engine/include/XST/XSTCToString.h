@@ -17,9 +17,9 @@ namespace XST
 			CToString() {}
 
 			template<class _T_>
-			CToString(const _T_* pArray, cu32& uiElemCount)
+			CToString(const _T_* pArray, cu32& uiElemCount, const ch8 chSeparator = SEPARATOR)
 			{
-				Array( pArray, uiElemCount );
+				Array( pArray, uiElemCount, chSeparator );
 			}
 
 			virtual				~CToString() {}
@@ -46,23 +46,31 @@ namespace XST
 			{ return m_ssStr.str(); }	
 
 			template<class _T_>
-			xst_fi	CToString&	operator()(const _T_* pArray, cu32& uiElemCount)
+			xst_fi	CToString&	operator()(const _T_* pArray, cu32& uiElemCount, const ch8 chSeparator = SEPARATOR)
 			{
-				return Array( pArray, uiElemCount );
+				return Array( pArray, uiElemCount, chSeparator );
 			}
 
 			template<class _T_>
-			xst_fi	CToString&	Array(const _T_* pArray, u32 uiElemCount)
+			xst_fi	CToString&	Array(const _T_* pArray, u32 uiElemCount, const ch8 chSeparator = SEPARATOR)
 			{
 				m_ssStr << "( ";
-				for(int i = 0; i < uiElemCount; ++i)
+				cu32 uEnd = uiElemCount - 1;
+				for(int i = 0; i < uEnd; ++i)
 				{
-					m_ssStr << pArray[ i ] << SEPARATOR;
+					m_ssStr << pArray[ i ] << chSeparator;
 				}
-				m_ssStr << ")";
+				m_ssStr << pArray[ uEnd ];
+				m_ssStr << " )";
 				return *this;
 			}
 
+			template<class _T_>
+			xst_fi CToString& Append(const _T_& tType)
+			{
+				m_ssStr << tType;
+				return *this;
+			}
 
 		protected:
 
@@ -72,6 +80,12 @@ namespace XST
 	static xst_fi CToString ToStr()
 	{
 		return CToString();
+	}
+
+	template<class _T_>
+	static xst_fi CToString ToStr(const _T_* pArray, cu32& uiElemCount, const ch8 chSeparator = CToString::SEPARATOR)
+	{
+		return CToString( pArray, uiElemCount, chSeparator );
 	}
 
 }//xst

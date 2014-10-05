@@ -33,9 +33,9 @@ namespace XSE
 			m_pRS->m_pDeviceContext->RSGetState( &pRState );
 			pRState->GetDesc( &RDesc );
 			RDesc.FillMode = m_pRS->m_aeFillModes[ eMode ];
-			pRState->Release();
-			m_pRS->m_pDevice->CreateRasterizerState( &RDesc, & pRState );
+			m_pRS->m_pDevice->CreateRasterizerState( &RDesc, &pRState );
 			m_pRS->m_pDeviceContext->RSSetState( pRState );
+			pRState->Release();
 		}
 
 		i32 CViewport::_Create(ID3D11Device* pDevice, IDXGISwapChain* pSwapChain, const SViewportOptions& Options)

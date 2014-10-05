@@ -12,6 +12,15 @@ class CRenderThread : public QThread
 
 	public:
 
+	enum class MESSAGE
+	{
+		NONE,
+		SET_RENDER_TYPE_WIREFRAME,
+		SET_RENDER_TYPE_SOLID,
+	};
+
+	public:
+
 	CRenderThread();
 	virtual ~CRenderThread();
 
@@ -25,13 +34,18 @@ class CRenderThread : public QThread
 
 		void	Unlock();
 
+		void	SendMessage(MESSAGE uMsg);
+
 	private:
+
+		void	ProcessMessages();
 
 		void	run();
 
 	private:
 
 		QMutex*			m_pMutex;
+		std::stack<MESSAGE> m_sMessages;
 		XSE::CEngine*	m_pEngine = xst_null;
 		ISample*		m_pSample = xst_null;
 		bool			m_bRunning = false;

@@ -181,6 +181,9 @@
     <ClInclude Include="..\..\Engine\include\XST\XSTCSimpleProfiler.h" />
     <ClInclude Include="..\..\Engine\include\XST\XSTCString.h" />
     <ClInclude Include="..\..\Engine\include\XST\XSTCStringUtil.h" />
+    <ClInclude Include="..\..\Engine\include\XST\XSTCTask.h" />
+    <ClInclude Include="..\..\Engine\include\XST\XSTCTaskGroup.h" />
+    <ClInclude Include="..\..\Engine\include\XST\XSTCTaskPool.h" />
     <ClInclude Include="..\..\Engine\include\XST\XSTCTextFileReader.h" />
     <ClInclude Include="..\..\Engine\include\XST\XSTCTextFileWriter.h" />
     <ClInclude Include="..\..\Engine\include\XST\XSTCTextLogger.h" />
@@ -466,6 +469,9 @@
     <ClCompile Include="..\..\Engine\src\XST\XSTCString.cpp" />
     <ClCompile Include="..\..\Engine\src\XST\XSTCStringUtil.cpp" />
     <ClCompile Include="..\..\Engine\src\XST\XSTCSystemFileLoader.cpp" />
+    <ClCompile Include="..\..\Engine\src\XST\XSTCTask.cpp" />
+    <ClCompile Include="..\..\Engine\src\XST\XSTCTaskGroup.cpp" />
+    <ClCompile Include="..\..\Engine\src\XST\XSTCTaskPool.cpp" />
     <ClCompile Include="..\..\Engine\src\XST\XSTCTextFileReader.cpp" />
     <ClCompile Include="..\..\Engine\src\XST\XSTCTextFileWriter.cpp" />
     <ClCompile Include="..\..\Engine\src\XST\XSTCTextLogger.cpp" />

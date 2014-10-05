@@ -13,6 +13,15 @@ namespace XSE
 
 			public:
 
+				enum class CHANNEL : u32
+				{
+					RED,
+					GREEN,
+					BLUE,
+					ALPHA,
+					_MAX
+				};
+
 				typedef XST::TCObjectSmartPointer< IImage >	ImagePtr;
                 //typedef XST::TCWeakPointer< IImage >	    ImageWeakPtr;
 
@@ -26,6 +35,8 @@ namespace XSE
 				virtual XST::CColor			GetColor(cu32& uiPosition) const = 0;
 				virtual void				GetColor(cu32& uiPosition, XST::CColor* pColorOut) const = 0;
 				virtual void				GetColor(cu32& uiX, cu32& uiY, XST::CColor* pColorOut) const = 0;
+				virtual u8					GetChannelColor(cu32& uiPosition, const IImage::CHANNEL& eChannel) const = 0;
+				virtual u8					GetChannelColor(cu32& uiX, cu32& uiY, const IImage::CHANNEL& eChannel) const = 0;
 				virtual u32					GetPixelCount() const = 0;
 				virtual void				SetColor(cu32& uiX, cu32& uiY, const XST::CColor& Color) = 0;
 				virtual void				SetColor(cu32& uiPosition, const XST::CColor& Color) = 0;
@@ -48,6 +59,7 @@ namespace XSE
 
 	typedef Resources::IImage::ImagePtr	    ImagePtr;
     //typedef Resources::IImage::ImageWeakPtr	ImageWeakPtr;
+	typedef Resources::IImage::CHANNEL	COLOR_CHANNEL;
 
 }//xse
 

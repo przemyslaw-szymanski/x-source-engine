@@ -127,8 +127,10 @@ namespace XSE
 
 			virtual i32					LockIndexBuffers();
 
-			virtual i32					SetIndexBufferData(u32 uiLOD);
-			virtual i32					SetIndexBufferData();
+			virtual i32					CalcIndexBufferData(u32 uiLOD);
+			virtual i32					CalcIndexBufferData();
+
+			virtual i32					CalcVertexNormalData();
 
 			virtual i32					UnlockIndexBuffers();
 
@@ -204,6 +206,7 @@ namespace XSE
 			PageVec			m_vPages;
 			IBVec			m_vIndexBuffers;
 			CPoint			m_TileCount;
+			xst_vector<Vec3>	m_vTerrNormals;
 #if defined( XSE_RENDERER_DEBUG )
 			ModelPtr		m_pBoundingSphereModel; // Used for each tile
 			ModelPtr		m_pAABBModel; // Used for each tile

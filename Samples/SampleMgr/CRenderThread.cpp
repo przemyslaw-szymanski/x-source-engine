@@ -30,6 +30,11 @@ void CRenderThread::StartRendering(bool bStart)
 	m_bRunning = bStart;
 }
 
+void CRenderThread::SendMessage( CRenderThread::MESSAGE eMsg )
+{
+	m_sMessages.push( eMsg );
+}
+
 void CRenderThread::Lock()
 {
 	m_pMutex->lock();
@@ -38,6 +43,26 @@ void CRenderThread::Lock()
 void CRenderThread::Unlock()
 {
 	m_pMutex->unlock();
+}
+
+void CRenderThread::ProcessMessages()
+{
+	while( !m_sMessages.empty() )
+	{
+		MESSAGE eMsg = m_sMessages.top();
+		m_sMessages.pop();
+
+		switch( eMsg )
+		{
+			case MESSAGE::SET_RENDER_TYPE_SOLID:
+				m_pEngine->GetRenderSystem( )->GetCurrentViewport( )->SetFillMode( XSE::FILL_MODE::SOLID );
+			break;
+
+			case MESSAGE::SET_RENDER_TYPE_WIREFRAME:
+				m_pEngine->GetRenderSystem( )->GetCurrentViewport( )->SetFillMode( XSE::FILL_MODE::WIREFRAME );
+			break;
+		}
+	}
 }
 
 void CRenderThread::run()
@@ -49,6 +74,7 @@ void CRenderThread::run()
 			Lock();
 			m_pSample->Update();
 			g_pWnd->BeginRenderFrame();
+			ProcessMessages();
 			g_pWnd->EndRenderFrame();
 			Unlock();
 		}

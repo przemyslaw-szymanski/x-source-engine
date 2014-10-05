@@ -189,12 +189,14 @@ bool CSampleMgr::RunSample(xst_castring& strName)
 
 void CSampleMgr::RenderWireframe()
 {
-	m_pEngine->GetRenderSystem()->GetCurrentViewport()->SetFillMode( XSE::FillModes::WIREFRAME );
+	//m_pEngine->GetRenderSystem()->GetCurrentViewport()->SetFillMode( XSE::FillModes::WIREFRAME );
+	g_RenderThread.SendMessage( CRenderThread::MESSAGE::SET_RENDER_TYPE_WIREFRAME );
 }
 
 void CSampleMgr::RenderSolid()
 {
-	m_pEngine->GetRenderSystem()->GetCurrentViewport()->SetFillMode( XSE::FillModes::SOLID );
+	//m_pEngine->GetRenderSystem()->GetCurrentViewport()->SetFillMode( XSE::FillModes::SOLID );
+	g_RenderThread.SendMessage( CRenderThread::MESSAGE::SET_RENDER_TYPE_SOLID );
 }
 
 void CSampleMgr::ResetCamera()

@@ -42,11 +42,15 @@ namespace XSE
 		xst_fi	const ImagePtr&	GetImage() const
 		{ return m_pImg; }
 
-		i32				CalcTileVertexData(const CMipMapTerrainTile::SInfo& Info);
+		i32				CalcTileVertexData(const CMipMapTerrainTile::SInfo& Info, const Vec3* aNormals, cul32& ulNormalCount);
 
 		i32				CreateVertexData();
 
 		i32				CalcVertexData(CMipMapTerrainTile::SInfo Info);
+
+		void			CalcVertexNormalsForTiles();
+
+		void			CalcTileVertexNormals(const CMipMapTerrainTile::SInfo& Info);
 
 		xst_fi	u32				CalcVertexDataId(cu32& uiX, cu32& uiY) const
 		{ return uiX + m_TileCount.x * uiY; }
