@@ -206,6 +206,7 @@ namespace XSE
 			PageVec			m_vPages;
 			IBVec			m_vIndexBuffers;
 			CPoint			m_TileCount;
+			xst_vector<ImagePtr> m_vpImages; // heightmap images
 			xst_vector<Vec3>	m_vTerrNormals;
 #if defined( XSE_RENDERER_DEBUG )
 			ModelPtr		m_pBoundingSphereModel; // Used for each tile

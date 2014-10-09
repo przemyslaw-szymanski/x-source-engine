@@ -23,7 +23,7 @@ namespace XSE
 				};
 
 				typedef XST::TCObjectSmartPointer< IImage >	ImagePtr;
-                //typedef XST::TCWeakPointer< IImage >	    ImageWeakPtr;
+                typedef XST::TCWeakPointer< IImage >	    ImageWeakPtr;
 
 			public:
 
@@ -58,7 +58,7 @@ namespace XSE
 	}//resources
 
 	typedef Resources::IImage::ImagePtr	    ImagePtr;
-    //typedef Resources::IImage::ImageWeakPtr	ImageWeakPtr;
+    typedef Resources::IImage::ImageWeakPtr	ImageWeakPtr;
 	typedef Resources::IImage::CHANNEL	COLOR_CHANNEL;
 
 }//xse

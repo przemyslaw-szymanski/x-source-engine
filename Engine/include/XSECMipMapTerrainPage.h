@@ -21,6 +21,18 @@ namespace XSE
 			CVertexData*		pData;
 		};
 
+		struct SInfo
+		{
+			CPoint VertexCount; // vertex count for this page
+			CPoint TileCount; // tile count for this page
+			CPoint TileVertexCount; // vertex count per one tile
+			Vec2 vecHeightRange; // terrain vertex y position min-max
+			Vec3 vecPagePosition; // position in 3d space. Top left corner position
+			Vec2 vecPageSize; // size x-z of the page
+			const Resources::IImage* pImg = xst_null;
+			const IInputLayout* pInputLayout = xst_null;
+		};
+
 		typedef xst_vector< CMipMapTerrainTile* >	TileVec;
 		//typedef xst_vector< SVertexData >			VertexDataVec;
 		typedef XST::TCDynamicArray< SVertexData >	VertexDataArray;
@@ -31,29 +43,25 @@ namespace XSE
 		CMipMapTerrainPage(CMipMapPagingTerrain* pTerrain);
 		virtual					~CMipMapTerrainPage();
 
-		i32				Init(cu32& uiWidth, cu32& uiHeight, cul32& ulTileVertexCount, IInputLayout* pTileInputLayout);
+		i32				Init(const SInfo& Info);
 
-		xst_fi	void			SetImage(ImagePtr pImg)
-		{ m_pImg = pImg; }
+		xst_fi	const Resources::IImage*	GetImage() const
+											{ return m_Info.pImg; }
 
-		xst_fi	ImagePtr		GetImage()
-		{ return m_pImg; }
-
-		xst_fi	const ImagePtr&	GetImage() const
-		{ return m_pImg; }
-
-		i32				CalcTileVertexData(const CMipMapTerrainTile::SInfo& Info, const Vec3* aNormals, cul32& ulNormalCount);
+		i32				CalcTileVertexData(const CMipMapTerrainTile::SInfo& Info);
 
 		i32				CreateVertexData();
 
 		i32				CalcVertexData(CMipMapTerrainTile::SInfo Info);
 
-		void			CalcVertexNormalsForTiles();
+		i32				CalcVertexDataForPage();
 
-		void			CalcTileVertexNormals(const CMipMapTerrainTile::SInfo& Info);
+		i32				SetTileData(CMipMapTerrainTile *const (*const *paTiles), u32 uiStartTile, u32 uiEndTile);
+
+		void			CalcVertexNormals();
 
 		xst_fi	u32				CalcVertexDataId(cu32& uiX, cu32& uiY) const
-		{ return uiX + m_TileCount.x * uiY; }
+		{ return uiX + m_Info.TileCount.x * uiY; }
 
 		xst_fi	SVertexData&	GetVertexData(cu32& uiX, cu32& uiY)
 		{ return m_aVertexData[ CalcVertexDataId( uiX, uiY ) ]; }
@@ -76,10 +84,12 @@ namespace XSE
 		//TileVec					m_vTiles;
 		VertexDataArray			m_aVertexData;
 		CBoundingVolume			m_BoundingVolume;
-		ImagePtr				m_pImg;
-		CPoint					m_TileCount;
-		ul32					m_ulTileVertexCount;
-		IInputLayout*			m_pTileInputLayout;
+		//CPoint					m_TileCount;
+		//ul32					m_ulTileVertexCount;
+		//IInputLayout*			m_pTileInputLayout;
+		SInfo					m_Info;
+		xst_vector<Vec3>		m_vVertices;
+		xst_vector<Vec3>		m_vNormals;
 	};
 }//xse
 

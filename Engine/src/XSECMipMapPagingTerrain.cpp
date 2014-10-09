@@ -187,14 +187,14 @@ namespace XSE
 		ValidateOptions( &m_Options );
 
 		m_TileCount = CPoint( ceilf( (f32)m_Options.PageVertexCount.x / m_Options.TileVertexCount.x ), ceilf( (f32)m_Options.PageVertexCount.y / m_Options.TileVertexCount.y ) );
-		
-		if( XST_FAILED( CreatePages() ) )
+
+		//Load heightmap images
+		if( XST_FAILED( LoadImages( Options.vHeightmaps ) ) )
 		{
 			return XST_FAIL;
 		}
 
-		//Load heightmap images
-		if( XST_FAILED( LoadImages( Options.vHeightmaps ) ) )
+		if( XST_FAILED( CreatePages() ) )
 		{
 			return XST_FAIL;
 		}
@@ -205,16 +205,39 @@ namespace XSE
 	i32 CMipMapPagingTerrain::CreatePages()
 	{
 		//Create pages
-		u32 uiPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
-		for(u32 i = 0; i < uiPageCount; ++i)
-		{
-			CMipMapTerrainPage* pPage = xst_new CMipMapTerrainPage( this );
-			m_vPages.push_back( pPage );
+		//u32 uiPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
+		const Vec3 vecRightTopCorner( -m_Options.Size.x * 0.5f, 0.0f, -m_Options.Size.y * 0.5f );
+		Vec3 vecPos = vecRightTopCorner;
+		const Vec2 vecPageSize( m_Options.Size.x / m_Options.PageCount.x, m_Options.Size.y / m_Options.PageCount.y );
 
-			if( XST_FAILED( pPage->Init( m_TileCount.x, m_TileCount.y, m_Options.TileVertexCount.x * m_Options.TileVertexCount.y, m_pInputLayout ) ) )
+		for(u32 y = 0; y < m_Options.PageCount.y; ++y)
+		{
+			vecPos.x = vecRightTopCorner.x;
+
+			for( u32 x = 0; x < m_Options.PageCount.x; ++x )
 			{
-				return XST_FAIL;
+				CMipMapTerrainPage* pPage = xst_new CMipMapTerrainPage( this );
+				m_vPages.push_back( pPage );
+				CMipMapTerrainPage::SInfo Info;
+				
+				Info.vecPageSize = vecPageSize;
+				Info.TileCount = m_TileCount;
+				Info.pInputLayout = m_pInputLayout;
+				Info.vecHeightRange = m_Options.vecHeightRange;
+				Info.vecPagePosition = vecPos;
+				Info.VertexCount = m_Options.PageVertexCount;
+				Info.TileVertexCount = m_Options.TileVertexCount;
+				Info.pImg = m_vpImages.front().GetPtr(); // TEMP use only one heightmap at this moment
+				
+				if( XST_FAILED( pPage->Init( Info ) ) )
+				{
+					return XST_FAIL;
+				}
+
+				vecPos.x += vecPageSize.x;
 			}
+
+			vecPos.z += vecPageSize.y;
 		}
 		
 		return XST_OK;
@@ -223,28 +246,13 @@ namespace XSE
 	i32 CMipMapPagingTerrain::LoadImages(const StringVector& vHeightmapNames)
 	{
 		CImageManager* pImgMgr = CImageManager::GetSingletonPtr();
-		u32 uiCount = Math::Min( vHeightmapNames.size(), m_vPages.size() );
 		xst_castring strImgGroup( DEFAULT_GROUP );
+		m_vpImages.clear();
 
-		for(u32 i = 0; i < uiCount; ++i)
+		for(u32 i = 0; i < vHeightmapNames.size(); ++i)
 		{
-			/*ImagePtr pImg = pImgMgr->CreateImage( vHeightmapNames[ i ] );
-			if( pImg == xst_null )
-			{
-				return XST_FAIL;
-			}
 
-			if( XST_FAILED( pImgMgr->LoadImage( pImg ) ) )
-			{
-				return XST_FAIL;
-			}
-
-			if( XST_FAILED( pImgMgr->PrepareImage( pImg ) ) )
-			{
-				return XST_FAIL;
-			}*/
-
-            ImagePtr pImg = pImgMgr->CreateResource( vHeightmapNames[ i ] );
+            ImageWeakPtr pImg = pImgMgr->CreateResource( vHeightmapNames[ i ] );
 			if( pImg == xst_null )
 			{
 				return XST_FAIL;
@@ -263,11 +271,9 @@ namespace XSE
 			//If image has more pixels than terrain, resize it
 			u32 uiHeight = m_Options.PageVertexCount.y; //Math::Max( (u32)m_Options.PageVertexCount.y, pImg->GetHeight() ) - m_TileCount.y + 1; //leave first tile
 			u32 uiWidth = m_Options.PageVertexCount.x; //Math::Max( (u32)m_Options.PageVertexCount.x, pImg->GetWidth() ) - m_TileCount.x + 1;
-			//u32 uiHeight = Math::Max( (u32)m_Options.PageVertexCount.y, pImg->GetHeight() ) - m_TileCount.y + 1; //leave first tile
-			//u32 uiWidth = Math::Max( (u32)m_Options.PageVertexCount.x, pImg->GetWidth() ) - m_TileCount.x + 1;
 			pImg->Scale( uiWidth, uiHeight );
 
-			m_vPages[ i ]->SetImage( pImg );
+			m_vpImages.push_back( pImg );
 		}
 		return XST_OK;
 	}
@@ -450,6 +456,7 @@ namespace XSE
 			}
 		}
         }
+		
 		m_bTileLocked = true;
 
 		return XST_OK;
@@ -471,6 +478,7 @@ namespace XSE
 		pInfoOut->vecVertexDistance = vecDistance;
 		pInfoOut->VertexCount = m_Options.TileVertexCount;
 		pInfoOut->vecHeightRange = m_Options.vecHeightRange;
+		pInfoOut->pvTerrainNormals = &m_vTerrNormals;
 	}
 
 	i32 CMipMapPagingTerrain::CreatePagesVertexData()
@@ -484,6 +492,14 @@ namespace XSE
 				return XST_OK;
 			}
 		}
+		// TMP
+		for( auto& pPage : m_vPages )
+		{
+			// TEMP
+			pPage->CalcVertexDataForPage();
+			//CMipMapTerrainTile** paTiles = &m_vTiles[0];
+			pPage->SetTileData( 0, 0, m_vTiles.size() );
+		}
 		return XST_OK;
 	}
 
@@ -496,7 +512,7 @@ namespace XSE
 		PageVec::iterator Itr;
 		xst_stl_foreach( Itr, m_vPages )
 		{
-			if( XST_FAILED( (*Itr)->CalcVerBtexData( Info ) ) )
+			if( XST_FAILED( (*Itr)->CalcVertexData( Info ) ) )
 			{
 				return XST_FAIL;
 			}
@@ -598,7 +614,8 @@ namespace XSE
 		TileInfo.VertexCount = m_Options.TileVertexCount;
 		TileInfo.vecHeightRange = m_Options.vecHeightRange;
 		//Temp
-		TileInfo.pHeightmap = m_vPages[ 0 ]->GetImage().GetPtr();
+		TileInfo.pHeightmap = m_vPages[ 0 ]->GetImage();
+		TileInfo.pvTerrainNormals = &m_vTerrNormals;
 
 		for(i32 y = 0; y < m_TileCount.y; ++y)
 		{
@@ -606,7 +623,7 @@ namespace XSE
 			{
 				TileInfo.TilePart = CPoint( x, y );
 				m_vTiles[ uiCurrTile++ ]->CalcVertexData( TileInfo );
-				DebugPrintVB( m_vTiles[ uiCurrTile - 1]->m_pMesh );
+				//DebugPrintVB( m_vTiles[ uiCurrTile - 1]->m_pMesh );
 			}
 			//DebugPrintVB( m_vTiles[ uiCurrTile - 1]->m_pMesh );
 		}
@@ -713,6 +730,9 @@ namespace XSE
 
 	i32 CMipMapPagingTerrain::CalcVertexNormalData()
 	{
+		if( !m_Options.bNormal )
+			return XST_OK;
+
 		XSTSimpleProfiler();
 		// Get index data for default lod 0
 		const IIndexBuffer* pIB = GetIndexBuffer( 0, MipMapTerrainStitchTypes::NONE ).pIndexBuffer.GetPtr();
@@ -736,7 +756,7 @@ namespace XSE
 
 		for( auto& pPage : m_vPages )
 		{
-			const IImage* pImg = pPage->GetImage().GetPtr();
+			const IImage* pImg = pPage->GetImage();
 			// For each vertex/texel
 			for( u32 y = 0; y < pImg->GetHeight() - 1; y += 1 )
 			{
@@ -748,9 +768,9 @@ namespace XSE
 					auRs[ 3 ] = pImg->GetChannelColor( x+1, y+1, IImage::CHANNEL::RED ); // bottom right
 					// Create quad
 					// Left triangle |\.
-					avecTriLeft[ 0 ].Set( x, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[0]), y ); // top left
-					avecTriLeft[ 1 ].Set( x, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[1]), y + 1); // bottom left
-					avecTriLeft[ 2 ].Set( x + 1, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[3]), y + 1 ); // botton right
+					avecTriLeft[ 0 ].Set( x, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[0] ), y ); // top left
+					avecTriLeft[ 1 ].Set( x, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[1] ), y + 1 ); // bottom left
+					avecTriLeft[ 2 ].Set( x + 1, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[3] ), y + 1 ); // botton right
 
 					vecU = avecTriLeft[ 1 ];
 					vecV = avecTriLeft[ 2 ];
@@ -764,9 +784,9 @@ namespace XSE
 					m_vTerrNormals[XST_ARRAY_2D_TO_1D(x+1, y+1, m_Options.PageVertexCount.x)] += avecNormals[0];
 
 					// Right triangle \|
-					avecTriRight[ 0 ].Set( x, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[0]), y ); // top left
-					avecTriRight[ 1 ].Set( x + 1, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[3]), y + 1); // bottom right
-					avecTriRight[ 2 ].Set( x + 1, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[2]), y ); // top right
+					avecTriRight[ 0 ].Set( x, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[0] ), y ); // top left
+					avecTriRight[ 1 ].Set( x + 1, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[3] ), y + 1 ); // bottom right
+					avecTriRight[ 2 ].Set( x + 1, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[2] ), y ); // top right
 
 					vecU = avecTriRight[ 1 ];
 					vecV = avecTriRight[ 2 ];
@@ -783,9 +803,9 @@ namespace XSE
 				}
 			}
 
-			for( auto& vecNormal : m_vTerrNormals )
-			{
-				vecNormal.Normalize();
+			for( u32 i = 0; i < m_vTerrNormals.size(); ++i )
+			{	
+				m_vTerrNormals[ i ].Normalize();
 				//CDebug::PrintDebugLN( ToStr( vecNormal.a, 3 ) );
 			}
 			

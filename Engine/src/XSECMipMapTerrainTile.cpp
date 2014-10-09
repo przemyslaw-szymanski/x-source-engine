@@ -58,7 +58,7 @@ namespace XSE
 		m_pMesh->SetBoundingVolume( Volume );
 	}
 
-	i32 CMipMapTerrainTile::CalcVertexData(const SInfo& Info, CVertexData* pData, CBoundingVolume* pVolumeOut, const Vec3* aNormals, cul32& ulNormalCount)
+	i32 CMipMapTerrainTile::CalcVertexData(const SInfo& Info, CVertexData* pData, CBoundingVolume* pVolumeOut)
 	{
 		xst_assert( pData != xst_null, "(CMipMapTerrainTile::CalcVertexData)" );
 		ul32 ulCurrVertex = 0;
@@ -70,7 +70,7 @@ namespace XSE
 		const Vec3 vecEndPos( vecBeginPos + Vec3( Info.vecTileSize.x, 0, -Info.vecTileSize.y ) );
 		Vec3 vecPos( vecBeginPos );
 		Vec3 vecNormal;
-		CPoint ImgBeginPos( Info.TilePart.x * ( Info.VertexCount.x - 1 ), Info.TilePart.y * ( Info.VertexCount.y - 1 ) );
+		const Vec2 vecImgBeginPos( Info.TilePart.x * ( Info.VertexCount.x - 1 ), Info.TilePart.y * ( Info.VertexCount.y - 1 ) );
 		Vec2 vecCurrPos;
 		XST::CColor Color( XST::CColor::BLACK );
 		Vec4 vecCol( 1, 1, 1, 1 );
@@ -85,7 +85,7 @@ namespace XSE
 				if( Info.pHeightmap )
 				{
 					//Get color from heightmap
-					vecCurrPos.Add( ImgBeginPos.x, ImgBeginPos.y );
+					vecCurrPos += vecImgBeginPos;
 					Color = Info.pHeightmap->GetColor( vecCurrPos.x, vecCurrPos.y );
 					vecCol = Vec4( (f32)Color.r / 255.0f, (f32)Color.g / 255.0f, (f32)Color.b / 255.0f, 1 );
 				}
@@ -107,8 +107,8 @@ namespace XSE
 				if( pIL->IsNormal() )
 				{
 					ul32 ulPos = XST_ARRAY_2D_TO_1D( vecCurrPos.x, vecCurrPos.y, Info.TerrainVertexCount.x );
-					xst_assert( ulPos < ulNormalCount, "(CMipMapTerrainTile::CalcVertexData) Array index out of bounds" );
-					vecNormal = aNormals[ ulPos ];
+					xst_assert( ulPos < Info.pvTerrainNormals->size(), "(CMipMapTerrainTile::CalcVertexData) Array index out of bounds" );
+					vecNormal = Info.pvTerrainNormals->at( ulPos );
 					pData->SetNormal( ulCurrVertex, vecNormal );
 				}
 				//
@@ -138,12 +138,11 @@ namespace XSE
 		return XST_OK;
 	}
 
-	/*i32	CMipMapTerrainTile::CalcVertexData(const CMipMapTerrainTile::SInfo& Info, const Vec3* aNormals, cul32& ulNormalCount)
+	i32	CMipMapTerrainTile::CalcVertexData(const CMipMapTerrainTile::SInfo& Info)
 	{
 		CVertexData& Data = m_pMesh->GetVertexBuffer()->GetVertexData();
-		CBoundingVolume& Vol = m_pMesh->GetBoundingVolume();
-		return CalcVertexData( Info, &Data, &Vol, aNormals, ulNormalCount );
-	}*/
+		return CalcVertexData( Info, &Data );
+	}
 
 	i32 CMipMapTerrainTile::Unlock()
 	{

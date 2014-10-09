@@ -54,6 +54,7 @@ namespace XSE
 				Vec3						vecTerrainPosition;
 				Vec3						vecVertexDistance;
 				Vec3						vecDebugColor;
+				xst_vector< Vec3 >*			pvTerrainNormals;
 				const Resources::IImage*	pHeightmap;
 			};
 
@@ -72,9 +73,9 @@ namespace XSE
 
 			i32								Lock(MeshWeakPtr pMesh, ul32 ulVertexCount);
 
-			//i32								CalcVertexData(const SInfo& Info, const Vec3* aNormals, cul32& ulNormalCount);
+			i32								CalcVertexData(const SInfo& Info);
 
-			static	i32						CalcVertexData(const SInfo& Info, CVertexData* pData, CBoundingVolume* pVolumeOut, const Vec3* aNormals, cul32& ulNormalCount);
+			static	i32						CalcVertexData(const SInfo& Info, CVertexData* pData, CBoundingVolume* pVolumeOut = xst_null);
 
 			static	xst_fi f32				ColorToHeight(const Vec2& vecHeightRange, cu8& byValue)
 											{

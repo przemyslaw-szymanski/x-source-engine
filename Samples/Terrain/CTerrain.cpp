@@ -155,6 +155,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	Options.uiLODCount = 3;
 	Options.bColor = true;
 	Options.bBinormal = Options.bNormal = Options.bTangent = Options.bTexCoord = false;
+	Options.bNormal = true;
 
 	{
 		XSTSimpleProfiler2( "CreateTerrain");
