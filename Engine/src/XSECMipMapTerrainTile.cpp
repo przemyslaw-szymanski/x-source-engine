@@ -9,7 +9,7 @@ namespace XSE
 {
 	using namespace XST;
 
-	CMipMapTerrainTile::CMipMapTerrainTile() : m_pMesh( xst_null )
+	CMipMapTerrainTile::CMipMapTerrainTile() 
 	{
 	}
 
@@ -20,13 +20,12 @@ namespace XSE
 
 	i32 CMipMapTerrainTile::Init(const CPoint& GridId)
 	{
-		m_GridId = GridId;
 		return XST_OK;
 	}
 
 	i32	CMipMapTerrainTile::Lock(MeshWeakPtr pMesh, ul32 ulVertexCount)
 	{
-		m_pMesh = pMesh;
+		/*m_pMesh = pMesh;
 		IVertexBuffer* pVB;
 		{
 			//XSTSimpleProfiler2("-CreateVertexBuffer"); //~0.0007sec in debug
@@ -39,28 +38,30 @@ namespace XSE
 		pVB->SetTopologyType( XSE::TopologyTypes::TRIANGLE_LIST );
 		pVB->SetUsage( XSE::BufferUsages::STATIC );
 
-		return pMesh->GetVertexBuffer()->Lock();
+		return pMesh->GetVertexBuffer()->Lock();*/
+		return 0;
 	}	
 
 	i32 CMipMapTerrainTile::SetVertexData(const CVertexData& SrcData)
 	{
-		xst_assert2( m_pMesh != xst_null );
+		/*xst_assert2( m_pMesh != xst_null );
 		xst_assert2( m_pMesh->GetVertexBuffer() != xst_null );
 		xst_assert2( m_pMesh->GetVertexBuffer()->IsLocked() );
 
 		CVertexData& Data = m_pMesh->GetVertexBuffer()->GetVertexData();
 
-		return Data.SetData( SrcData );
+		return Data.SetData( SrcData );*/
+		return 0;
 	}
 
 	void CMipMapTerrainTile::SetBoundingVolume(const CBoundingVolume& Volume)
 	{
-		m_pMesh->SetBoundingVolume( Volume );
+		//m_pMesh->SetBoundingVolume( Volume );
 	}
 
 	i32 CMipMapTerrainTile::CalcVertexData(const SInfo& Info, CVertexData* pData, CBoundingVolume* pVolumeOut)
 	{
-		xst_assert( pData != xst_null, "(CMipMapTerrainTile::CalcVertexData)" );
+		/*xst_assert( pData != xst_null, "(CMipMapTerrainTile::CalcVertexData)" );
 		ul32 ulCurrVertex = 0;
 		f32 uiWidth = Info.vecTileSize.x;
 		f32 uiHeight = Info.vecTileSize.y;
@@ -134,19 +135,14 @@ namespace XSE
 
 		//XST::CDebug::PrintDebugLN( XST::ToStr() << "Tile data calculated: " << Info.TilePart.x << " " << Info.TilePart.y );
 		//DebugPrintVertexData( *pData );
-
+		*/
 		return XST_OK;
-	}
-
-	i32	CMipMapTerrainTile::CalcVertexData(const CMipMapTerrainTile::SInfo& Info)
-	{
-		CVertexData& Data = m_pMesh->GetVertexBuffer()->GetVertexData();
-		return CalcVertexData( Info, &Data );
 	}
 
 	i32 CMipMapTerrainTile::Unlock()
 	{
-		return m_pMesh->GetVertexBuffer()->Unlock();
+		//return m_pMesh->GetVertexBuffer()->Unlock();
+		return 0;
 	}
 		
 	void CMipMapTerrainTile::SetLOD(u32 uiMeshLOD, u32 uiLOD, MIPMAP_TERRAIN_STITCH_TYPE eType)

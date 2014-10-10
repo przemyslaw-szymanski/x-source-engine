@@ -92,7 +92,12 @@ namespace XSE
         f32 fPrevDist;
         CCamera* pCam = m_pSceneMgr->GetComputeCamera();
 
-        for( u32 i = 0; i < m_vTiles.size(); ++i )
+		for( u32 i = 0; i < m_vPages.size(); ++i )
+		{
+			m_vPages[ i ]->Update( pCam );
+		}
+
+        /*for( u32 i = 0; i < m_vTiles.size(); ++i )
         {
             pCurrTile = m_vTiles[ i ];
             pCurrMesh = pCurrTile->m_pMesh.GetPtr();
@@ -145,7 +150,7 @@ namespace XSE
             {
                 eStitchType = MipMapTerrainStitchTypes::NONE;
                 pCurrTile = m_vTileGrid[ x ][ y ];
-                if( !pCurrTile->GetMesh()->IsVisible() /*|| pCurrTile->GetMesh()->IsDisabled()*/ )
+                if( !pCurrTile->GetMesh()->IsVisible() )
                     continue;
                 uiLOD = pCurrTile->GetLOD();
                 pLeft = m_vTileGrid[ x - 1 ][ y ];
@@ -177,7 +182,7 @@ namespace XSE
 
                 pCurrTile->SetLOD( CalcLOD( uiLOD, eStitchType ), uiLOD, eStitchType );
             }
-        }
+        }*/
 	}
 
 	i32 CMipMapPagingTerrain::Init(const STerrainOptions& Options)
@@ -228,6 +233,8 @@ namespace XSE
 				Info.VertexCount = m_Options.PageVertexCount;
 				Info.TileVertexCount = m_Options.TileVertexCount;
 				Info.pImg = m_vpImages.front().GetPtr(); // TEMP use only one heightmap at this moment
+				Info.uPageId = m_vPages.size() - 1;
+				Info.ImgPixelStartPosition = CPoint( x, y );
 				
 				if( XST_FAILED( pPage->Init( Info ) ) )
 				{
@@ -492,14 +499,7 @@ namespace XSE
 				return XST_OK;
 			}
 		}
-		// TMP
-		for( auto& pPage : m_vPages )
-		{
-			// TEMP
-			pPage->CalcVertexDataForPage();
-			//CMipMapTerrainTile** paTiles = &m_vTiles[0];
-			pPage->SetTileData( 0, 0, m_vTiles.size() );
-		}
+
 		return XST_OK;
 	}
 
@@ -866,7 +866,7 @@ namespace XSE
 		{
 			//XSTSimpleProfiler(); //~32sec in debug for 31x31 tiles
 
-		const int iMaxLODCount = m_Options.uiLODCount * MipMapTerrainStitchTypes::_MAX_COUNT;
+		/*const int iMaxLODCount = m_Options.uiLODCount * MipMapTerrainStitchTypes::_MAX_COUNT;
 		SMeshLOD LOD;
 		int iCurrLOD = 0;
 		CMipMapTerrainTile* pCurrTile;
@@ -896,13 +896,6 @@ namespace XSE
 						SMeshLOD* pLOD = pCurrMesh->GetLOD( iCurrLOD );
 						pLOD->pIndexBuffer = IBuffer.pIndexBuffer;
 						pLOD->pVertexBuffer = pFirstLOD->pVertexBuffer; // Empty lods was created during mesh creation now it is time to set vertex buffer for each lod
-                        //XST::CDebug::PrintDebugLN( XST::ToStr() << iCurrLOD );
-
-						//SMeshLOD& LOD = m_vTiles[ t ]->m_pMesh->AddLOD( iCurrLOD++ );
-						//LOD.pIndexBuffer = IBuffer.pIndexBuffer;
-						//LOD.pIndexBuffer = IBuffer.pIndexBuffer;
-						//LOD.pVertexBuffer = m_vTiles[ t ]->m_pMesh->GetVertexBuffer();
-						//m_vTiles[ t ]->m_pMesh->SetLOD( iCurrLOD++, LOD );
 					}
 
 					iCurrLOD++;
@@ -910,10 +903,7 @@ namespace XSE
 			}
 
 			m_vTiles[ t ]->SetLOD( 0, 0, MipMapTerrainStitchTypes::NONE );
-			//DebugPrintIndexData( m_vTiles[ t ]->m_pMesh->GetIndexBuffer()->GetIndexData() );
-			//DebugPrintVB( m_vTiles[ t ]->m_pMesh );
-			//DebugPrintIB( m_vTiles[ t ]->m_pMesh );
-		}
+		}*/
 		}
 		return XST_OK;
 	}

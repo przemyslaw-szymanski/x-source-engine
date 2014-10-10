@@ -23,17 +23,19 @@ namespace XSE
 
 		struct SInfo
 		{
+			Vec3 vecPagePosition; // position in 3d space. Top left corner position
 			CPoint VertexCount; // vertex count for this page
 			CPoint TileCount; // tile count for this page
 			CPoint TileVertexCount; // vertex count per one tile
+			CPoint ImgPixelStartPosition;
 			Vec2 vecHeightRange; // terrain vertex y position min-max
-			Vec3 vecPagePosition; // position in 3d space. Top left corner position
 			Vec2 vecPageSize; // size x-z of the page
 			const Resources::IImage* pImg = xst_null;
 			const IInputLayout* pInputLayout = xst_null;
+			u32	uPageId;
 		};
 
-		typedef xst_vector< CMipMapTerrainTile* >	TileVec;
+		typedef xst_vector< CMipMapTerrainTile >	TileVec;
 		//typedef xst_vector< SVertexData >			VertexDataVec;
 		typedef XST::TCDynamicArray< SVertexData >	VertexDataArray;
 		//xst_vector< SVertexData, XST::STL::TCAlignedAllocator< SVertexData, 16 > > v;
@@ -48,11 +50,8 @@ namespace XSE
 		xst_fi	const Resources::IImage*	GetImage() const
 											{ return m_Info.pImg; }
 
-		i32				CalcTileVertexData(const CMipMapTerrainTile::SInfo& Info);
-
 		i32				CreateVertexData();
 
-		i32				CalcVertexData(CMipMapTerrainTile::SInfo Info);
 
 		i32				CalcVertexDataForPage();
 
@@ -60,34 +59,17 @@ namespace XSE
 
 		void			CalcVertexNormals();
 
-		xst_fi	u32				CalcVertexDataId(cu32& uiX, cu32& uiY) const
-		{ return uiX + m_Info.TileCount.x * uiY; }
+		xst_fi	u32		CalcVertexDataId(cu32& uiX, cu32& uiY) const
+						{ return uiX + m_Info.TileCount.x * uiY; }
 
-		xst_fi	SVertexData&	GetVertexData(cu32& uiX, cu32& uiY)
-		{ return m_aVertexData[ CalcVertexDataId( uiX, uiY ) ]; }
-
-		xst_fi	
-			const	SVertexData&	GetVertexData(cu32& uiX, cu32& uiY) const
-		{ return m_aVertexData[ CalcVertexDataId( uiX, uiY ) ]; }
-
-		xst_fi	
-			VertexDataArray&		GetVertexDataBuffer()
-		{ return m_aVertexData; }
-
-		xst_fi	
-			const VertexDataArray&	GetVertexDataBuffer() const
-		{ return m_aVertexData; }
 
 	protected:
 
 		CMipMapPagingTerrain*	m_pTerrain;
-		//TileVec					m_vTiles;
-		VertexDataArray			m_aVertexData;
+		TileVec					m_vTiles;
 		CBoundingVolume			m_BoundingVolume;
-		//CPoint					m_TileCount;
-		//ul32					m_ulTileVertexCount;
-		//IInputLayout*			m_pTileInputLayout;
 		SInfo					m_Info;
+		MeshPtr					m_pMesh; // Not drawable
 		xst_vector<Vec3>		m_vVertices;
 		xst_vector<Vec3>		m_vNormals;
 	};

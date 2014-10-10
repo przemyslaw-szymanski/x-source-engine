@@ -46,16 +46,13 @@ namespace XSE
 
 			struct SInfo
 			{
-				CPoint						TilePart;
-				Vec3						vecTileSize;
-				CPoint						VertexCount;
-				CPoint						TerrainVertexCount;
-				Vec2						vecHeightRange;
-				Vec3						vecTerrainPosition;
-				Vec3						vecVertexDistance;
-				Vec3						vecDebugColor;
-				xst_vector< Vec3 >*			pvTerrainNormals;
-				const Resources::IImage*	pHeightmap;
+				Vec3		vecTileSize;
+				Vec3		vecDebugColor;
+				CPoint		TilePart;
+				CPoint		VertexCount;
+				CPoint		TerrainVertexCount;
+				ul32		ulVertexBufferOffset; // offset in global (page) vertex buffer
+				ul32		ulVertexBufferDataSize; // data size of the tile. Offset is a begin and offset + dataSize is end
 			};
 
 		public:
@@ -64,12 +61,6 @@ namespace XSE
 			virtual							~CMipMapTerrainTile();
 
 			i32								Init(const CPoint& GridId);
-
-			void							SetPoolId(cu32& uiId)
-											{ m_uiPoolId = uiId; }
-
-			xst_fi	u32						GetPoolId() const
-											{ return m_uiPoolId; }
 
 			i32								Lock(MeshWeakPtr pMesh, ul32 ulVertexCount);
 
@@ -88,15 +79,6 @@ namespace XSE
 
 			void							SetLOD(u32 uiMeshLOD, u32 uiLOD, MIPMAP_TERRAIN_STITCH_TYPE eType);
 
-			const Vec3&						GetTranslation() const
-											{ return m_vecTranslation; }
-
-			MeshPtr				        GetMesh() const
-											{ return m_pMesh; }
-
-			MeshPtr						GetMesh()
-											{ return m_pMesh; }
-
 			i32								SetVertexData(const CVertexData& Data);
 
 			void							SetBoundingVolume(const CBoundingVolume& Volume);
@@ -106,9 +88,6 @@ namespace XSE
 
 			CMipMapTerrainTile*				GetNeighbour(u32 uiId)
 											{ return m_apNeighbours[ uiId ]; }
-
-			xst_fi const CPoint&			GetGridId() const
-											{ return m_GridId; }
 
 			xst_fi	u32						GetLOD() const
 											{ return m_uiLOD; }
@@ -137,15 +116,9 @@ namespace XSE
 
 		protected:
 
-			MeshPtr				m_pMesh;
 			CMipMapTerrainTile*	m_apNeighbours[ 4 ];
-			Vec3				m_vecTranslation;
-			Vec2				m_vecSize;
-			CPoint				m_GridId; // position id in the grid
 			u32					m_uiLOD = 0;
-			u32					m_uiPoolId; // id in the tile pool
 			MIPMAP_TERRAIN_STITCH_TYPE	m_eStitchType = MipMapTerrainStitchTypes::NONE;
-			bool				m_bReady;
 	};
 }//xse
 #endif

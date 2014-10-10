@@ -82,102 +82,51 @@ namespace XSE
 		CMipMapPagingTerrain* pTerrain = xst_new CMipMapPagingTerrain( strName, pIL, m_pSceneMgr );
 		m_vTerrains.push_back( pTerrain );
 		
-		{
-			XSTSimpleProfiler2( "Init" );
 		if( XST_FAILED( pTerrain->Init( Options ) ) )
 		{
 			return xst_null;
 		}
-		}
 
-		{ XSTSimpleProfiler2( "CreateIndexBuffers" );
 		if( XST_FAILED( pTerrain->CreateIndexBuffers() ) )
 		{
 			return xst_null;
 		}
-		}
 
-		{ XSTSimpleProfiler2( "LockIndexBuffers" );
 		if( XST_FAILED( pTerrain->LockIndexBuffers() ) )
 		{
 			return xst_null;
 		}
-		}
 
-		{ XSTSimpleProfiler2( "CalcIndexBufferData" );
 		if( XST_FAILED( pTerrain->CalcIndexBufferData() ) )
 		{
 			return xst_null;
 		}
-		}
 
-		{ XSTSimpleProfiler2( "CalcVertexNormalData" );
-		if( XST_FAILED( pTerrain->CalcVertexNormalData() ) )
-		{
-			return xst_null;
-		}
-		}
-
-		{ XSTSimpleProfiler2( "CreatePagesVertexData" );
-		if( XST_FAILED( pTerrain->CreatePagesVertexData() ) )
-		{
-			return xst_null;
-		}
-		}
-
-		{ XSTSimpleProfiler2( "CreateTiles" );
-		if( XST_FAILED( pTerrain->CreateTiles() ) )
-		{
-			return xst_null;
-		}
-		}
-
-		{ XSTSimpleProfiler2( "LockTiles" );
-		if( XST_FAILED( pTerrain->LockTiles() ) )
-		{
-			return xst_null;
-		}
-		}
-
-		{ XSTSimpleProfiler2( "SetPagesData" );
-		//Set following frustum to create/load proper terrain pages
-		if( XST_FAILED( pTerrain->SetPagesData() ) )
-		{
-			return xst_null;
-		}
-		}
-
-		{ XSTSimpleProfiler2( "SetTileDataFromPages" );
-		if( XST_FAILED( pTerrain->SetTileDataFromPages() ) )
-		{
-			return xst_null;
-		}
-		}
-
-		{ XSTSimpleProfiler2( "UnlockTiles" );
-		if( XST_FAILED( pTerrain->UnlockTiles() ) )
-		{
-			return xst_null;
-		}
-		}
-
-		{ XSTSimpleProfiler2( "UnlockIndexBuffers" );
 		if( XST_FAILED( pTerrain->UnlockIndexBuffers() ) )
 		{
 			return xst_null;
 		}
-		}
 
-		{ XSTSimpleProfiler2( "CreateTilesLods" );
-		if( XST_FAILED( pTerrain->CreateTilesLODs() ) )
+		if( XST_FAILED( pTerrain->CreateVertexBuffers() ) )
 		{
 			return xst_null;
 		}
+
+		if( XST_FAILED( pTerrain->LockVertexBuffers() ) )
+		{
+			return xst_null;
 		}
 
-		{ XSTSimpleProfiler2( "SetLOD" );
-		pTerrain->SetLOD( pTerrain->GetIndexBufferID( 0, MipMapTerrainStitchTypes::NONE ) );
+		if( XST_FAILED( pTerrain->CalcVertexData() ) )
+		{
+			return xst_null;
 		}
+
+		if( XST_FAILED( pTerrain->UnlockVertexBuffers() ) )
+		{
+			return xst_null;
+		}
+
 		return pTerrain;
 
 	}

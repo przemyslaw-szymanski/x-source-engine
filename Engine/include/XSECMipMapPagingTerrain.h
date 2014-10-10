@@ -99,22 +99,6 @@ namespace XSE
 
 			virtual i32					CreatePages(); 
 
-			virtual i32					CreatePagesVertexData(); //vertex data for all page tiles
-
-			virtual i32					SetPagesData(); 
-
-			virtual CMipMapTerrainTile*	CreateTile();
-
-			virtual i32					CreateTiles();
-
-			virtual i32					LockTiles();
-
-			virtual i32					SetTileData();
-
-			virtual i32					SetTileDataFromPages();
-
-			virtual i32					UnlockTiles();
-
 			virtual void				SetLOD(u32 uiLOD);
 
 					i32					ValidateOptions(STerrainOptions* pOptionsOut);
@@ -127,14 +111,22 @@ namespace XSE
 
 			virtual i32					LockIndexBuffers();
 
+			virtual i32					UnlockIndexBuffers();
+
+			virtual i32					CreateVertexBuffers(); //vertex data for all page tiles 
+
+			virtual i32					CalcVertexData();
+
+			virtual i32					LockVertexBuffers();
+
+			virtual i32					UnlockVertexBuffers();
+
 			virtual i32					CalcIndexBufferData(u32 uiLOD);
 			virtual i32					CalcIndexBufferData();
 
-			virtual i32					CalcVertexNormalData();
-
-			virtual i32					UnlockIndexBuffers();
-
 			virtual void				DestroyIndexBuffers();
+
+			virtual void				DestroyVertexBuffers();
 
 			virtual i32					CreateTilesLODs();
 
@@ -197,12 +189,6 @@ namespace XSE
 		protected:
 
 			CSceneManager*	m_pSceneMgr;
-			//xst_astring		m_strName;
-			TileVec			m_vTiles; //shared tiles among all pages
-			TilePoolVec		m_vTilePool;
-			TileIdVec		m_vTileIdGrid; // grid of the tile ids
-            TileGrid        m_vTileGrid;
-            TileInfoGrid    m_vTileInfoGrid;
 			PageVec			m_vPages;
 			IBVec			m_vIndexBuffers;
 			CPoint			m_TileCount;
