@@ -214,6 +214,8 @@ namespace XSE
 		const Vec3 vecRightTopCorner( -m_Options.Size.x * 0.5f, 0.0f, -m_Options.Size.y * 0.5f );
 		Vec3 vecPos = vecRightTopCorner;
 		const Vec2 vecPageSize( m_Options.Size.x / m_Options.PageCount.x, m_Options.Size.y / m_Options.PageCount.y );
+		u32 uPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
+		m_vPages.resize( uPageCount, CMipMapTerrainPage( this ) );
 
 		for(u32 y = 0; y < m_Options.PageCount.y; ++y)
 		{
@@ -221,8 +223,7 @@ namespace XSE
 
 			for( u32 x = 0; x < m_Options.PageCount.x; ++x )
 			{
-				CMipMapTerrainPage* pPage = xst_new CMipMapTerrainPage( this );
-				m_vPages.push_back( pPage );
+				CMipMapTerrainPage* pPage = m_vPages[ XST_ARRAY_2D_TO_1D( x, y, m_Options.PageCount.x ) ];
 				CMipMapTerrainPage::SInfo Info;
 				
 				Info.vecPageSize = vecPageSize;
