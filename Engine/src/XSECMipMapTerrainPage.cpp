@@ -15,9 +15,49 @@ namespace XSE
 	i32 CMipMapTerrainPage::Init(const CMipMapTerrainPage::SInfo& Info)
 	{
 		m_Info = Info;
-		u32 uiCount = m_Info.TileCount.x * m_Info.TileCount.y;
-		m_vTiles.resize( uiCount );
+		xst_assert2( m_Info.apTiles );
+		xst_assert2( m_Info.pImg );
+		xst_assert2( m_Info.pInputLayout );
+		return XST_OK;
+	}
 
+	void CMipMapTerrainPage::Update(const CCamera* pCam)
+	{
+
+	}
+
+	i32 CMipMapTerrainPage::CreateVertexBuffer()
+	{
+		return XST_OK;
+	}
+
+	void CMipMapTerrainPage::DestroyVertexBuffer()
+	{
+
+	}
+
+	i32 CMipMapTerrainPage::LockVertexBuffer()
+	{
+		return XST_OK;
+	}
+
+	i32 CMipMapTerrainPage::UnlockVertexBuffer()
+	{
+		return XST_OK;
+	}
+
+	void CMipMapTerrainPage::CalcVertexPositions()
+	{
+
+	}
+
+	void CMipMapTerrainPage::CalcVertexNormals()
+	{
+
+	}
+
+	i32 CMipMapTerrainPage::FillVertexBuffer()
+	{
 		return XST_OK;
 	}
 

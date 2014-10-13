@@ -149,7 +149,7 @@ namespace XSE
 	{
 		m_uiLOD = uiLOD;
 		m_eStitchType = eType;
-		m_pMesh->SetLOD( uiMeshLOD );
+		//m_pMesh->SetLOD( uiMeshLOD );
 	}
 
 	/*

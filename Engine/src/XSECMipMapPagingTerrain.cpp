@@ -55,22 +55,7 @@ namespace XSE
 
 		m_vIndexBuffers.clear();
 
-		PageVec::iterator PageItr;
-		xst_stl_foreach( PageItr, m_vPages )
-		{
-			xst_delete( (*PageItr) );
-		}
-
 		m_vPages.clear();
-
-		for(u32 i = 0; i < m_vTiles.size(); ++i)
-		{
-			CMipMapTerrainTile* pTile = m_vTiles[ i ];
-			//xst_delete( pTile );
-		}
-
-		xst_vector_clear( m_vTiles, TileVec::value_type );
-		xst_vector_clear( m_vTilePool, TilePoolVec::value_type );
 	}
 
 	void CMipMapPagingTerrain::Disable(cu32& uiReason)
@@ -94,7 +79,7 @@ namespace XSE
 
 		for( u32 i = 0; i < m_vPages.size(); ++i )
 		{
-			m_vPages[ i ]->Update( pCam );
+			m_vPages[ i ].Update( pCam );
 		}
 
         /*for( u32 i = 0; i < m_vTiles.size(); ++i )
@@ -191,7 +176,11 @@ namespace XSE
 		
 		ValidateOptions( &m_Options );
 
+		cu32 uPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
 		m_TileCount = CPoint( ceilf( (f32)m_Options.PageVertexCount.x / m_Options.TileVertexCount.x ), ceilf( (f32)m_Options.PageVertexCount.y / m_Options.TileVertexCount.y ) );
+		m_vTiles.resize( ( m_TileCount.x * m_TileCount.y ) * uPageCount );
+		m_vTileVisibility.resize( m_vTiles.size(), false );
+		m_vPageVisibility.resize( uPageCount, false );
 
 		//Load heightmap images
 		if( XST_FAILED( LoadImages( Options.vHeightmaps ) ) )
@@ -207,6 +196,12 @@ namespace XSE
 		return XST_OK;
 	}
 
+	static xst_fi u32 CalcFirstTileIdForPage(cu32& uPageId, cu32& uTileCountForPage)
+	{
+		u32 uResult = (uPageId - 1) * uTileCountForPage;
+		return uResult;
+	}
+
 	i32 CMipMapPagingTerrain::CreatePages()
 	{
 		//Create pages
@@ -216,6 +211,7 @@ namespace XSE
 		const Vec2 vecPageSize( m_Options.Size.x / m_Options.PageCount.x, m_Options.Size.y / m_Options.PageCount.y );
 		u32 uPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
 		m_vPages.resize( uPageCount, CMipMapTerrainPage( this ) );
+		u32 uTileCount = m_TileCount.x * m_TileCount.y;
 
 		for(u32 y = 0; y < m_Options.PageCount.y; ++y)
 		{
@@ -223,7 +219,8 @@ namespace XSE
 
 			for( u32 x = 0; x < m_Options.PageCount.x; ++x )
 			{
-				CMipMapTerrainPage* pPage = m_vPages[ XST_ARRAY_2D_TO_1D( x, y, m_Options.PageCount.x ) ];
+				u32 uCurrPageId = XST_ARRAY_2D_TO_1D( x, y, m_Options.PageCount.x );
+				CMipMapTerrainPage* pPage = &m_vPages[ uCurrPageId ];
 				CMipMapTerrainPage::SInfo Info;
 				
 				Info.vecPageSize = vecPageSize;
@@ -236,6 +233,8 @@ namespace XSE
 				Info.pImg = m_vpImages.front().GetPtr(); // TEMP use only one heightmap at this moment
 				Info.uPageId = m_vPages.size() - 1;
 				Info.ImgPixelStartPosition = CPoint( x, y );
+				Info.apTiles = &m_vTiles[ CalcFirstTileIdForPage( uCurrPageId, uTileCount ) ];
+				Info.uTileCount = uTileCount;
 				
 				if( XST_FAILED( pPage->Init( Info ) ) )
 				{
@@ -286,7 +285,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-	CMipMapTerrainTile* CMipMapPagingTerrain::CreateTile()
+	/*CMipMapTerrainTile* CMipMapPagingTerrain::CreateTile()
 	{
 		//CMipMapTerrainTile* pTile = xst_new CMipMapTerrainTile();
 		u32 uiId = m_vTiles.size();
@@ -295,7 +294,7 @@ namespace XSE
 		m_vTiles.push_back( pTile );
         
 		return pTile;
-	}
+	}*/
 
 	void CMipMapPagingTerrain::SetVisible(bool bVisible)
 	{
@@ -317,342 +316,69 @@ namespace XSE
 	void CMipMapPagingTerrain::SetMaterial(MaterialPtr pMat)
 	{
 		ITerrain::SetMaterial( pMat );
-
-		TileVec::iterator Itr;
-		xst_stl_foreach( Itr, m_vTiles )
-		{
-			(*Itr)->GetMesh()->SetMaterial( pMat );
-		}
 	}
 
-	i32 CMipMapPagingTerrain::CreateTiles()
-	{
-		u32 uiTileCount = m_TileCount.x * m_TileCount.y;
-		
-		m_vTileGrid.resize( m_TileCount.x );
-        m_vTileInfoGrid.resize( m_TileCount.x );
-        for( u32 i = 0; i < m_TileCount.x; ++i )
-        {
-            m_vTileGrid[ i ].resize( m_TileCount.y );
-            m_vTileInfoGrid[ i ].resize( m_TileCount.y );
-        }
-		m_vTiles.reserve( uiTileCount );
-		m_vTilePool.reserve( uiTileCount );
-		m_vTilePool.resize( uiTileCount );
-		//m_vTiles.resize( uiTileCount );
-
-		/*for(u32 i = 0; i < uiTileCount; ++i)
-		{
-			 CreateTile();
-		}*/
-
-		// Create tiles in the grid
-		for( u32 y = 0; y < m_TileCount.y; ++y )
-		{
-			for( u32 x = 0; x < m_TileCount.x; ++x )
-			{
-				CMipMapTerrainTile* pTile = CreateTile();
-				pTile->Init( CPoint( x, y ) );
-                m_vTileGrid[ x ][ y ] = pTile;
-			}
-		}
-
-		// Set tile neighbours
-		CMipMapTerrainTile* pTmpTile;
-		for( u32 y = 0; y < m_TileCount.y; ++y )
-		{
-			for( u32 x = 0; x < m_TileCount.x; ++x )
-			{
-				CMipMapTerrainTile* pTile = m_vTiles[ CALC_XY( x, y, m_TileCount.x ) ];
-				// Prepare neighbours
-				CMipMapTerrainTile* pLeftTile = xst_null;
-				CMipMapTerrainTile* pRightTile = xst_null;
-				CMipMapTerrainTile* pUpTile = xst_null;
-				CMipMapTerrainTile* pDownTile = xst_null;
-				// Get left neighbour
-				if( x > 0 )
-				{
-					pLeftTile = m_vTiles[ CALC_XY( x - 1, y, m_TileCount.x ) ];
-				}
-				// Get up neighbour
-				if( y > 0 )
-				{
-					pUpTile = m_vTiles[ CALC_XY( x, y - 1, m_TileCount.x ) ];
-				}
-				// Get right neighbour
-				if( x < m_TileCount.x - 1 )
-				{
-					pRightTile = m_vTiles[ CALC_XY( x + 1, y, m_TileCount.x ) ];
-				}
-				// Get down neighbour
-				if( y < m_TileCount.y - 1 )
-				{
-					pDownTile = m_vTiles[ CALC_XY( x, y + 1, m_TileCount.x ) ];
-				}
-
-				CMipMapTerrainTile* aTiles[ 4 ] = { pLeftTile, pUpTile, pRightTile, pDownTile };
-				pTile->SetNeighbours( aTiles );
-			}
-		}
-
-		return XST_OK;
-	}
-
-	i32 CMipMapPagingTerrain::LockTiles()
-	{
-		if( m_bTileLocked )
-		{
-			return XST_OK;
-		}
-
-		//Create memory buffers for vertices and indices
-
-		//Vertex count per one tile
-		ul32 ulCurrTile = 0;
-
-		CMeshManager* pMeshMgr = CMeshManager::GetSingletonPtr();
-		ul32 ulVertexCount = m_Options.TileVertexCount.x * m_Options.TileVertexCount.y;
-		//Calculate tile count
-		//m_TileCount = CPoint( m_Options.PageVertexCount / m_Options.TileVertexCount );
-		xst_stringstream ssName;
-		
-		ch8 strTileName[32];
-
-		xst_string strFullName;
-		strFullName.reserve(64);
-
-		xst_astring strTerrName = XST_GET_DBG_NAME( this );
-		if( strTerrName.empty() ) 
-		{
-			strTerrName = "Terrain";
-			//strTerrName += XST::ToStr() << XST::CTime::GetQPerfTickCount();
-		}
-
-		//int iBaseNameLen = xst_sprintf( strTileName, 32, "%s_", strTerrName.c_str() );
-		//int iTmpLen = 0;
-        {
-            XSTSimpleProfiler2( "Create and lock tile meshes" );
-		for(i32 y = 0; y < m_TileCount.y; ++y)
-		{
-			for(i32 x = 0; x < m_TileCount.x; ++x)
-			{
-				xst_sprintf( strTileName, "%s_%d_%d", strTerrName.data(), x, y);
-				strFullName = strTileName;
-			
-				MeshWeakPtr pMesh; 
-				{
-					//XSTSimpleProfiler2("Create Tile Mesh"); //~0.006sec in debug
-					pMesh = pMeshMgr->CreateMesh( strFullName, m_pInputLayout, m_pSceneMgr->GetName() );
-				}
-				xst_assert( pMesh.IsValid( ), "(CMipMapPagingTerrain::LockTiles) No memory for mesh object" );
-				{
-					//XSTSimpleProfiler2("Set lod count"); //~0.014sec in debug
-					pMesh->SetLODCount( m_Options.uiLODCount * MipMapTerrainStitchTypes::_MAX_COUNT ); // empty lods are created here vertex and index buffers should be set in CreateTilesLODs
-				}
-				CMipMapTerrainTile* pTile = m_vTiles[ ulCurrTile++ ];
-
-				//m_pSceneMgr->CreateNode( ssName.str() )->AddObject( pTile );
-
-				{
-					//XSTSimpleProfiler2("Lock Tile"); //~0.003 sec in debug
-				if( XST_FAILED( pTile->Lock( pMesh, ulVertexCount ) ) )
-				{
-					return XST_FAIL;
-				}
-				}
-				
-			}
-		}
-        }
-		
-		m_bTileLocked = true;
-
-		return XST_OK;
-	}
 
 	void CMipMapPagingTerrain::SetTileInfo(CMipMapTerrainTile::SInfo* pInfoOut)
 	{
-		//Center terrain position
-		Vec3 vecTerrainPos( (f32)m_Options.Size.x * -0.5f, 0, (f32)m_Options.Size.y * 0.5f );
 		
-		//Calculate size of one tile
-		Vec2 vecTileSize( (f32)m_Options.Size.x / m_TileCount.x, (f32)m_Options.Size.y / m_TileCount.y );
-		Vec2 vecDistance( vecTileSize.x / ( m_Options.TileVertexCount.x - 1 ), vecTileSize.y / ( m_Options.TileVertexCount.y - 1 ) );
-		
-		xst_zero( pInfoOut, sizeof( CMipMapTerrainTile::SInfo ) );
-		pInfoOut->TerrainVertexCount = m_Options.PageVertexCount;
-		pInfoOut->vecTileSize = vecTileSize;
-		pInfoOut->vecTerrainPosition = vecTerrainPos;
-		pInfoOut->vecVertexDistance = vecDistance;
-		pInfoOut->VertexCount = m_Options.TileVertexCount;
-		pInfoOut->vecHeightRange = m_Options.vecHeightRange;
-		pInfoOut->pvTerrainNormals = &m_vTerrNormals;
 	}
 
-	i32 CMipMapPagingTerrain::CreatePagesVertexData()
+	i32 CMipMapPagingTerrain::CreateVertexBuffers()
 	{
-		//For each visible page set its data
-		PageVec::iterator Itr;
-		xst_stl_foreach( Itr, m_vPages )
+		for( auto& Page : m_vPages )
 		{
-			if( XST_FAILED( (*Itr)->CreateVertexData() ) )
-			{
-				return XST_OK;
-			}
-		}
-
-		return XST_OK;
-	}
-
-	i32 CMipMapPagingTerrain::SetPagesData()
-	{
-		CMipMapTerrainTile::SInfo Info;
-		SetTileInfo( &Info );
-
-		//For each page set its data
-		PageVec::iterator Itr;
-		xst_stl_foreach( Itr, m_vPages )
-		{
-			if( XST_FAILED( (*Itr)->CalcVertexData( Info ) ) )
+			if( XST_FAILED( Page.CreateVertexBuffer() ) )
 			{
 				return XST_FAIL;
 			}
 		}
-
 		return XST_OK;
 	}
 
-	i32 CMipMapPagingTerrain::SetTileDataFromPages()
+	i32 CMipMapPagingTerrain::LockVertexBuffers()
 	{
-
-		xst_assert( m_bTileLocked, "(CMipMapPagingTerrain::SetTileData) Tiles not locked for set data" );
-		xst_assert( m_vTiles.size() > 0, "(CMipMapPagingTerrain::SetTileData) Tiles not created" );
-
-		//If tile count is more than page count, set tile data from main page (center) to tiles
-		//Choose next pages to set rest of the tiles
-
-#if defined( XSE_RENDERER_DEBUG )
-		m_bBoundingObjectsCreated = true;
-		CMeshManager* pMeshMgr = CMeshManager::GetSingletonPtr();
-		CModelManager* pModelMgr = CModelManager::GetSingletonPtr();
-		if( !m_bBoundingObjectsCreated )
+		for( auto& Page : m_vPages )
 		{
-			m_pBoundingSphereModel = CModelManager::GetSingletonPtr( )->CreateModel( "Terrain/BoundingSphere", "Debug" );
-			m_pAABBModel = CModelManager::GetSingletonPtr( )->CreateModel( "Terrain/AABB", "Debug" );
-			CSceneNode* pNode = m_pSceneMgr->CreateNode( "Terrain/BoundingObjects" );
-			pNode->AddObject( m_pBoundingSphereModel );
-			pNode->AddObject( m_pAABBModel );
-			m_pBoundingSphereModel->SetVisible( false );
-		}
-#endif // XSE_RENDERER_DEBUG
-
-		u32 uiCurrTileID = 0;
-		PageVec::iterator PageItr;
-		xst_stl_foreach( PageItr, m_vPages )
-		{
-			//const CMipMapTerrainPage::VertexDataVec& vVertexDataBuffer = (*PageItr)->GetVertexDataBuffer();
-			const CMipMapTerrainPage::VertexDataArray& vVertexDataBuffer = (*PageItr)->GetVertexDataBuffer();
-			CVertexData* pCurrVertexData;
-			CMipMapTerrainTile* pCurrTile;
-
-			for(u32 i = 0; i < vVertexDataBuffer.size(); ++i)
-			{
-				pCurrTile = m_vTiles[ uiCurrTileID ];
-				pCurrVertexData = vVertexDataBuffer[ i ].pData;
-				if( XST_FAILED( pCurrTile->SetVertexData( *pCurrVertexData ) ) )
-				{
-					return XST_OK;
-				}
-				
-				pCurrTile->SetBoundingVolume( vVertexDataBuffer[ i ].Volume );
-
-#if defined( XSE_RENDERER_DEBUG )
-				if( !m_bBoundingObjectsCreated )
-				{
-					SCircleOptions SphereOptions;
-					const CBoundingVolume& Volume = pCurrTile->GetMesh( )->GetBoundingVolume( );
-					SphereOptions.fRadius = Volume.GetSphere().fRadius;
-					SphereOptions.vecPos = Volume.GetSphere().vecCenter;
-					SphereOptions.uStep = 20;
-					MeshPtr pSphereMesh = pMeshMgr->CreateMesh( pCurrTile->GetMesh()->GetResourceName() + "/BoundingSphere", ILEs::POSITION | ILEs::COLOR, XSE::BasicShapes::CIRCLE, &SphereOptions, "Debug" );
-					m_pBoundingSphereModel->AddMesh( pSphereMesh );
-				}
-#endif // XSE_RENDERER_DEBUG
-
-				++uiCurrTileID;
-			}
-		}
-
-#if defined( XSE_RENDERER_DEBUG )
-		m_bBoundingObjectsCreated = true;
-#endif // XSE_RENDERER_DEBUG
-
-		return XST_OK;
-	}
-
-	i32 CMipMapPagingTerrain::SetTileData()
-	{
-		xst_assert( m_bTileLocked, "(CMipMapPagingTerrain::SetTileData) Tiles not locked for set data" );
-		xst_assert( m_vTiles.size() > 0, "(CMipMapPagingTerrain::SetTileData) Tiles not created" );
-
-		//Set vertex positions
-		u32 uiCurrTile = 0;
-		//Calculate distance between vertices
-		//Vec2 vecDistance( (f32)m_Options.Size.x / ( m_Options.PageVertexCount.x - 1 ), (f32)m_Options.Size.y / ( m_Options.PageVertexCount.y - 1 ) );
-		//Center terrain position
-		Vec3 vecTerrainPos( (f32)m_Options.Size.x * -0.5f, 0, (f32)m_Options.Size.y * 0.5f );
-		
-		//Calculate size of one tile
-		Vec2 vecTileSize( (f32)m_Options.Size.x / m_TileCount.x, (f32)m_Options.Size.y / m_TileCount.y );
-		Vec2 vecDistance( vecTileSize.x / ( m_Options.TileVertexCount.x - 1 ), vecTileSize.y / ( m_Options.TileVertexCount.y - 1 ) );
-		
-		CMipMapTerrainTile::SInfo TileInfo;
-		xst_zero( &TileInfo, sizeof( CMipMapTerrainTile::SInfo ) );
-		TileInfo.TerrainVertexCount = m_Options.PageVertexCount;
-		TileInfo.vecTileSize = vecTileSize;
-		TileInfo.vecTerrainPosition = vecTerrainPos;
-		TileInfo.vecVertexDistance = vecDistance;
-		TileInfo.VertexCount = m_Options.TileVertexCount;
-		TileInfo.vecHeightRange = m_Options.vecHeightRange;
-		//Temp
-		TileInfo.pHeightmap = m_vPages[ 0 ]->GetImage();
-		TileInfo.pvTerrainNormals = &m_vTerrNormals;
-
-		for(i32 y = 0; y < m_TileCount.y; ++y)
-		{
-			for(i32 x = 0; x < m_TileCount.x; ++x)
-			{
-				TileInfo.TilePart = CPoint( x, y );
-				m_vTiles[ uiCurrTile++ ]->CalcVertexData( TileInfo );
-				//DebugPrintVB( m_vTiles[ uiCurrTile - 1]->m_pMesh );
-			}
-			//DebugPrintVB( m_vTiles[ uiCurrTile - 1]->m_pMesh );
-		}
-
-	
-		return XST_OK;
-	}
-
-	i32 CMipMapPagingTerrain::UnlockTiles()
-	{
-		if( !m_bTileLocked )
-		{
-			return XST_OK;
-		}
-
-		//Create Renderer vertex and index buffers for tile data
-
-		TileVec::iterator Itr;
-		xst_stl_foreach( Itr, m_vTiles )
-		{
-			if( XST_FAILED( (*Itr)->Unlock() ) )
+			if( XST_FAILED( Page.LockVertexBuffer() ) )
 			{
 				return XST_FAIL;
 			}
 		}
+		return XST_OK;
+	}
 
-		m_bTileLocked = false;
-		
+	i32 CMipMapPagingTerrain::UnlockVertexBuffers()
+	{
+		for( auto& Page : m_vPages )
+		{
+			if( XST_FAILED( Page.UnlockVertexBuffer() ) )
+			{
+				return XST_FAIL;
+			}
+		}
+		return XST_OK;
+	}
+
+	void CMipMapPagingTerrain::DestroyVertexBuffers()
+	{
+		for( auto& Page : m_vPages )
+		{
+			Page.DestroyVertexBuffer();
+		}
+	}
+
+	i32 CMipMapPagingTerrain::CalcVertexData()
+	{
+		for( auto& Page : m_vPages )
+		{
+			Page.CalcVertexPositions();
+			Page.CalcVertexNormals();
+			if( XST_FAILED( Page.FillVertexBuffer() ) )
+			{
+				return XST_FAIL;
+			}
+		}
 		return XST_OK;
 	}
 
@@ -729,7 +455,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32 CMipMapPagingTerrain::CalcVertexNormalData()
+	/*i32 CMipMapPagingTerrain::CalcVertexNormalData()
 	{
 		if( !m_Options.bNormal )
 			return XST_OK;
@@ -813,7 +539,7 @@ namespace XSE
 		}
 
 		return XST_OK;
-	}
+	}*/
 
 	i32	CMipMapPagingTerrain::CalcIndexBufferData(u32 uiLOD)
 	{
@@ -911,11 +637,6 @@ namespace XSE
 
 	void CMipMapPagingTerrain::SetLOD(u32 uiLOD)
 	{
-		TileVec::iterator Itr;
-		xst_stl_foreach( Itr, m_vTiles )
-		{
-			(*Itr)->SetLOD( uiLOD, uiLOD, MipMapTerrainStitchTypes::NONE );
-		}
 	}
 
 	i32 CMipMapPagingTerrain::ValidateOptions(STerrainOptions* pOptionsOut)
@@ -953,22 +674,22 @@ namespace XSE
 	void CMipMapPagingTerrain::_OnAddToRenderQueue(CRenderQueueElement* pQueue)
 	{
 		XSTSimpleProfiler();
-		for(u32 i = 0; i < m_vTiles.size(); ++i)
+		/*for(u32 i = 0; i < m_vTiles.size(); ++i)
 		{
 			pQueue->AddObject( m_vTiles[ i ]->m_pMesh );
-		}
+		}*/
 	}
 
 	void CMipMapPagingTerrain::_SetSceneNode(CSceneNode* pNode)
 	{
 		XSTSimpleProfiler();
-		IRenderableObject::_SetSceneNode( pNode );
+		/*IRenderableObject::_SetSceneNode( pNode );
 		pNode->ReserveObjects( m_vTiles.size() + 16 );
 		for(u32 i = 0; i < m_vTiles.size(); ++i)
 		{
 			//m_vTiles[ i ]->m_pMesh->_SetSceneNode( pNode );
 			pNode->AddUniqueObject( m_vTiles[ i ]->m_pMesh );
-		}
+		}*/
 	}
 
 	#define LEFT_UP		0

@@ -25,13 +25,15 @@ namespace XSE
 		{
 			Vec3 vecPagePosition; // position in 3d space. Top left corner position
 			CPoint VertexCount; // vertex count for this page
-			CPoint TileCount; // tile count for this page
+			CPoint TileCount; // tile count for this page for x and y
 			CPoint TileVertexCount; // vertex count per one tile
 			CPoint ImgPixelStartPosition;
 			Vec2 vecHeightRange; // terrain vertex y position min-max
 			Vec2 vecPageSize; // size x-z of the page
 			const Resources::IImage* pImg = xst_null;
 			const IInputLayout* pInputLayout = xst_null;
+			CMipMapTerrainTile* apTiles = xst_null; // a begin pointer to the tile buffer
+			u32 uTileCount = 0; // a end indicator in the tile buffer
 			u32	uPageId;
 		};
 
@@ -47,17 +49,30 @@ namespace XSE
 
 		i32				Init(const SInfo& Info);
 
+		void			Update(const CCamera* pCam);
+
 		xst_fi	const Resources::IImage*	GetImage() const
 											{ return m_Info.pImg; }
 
 		i32				CreateVertexData();
 
+		i32				CreateVertexBuffer();
+
+		void			DestroyVertexBuffer();
+
+		i32				LockVertexBuffer();
+
+		i32				UnlockVertexBuffer();
+
+		void			CalcVertexPositions();
+
+		void			CalcVertexNormals();
+
+		i32				FillVertexBuffer();
 
 		i32				CalcVertexDataForPage();
 
 		i32				SetTileData(CMipMapTerrainTile *const (*const *paTiles), u32 uiStartTile, u32 uiEndTile);
-
-		void			CalcVertexNormals();
 
 		xst_fi	u32		CalcVertexDataId(cu32& uiX, cu32& uiY) const
 						{ return uiX + m_Info.TileCount.x * uiY; }
@@ -65,8 +80,7 @@ namespace XSE
 
 	protected:
 
-		CMipMapPagingTerrain*	m_pTerrain;
-		TileVec					m_vTiles;
+		CMipMapPagingTerrain*	m_pTerrain = xst_null;
 		CBoundingVolume			m_BoundingVolume;
 		SInfo					m_Info;
 		MeshPtr					m_pMesh; // Not drawable
