@@ -39,6 +39,7 @@ namespace XSE
 			typedef xst_vector< CMipMapTerrainTile* >	TileVec;
 			typedef xst_vector< CMipMapTerrainPage >	PageVec;
 			typedef xst_vector< CMipMapTerrainTile >	TilePoolVec;
+			typedef xst_vector< IVertexBuffer* >		VBVec;
 			typedef xst_vector< u32 >					IntVec;
 			typedef xst_vector< bool >					BoolVec;
 			typedef xst_vector< IntVec >				TileIdVec;
@@ -195,6 +196,8 @@ namespace XSE
 			BoolVec			m_vTileVisibility; // a bool array for each page tile
 			BoolVec			m_vPageVisibility; // a bool array for each page
 			IBVec			m_vIndexBuffers;
+			VBVec			m_vpVertexBuffers; // vertex buffer pool for each page
+			CVertexData		m_VertexData; // one big vertex data buffer
 			CPoint			m_TileCount;
 			xst_vector<ImagePtr> m_vpImages; // heightmap images
 			xst_vector<Vec3>	m_vTerrNormals;

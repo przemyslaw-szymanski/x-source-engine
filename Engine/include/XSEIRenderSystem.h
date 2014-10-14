@@ -65,6 +65,8 @@ namespace XSE
 			//virtual Resources::IVertexShader*		CreateDefaultVertexShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator) = 0;
 			virtual	Resources::IPixelShader*		CreateDefaultPixelShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator) = 0;
 			virtual IVertexBuffer*		CreateVertexBuffer() = 0;
+			virtual i32					CreateVertexBuffers(XSE::IVertexBuffer* *const paArray, cu32& uVBCount) = 0;
+			virtual void				DestroyVertexBuffers(XSE::IVertexBuffer* *const paArray, cu32& uVBCount) = 0;
 			virtual IInputLayout*		GetInputLayout(ul32 ulElements) = 0;
 			virtual i32					DrawVertexBuffer(const IVertexBuffer* pVB) = 0;
 			virtual i32					DrawVertexBuffer(const IVertexBuffer* pVB, const IIndexBuffer* pIB) = 0;

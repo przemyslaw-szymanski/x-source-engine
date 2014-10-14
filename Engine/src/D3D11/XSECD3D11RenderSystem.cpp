@@ -691,6 +691,29 @@ namespace XSE
 			return pVB;
 		}
 
+		i32 CRenderSystem::CreateVertexBuffers(XSE::IVertexBuffer* *const paArray, cu32& uVBCount)
+		{
+			for( u32 i = uVBCount; i-- > 0; )
+			{
+				XSE::IVertexBuffer* pPtr = CreateVertexBuffer();
+				if( !pPtr )
+				{
+					return XST_FAIL;
+				}
+				paArray[ i ] = pPtr;
+			}
+			return XST_OK;
+		}
+
+		void CRenderSystem::DestroyVertexBuffers(XSE::IVertexBuffer* *const paArray, cu32& uVBCount)
+		{
+			for( u32 i = uVBCount; i-- > 0; )
+			{
+				CVertexBuffer* pVB = (CVertexBuffer*) paArray[i];
+				xst_delete( pVB );
+			}
+		}
+
 		void CRenderSystem::UpdateVertexBuffer(IVertexBuffer* pVB, cul32& ulStartVertex, cul32& ulVertexCount, const CVertexData& DstData)
 		{
 			xst_assert2( pVB != xst_null );

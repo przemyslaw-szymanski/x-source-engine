@@ -99,6 +99,10 @@ namespace XSE
 
 						IVertexBuffer*	CreateVertexBuffer();
 
+						i32				CreateVertexBuffers(XSE::IVertexBuffer* *const paArray, cu32& uVBCount);
+
+						void			DestroyVertexBuffers(XSE::IVertexBuffer* *const paArray, cu32& uVBCount);
+
 						ul32			GetShaderMaxSize();
 
 						i32				DrawVertexBuffer(const IVertexBuffer* pVB);

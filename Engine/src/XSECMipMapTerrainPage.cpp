@@ -15,9 +15,13 @@ namespace XSE
 	i32 CMipMapTerrainPage::Init(const CMipMapTerrainPage::SInfo& Info)
 	{
 		m_Info = Info;
-		xst_assert2( m_Info.apTiles );
+		xst_assert2( m_Info.aTiles );
 		xst_assert2( m_Info.pImg );
 		xst_assert2( m_Info.pInputLayout );
+		m_Info.pVB->SetInputLayout( m_Info.pInputLayout );
+		m_Info.pVB->SetTopologyType( TopologyTypes::TRIANGLE_LIST );
+		m_Info.pVB->SetUsage( BufferUsages::DYNAMIC );
+		m_Info.pVB->SetVertexCount( m_Info.VertexCount.x * m_Info.VertexCount.y );
 		return XST_OK;
 	}
 
@@ -38,17 +42,76 @@ namespace XSE
 
 	i32 CMipMapTerrainPage::LockVertexBuffer()
 	{
-		return XST_OK;
+		xst_assert2( m_Info.pVB );
+		return m_Info.pVB->Lock();
 	}
 
 	i32 CMipMapTerrainPage::UnlockVertexBuffer()
 	{
-		return XST_OK;
+		xst_assert2( m_Info.pVB );
+		return m_Info.pVB->Unlock();
 	}
 
 	void CMipMapTerrainPage::CalcVertexPositions()
 	{
+		cu32 uImgWidth	= m_Info.pImg->GetWidth();
+		cu32 uImgHeight = m_Info.pImg->GetHeight();
+		const CPoint Range( uImgWidth - m_Info.ImgPixelStartPosition.x, uImgHeight - m_Info.ImgPixelStartPosition.y );
+		xst_assert2( Range.x >= m_Info.VertexCount.x && Range.y >= m_Info.VertexCount.y );
 
+		CVertexData& VData = m_Info.pVB->GetVertexData();
+
+		Vec3 vecPos = m_Info.vecPagePosition;
+		const Vec2 vecStep( m_Info.vecPageSize.x / m_Info.VertexCount.x, m_Info.vecPageSize.y / m_Info.VertexCount.y );
+		CPoint PixelPos = m_Info.ImgPixelStartPosition;
+		ul32 ulVertexOffsetStart = 0;
+		ul32 ulVertexDataSize = 0;
+		ul32 ulVertexId = 0;
+		cul32 ulVertexCount = m_Info.VertexCount.x * m_Info.VertexCount.y;
+		cul32 ulTileVertexCount = m_Info.TileVertexCount.x * m_Info.TileVertexCount.y;
+		CMipMapTerrainTile::SInfo TileInfo;
+		TileInfo.ulVertexBufferDataSize = ulTileVertexCount * m_Info.pInputLayout->GetVertexSize();
+
+		for( u32 uTileY = 0; uTileY < m_Info.TileCount.y; ++uTileY )
+		{
+			for( u32 uTileX = 0; uTileX < m_Info.TileCount.x; ++uTileX )
+			{
+				TileInfo.VertexRange.x = ulVertexId;
+				for( u32 uVertexY = 0; uVertexY < m_Info.TileVertexCount.y; ++uVertexY )
+				{
+					vecPos.x = m_Info.vecPagePosition.x + uTileX * (m_Info.TileVertexCount.x-1) /* * vecStep.x*/;
+					PixelPos.x = m_Info.ImgPixelStartPosition.x + uTileX * (m_Info.TileVertexCount.x-1);
+					for( u32 uVertexX = 0; uVertexX < m_Info.TileVertexCount.x; ++uVertexX )
+					{
+						if( PixelPos.x >= uImgWidth || PixelPos.y >= uImgHeight )
+						{
+							int a = 3;
+							a = a;
+						}
+						u8 uR = m_Info.pImg->GetChannelColor( PixelPos.x, PixelPos.y, Resources::IImage::CHANNEL::RED );
+						vecPos.y = CMipMapTerrainTile::ColorToHeight( m_Info.vecHeightRange, uR );
+						vecPos.x += vecStep.x;
+
+						//VData.SetPosition( ulVertexId, vecPos );
+
+						++ulVertexId;
+					}
+					vecPos.y += vecStep.y;
+					PixelPos.y++;
+				}
+				PixelPos.y = m_Info.ImgPixelStartPosition.y + uTileY * (m_Info.TileVertexCount.y-1);
+
+				CMipMapTerrainTile* pTile = &m_Info.aTiles[ XST_ARRAY_2D_TO_1D( uTileX, uTileY, m_Info.TileCount.x ) ];
+				TileInfo.ulVertexBufferOffset = ulVertexOffsetStart;
+				TileInfo.TilePart = CPoint( uTileX, uTileY );
+				TileInfo.VertexRange.y = ulVertexId - 1;
+				pTile->SetInfo( TileInfo );
+				ulVertexOffsetStart += TileInfo.ulVertexBufferDataSize;
+			}
+			vecPos.y = m_Info.vecPagePosition.y + uTileY * (m_Info.TileVertexCount.y-1) /* * vecStep.y*/;
+			
+		}
+		xst_assert2( ulVertexId == ulVertexCount );
 	}
 
 	void CMipMapTerrainPage::CalcVertexNormals()
@@ -64,6 +127,7 @@ namespace XSE
 	i32 CMipMapTerrainPage::CreateVertexData()
 	{
 		xst_assert2( m_Info.pInputLayout != xst_null );
+		xst_assert2( m_Info.pVB );
 		
 		return XST_OK;
 	}

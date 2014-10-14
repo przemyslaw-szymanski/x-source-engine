@@ -46,11 +46,8 @@ namespace XSE
 
 			struct SInfo
 			{
-				Vec3		vecTileSize;
-				Vec3		vecDebugColor;
 				CPoint		TilePart;
-				CPoint		VertexCount;
-				CPoint		TerrainVertexCount;
+				CPoint		VertexRange; // for debug only
 				ul32		ulVertexBufferOffset; // offset in global (page) vertex buffer
 				ul32		ulVertexBufferDataSize; // data size of the tile. Offset is a begin and offset + dataSize is end
 			};
@@ -61,6 +58,9 @@ namespace XSE
 			virtual							~CMipMapTerrainTile();
 
 			i32								Init(const CPoint& GridId);
+
+			void							SetInfo(const SInfo& Info)
+											{ m_Info = Info; }
 
 			i32								Lock(MeshWeakPtr pMesh, ul32 ulVertexCount);
 
@@ -116,6 +116,7 @@ namespace XSE
 
 		protected:
 
+			SInfo				m_Info;
 			CMipMapTerrainTile*	m_apNeighbours[ 4 ];
 			u32					m_uiLOD = 0;
 			MIPMAP_TERRAIN_STITCH_TYPE	m_eStitchType = MipMapTerrainStitchTypes::NONE;

@@ -32,7 +32,8 @@ namespace XSE
 			Vec2 vecPageSize; // size x-z of the page
 			const Resources::IImage* pImg = xst_null;
 			const IInputLayout* pInputLayout = xst_null;
-			CMipMapTerrainTile* apTiles = xst_null; // a begin pointer to the tile buffer
+			CMipMapTerrainTile* aTiles = xst_null; // a begin pointer to the tile buffer
+			IVertexBuffer* pVB = xst_null;
 			u32 uTileCount = 0; // a end indicator in the tile buffer
 			u32	uPageId;
 		};

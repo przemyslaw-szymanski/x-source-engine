@@ -46,16 +46,10 @@ namespace XSE
 
 	void CMipMapPagingTerrain::DestroyData()
 	{
-
-		IBVec::iterator IBItr;
-		xst_stl_foreach( IBItr, m_vIndexBuffers )
-		{
-			//xst_release( IBItr->pIndexBuffer );
-		}
-
-		m_vIndexBuffers.clear();
-
 		m_vPages.clear();
+		m_vIndexBuffers.clear();
+		m_pSceneMgr->GetRenderSystem( )->DestroyVertexBuffers( &m_vpVertexBuffers[0], m_vpVertexBuffers.size() );
+		m_vpVertexBuffers.clear();
 	}
 
 	void CMipMapPagingTerrain::Disable(cu32& uiReason)
@@ -181,6 +175,7 @@ namespace XSE
 		m_vTiles.resize( ( m_TileCount.x * m_TileCount.y ) * uPageCount );
 		m_vTileVisibility.resize( m_vTiles.size(), false );
 		m_vPageVisibility.resize( uPageCount, false );
+		m_vpVertexBuffers.resize( uPageCount );
 
 		//Load heightmap images
 		if( XST_FAILED( LoadImages( Options.vHeightmaps ) ) )
@@ -212,6 +207,10 @@ namespace XSE
 		u32 uPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
 		m_vPages.resize( uPageCount, CMipMapTerrainPage( this ) );
 		u32 uTileCount = m_TileCount.x * m_TileCount.y;
+		if( XST_FAILED( m_pSceneMgr->GetRenderSystem()->CreateVertexBuffers( &m_vpVertexBuffers[ 0 ], m_vpVertexBuffers.size() ) ) )
+		{
+			return XST_FAIL;
+		}
 
 		for(u32 y = 0; y < m_Options.PageCount.y; ++y)
 		{
@@ -233,8 +232,10 @@ namespace XSE
 				Info.pImg = m_vpImages.front().GetPtr(); // TEMP use only one heightmap at this moment
 				Info.uPageId = m_vPages.size() - 1;
 				Info.ImgPixelStartPosition = CPoint( x, y );
-				Info.apTiles = &m_vTiles[ CalcFirstTileIdForPage( uCurrPageId, uTileCount ) ];
+				//Info.apTiles = &m_vTiles[ CalcFirstTileIdForPage( uCurrPageId, uTileCount ) ];
+				Info.aTiles = m_vTiles.data() + CalcFirstTileIdForPage( uCurrPageId, uTileCount );
 				Info.uTileCount = uTileCount;
+				Info.pVB = m_vpVertexBuffers[ uCurrPageId ];
 				
 				if( XST_FAILED( pPage->Init( Info ) ) )
 				{

@@ -151,6 +151,12 @@ namespace XSE
 	static xst_castring	ALL_GROUPS( "" );
 	static xst_castring DEFAULT_GROUP( "Default" );
 
+	template<class _T_>
+	using ConstPtr = _T_ *const;
+
+	template<class _T_>
+	using ConstPtrToConstPtr = _T_ *const *const;
+
 	xst_tvectorx( xst_astring )	StringVector;
 	xst_tvectorx( i32 )			IntVector;
 	xst_tvectorx( u32 )			UIntVector;
