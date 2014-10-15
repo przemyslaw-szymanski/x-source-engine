@@ -1,4 +1,5 @@
 #include "XSECMipMapTerrainPage.h"
+#include <XSTCToString.h>
 
 namespace XSE
 {
@@ -72,14 +73,19 @@ namespace XSE
 		CMipMapTerrainTile::SInfo TileInfo;
 		TileInfo.ulVertexBufferDataSize = ulTileVertexCount * m_Info.pInputLayout->GetVertexSize();
 
+        char t[256];
+
 		for( u32 uTileY = 0; uTileY < m_Info.TileCount.y; ++uTileY )
 		{
+            XST::CDebug::PrintDebugLN("");
 			for( u32 uTileX = 0; uTileX < m_Info.TileCount.x; ++uTileX )
 			{
+                vecPos.x = m_Info.vecPagePosition.x + uTileX * ((m_Info.TileVertexCount.x-1) * vecStep.x);
+                sprintf( t, "(%f,%f) ", vecPos.x, vecPos.z ); XST::CDebug::PrintDebug( t );
 				TileInfo.VertexRange.x = ulVertexId;
 				for( u32 uVertexY = 0; uVertexY < m_Info.TileVertexCount.y; ++uVertexY )
 				{
-					vecPos.x = m_Info.vecPagePosition.x + uTileX * (m_Info.TileVertexCount.x-1) /* * vecStep.x*/;
+					vecPos.x = m_Info.vecPagePosition.x + uTileX * ( (m_Info.TileVertexCount.x-1) * vecStep.x );
 					PixelPos.x = m_Info.ImgPixelStartPosition.x + uTileX * (m_Info.TileVertexCount.x-1);
 					for( u32 uVertexX = 0; uVertexX < m_Info.TileVertexCount.x; ++uVertexX )
 					{
@@ -96,10 +102,11 @@ namespace XSE
 
 						++ulVertexId;
 					}
-					vecPos.y += vecStep.y;
+					vecPos.z += vecStep.y;
 					PixelPos.y++;
 				}
 				PixelPos.y = m_Info.ImgPixelStartPosition.y + uTileY * (m_Info.TileVertexCount.y-1);
+                vecPos.z = m_Info.vecPagePosition.y + uTileY * ( (m_Info.TileVertexCount.y-1) * vecStep.y );
 
 				CMipMapTerrainTile* pTile = &m_Info.aTiles[ XST_ARRAY_2D_TO_1D( uTileX, uTileY, m_Info.TileCount.x ) ];
 				TileInfo.ulVertexBufferOffset = ulVertexOffsetStart;
@@ -108,7 +115,7 @@ namespace XSE
 				pTile->SetInfo( TileInfo );
 				ulVertexOffsetStart += TileInfo.ulVertexBufferDataSize;
 			}
-			vecPos.y = m_Info.vecPagePosition.y + uTileY * (m_Info.TileVertexCount.y-1) /* * vecStep.y*/;
+			vecPos.z = m_Info.vecPagePosition.y + uTileY * ( (m_Info.TileVertexCount.y-1) * vecStep.y );
 			
 		}
 		xst_assert2( ulVertexId == ulVertexCount );

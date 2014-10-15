@@ -17,32 +17,32 @@ namespace XST
         #endif//_DEBUG
     }
 
-    void	CDebug::PrintDebug(xst_castring& _strText)
+    void	CDebug::PrintDebug(lpcastr _strText)
     {
         #if defined(XST_WINDOWS)
-            OutputDebugStringA(_strText.c_str());
+            OutputDebugStringA(_strText);
         #endif
     }
 
-    void	CDebug::PrintDebug(xst_cwstring& _strText)
+    void	CDebug::PrintDebug(lpcwstr _strText)
     {
         #if defined(XST_WINDOWS)
-            OutputDebugStringW(_strText.c_str());
+            OutputDebugStringW(_strText);
         #endif
     }
 
-    void	CDebug::PrintDebugLN(xst_castring& _strText)
+    void	CDebug::PrintDebugLN(lpcastr _strText)
     {
         #if defined(XST_WINDOWS)
-            OutputDebugStringA(_strText.c_str());
+            OutputDebugStringA(_strText);
             OutputDebugStringA("\n");
         #endif
     }
 
-    void	CDebug::PrintDebugLN(xst_cwstring& _strText)
+    void	CDebug::PrintDebugLN(lpcwstr _strText)
     {
         #if defined(XST_WINDOWS)
-            OutputDebugStringW(_strText.c_str());
+            OutputDebugStringW(_strText);
             OutputDebugStringW(L"\n");
         #endif
     }

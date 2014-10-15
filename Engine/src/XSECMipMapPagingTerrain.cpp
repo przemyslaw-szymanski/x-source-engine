@@ -201,7 +201,7 @@ namespace XSE
 	{
 		//Create pages
 		//u32 uiPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
-		const Vec3 vecRightTopCorner( -m_Options.Size.x * 0.5f, 0.0f, -m_Options.Size.y * 0.5f );
+		const Vec3 vecRightTopCorner = Vec3::ZERO; //( -m_Options.Size.x * 0.5f, 0.0f, -m_Options.Size.y * 0.5f );
 		Vec3 vecPos = vecRightTopCorner;
 		const Vec2 vecPageSize( m_Options.Size.x / m_Options.PageCount.x, m_Options.Size.y / m_Options.PageCount.y );
 		u32 uPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
