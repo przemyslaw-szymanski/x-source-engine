@@ -171,7 +171,8 @@ namespace XSE
 		ValidateOptions( &m_Options );
 
 		cu32 uPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
-		m_TileCount = CPoint( ceilf( (f32)m_Options.PageVertexCount.x / m_Options.TileVertexCount.x ), ceilf( (f32)m_Options.PageVertexCount.y / m_Options.TileVertexCount.y ) );
+		m_TileCount = CPoint( ceilf( (f32)(m_Options.PageVertexCount.x-1) / (m_Options.TileVertexCount.x-1) ), 
+							  ceilf( (f32)(m_Options.PageVertexCount.y-1) / (m_Options.TileVertexCount.y-1) ) );
 		m_vTiles.resize( ( m_TileCount.x * m_TileCount.y ) * uPageCount );
 		m_vTileVisibility.resize( m_vTiles.size(), false );
 		m_vPageVisibility.resize( uPageCount, false );
