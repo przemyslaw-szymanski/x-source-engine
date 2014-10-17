@@ -48,7 +48,8 @@ namespace XSE
 	{
 		m_vPages.clear();
 		m_vIndexBuffers.clear();
-		m_pSceneMgr->GetRenderSystem( )->DestroyVertexBuffers( &m_vpVertexBuffers[0], m_vpVertexBuffers.size() );
+		if( !m_vpVertexBuffers.empty() )
+			m_pSceneMgr->GetRenderSystem( )->DestroyVertexBuffers( &m_vpVertexBuffers[0], m_vpVertexBuffers.size() );
 		m_vpVertexBuffers.clear();
 	}
 
@@ -194,7 +195,7 @@ namespace XSE
 
 	static xst_fi u32 CalcFirstTileIdForPage(cu32& uPageId, cu32& uTileCountForPage)
 	{
-		u32 uResult = (uPageId - 1) * uTileCountForPage;
+		u32 uResult = (uPageId) * uTileCountForPage;
 		return uResult;
 	}
 
@@ -234,7 +235,9 @@ namespace XSE
 				Info.uPageId = m_vPages.size() - 1;
 				Info.ImgPixelStartPosition = CPoint( x, y );
 				//Info.apTiles = &m_vTiles[ CalcFirstTileIdForPage( uCurrPageId, uTileCount ) ];
-				Info.aTiles = m_vTiles.data() + CalcFirstTileIdForPage( uCurrPageId, uTileCount );
+				u32 uTileId = CalcFirstTileIdForPage( uCurrPageId, uTileCount );
+				xst_assert2( uTileId < m_vTiles.size() );
+				Info.aTiles = &m_vTiles[ uTileId ];
 				Info.uTileCount = uTileCount;
 				Info.pVB = m_vpVertexBuffers[ uCurrPageId ];
 				
