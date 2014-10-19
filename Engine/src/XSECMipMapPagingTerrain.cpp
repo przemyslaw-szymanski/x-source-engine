@@ -184,6 +184,13 @@ namespace XSE
 		m_vPageVisibility.resize( uPageCount, false );
 		m_vpVertexBuffers.resize( uPageCount );
 
+		// Set visible pointers
+		for( u32 i = 0; i < m_vTiles.size(); ++i )
+		{
+			auto it = m_vTileVisibility.begin() + i;
+			m_vTiles[ i ].m_pbIsVisible = it;
+		}
+
 		this->m_pMaterial = CMaterialManager::GetSingletonPtr( )->GetDefaultMaterial();
 
 		//Load heightmap images
@@ -326,6 +333,8 @@ namespace XSE
 		Mtx4 mtxTransform = Mtx4::IDENTITY;
 
 		pRS->SetInputLayoutWithCheck( m_pInputLayout );
+		pRS->SetTopology( TopologyTypes::TRIANGLE_LIST );
+
 		CMaterial* pMat = m_pMaterial.GetPtr();
 		ITechnique* pTech = pMat->GetCurrentTechnique();
 		IPass* pPass;
@@ -345,17 +354,16 @@ namespace XSE
 			pRS->SetMatrix( MatrixTypes::WORLD, mtxTransform );
 			//Update shaders input
 			pRS->UpdateObjectInputs();
-
-			for( auto& Page : m_vPages )
-			{
-				const auto& Info = Page.m_Info;
 				
-				pRS->SetVertexBuffer( Info.pVB );
-				//Draw object
-				for( u32 t = 0; t < Info.uTileCount; ++t )
+			//Draw object
+			for( u32 t = 0; t < m_vTiles.size(); ++t )
+			{
+				if( m_vTileVisibility[t] )
 				{
-					const auto& TileInfo = Info.aTiles[ t ].m_Info;
-					pIB = GetIndexBuffer( 0, MipMapTerrainStitchTypes::RIGHT ).pIndexBuffer.GetPtr();
+					// TODO: probably cache miss here. Use array of pVB,ulStartVertex structures
+					const auto& TileInfo = m_vTiles[t].m_Info;
+					pIB = GetIndexBuffer( 0, MipMapTerrainStitchTypes::DOWN ).pIndexBuffer.GetPtr();
+					pRS->SetVertexBufferWithCheck( TileInfo.pVB );
 					pRS->SetIndexBufferWithCheck( pIB );
 					pRS->DrawIndexed( pIB->GetIndexCount(), 0, TileInfo.ulStartVertex );
 				}
@@ -721,17 +729,6 @@ namespace XSE
 	void CMipMapPagingTerrain::_OnAddToRenderQueue(CRenderQueueElement* pQueue)
 	{
 		XSTSimpleProfiler();
-		/*for( auto& Page : m_vPages )
-		{
-			Page.m_pMesh->SetVertexBuffer( VertexBufferWeakPtr(Page.m_Info.pVB) );
-			Page.m_pMesh->SetIndexBuffer( m_vIndexBuffers[0].pIndexBuffer );
-			pQueue->AddObject( Page.m_pMesh.GetPtr() );
-		}*/
-
-		SBoxOptions bo;
-		bo.vecSize = Vec3(100,100, 100 );
-		MeshPtr pMeshBox = CMeshManager::GetSingletonPtr( )->CreateMesh( "tmp_terr_box", m_pInputLayout, BasicShapes::BOX, &bo, "terrain" );
-		pQueue->AddObject( pMeshBox );
 	}
 
 	void CMipMapPagingTerrain::_SetSceneNode(CSceneNode* pNode)
@@ -1096,10 +1093,10 @@ namespace XSE
 				/* /| to /\ */
 				if( g_bCCW )
 					// Quad calculations: 
-					// Left triangle: leftUp, leftDown, rightDown
-					// Right triangle: rightUp, leftUp, rightDown
-					// Right down vertex for left triangle is at index -1
-					uiPos = Info.uiCurrID - 1;
+					// Left triangle: leftUp, leftDown, rightUp
+					// Right triangle: rightDown, rightUp, leftDown
+					// Right down vertex for left triangle is at index -3
+					uiPos = Info.uiCurrID - 3;
 				else
 					//Right down vertex of the second triangle is at position -2
 					uiPos = Info.uiCurrID - 1;
@@ -1110,10 +1107,10 @@ namespace XSE
 				/* |\ change to \ */
 				if( g_bCCW )
 					// Quad calculations: 
-					// Left triangle: leftUp, leftDown, rightUp
-					// Right triangle: rightDown, rightUp, leftDown
-					// Left down vertex for left triangle is at index -1
-					uiPos = Info.uiCurrID - 1;
+					// Left triangle: leftUp, leftDown, rightDown
+					// Right triangle: rightUp, leftUp, rightDown
+					// Left down vertex for left triangle is at index -5
+					uiPos = Info.uiCurrID - 5;
 				else
 					//Left up vertex of the first triangle is at position -5
 					uiPos = Info.uiCurrID - 6;

@@ -87,7 +87,7 @@ namespace XSE
 
 		for( u32 uTileY = 0; uTileY < m_Info.TileCount.y; ++uTileY )
 		{
-            XST::CDebug::PrintDebugLN("");
+           // XST::CDebug::PrintDebugLN("");
 			vecTilePos.z = uTileY * vecTileSize.y;
 			for( u32 uTileX = 0; uTileX < m_Info.TileCount.x; ++uTileX )
 			{
@@ -103,7 +103,7 @@ namespace XSE
 					for( u32 uVertexX = 0; uVertexX < m_Info.TileVertexCount.x; ++uVertexX )
 					{
 						u8 uR = m_Info.pImg->GetChannelColor( PixelPos.x, PixelPos.y, Resources::IImage::CHANNEL::RED );
-						//vecPos.y = CMipMapTerrainTile::ColorToHeight( m_Info.vecHeightRange, uR );
+						vecPos.y = CMipMapTerrainTile::ColorToHeight( m_Info.vecHeightRange, uR );
 						//sprintf( t, "(%.2f,%.2f)", vecPos.x, vecPos.z ); XST::CDebug::PrintDebug( t );
 						//sprintf( t, "(%d,%d)", PixelPos.x, PixelPos.y ); XST::CDebug::PrintDebug( t );
 						VData.SetPosition( ulVertexId, vecPos );
@@ -132,12 +132,14 @@ namespace XSE
 				TileInfo.ulVertexBufferOffset = TileInfo.ulStartVertex /*pIL->GetVertexSize()*/;
 				TileInfo.TilePart = CPoint( uTileX, uTileY );
 				TileInfo.VertexRange.y = ulVertexId - 1;
+				TileInfo.pVB = m_Info.pVB;
 				pTile->SetInfo( TileInfo );
+				*pTile->m_pbIsVisible = true;
 		
 				uCurrTileId++;
-				sprintf( t, "vertex range: (%d-%d) ", TileInfo.ulVertexBufferOffset, TileInfo.ulStartVertex ); XST::CDebug::PrintDebug( t );
+				//sprintf( t, "vertex range: (%d-%d) ", TileInfo.ulVertexBufferOffset, TileInfo.ulStartVertex ); XST::CDebug::PrintDebug( t );
 			}
-			XST::CDebug::PrintDebugLN( "" );
+			//XST::CDebug::PrintDebugLN( "" );
 			vecPos.z = m_Info.vecPagePosition.y + uTileY * ( (m_Info.TileVertexCount.y-1) * vecStep.y );
 			
 		}

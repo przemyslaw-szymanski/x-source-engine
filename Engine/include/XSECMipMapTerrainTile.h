@@ -40,16 +40,18 @@ namespace XSE
 	class XST_API CMipMapTerrainTile
 	{
 		friend class CMipMapPagingTerrain;
+		friend class CMipMapTerrainPage;
 		friend class CTerrainSystem;
 
 		public:
 
 			struct SInfo
 			{
-				CPoint		TilePart;
-				CPoint		VertexRange; // for debug only
-				ul32		ulVertexBufferOffset; // offset bytes in global (page) vertex buffer
-				ul32		ulStartVertex; // start vertex for this tile
+				CPoint					TilePart;
+				CPoint					VertexRange; // for debug only
+				ul32					ulVertexBufferOffset; // offset bytes in global (page) vertex buffer
+				ul32					ulStartVertex; // start vertex for this tile
+				const IVertexBuffer*	pVB;
 			};
 
 		public:
@@ -120,6 +122,7 @@ namespace XSE
 			CMipMapTerrainTile*	m_apNeighbours[ 4 ];
 			u32					m_uiLOD = 0;
 			MIPMAP_TERRAIN_STITCH_TYPE	m_eStitchType = MipMapTerrainStitchTypes::NONE;
+			xst_vector<bool>::iterator				m_pbIsVisible; // a pointer to a bool array from MipMapPagingTerrain (set in Init method)
 	};
 }//xse
 #endif
