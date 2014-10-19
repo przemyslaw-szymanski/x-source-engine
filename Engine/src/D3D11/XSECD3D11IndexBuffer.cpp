@@ -77,7 +77,11 @@ namespace XSE
 			}
 
 			ul32 ulDataSize = m_IndexData.GetSize();
-			//TODO: check whether ulDataSize == 0 and log it with warning. There is an D3D error is no indices are set
+			if( ulDataSize == 0 )
+			{
+				XST_LOG_ERR( "Index data size == 0. There is no indices to set." );
+				return XST_FAIL;
+			}
 			const void* pData = m_IndexData.GetData();
 
 			/*for(u32 i = 0; i < m_IndexData.GetIndexCount(); ++i)

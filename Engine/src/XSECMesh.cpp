@@ -23,12 +23,14 @@ namespace XSE
 			m_RenderMethod( &CMesh::_Render )
 		{
             m_vLODs.resize( 1 );
+			m_pCurrentLOD = &m_vLODs[0];
 		}
 
 		CMesh::CMesh() :
 			m_pRS( XSE::CEngine::GetSingletonPtr()->GetRenderSystem() )
 		{
             m_vLODs.resize( 1 );
+			m_pCurrentLOD = &m_vLODs[0];
 		}
 
 		CMesh::CMesh(IRenderSystem* pRS, IInputLayout* pIL, XSE_IRESOURCE_DECL_PARAMS) :	
@@ -46,6 +48,7 @@ namespace XSE
 			//m_pVertexBuffer = m_pCurrentLOD->pVertexBuffer;
 			//m_pIndexBuffer = m_pCurrentLOD->pIndexBuffer;
             m_vLODs.resize( 1 );
+			m_pCurrentLOD = &m_vLODs[0];
 		}
 
 		CMesh::~CMesh()
@@ -175,7 +178,7 @@ namespace XSE
 			this->m_pSceneNode = pNode;
 		}
 
-		void CMesh::SetInputLayout(IInputLayout* pIL)
+		void CMesh::SetInputLayout(const IInputLayout* pIL)
 		{
 			xst_assert( pIL != xst_null, "(CMesh::SetInputLayout)" );
 			this->m_pInputLayout = pIL;

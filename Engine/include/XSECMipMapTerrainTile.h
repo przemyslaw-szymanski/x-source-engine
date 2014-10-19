@@ -48,8 +48,8 @@ namespace XSE
 			{
 				CPoint		TilePart;
 				CPoint		VertexRange; // for debug only
-				ul32		ulVertexBufferOffset; // offset in global (page) vertex buffer
-				ul32		ulVertexBufferDataSize; // data size of the tile. Offset is a begin and offset + dataSize is end
+				ul32		ulVertexBufferOffset; // offset bytes in global (page) vertex buffer
+				ul32		ulStartVertex; // start vertex for this tile
 			};
 
 		public:

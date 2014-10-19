@@ -7,14 +7,18 @@
 #include "XSECRenderQueueElement.h"
 #include "XSECMeshManager.h"
 #include "XSECModelManager.h"
+#include "XSECMaterialManager.h"
 #include "XSECSceneNode.h"
 #include "XSECImageManager.h"
+#include "XSEIPass.h"
+#include "XSEITechnique.h"
 #include <XSTCToString.h>
 namespace XSE
 {
 	#define CALC_XY(_x, _y, _width) ( (_x) + (_y) * (_width) )
 
 	Vec3* g_avecNormals = xst_null;
+	bool g_bCCW = true;
 
 	void DebugPrintVB(MeshPtr& pMesh)
 	{
@@ -37,6 +41,7 @@ namespace XSE
 		m_pSceneMgr( pSceneMgr ),
 		m_bTileLocked( false )
 	{
+		this->m_bManualRendering = true;
 	}
 
 	CMipMapPagingTerrain::~CMipMapPagingTerrain()
@@ -179,6 +184,8 @@ namespace XSE
 		m_vPageVisibility.resize( uPageCount, false );
 		m_vpVertexBuffers.resize( uPageCount );
 
+		this->m_pMaterial = CMaterialManager::GetSingletonPtr( )->GetDefaultMaterial();
+
 		//Load heightmap images
 		if( XST_FAILED( LoadImages( Options.vHeightmaps ) ) )
 		{
@@ -315,7 +322,45 @@ namespace XSE
 
 	void CMipMapPagingTerrain::_RenderNormal(XSE::IRenderSystem *pRS)
 	{
-		
+		IIndexBuffer* pIB = m_vIndexBuffers[0].pIndexBuffer.GetPtr();
+		Mtx4 mtxTransform = Mtx4::IDENTITY;
+
+		pRS->SetInputLayoutWithCheck( m_pInputLayout );
+		CMaterial* pMat = m_pMaterial.GetPtr();
+		ITechnique* pTech = pMat->GetCurrentTechnique();
+		IPass* pPass;
+		IVertexShader* pVS;
+		IPixelShader* pPS;
+		for(u32 i = 0; i < pTech->GetPassCount(); ++i)
+		{
+			pPass = pTech->GetPass( i );
+			pVS = pPass->GetVertexShader().GetPtr();
+			pPS = pPass->GetPixelShader().GetPtr();
+
+			//Set shaders
+			pRS->SetVertexShaderWithCheck( pVS );
+			pRS->SetPixelShaderWithCheck( pPS );
+				
+			//Do transformations
+			pRS->SetMatrix( MatrixTypes::WORLD, mtxTransform );
+			//Update shaders input
+			pRS->UpdateObjectInputs();
+
+			for( auto& Page : m_vPages )
+			{
+				const auto& Info = Page.m_Info;
+				
+				pRS->SetVertexBuffer( Info.pVB );
+				//Draw object
+				for( u32 t = 0; t < Info.uTileCount; ++t )
+				{
+					const auto& TileInfo = Info.aTiles[ t ].m_Info;
+					pIB = GetIndexBuffer( 0, MipMapTerrainStitchTypes::RIGHT ).pIndexBuffer.GetPtr();
+					pRS->SetIndexBufferWithCheck( pIB );
+					pRS->DrawIndexed( pIB->GetIndexCount(), 0, TileInfo.ulStartVertex );
+				}
+			}
+		}
 	}
 
 	void CMipMapPagingTerrain::SetMaterial(MaterialPtr pMat)
@@ -326,7 +371,6 @@ namespace XSE
 
 	void CMipMapPagingTerrain::SetTileInfo(CMipMapTerrainTile::SInfo* pInfoOut)
 	{
-		
 	}
 
 	i32 CMipMapPagingTerrain::CreateVertexBuffers()
@@ -650,28 +694,26 @@ namespace XSE
 
 		if( pOptionsOut->TileVertexCount.x % 2 == 0 )
 		{
-			pOptionsOut->TileVertexCount.x -= 1;
+			pOptionsOut->TileVertexCount.x += 1;
 		}
 
 		if( pOptionsOut->TileVertexCount.y % 2 == 0 )
 		{
-			pOptionsOut->TileVertexCount.y -= 1;
+			pOptionsOut->TileVertexCount.y += 1;
 		}
 
 		if( pOptionsOut->PageVertexCount.x % 2 == 0 )
 		{
-			pOptionsOut->TileVertexCount.x -= 1;
+			pOptionsOut->TileVertexCount.x += 1;
 		}
 
 		if( pOptionsOut->PageVertexCount.y % 2 == 0 )
 		{
-			pOptionsOut->TileVertexCount.y -= 1;
+			pOptionsOut->TileVertexCount.y += 1;
 		}
 
 		u32 uiVertCount = pOptionsOut->PageVertexCount.x - 1 * pOptionsOut->PageVertexCount.y - 1; //convert to even values
 		u32 uiTileVertCount = pOptionsOut->TileVertexCount.x - 1 * pOptionsOut->TileVertexCount.y - 1; //convert to even values
-
-
 
 		return iResult;
 	}
@@ -679,10 +721,17 @@ namespace XSE
 	void CMipMapPagingTerrain::_OnAddToRenderQueue(CRenderQueueElement* pQueue)
 	{
 		XSTSimpleProfiler();
-		/*for(u32 i = 0; i < m_vTiles.size(); ++i)
+		/*for( auto& Page : m_vPages )
 		{
-			pQueue->AddObject( m_vTiles[ i ]->m_pMesh );
+			Page.m_pMesh->SetVertexBuffer( VertexBufferWeakPtr(Page.m_Info.pVB) );
+			Page.m_pMesh->SetIndexBuffer( m_vIndexBuffers[0].pIndexBuffer );
+			pQueue->AddObject( Page.m_pMesh.GetPtr() );
 		}*/
+
+		SBoxOptions bo;
+		bo.vecSize = Vec3(100,100, 100 );
+		MeshPtr pMeshBox = CMeshManager::GetSingletonPtr( )->CreateMesh( "tmp_terr_box", m_pInputLayout, BasicShapes::BOX, &bo, "terrain" );
+		pQueue->AddObject( pMeshBox );
 	}
 
 	void CMipMapPagingTerrain::_SetSceneNode(CSceneNode* pNode)
@@ -694,6 +743,11 @@ namespace XSE
 		{
 			//m_vTiles[ i ]->m_pMesh->_SetSceneNode( pNode );
 			pNode->AddUniqueObject( m_vTiles[ i ]->m_pMesh );
+		}*/
+		/*pNode->ReserveObjects( m_vPages.size() + 16 );
+		for( auto& Page : m_vPages )
+		{
+			pNode->AddUniqueObject( Page.m_pMesh );
 		}*/
 	}
 
@@ -854,7 +908,7 @@ namespace XSE
 
 			for(u32 x = 0; x < uiWidth; x += uiLODStep)
 			{
-				_CalcQuadCW( &IData, x, z, &uiCurrTri, uiLODStep, bBackslash );
+				_CalcQuadCCW( &IData, x, z, &uiCurrTri, uiLODStep, bBackslash );
 				bBackslash = !bBackslash;
 				Info.uiCurrID = uiCurrTri * 3;
 				Info.uiCurrX = x;
@@ -884,7 +938,7 @@ namespace XSE
 			bool bBackslash = ulQuad % 2 == 0;
 			for(u32 x = 0; x < uiWidth - uiLODStep; x += uiLODStep)
 			{
-				_CalcQuadCW( &IData, x, z, &uiCurrTri, uiLODStep, bBackslash );
+				_CalcQuadCCW( &IData, x, z, &uiCurrTri, uiLODStep, bBackslash );
 				bBackslash = !bBackslash;
 			}
 			ulQuad++;
@@ -904,20 +958,42 @@ namespace XSE
 			//if( Info.uiCurrY % 2 == 0 )
 			if( Info.uiCurrItrY % 2 == 0 )
 			{
-				//Left down vertex is at index -5
-				/* /| */
-				uiPos = Info.uiCurrID - 1;
+				if( g_bCCW )
+				{
+					// Quad calculations: 
+					// Left triangle: uiIds[ LEFT_UP ], uiIds[ LEFT_DOWN ], uiIds[ RIGHT_UP ]
+					// Right triangle: uiIds[ RIGHT_DOWN ], uiIds[ RIGHT_UP ], uiIds[ LEFT_DOWN ]
+					// Right down vertex is at position -3
+					uiPos = Info.uiCurrID - 3;
+				}
+				else
+				{
+					//Left down vertex is at index -5
+					/* /| */
+					uiPos = Info.uiCurrID - 1;
+				}
 				uiId = CALC_XY( Info.uiCurrX + Info.uiLODStep, Info.uiCurrY + Info.uiNextLODStep, Info.uiVertCountX );
-				pData->SetIndex( uiPos, uiId );
 			}
 			else
 			{
-				//Left up vertex is at index -2
-				/* \| */
-				uiPos = Info.uiCurrID - 2;
+				if( g_bCCW )
+				{
+					// Quad calculations: 
+					// Left triangle: uiIds[ LEFT_UP ], uiIds[ LEFT_DOWN ], uiIds[ RIGHT_DOWN ]
+					// Right triangle: uiIds[ RIGHT_UP ], uiIds[ LEFT_UP ], uiIds[ RIGHT_DOWN ]
+					// Right up vertex is at position -3
+					uiPos = Info.uiCurrID - 3;
+				}
+				else
+				{
+					//Left up vertex is at index -2
+					/* \| */
+					uiPos = Info.uiCurrID - 2;
+				}
 				uiId = CALC_XY( Info.uiCurrX + Info.uiLODStep, Info.uiCurrY + Info.uiLODStep, Info.uiVertCountX );
-				pData->SetIndex( uiPos, uiId );
+				
 			}
+			pData->SetIndex( uiPos, uiId );
 		}
 	}
 
@@ -930,20 +1006,41 @@ namespace XSE
 			//if( Info.uiCurrY % 2 == 0 )
 			if( Info.uiCurrItrY % 2 == 0 )
 			{
-				//Left down vertex is at index -5
 				/* |\ */
-				uiPos = Info.uiCurrID - 6;
+				if( g_bCCW )
+				{
+					// Quad calculations: 
+					// Left triangle: leftUp, leftDown, rightDown
+					// Right triangle: rightUp, leftUp, rightDown
+					// Left down vertex for left triangle is at index -4
+					uiPos = Info.uiCurrID - 4 - 1; // sub -1 because we are on a next working index
+				}
+				else
+				{
+					//Left down vertex is at index -5
+					uiPos = Info.uiCurrID - 6;
+				}
 				uiId = CALC_XY( Info.uiCurrX, Info.uiCurrY + Info.uiNextLODStep, Info.uiVertCountX );
-				pData->SetIndex( uiPos, uiId );
 			}
 			else
 			{
-				//Left up vertex is at index -5
 				/* |/ */
-				uiPos = Info.uiCurrID - 5;
+				if( g_bCCW )
+				{
+					// Quad calculations: 
+					// Left triangle: leftUp, leftDown, rightUp
+					// Right triangle: rightDown, rightUp, leftDown
+					// Left up vertex for left triangle is at index -5
+					uiPos = Info.uiCurrID - 5 - 1;
+				}
+				else
+				{
+					//Left up vertex is at index -5
+					uiPos = Info.uiCurrID - 5;	
+				}
 				uiId = CALC_XY( Info.uiCurrX + Info.uiLODStep, Info.uiCurrY, Info.uiVertCountX );
-				pData->SetIndex( uiPos, uiId );
 			}
+			pData->SetIndex( uiPos, uiId );
 		}
 	}
 

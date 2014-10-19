@@ -142,7 +142,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	}
 
 	XSE::STerrainOptions Options;
-	Options.Size = XSE::CPoint( 65, 65 );
+	Options.Size = XSE::CPoint( 300, 300 );
 	u32 uiCount = 11;
 	Options.PageCount = XSE::CPoint( 1, 1 );
 	Options.vHeightmaps.push_back( "heightmap04.jpg" );
@@ -152,10 +152,10 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	//Options.TileVertexCount = XSE::CPoint( 16 + 1 );
 	Options.PageVertexCount = XSE::CPoint( 16 + 1 );
 	Options.TileVertexCount = XSE::CPoint( 4 + 1 );
-	Options.uiLODCount = 3;
-	Options.bColor = true;
+	Options.uiLODCount = 2;
+	//Options.bColor = true;
 	Options.bBinormal = Options.bNormal = Options.bTangent = Options.bTexCoord = false;
-	Options.bNormal = true;
+	//Options.bNormal = true;
 
 	{
 		XSTSimpleProfiler2( "CreateTerrain");

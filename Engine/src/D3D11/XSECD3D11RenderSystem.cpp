@@ -722,7 +722,7 @@ namespace XSE
 			m_pDeviceContext->UpdateSubresource( pBuff->m_pD3DBuffer, 0, xst_null, DstData.GetData(), DstData.GetSize(), 0 );
 		}
 
-		i32	CRenderSystem::SetVertexBuffer(const IVertexBuffer* pVB, const ul32& ulVertexSize)
+		i32	CRenderSystem::SetVertexBuffer(const IVertexBuffer* pVB, cul32& ulVertexSize, cul32& ulOffset)
 		{
 			xst_assert2( ulVertexSize > 0 );
 			const CVertexBuffer* pBuff = (CVertexBuffer*)pVB;
@@ -735,7 +735,7 @@ namespace XSE
 
 			m_pDeviceContext->IASetPrimitiveTopology( pBuff->m_eD3DTopologyType );
 			u32 uiStrides = ulVertexSize;
-			u32 uiOffsets = 0;
+			u32 uiOffsets = ulOffset;
 			m_pDeviceContext->IASetVertexBuffers( 0, 1, &pBuff->m_pD3DBuffer, &uiStrides, &uiOffsets );
 #if defined (XSE_RENDERER_DEBUG)
 			++g_Diagnostics.ulSetVertexBufferCount;

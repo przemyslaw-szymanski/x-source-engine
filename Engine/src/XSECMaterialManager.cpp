@@ -122,7 +122,7 @@ namespace XSE
 
 	MaterialPtr CMaterialManager::GetDefaultMaterial(const Resources::CMesh *pMesh)
 	{
-		IInputLayout* pIL = pMesh->GetInputLayout();
+		const IInputLayout* pIL = pMesh->GetInputLayout();
 		xst_assert( pIL != xst_null, "(CMaterialManager::GetDefaultMaterial) Input layout must be set" );
 		//Get or create default material for this input layout
 		DefaultMatMap::iterator Itr;

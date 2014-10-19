@@ -22,6 +22,8 @@ namespace XSE
 
 					void		Delete();
 
+					i32			CopyFrom(const CIndexData& Other);
+
 			xst_fi	cu8*		GetData() const
 								{ return m_Data.GetData(); }
 

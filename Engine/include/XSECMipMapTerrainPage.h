@@ -10,6 +10,7 @@ namespace XSE
 
 	class CMipMapTerrainPage
 	{
+		friend class CMipMapPagingTerrain;
 	public:
 
 		struct SVertexData
@@ -84,7 +85,7 @@ namespace XSE
 		CMipMapPagingTerrain*	m_pTerrain = xst_null;
 		CBoundingVolume			m_BoundingVolume;
 		SInfo					m_Info;
-		MeshPtr					m_pMesh; // Not drawable
+		//MeshPtr					m_pMesh; // Not drawable
 		xst_vector<Vec3>		m_vVertices;
 		xst_vector<Vec3>		m_vNormals;
 	};

@@ -60,6 +60,7 @@ namespace XST
 
 		xst_memcpy( m_pData, ulDataSize, pData, ulDataSize );
 		m_pCurrentPosition = m_pData;
+		m_ulCurrentSize = ulDataSize;
 		return XST_OK;
 	}
 

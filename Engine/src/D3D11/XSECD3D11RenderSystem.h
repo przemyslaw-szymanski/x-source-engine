@@ -123,7 +123,7 @@ namespace XSE
 
 						i32					SetVertexBuffer(const IVertexBuffer* pVB);
 
-						i32					SetVertexBuffer(const IVertexBuffer* pVB, const ul32& ulVertexSize);
+						i32					SetVertexBuffer(const IVertexBuffer* pVB, cul32& ulVertexSize, cul32& ulOffsets = 0);
 
 						i32					SetPixelShader(const Resources::IPixelShader* pPS);
 

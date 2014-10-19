@@ -100,6 +100,19 @@ namespace XSE
 		return XST_OK;
 	}
 
+	i32 CIndexData::CopyFrom(const CIndexData& Other)
+	{
+		xst_assert( m_ulBufferSize == Other.m_ulBufferSize, "(CIndexData::CopyFrom) Invalid buffer size" );
+
+		if( XST_FAILED( m_Data.SetData( Other.m_Data ) ) )
+		{
+			return XST_FAIL;
+		}
+		m_ulIndexCount = Other.m_ulIndexCount;
+		m_ulTriangleCount = Other.m_ulTriangleCount;
+		return XST_OK;
+	}
+
 	void CIndexData::SetTriangle(cul32& ulTriangleId, cu16& usIndex0, cu16& usIndex1, cu16& usIndex2)
 	{
 		xst_assert( ulTriangleId < m_ulTriangleCount, "(CIndexData::SetTriangle) TriangleId out of bounds" );

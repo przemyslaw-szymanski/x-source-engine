@@ -12,11 +12,11 @@ namespace XSE
 {
 	using namespace Resources;
 
-	i32 CreateBox(CMesh* pMesh, IInputLayout* pIL, const SBoxOptions& Options);
-	i32 CreateBox(CMesh* pMesh, IInputLayout* pIL, const SLineBoxOptions& Options);
-	i32 CreatePlane(CMesh* pMesh, IInputLayout* pIL, const SPlaneOptions& Opts);
-	i32 CreateRect2D(CMesh* pMesh, IInputLayout* pIL, const SRect2DOptions& Opts);
-	i32 CreateCircle( CMesh* pMesh, IInputLayout* pIL, const SCircleOptions& Opts );
+	i32 CreateBox(CMesh* pMesh, const IInputLayout* pIL, const SBoxOptions& Options);
+	i32 CreateBox(CMesh* pMesh, const IInputLayout* pIL, const SLineBoxOptions& Options);
+	i32 CreatePlane(CMesh* pMesh, const IInputLayout* pIL, const SPlaneOptions& Opts);
+	i32 CreateRect2D(CMesh* pMesh,  const IInputLayout* pIL, const SRect2DOptions& Opts);
+	i32 CreateCircle( CMesh* pMesh, const  IInputLayout* pIL, const SCircleOptions& Opts );
 
 	ch8 g_astrName[ 128 ];
 	xst_astring g_strName;
@@ -195,7 +195,7 @@ namespace XSE
 		return CreateMesh( strName, pIL, eShape, pShapeOptions, strGroupName );
 	}
 
-	MeshWeakPtr	CMeshManager::CreateMesh(xst_castring& strName, IInputLayout* pIL, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName)
+	MeshWeakPtr	CMeshManager::CreateMesh(xst_castring& strName, const IInputLayout* pIL, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName)
 	{
 		MeshWeakPtr pMesh = CreateMesh( strName, pIL, strGroupName );
 		if( pMesh->m_bIsCloned )
@@ -279,7 +279,7 @@ namespace XSE
 		return pMesh;
 	}
 
-	MeshWeakPtr	CMeshManager::CreateMesh(xst_castring& strName, IInputLayout* pIL,  xst_castring& strGroupName)
+	MeshWeakPtr	CMeshManager::CreateMesh(xst_castring& strName, const IInputLayout* pIL,  xst_castring& strGroupName)
 	{
 		bool bCreated = true;
 		ResourceWeakPtr pRes;
@@ -293,7 +293,7 @@ namespace XSE
 		}
 
 		MeshWeakPtr pMesh( pRes );
-		pMesh->m_pInputLayout = pIL;
+		pMesh->SetInputLayout( pIL );
 
 		if( !bCreated )
 		{
@@ -427,7 +427,7 @@ namespace XSE
 		return pMesh;
 	}
 
-	i32 CreateCircle( CMesh* pMesh, IInputLayout* pIL, const SCircleOptions& Options )
+	i32 CreateCircle( CMesh* pMesh, const IInputLayout* pIL, const SCircleOptions& Options )
 	{
 		xst_vector< Vec3 > vPoints;
 		f32 fAngle = 0.0f;
@@ -471,7 +471,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32 CreateBox(CMesh* pMesh, IInputLayout* pIL, const SBoxOptions& Options)
+	i32 CreateBox(CMesh* pMesh, const IInputLayout* pIL, const SBoxOptions& Options)
 	{
 		bool bIsNormal = pIL->IsNormal();
 		ul32 ulVertCount = ( bIsNormal )? 24 : 8; //if there are normals use more vertices
@@ -625,7 +625,7 @@ namespace XSE
 	}
 
 
-	i32 CreateBox(CMesh* pMesh, IInputLayout* pIL, const SLineBoxOptions& Options)
+	i32 CreateBox(CMesh* pMesh, const IInputLayout* pIL, const SLineBoxOptions& Options)
 	{
 
 		ul32 ulVertCount = 8; 
@@ -745,7 +745,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32 CreatePlane(CMesh* pMesh, IInputLayout* pIL, const SPlaneOptions& Opts)
+	i32 CreatePlane(CMesh* pMesh, const IInputLayout* pIL, const SPlaneOptions& Opts)
 	{
 		bool bIsNormal = pIL->IsNormal();
 		u16 ulVVertCount = (u16)Opts.vecVertexCount.x;
@@ -863,7 +863,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32 CreateRect2D(CMesh* pMesh, IInputLayout* pIL, const SRect2DOptions& Opts)
+	i32 CreateRect2D(CMesh* pMesh, const IInputLayout* pIL, const SRect2DOptions& Opts)
 	{
 		Vec3 vecScale( 100 ); 
 		Vec2 vecWidth( 0, 100 );

@@ -76,7 +76,7 @@ namespace XSE
 			virtual i32					AddSupportablePixelShaderProfile(xst_castring& strProfile) = 0;
 			virtual i32					SetInputLayout(const IInputLayout* pIL) = 0;
 			virtual i32					SetVertexBuffer(const IVertexBuffer* pVB) = 0;
-			virtual i32					SetVertexBuffer(const IVertexBuffer* pVB, const ul32& ulVertexSize) = 0;
+			virtual i32					SetVertexBuffer(const IVertexBuffer* pVB, cul32& ulVertexSize, cul32& ulOffset = 0) = 0;
 			virtual i32					SetPixelShader(const Resources::IPixelShader* pPS) = 0;
 			virtual i32					SetVertexShader(const Resources::IVertexShader* pVS ) = 0;
 			virtual i32					SetInputLayoutWithCheck(const IInputLayout* pIL) = 0;

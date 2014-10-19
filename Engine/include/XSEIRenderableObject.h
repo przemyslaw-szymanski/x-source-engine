@@ -58,7 +58,8 @@ namespace XSE
 			virtual const MaterialPtr&	GetMaterial() const
 										{ return m_pMaterial; }
 
-			virtual IInputLayout*		GetInputLayout() const
+			virtual 
+			const IInputLayout*			GetInputLayout() const
 										{ return m_pInputLayout; }
 
 			virtual	xst_fi	bool		IsManualRendering() const
@@ -108,7 +109,7 @@ namespace XSE
 
 			Mtx4					m_mtxTransform;
 			MaterialPtr				m_pMaterial;
-			IInputLayout*			m_pInputLayout;
+			const IInputLayout*		m_pInputLayout;
 			CRenderQueue*			m_pRenderQueue;
 			CSceneNode*				m_pSceneNode;
 			Vec3					m_vecWorldPosition;

@@ -30,13 +30,13 @@ namespace XSE
 
 					MeshWeakPtr			CreateMesh(xst_castring& strName, ul32 ulInputLayout, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName = DEFAULT_GROUP);
 
-					MeshWeakPtr			CreateMesh(xst_castring& strName, IInputLayout* pIL, xst_castring& strGroupName = DEFAULT_GROUP);
+					MeshWeakPtr			CreateMesh(xst_castring& strName, const IInputLayout* pIL, xst_castring& strGroupName = DEFAULT_GROUP);
 
 					MeshWeakPtr			CreateMesh(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
 
 					MeshWeakPtr			CreateMesh(xst_castring& strName, GroupWeakPtr pResourceGroup);
 
-					MeshWeakPtr			CreateMesh(xst_castring& strName, IInputLayout* pIL, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName = DEFAULT_GROUP);
+					MeshWeakPtr			CreateMesh(xst_castring& strName, const IInputLayout* pIL, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName = DEFAULT_GROUP);
 
 					MeshWeakPtr			LoadMesh(xst_castring& strName, xst_castring& strGroup = DEFAULT_GROUP);
 

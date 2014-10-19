@@ -53,12 +53,10 @@ namespace XSE
 				continue;
 
 			pMat = pObj->GetMaterial().GetPtr();
-
+			pObj->Update();
 			pTech = pMat->GetCurrentTechnique();
 			for(u32 i = 0; i < pTech->GetPassCount(); ++i)
 			{
-				pObj->Update();
-
 				pPass = pTech->GetPass( i );
 				pVS = pPass->GetVertexShader().GetPtr();
 				pPS = pPass->GetPixelShader().GetPtr();
@@ -99,11 +97,11 @@ namespace XSE
 	{
 		xst_assert( pObject != xst_null, "Null object" );
 
-		pObject->_OnAddToRenderQueue( this );
-
 		if( pObject->IsManualRendering() )
 		{
 			m_vManualRenderObjects.push_back( pObject );
+			pObject->_OnAddToRenderQueue( this );
+			return;
 		}
 
 		switch( pObject->GetObjectType() )
@@ -122,12 +120,14 @@ namespace XSE
 			case ObjectTypes::MESH:
 			{
 				m_vObjects.push_back( pObject );
+				pObject->_OnAddToRenderQueue( this );
 			}
 			break;
 
 			case ObjectTypes::TERRAIN:
 			{
-				
+				m_vObjects.push_back( pObject );
+				pObject->_OnAddToRenderQueue( this );
 			}
 			break;
 		}
