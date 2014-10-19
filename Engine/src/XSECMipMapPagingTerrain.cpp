@@ -1050,23 +1050,35 @@ namespace XSE
 		{
 			u32 uiPos, uiId;
 			//For even quads change right up vertex of the second triangle
-			//if( Info.uiCurrX % 2 == 0 )
 			if( Info.uiCurrItrX % 2 == 0 )
 			{
 				/* \| change to \/ */
-				//Right up vertex of the second triangle is at position -2
-				uiPos = Info.uiCurrID - 2;
+				if( g_bCCW )
+					// Quad calculations: 
+					// Left triangle: leftUp, leftDown, rightDown
+					// Right triangle: rightUp, leftUp, rightDown
+					// Right up vertex for left triangle is at index -3
+					uiPos = Info.uiCurrID - 3;
+				else
+					//Right up vertex of the second triangle is at position -2
+					uiPos = Info.uiCurrID - 2;
 				uiId = CALC_XY( Info.uiCurrX + Info.uiNextLODStep, Info.uiCurrY, Info.uiVertCountX );
-				pData->SetIndex( uiPos, uiId );
 			}
 			else //for odd quads degenerate first triangle
 			{
 				/* |/ change to / */
-				//Left up vertex of the first triangle is at position -5
-				uiPos = Info.uiCurrID - 5;
+				if( g_bCCW )
+					// Quad calculations: 
+					// Left triangle: leftUp, leftDown, rightUp
+					// Right triangle: rightDown, rightUp, leftDown
+					// Left up vertex for left triangle is at index -6
+					uiPos = Info.uiCurrID - 6;
+				else
+					//Left up vertex of the first triangle is at position -5
+					uiPos = Info.uiCurrID - 5;
 				uiId = CALC_XY( Info.uiCurrX + Info.uiLODStep, Info.uiCurrY, Info.uiVertCountX );
-				pData->SetIndex( uiPos, uiId );
 			}
+			pData->SetIndex( uiPos, uiId );
 		}
 	}
 
@@ -1082,19 +1094,32 @@ namespace XSE
 			if( Info.uiCurrItrX % 2 == 0 )
 			{
 				/* /| to /\ */
-				//Right down vertex of the second triangle is at position -2
-				uiPos = Info.uiCurrID - 1;
+				if( g_bCCW )
+					// Quad calculations: 
+					// Left triangle: leftUp, leftDown, rightDown
+					// Right triangle: rightUp, leftUp, rightDown
+					// Right down vertex for left triangle is at index -1
+					uiPos = Info.uiCurrID - 1;
+				else
+					//Right down vertex of the second triangle is at position -2
+					uiPos = Info.uiCurrID - 1;
 				uiId = CALC_XY( Info.uiCurrX + Info.uiNextLODStep, Info.uiCurrY + Info.uiLODStep, Info.uiVertCountX );
-				pData->SetIndex( uiPos, uiId );
 			}
 			else //for odd quads degenerate first triangle
 			{
 				/* |\ change to \ */
-				//Left up vertex of the first triangle is at position -5
-				uiPos = Info.uiCurrID - 6;
+				if( g_bCCW )
+					// Quad calculations: 
+					// Left triangle: leftUp, leftDown, rightUp
+					// Right triangle: rightDown, rightUp, leftDown
+					// Left down vertex for left triangle is at index -1
+					uiPos = Info.uiCurrID - 1;
+				else
+					//Left up vertex of the first triangle is at position -5
+					uiPos = Info.uiCurrID - 6;
 				uiId = CALC_XY( Info.uiCurrX, Info.uiCurrY, Info.uiVertCountX );
-				pData->SetIndex( uiPos, uiId );
 			}
+			pData->SetIndex( uiPos, uiId );
 		}
 	}
 
