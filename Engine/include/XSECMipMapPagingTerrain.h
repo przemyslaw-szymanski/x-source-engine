@@ -167,22 +167,37 @@ namespace XSE
 					void		_SetSceneNode(CSceneNode* pNode);
 	
 					void		_CalcBaseIBStitch(u32 uiLOD, IndexBufferPtr& pIB, pfnCalcIBStitch Func1 = &CMipMapPagingTerrain::_CalcBaseIBStitchEmpty, pfnCalcIBStitch Func2 = &CMipMapPagingTerrain::_CalcBaseIBStitchEmpty);
-
 					void		_CalcBaseIBStitchEmpty(CIndexData* pData, const SCalcIBStitchInfo& Info) {}
-					void		_CalcBaseIBStitchRight(CIndexData* pData, const SCalcIBStitchInfo& Info);
-					void		_CalcBaseIBStitchLeft(CIndexData* pData, const SCalcIBStitchInfo& Info);
-					void		_CalcBaseIBStitchUp(CIndexData* pData, const SCalcIBStitchInfo& Info);
-					void		_CalcBaseIBStitchDown(CIndexData* pData, const SCalcIBStitchInfo& Info);
+
+					void		_CalcBaseIBStitchRightCCW(CIndexData* pData, const SCalcIBStitchInfo& Info);
+					void		_CalcBaseIBStitchLeftCCW(CIndexData* pData, const SCalcIBStitchInfo& Info);
+					void		_CalcBaseIBStitchUpCCW(CIndexData* pData, const SCalcIBStitchInfo& Info);
+					void		_CalcBaseIBStitchDownCCW(CIndexData* pData, const SCalcIBStitchInfo& Info);
+
+					void		_CalcBaseIBStitchRightCW(CIndexData* pData, const SCalcIBStitchInfo& Info);
+					void		_CalcBaseIBStitchLeftCW(CIndexData* pData, const SCalcIBStitchInfo& Info);
+					void		_CalcBaseIBStitchUpCW(CIndexData* pData, const SCalcIBStitchInfo& Info);
+					void		_CalcBaseIBStitchDownCW(CIndexData* pData, const SCalcIBStitchInfo& Info);
 					
-					void		_CalcIBStitchDown(u32 uiLOD, IndexBufferPtr& pIB);
-					void		_CalcIBStitchDownLeft(u32 uiLOD, IndexBufferPtr& pIB);
-					void		_CalcIBStitchLeft(u32 uiLOD, IndexBufferPtr& pIB);
-					void		_CalcIBStitchNone(u32 uiLOD, IndexBufferPtr& pIB);
-					void		_CalcIBStitchRight(u32 uiLOD, IndexBufferPtr& pIB);
-					void		_CalcIBStitchRightDown(u32 uiLOD, IndexBufferPtr& pIB);
-					void		_CalcIBStitchUp(u32 uiLOD, IndexBufferPtr& pIB);
-					void		_CalcIBStitchUpLeft(u32 uiLOD, IndexBufferPtr& pIB);
-					void		_CalcIBStitchUpRight(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchDownCCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchDownLeftCCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchLeftCCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchNoneCCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchRightCCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchRightDownCCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchUpCCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchUpLeftCCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchUpRightCCW(u32 uiLOD, IndexBufferPtr& pIB);
+
+					void		_CalcIBStitchDownCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchDownLeftCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchLeftCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchNoneCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchRightCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchRightDownCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchUpCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchUpLeftCW(u32 uiLOD, IndexBufferPtr& pIB);
+					void		_CalcIBStitchUpRightCW(u32 uiLOD, IndexBufferPtr& pIB);
 
 					void		_CalcQuadCW(CIndexData* pData, cu32& uiX, cu32& uiY, u32* puiCurrTri, cu32& uiLODStep, bool bBackslashTriangle);
 

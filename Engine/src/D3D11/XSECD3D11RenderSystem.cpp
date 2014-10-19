@@ -518,7 +518,8 @@ namespace XSE
 		i32 CRenderSystem::EndRender()
 		{
 #if defined (XSE_RENDERER_DEBUG)
-			xst_memcpy( &m_Diagnostics, sizeof( SRSDiagnostics ), &g_Diagnostics, sizeof( SRSDiagnostics ) );
+			//xst_memcpy( &m_Diagnostics, sizeof( SRSDiagnostics ), &g_Diagnostics, sizeof( SRSDiagnostics ) );
+			m_Diagnostics = g_Diagnostics;
 			xst_zero( &g_Diagnostics, sizeof( SRSDiagnostics ) );
 #endif
 			return m_pSwapChain->Present( m_Options.bVSync, 0 );
