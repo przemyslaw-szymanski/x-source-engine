@@ -80,6 +80,11 @@ namespace XSE
 		return pRes;
 	}
 
+	i32 CImageManager::_CloneResource(Resources::IResource** ppDstOut, const Resources::IResource* pSrc, bool bFullClone)
+	{
+		return m_pImgSystem->CloneImage((Resources::IImage**)ppDstOut, (Resources::IImage*)pSrc, bFullClone);
+	}
+
 	i32 CImageManager::RegisterImageSystem(IImageSystem *pImgSystem, bool bAutoDestroy)
 	{
 		xst_assert( this->m_pMemoryMgr, "(CImageManager::RegisterImageSystem) The memory manager and it's memory pool are created. You should not change now." );

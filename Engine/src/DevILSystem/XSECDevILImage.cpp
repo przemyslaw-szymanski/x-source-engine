@@ -1,5 +1,6 @@
 #include "XSECDevILImage.h"
 #include "XSECDevILSystem.h"
+#include "XSEIResourceManager.h"
 
 namespace XSE
 {
@@ -40,7 +41,7 @@ namespace XSE
 
 		ImagePtr CImage::Clone() const
 		{
-			return this->m_pImageSystem->CloneImage( this );
+			return this->m_pResourceCreator->CloneResource( this );
 		}
 
 		void CImage::GetColor(cu32& uiPosition, XST::CColor* pColorOut) const

@@ -20,6 +20,7 @@ namespace XSE
 			virtual i32						PrepareResource(Resources::IResource* pResource) = 0;
 			virtual u32						GetResourceObjectSize() const = 0;
 			virtual bool					IsAutoDestroy() const = 0;
+			virtual i32						CloneResource(Resources::IResource** ppDstOut, const Resources::IResource* pSrc, bool bFullClone) { return XST_FAIL; }
 
 		protected:
 	};

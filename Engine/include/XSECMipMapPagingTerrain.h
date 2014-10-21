@@ -145,7 +145,7 @@ namespace XSE
 										{ return m_vIndexBuffers[ GetIndexBufferID( uiLOD, uiStitchType ) ]; }
 
 			virtual xst_fi	u32			GetIndexBufferID(u32 uiLOD, u32 uiStitchType) const
-										{ return uiStitchType + uiLOD * MipMapTerrainStitchTypes::_MAX_COUNT; }
+										{ xst_assert2( uiLOD < m_Options.uiLODCount ); return uiStitchType + uiLOD * MipMapTerrainStitchTypes::_MAX_COUNT; }
 
 			virtual xst_fi	u32			GetIndexBuffersID(u32 uiLOD) const
 										{ return uiLOD * MipMapTerrainStitchTypes::_MAX_COUNT; }
@@ -212,6 +212,8 @@ namespace XSE
 			BoolVec			m_vPageVisibility; // a bool array for each page
 			IBVec			m_vIndexBuffers;
 			VBVec			m_vpVertexBuffers; // vertex buffer pool for each page
+			VBVec			m_vpImpostorVertexBuffers; // vertex buffer pool for each page for rendering distant land
+			IIndexBuffer*	m_pImpostorIB;
 			CVertexData		m_VertexData; // one big vertex data buffer
 			CPoint			m_TileCount;
 			xst_vector<ImagePtr> m_vpImages; // heightmap images

@@ -41,6 +41,8 @@ namespace XSE
 					Resources::IResource*	_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup) xst_implement;
 					//i32						_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null);
 
+					i32						_CloneResource(Resources::IResource** ppDstOut, const Resources::IResource* pSrc, bool bFullClone) xst_implement;
+
 					void					_OnDestroy() xst_implement;
 
 		protected:

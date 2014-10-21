@@ -35,6 +35,8 @@ namespace XSE
 		XSE_DEVIL_FD( ILboolean, ilTexImage );
 		XSE_DEVIL_TD( ILuint, ilCloneCurImage )();
 		XSE_DEVIL_FD( ILuint, ilCloneCurImage );
+		XSE_DEVIL_TD( ILboolean, ilCopyImage )(ILuint src);
+		XSE_DEVIL_FD( ILboolean, ilCopyImage );
 		XSE_DEVIL_TD( ILboolean, iluScale )(ILuint, ILuint, ILuint);
 		XSE_DEVIL_FD( ILboolean, iluScale );
 		XSE_DEVIL_TD( void, iluImageParameter )(ILenum, ILenum);
@@ -132,6 +134,7 @@ namespace XSE
 			XSE_LOAD_FUNC3( ilCloneCurImage, m_hDll );
 			XSE_LOAD_FUNC3( iluScale, m_hILUDll );
 			XSE_LOAD_FUNC3( iluImageParameter, m_hILUDll );
+			XSE_LOAD_FUNC3( ilCopyImage, m_hDll );
 
 			return XST_OK;
 		}
@@ -174,50 +177,6 @@ namespace XSE
 			pImg->m_uiPixelCount = uiWidth * uiHeight;
 			pImg->m_ulDataSize = ilGetInteger( IL_IMAGE_SIZE_OF_DATA );
 		}
-
-		/*XST::IAllocator* CImageSystem::CreateMemoryManager(ul32 ulObjCount)
-		{
-			return xst_new XST::TCFreeListMemoryManager< CImage >( ulObjCount );
-		}*/
-						
-		/*void CImageSystem::DestroyMemoryManager(XST::IAllocator* pAllocator)
-		{
-			XST::TCFreeListMemoryManager< CImage >* pMgr = (XST::TCFreeListMemoryManager< CImage >*)pAllocator;
-			xst_delete( pMgr );
-		}*/
-
-		ImagePtr CImageSystem::CloneImage(const XSE::Resources::IImage *pImg)
-		{
-			CImage* pTmpImg = (CImage*)pImg;
-			xst_stringstream ssName;
-			ssName << XST::CTime::GetQPerfTickCount() << "_clone";
-
-			CImage* pImage = xst_new CImage(	this, pTmpImg->m_pResourceCreator, 0, ssName.str(), 
-												pTmpImg->m_iResourceType, pTmpImg->m_iResourceState, xst_null );
-
-			ilBindImage( pTmpImg->m_uiImgId );
-
-			//pImage->m_bDirty = false;
-			pImage->m_bManual = false;
-			pImage->SetDataType( pTmpImg->m_eDataType);
-			pImage->SetFormat( pTmpImg->m_eFormat );
-			pImage->m_uiBPP = pTmpImg->m_uiBPP;
-			pImage->m_uiBytesPerChannel = pTmpImg->m_uiBytesPerChannel;
-			pImage->m_uiBytesPerPixel = pTmpImg->m_uiBytesPerPixel;
-			pImage->m_uiChannelCount = pTmpImg->m_uiChannelCount;
-			pImage->m_uiFormat = pTmpImg->m_uiFormat;
-			pImage->m_uiWidth = pTmpImg->m_uiWidth;
-			pImage->m_uiHeight = pTmpImg->m_uiHeight;
-			pImage->m_uiImgId = ilCloneCurImage();
-			pImage->m_uiPixelCount = pTmpImg->m_uiPixelCount;
-			pImage->m_uiType = pTmpImg->m_uiType;
-			pImage->m_ulDataSize = pTmpImg->m_ulDataSize;
-			pImage->m_pImageSystem = pTmpImg->m_pImageSystem;
-			ilBindImage( pImage->m_uiImgId );
-			pImage->m_pData = ilGetData();
-
-			return ImagePtr( pImage );
-		}
 		
 		Resources::IResource*	CImageSystem::CreateResource(IResourceManager* pCreator, ul32 ulResHandle, xst_castring& strResName, XST::IAllocator* pAllocator)
 		{
@@ -230,6 +189,55 @@ namespace XSE
 
 			return pImg;
 		}
+
+		i32 CImageSystem::CloneResource(Resources::IResource** ppDstOut, const Resources::IResource* pISrc, bool bFullClone)
+		{
+			CImage* pDst = (CImage*)*ppDstOut;
+			CImage* pSrc = (CImage*)pISrc;
+
+			if( !pSrc->m_uiImgId )
+			{
+				XST_LOG_ERR( "Source image is not created" );
+				return XST_FAIL;
+			}
+
+			if( pDst->m_uiImgId )
+			{
+				DestroyResource( pDst );
+			}
+
+			pDst->m_uiImgId = ilGenImage();
+			ilBindImage( pDst->m_uiImgId );
+			if( bFullClone )
+			{
+				if( ilCopyImage( pSrc->m_uiImgId ) == IL_FALSE )
+				{
+					XST_LOG_ERR( "Unable to copy the image" );
+					return XST_FAIL;
+				}
+			}
+
+			pDst->m_bManual = false;
+			pDst->m_bDestroyed = false;
+			pDst->m_eDataType = pSrc->m_eDataType;
+			pDst->m_eFormat = pSrc->m_eFormat;
+			pDst->m_iResourceState = pSrc->m_iResourceState;
+			pDst->m_iResourceType = pSrc->m_iResourceType;
+			pDst->m_pData = ilGetData();
+			pDst->m_pImageSystem = pSrc->m_pImageSystem;
+			pDst->m_pResourceFile = pSrc->m_pResourceFile;
+			pDst->m_uiBPP = pSrc->m_uiBPP;
+			pDst->m_uiBytesPerChannel = pSrc->m_uiBytesPerChannel;
+			pDst->m_uiBytesPerPixel = pSrc->m_uiBytesPerPixel;
+			pDst->m_uiChannelCount = pSrc->m_uiChannelCount;
+			pDst->m_uiFormat = pSrc->m_uiFormat;
+			pDst->m_uiHeight = pSrc->m_uiHeight;
+			pDst->m_uiPixelCount = pSrc->m_uiPixelCount;
+			pDst->m_uiType = pDst->m_uiType;
+			pDst->m_uiWidth = pSrc->m_uiWidth;
+
+			return XST_OK;
+		}
 		
 		void CImageSystem::DestroyResource(Resources::IResource* pResource)
 		{
@@ -241,7 +249,8 @@ namespace XSE
 				xst_deletea( pImage->m_pData );
 			}
 
-			ilDeleteImages( 1, &pImage->m_uiImgId );
+			if( pImage->m_uiImgId )
+				ilDeleteImages( 1, &pImage->m_uiImgId );
 			
 			pImage->m_uiImgId			= 0;
 			pImage->m_uiWidth			= 0;

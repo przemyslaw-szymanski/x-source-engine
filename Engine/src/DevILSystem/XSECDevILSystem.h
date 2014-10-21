@@ -20,8 +20,6 @@ namespace XSE
 
 						i32						Init();
 
-						ImagePtr				CloneImage(const Resources::IImage* pImg);
-
 						i32						SaveImage(xst_castring& strFileName, Resources::IImage* pImg);
 
 						void					ScaleImage(Resources::IImage* pImage, cu32& uiWidth, cu32& uiHeight);
@@ -30,7 +28,9 @@ namespace XSE
 						
 						//void					DestroyMemoryManager(XST::IAllocator* pAllocator);  
 						
-						Resources::IResource*	CreateResource(IResourceManager* pCreator, ul32 ulResHandle, xst_castring& strResName, XST::IAllocator* pAllocator);
+						Resources::IResource*	CreateResource(IResourceManager* pCreator, ul32 ulResHandle, xst_castring& strResName, XST::IAllocator* pAllocator) xst_implement;
+
+						i32						CloneResource(Resources::IResource** ppDstOut, const Resources::IResource* pSrc, bool bFullClone) xst_implement;
 						
 						void					DestroyResource(Resources::IResource* pResource);
 						

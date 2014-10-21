@@ -417,10 +417,17 @@ namespace XSE
 			return pNewRes; 
 		}
 
-		if( XST_FAILED( PrepareResource( pNewRes ) ) )
+		/*if( XST_FAILED( PrepareResource( pNewRes ) ) )
 		{
 			this->DestroyResource( pNewRes->GetResourceGroupHandle() );
 			return ResourcePtr();
+		}*/
+
+		Resources::IResource* pTmp = pNewRes.GetPtr();
+		if( XST_FAILED( _CloneResource( &pTmp, pSrcRes, bFullClone ) ) )
+		{
+			this->DestroyResource( pNewRes->GetResourceGroupHandle() );
+			return ResourceWeakPtr();
 		}
 
 		return pNewRes;

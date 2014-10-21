@@ -20,6 +20,54 @@ namespace XSE
 	Vec3* g_avecNormals = xst_null;
 	bool g_bCCW = true;
 
+	i32 CreateImpostorVertexBuffers( IVertexBuffer* *const *const pppVBs, u32 uVBCount, const CPoint& VertexCount, const Vec2& vecImpostorSize,
+									 const IInputLayout* pIL )
+	{
+		xst_assert2( uVBCount > 0 );
+		IVertexBuffer* *const apVBs = ( *pppVBs );
+		IVertexBuffer* pVB;
+		cul32 ulVertexCount = VertexCount.x * VertexCount.y;
+		const Vec2 vecStep( vecImpostorSize.x / VertexCount.x, vecImpostorSize.y / VertexCount.y );
+
+		for( u32 i = 0; i < uVBCount; ++i )
+		{
+			pVB = apVBs[ i ];
+			pVB->SetInputLayout( pIL );
+			pVB->SetTopologyType( TopologyTypes::TRIANGLE_LIST );
+			pVB->SetUsage( BufferUsages::DEFAULT );
+			pVB->SetVertexCount( ulVertexCount );
+		}
+
+		// Create data for first vertex buffer only
+		// And then copy that data to the rest
+		ul32 ulVertexId = 0;
+
+		for( u32 i = 0; i < 1; ++i )
+		{
+			pVB = apVBs[ i ];
+			if( XST_FAILED( pVB->Lock() ) )
+				return XST_FAIL;
+
+			CVertexData& VData = pVB->GetVertexData();
+			Vec3 vecPos = Vec3::ZERO;
+
+			for( u32 z = 0; z < VertexCount.y; ++z )
+			{
+				for( u32 x = 0; x < VertexCount.x; ++x )
+				{
+					VData.SetPosition( ulVertexId, vecPos );
+					vecPos.x += vecStep.x;
+					ulVertexId++;
+				}
+				vecPos.x = 0;
+				vecPos.z += vecStep.y;
+			}
+
+			if( XST_FAILED( pVB->Unlock() ) )
+				return XST_FAIL;
+		}
+	}
+
 	void DebugPrintVB(MeshPtr& pMesh)
 	{
 		CVertexData& Data = pMesh->GetVertexBuffer()->GetVertexData();
@@ -55,7 +103,10 @@ namespace XSE
 		m_vIndexBuffers.clear();
 		if( !m_vpVertexBuffers.empty() )
 			m_pSceneMgr->GetRenderSystem( )->DestroyVertexBuffers( &m_vpVertexBuffers[0], m_vpVertexBuffers.size() );
+		if( !m_vpImpostorVertexBuffers.empty() )
+			m_pSceneMgr->GetRenderSystem( )->DestroyVertexBuffers( &m_vpImpostorVertexBuffers[ 0 ], m_vpImpostorVertexBuffers.size() );
 		m_vpVertexBuffers.clear();
+		m_vpImpostorVertexBuffers.clear();
 	}
 
 	void CMipMapPagingTerrain::Disable(cu32& uiReason)
@@ -183,6 +234,7 @@ namespace XSE
 		m_vTileVisibility.resize( m_vTiles.size(), false );
 		m_vPageVisibility.resize( uPageCount, false );
 		m_vpVertexBuffers.resize( uPageCount );
+		m_vpImpostorVertexBuffers.resize( uPageCount );
 
 		// Set visible pointers
 		for( u32 i = 0; i < m_vTiles.size(); ++i )
@@ -215,6 +267,8 @@ namespace XSE
 
 	i32 CMipMapPagingTerrain::CreatePages()
 	{
+		if( m_vPages.size() > 0 )
+			return XST_FAIL;
 		//Create pages
 		//u32 uiPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
 		const Vec3 vecRightTopCorner = Vec3::ZERO; //( -m_Options.Size.x * 0.5f, 0.0f, -m_Options.Size.y * 0.5f );
@@ -223,7 +277,15 @@ namespace XSE
 		u32 uPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
 		m_vPages.resize( uPageCount, CMipMapTerrainPage( this ) );
 		u32 uTileCount = m_TileCount.x * m_TileCount.y;
+		u32 uMaxDiv = pow( 2.0, m_Options.uiLODCount + 1 );
+		const CPoint ImpVertCount( ceilf( ((f32)m_Options.PageVertexCount.x) / uMaxDiv ) + 1, ceilf( ((f32)m_Options.PageVertexCount.y) / uMaxDiv ) + 1 );
+		
 		if( XST_FAILED( m_pSceneMgr->GetRenderSystem()->CreateVertexBuffers( &m_vpVertexBuffers[ 0 ], m_vpVertexBuffers.size() ) ) )
+		{
+			return XST_FAIL;
+		}
+
+		if( XST_FAILED( m_pSceneMgr->GetRenderSystem()->CreateVertexBuffers( &m_vpImpostorVertexBuffers[ 0 ], m_vpImpostorVertexBuffers.size() ) ) )
 		{
 			return XST_FAIL;
 		}
@@ -245,7 +307,7 @@ namespace XSE
 				Info.vecPagePosition = vecPos;
 				Info.VertexCount = m_Options.PageVertexCount;
 				Info.TileVertexCount = m_Options.TileVertexCount;
-				Info.pImg = m_vpImages.front().GetPtr(); // TEMP use only one heightmap at this moment
+				Info.pImg = m_vpImages[0].GetPtr(); // TEMP use only one heightmap at this moment
 				Info.uPageId = m_vPages.size() - 1;
 				Info.ImgPixelStartPosition = CPoint( x, y );
 				//Info.apTiles = &m_vTiles[ CalcFirstTileIdForPage( uCurrPageId, uTileCount ) ];
@@ -254,6 +316,9 @@ namespace XSE
 				Info.aTiles = &m_vTiles[ uTileId ];
 				Info.uTileCount = uTileCount;
 				Info.pVB = m_vpVertexBuffers[ uCurrPageId ];
+				Info.pImpVB = m_vpImpostorVertexBuffers[ uCurrPageId ];
+				Info.ImpostorVertexCount = ImpVertCount;
+				Info.pImpImg = m_vpImages[1].GetPtr(); // TEMP
 				
 				if( XST_FAILED( pPage->Init( Info ) ) )
 				{
@@ -277,7 +342,6 @@ namespace XSE
 
 		for(u32 i = 0; i < vHeightmapNames.size(); ++i)
 		{
-
             ImageWeakPtr pImg = pImgMgr->CreateResource( vHeightmapNames[ i ] );
 			if( pImg == xst_null )
 			{
@@ -294,12 +358,22 @@ namespace XSE
 				return XST_FAIL;
 			}
 
+			ImageWeakPtr pImpImg = pImgMgr->CloneResource( pImg, vHeightmapNames[ i ] + "/impostor" );
+
 			//If image has more pixels than terrain, resize it
 			u32 uiHeight = m_Options.PageVertexCount.y; //Math::Max( (u32)m_Options.PageVertexCount.y, pImg->GetHeight() ) - m_TileCount.y + 1; //leave first tile
 			u32 uiWidth = m_Options.PageVertexCount.x; //Math::Max( (u32)m_Options.PageVertexCount.x, pImg->GetWidth() ) - m_TileCount.x + 1;
 			pImg->Scale( uiWidth, uiHeight );
-
 			m_vpImages.push_back( pImg );
+			
+			u32 h = uiHeight-1;
+			u32 w = uiWidth-1;
+			h = h >> m_Options.uiLODCount;
+			w = w >> m_Options.uiLODCount;
+			uiHeight = h + 1;
+			uiWidth = w + 1;
+			pImpImg->Scale( uiWidth, uiHeight );
+			m_vpImages.push_back( pImpImg );
 		}
 		return XST_OK;
 	}
@@ -362,7 +436,7 @@ namespace XSE
 				{
 					// TODO: probably cache miss here. Use array of pVB,ulStartVertex structures
 					const auto& TileInfo = m_vTiles[t].m_Info;
-					pIB = GetIndexBuffer( 0, MipMapTerrainStitchTypes::DOWN ).pIndexBuffer.GetPtr();
+					pIB = GetIndexBuffer( 0, MipMapTerrainStitchTypes::NONE ).pIndexBuffer.GetPtr();
 					pRS->SetVertexBufferWithCheck( TileInfo.pVB );
 					pRS->SetIndexBufferWithCheck( pIB );
 					pRS->DrawIndexed( pIB->GetIndexCount(), 0, TileInfo.ulStartVertex );
@@ -383,6 +457,7 @@ namespace XSE
 
 	i32 CMipMapPagingTerrain::CreateVertexBuffers()
 	{
+		XSTSimpleProfiler();
 		for( auto& Page : m_vPages )
 		{
 			if( XST_FAILED( Page.CreateVertexBuffer() ) )
@@ -395,6 +470,7 @@ namespace XSE
 
 	i32 CMipMapPagingTerrain::LockVertexBuffers()
 	{
+		XSTSimpleProfiler();
 		for( auto& Page : m_vPages )
 		{
 			if( XST_FAILED( Page.LockVertexBuffer() ) )
@@ -407,6 +483,7 @@ namespace XSE
 
 	i32 CMipMapPagingTerrain::UnlockVertexBuffers()
 	{
+		XSTSimpleProfiler();
 		for( auto& Page : m_vPages )
 		{
 			if( XST_FAILED( Page.UnlockVertexBuffer() ) )
@@ -427,6 +504,7 @@ namespace XSE
 
 	i32 CMipMapPagingTerrain::CalcVertexData()
 	{
+		XSTSimpleProfiler();
 		for( auto& Page : m_vPages )
 		{
 			Page.CalcVertexPositions();
@@ -453,6 +531,7 @@ namespace XSE
 
 	i32	CMipMapPagingTerrain::CreateIndexBuffers()
 	{
+		XSTSimpleProfiler();
 		const u32 uiIBCount = m_Options.uiLODCount * MipMapTerrainStitchTypes::_MAX_COUNT;
 
 		m_vIndexBuffers.reserve( uiIBCount );
@@ -501,10 +580,11 @@ namespace XSE
 
 	i32	CMipMapPagingTerrain::LockIndexBuffers()
 	{
+		XSTSimpleProfiler();
 		IBVec::iterator Itr;
-		xst_stl_foreach( Itr, m_vIndexBuffers )
+		for( auto& Data : m_vIndexBuffers )
 		{
-			if( XST_FAILED( (*Itr).pIndexBuffer->Lock() ) )
+			if( XST_FAILED( Data.pIndexBuffer->Lock() ) )
 			{
 				return XST_FAIL;
 			}
@@ -600,7 +680,6 @@ namespace XSE
 
 	i32	CMipMapPagingTerrain::CalcIndexBufferData(u32 uiLOD)
 	{
-		XSTSimpleProfiler();
 		cu32 uiIBID = GetIndexBuffersID( uiLOD );
 		if( g_bCCW )
 		{
@@ -645,11 +724,12 @@ namespace XSE
 
 	i32	CMipMapPagingTerrain::UnlockIndexBuffers()
 	{
+		XSTSimpleProfiler();
 		IBVec::iterator Itr;
 		u32 i = 0;
-		xst_stl_foreach( Itr, m_vIndexBuffers )
+		for( auto& Data : m_vIndexBuffers )
 		{
-			if( XST_FAILED( (*Itr).pIndexBuffer->Unlock() ) )
+			if( XST_FAILED( Data.pIndexBuffer->Unlock() ) )
 			{
 				return XST_FAIL;
 			}
@@ -734,8 +814,17 @@ namespace XSE
 			pOptionsOut->TileVertexCount.y += 1;
 		}
 
-		u32 uiVertCount = pOptionsOut->PageVertexCount.x - 1 * pOptionsOut->PageVertexCount.y - 1; //convert to even values
-		u32 uiTileVertCount = pOptionsOut->TileVertexCount.x - 1 * pOptionsOut->TileVertexCount.y - 1; //convert to even values
+		CPoint CurrVertexCount = pOptionsOut->PageVertexCount - 1;
+		cu32 uiLODCount = pOptionsOut->uiLODCount;
+		for( u32 i = 0; i <= uiLODCount; ++i )
+		{
+			CurrVertexCount /= 2;
+			if( CurrVertexCount.x < 2 || CurrVertexCount.y < 2 )
+			{
+				pOptionsOut->uiLODCount = i;
+				break;
+			}
+		}
 
 		return iResult;
 	}
@@ -873,12 +962,12 @@ namespace XSE
 
 	void CMipMapPagingTerrain::_CalcBaseIBStitch(u32 uiLOD, IndexBufferPtr& pIB, pfnCalcIBStitch Func1,  pfnCalcIBStitch Func2)
 	{
-		XSTSimpleProfiler();
+		//XSTSimpleProfiler();
 		u32 ulQuad = 0;
 		cu32 uiLODStep = CalcLODStep( uiLOD );
-		bool bIsLadLOD = (uiLOD == m_Options.uiMaxLODCount - 1);
+		bool bIsLastLOD = (uiLOD == m_Options.uiMaxLODCount - 1);
 		// If this lod is the las lod there is no next lod step
-		cu32 uiNextLODStep = ( bIsLadLOD ) ? uiLODStep : CalcLODStep( uiLOD + 1 );
+		cu32 uiNextLODStep = ( bIsLastLOD ) ? uiLODStep : CalcLODStep( uiLOD + 1 );
 		/*cu32 uiHeight = m_Options.TileVertexCount.y - uiLODStep;
 		cu32 uiWidth = m_Options.TileVertexCount.x - uiLODStep;
 		cu32 uiLastX = uiWidth - uiLODStep;
@@ -906,7 +995,7 @@ namespace XSE
 		Info.uiVertCountY = m_Options.TileVertexCount.y;
 		Info.uiCurrItrX = Info.uiCurrItrY = 0;
 
-		if( bIsLadLOD )
+		if( bIsLastLOD )
 		{
 			Func1 = &CMipMapPagingTerrain::_CalcBaseIBStitchEmpty;
 			Func2 = &CMipMapPagingTerrain::_CalcBaseIBStitchEmpty;

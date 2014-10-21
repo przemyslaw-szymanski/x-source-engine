@@ -29,12 +29,15 @@ namespace XSE
 			CPoint TileCount; // tile count for this page for x and y
 			CPoint TileVertexCount; // vertex count per one tile
 			CPoint ImgPixelStartPosition;
+			CPoint ImpostorVertexCount; // vertex count for impostor vertex buffer
 			Vec2 vecHeightRange; // terrain vertex y position min-max
 			Vec2 vecPageSize; // size x-z of the page
 			const Resources::IImage* pImg = xst_null;
 			const IInputLayout* pInputLayout = xst_null;
 			CMipMapTerrainTile* aTiles = xst_null; // a begin pointer to the tile buffer
 			IVertexBuffer* pVB = xst_null;
+			IVertexBuffer* pImpVB = xst_null; // impostor vertex buffer to render distant land
+			const Resources::IImage* pImpImg = xst_null; // impostor image
 			u32 uTileCount = 0; // a end indicator in the tile buffer
 			u32	uPageId;
 		};

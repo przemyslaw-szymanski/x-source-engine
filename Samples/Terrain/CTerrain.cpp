@@ -150,9 +150,9 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	//Options.TileVertexCount = XSE::CPoint( 16 * 1 + 1 );
 	//Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
 	//Options.TileVertexCount = XSE::CPoint( 16 + 1 );
-	Options.PageVertexCount = XSE::CPoint( 1024 + 1 );
-	Options.TileVertexCount = XSE::CPoint( 32 + 1 );
-	Options.uiLODCount = 2;
+	Options.PageVertexCount = XSE::CPoint( 16 + 1 );
+	Options.TileVertexCount = XSE::CPoint( 4 + 1 );
+	Options.uiLODCount = 4;
 	//Options.bColor = true;
 	Options.bBinormal = Options.bNormal = Options.bTangent = Options.bTexCoord = false;
 	//Options.bNormal = true;

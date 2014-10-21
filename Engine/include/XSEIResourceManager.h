@@ -115,6 +115,9 @@ namespace XSE
         protected:
 
             virtual Resources::IResource*   _CreateResource(xst_castring& strName, const ResourceHandle& ResHandle, GroupWeakPtr pGroup) = 0;
+
+			virtual i32						_CloneResource(Resources::IResource** ppDstOut, const Resources::IResource* pSrc, bool bFullClone)
+											{ xst_assert( 0, "(XSE::IResourceManager::_CloneResource) not implemented"); return XST_FAIL; }
             
             virtual IResourceGroup*         _CreateGroup(xst_castring& strName, const GroupHandle& Handle);
 
