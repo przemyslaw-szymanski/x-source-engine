@@ -168,30 +168,6 @@ namespace XSE
 			vecPos.z = m_Info.vecPagePosition.y + uTileY * ( (m_Info.TileVertexCount.y-1) * vecStep.y );	
 		}
 		xst_assert2( ulVertexId == ulVertexCount );
-		// IMPOSTOR
-		CVertexData& VDataImp = m_Info.pImpVB->GetVertexData();
-		vecPos = m_Info.vecPagePosition;
-		vecStep = Vec2( m_Info.vecPageSize.x / (m_Info.ImpostorVertexCount.x-1), m_Info.vecPageSize.y / (m_Info.ImpostorVertexCount.y-1) );
-		ulVertexId = 0;
-		const CPoint Div = m_Info.VertexCount / m_Info.ImpostorVertexCount;
-		const CPoint ImpStartPos = m_Info.ImgPixelStartPosition / Div;
-		PixelPos = ImpStartPos;
-		for( u32 z = 0; z < m_Info.ImpostorVertexCount.y; ++z )
-		{
-			PixelPos.x = ImpStartPos.x;
-			vecPos.x = m_Info.vecPagePosition.x;
-			for( u32 x = 0; x < m_Info.ImpostorVertexCount.x; ++x )
-			{
-				u8 r = m_Info.pImpImg->GetChannelColor( PixelPos.x, PixelPos.y, COLOR_CHANNEL::RED );
-				vecPos.y = CMipMapTerrainTile::ColorToHeight( m_Info.vecHeightRange, r );
-				VDataImp.SetPosition( ulVertexId, vecPos );
-				vecPos.x += vecStep.x;
-				PixelPos.x++;
-				ulVertexId++;
-			}
-			vecPos.z += vecStep.y;
-			PixelPos.y++;
-		}
 	}
 
 	void CMipMapTerrainPage::CalcVertexNormals()

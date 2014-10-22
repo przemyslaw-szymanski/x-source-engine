@@ -136,6 +136,8 @@ namespace XSE
 
 			virtual u16					CalcTriangleCount(u32 uiLOD);
 
+            virtual i32                 CreateImpostors();
+
 			virtual xst_fi
 			SMipMapIndexBuffer&			GetIndexBuffer(u32 uiLOD, u32 uiStitchType)
 										{ return m_vIndexBuffers[ GetIndexBufferID( uiLOD, uiStitchType ) ]; }

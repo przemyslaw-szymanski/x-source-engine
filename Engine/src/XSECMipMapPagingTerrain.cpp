@@ -66,6 +66,19 @@ namespace XSE
 			if( XST_FAILED( pVB->Unlock() ) )
 				return XST_FAIL;
 		}
+
+        for( u32 i = 1; i < uVBCount; ++i )
+        {
+            pVB = apVBs[ i ];
+            if( XST_FAILED( pVB->Lock() ) )
+				return XST_FAIL;
+            CVertexData& VData = pVB->GetVertexData();
+            VData.SetData( apVBs[ 0 ]->GetVertexData() );
+            if( XST_FAILED( pVB->Unlock() ) )
+				return XST_FAIL;
+        }
+
+        return XST_OK;
 	}
 
 	void DebugPrintVB(MeshPtr& pMesh)
@@ -516,6 +529,18 @@ namespace XSE
 		}
 		return XST_OK;
 	}
+
+    i32 CMipMapPagingTerrain::CreateImpostors()
+    {
+        Vec2 vecSize( m_Options.Size.x, m_Options.Size.y );
+        CPoint VertexCount( (m_Options.PageVertexCount.x-1) << m_Options.uiLODCount, (m_Options.PageVertexCount.y-1) << m_Options.uiLODCount );
+        IVertexBuffer** apBuffs = &m_vpImpostorVertexBuffers[ 0 ];
+        if( XST_FAILED( CreateImpostorVertexBuffers( &apBuffs, m_vpImpostorVertexBuffers.size(), VertexCount, vecSize, m_pInputLayout ) ) )
+        {
+            return XST_FAIL;
+        }
+        return XST_OK;
+    }
 
 	void CMipMapPagingTerrain::DestroyIndexBuffers()
 	{

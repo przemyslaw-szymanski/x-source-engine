@@ -127,6 +127,11 @@ namespace XSE
 			return xst_null;
 		}
 
+        if( XST_FAILED( pTerrain->CreateImpostors() ) )
+		{
+			return xst_null;
+		}
+
 		return pTerrain;
 
 	}
