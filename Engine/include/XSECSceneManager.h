@@ -153,6 +153,8 @@ namespace XSE
 		                        { AddToRenderQueue( eType, pObj.GetPtr() ); }
 		        void			AddToRenderQueue(RENDER_QUEUE_TYPE eType, IRenderableObject* pObj);
 
+				void			AddToPartitionSystem(CObject* pObj);
+
 		        i32				SetTerrainSystem(ITerrainSystem* pSystem);
 
 		        void			DestroyTerrain(xst_castring& strName);

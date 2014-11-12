@@ -10,14 +10,19 @@ namespace XSE
 
 	static CEmptyObjectListener g_EmptyListener;
 
+	CObject::CObject() :
+		XST::IObject()
+		, m_pObjListener( &g_EmptyListener )
+	{}
+
 	CObject::CObject(ul32 ulType, lpcastr strDbgName, CObject* pParent) : 
 #if defined( XST_OBJ_DEBUG )
 		XST::IObject( XST::xst_obj_dbg_name( strDbgName ) )
 #else
         XST::IObject()
 #endif
-		, m_ulObjType( ulType )
 		, m_pObjListener( &g_EmptyListener )
+		, m_ulObjType( ulType )
 		, m_pParent( pParent )
 	{
 		XST_SET_DBG_NAME( this, strDbgName );

@@ -233,7 +233,7 @@ namespace XST
 		#define XST_FAIL XST::RESULT::FAILED
 
 		#define XST_FAILED(_exp) ( ( _exp ) != XST::RESULT::OK )
-		#define XST_F(_exp) XST_FAILED( _exp )
+		#define XST_RET_FAIL(_exp) { if((_exp)) { return XST_FAIL; } }
 
 		#define XST_TOSTRING(_type) #_type
 		#define XST_ADD(_left, _right) _left##_right

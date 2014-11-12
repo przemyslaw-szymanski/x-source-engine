@@ -918,7 +918,7 @@ namespace XSE
 		{
 			xst_assert( pVB, "(CRenderSystem::DrawVertexBuffer)" );
 
-			CVertexBuffer* pVBuff = (CVertexBuffer*)pVB;
+			//CVertexBuffer* pVBuff = (CVertexBuffer*)pVB;
 			cul32 u = pVB->GetVertexCount();
 			m_pDeviceContext->Draw( u, 0 );
 
@@ -933,8 +933,8 @@ namespace XSE
 			xst_assert( pVB, "(CRenderSystem::DrawVertexBuffer)" );
 			xst_assert( pIB, "(CRenderSystem::DrawVertexBuffer)" );
 
-			CVertexBuffer* pVBuff = (CVertexBuffer*)pVB;
-			CIndexBuffer* pIBuff = (CIndexBuffer*)pIB;
+			//CVertexBuffer* pVBuff = (CVertexBuffer*)pVB;
+			//CIndexBuffer* pIBuff = (CIndexBuffer*)pIB;
 		
 			cul32 u = pIB->GetIndexCount();
 			m_pDeviceContext->DrawIndexed( u, 0, 0 );
@@ -1313,6 +1313,9 @@ namespace XSE
 		void CRenderSystem::DrawIndexed(cu32& uiIndexCount, cu32& uiStartLocation, ci32& iBaseVertexLocation)
 		{
 			m_pDeviceContext->DrawIndexed( uiIndexCount, uiStartLocation, iBaseVertexLocation );
+#if defined (XSE_RENDERER_DEBUG)
+			++g_Diagnostics.ulIndexedDrawCallCount;
+#endif
 		}
 
 		void CRenderSystem::SetTopology(TOPOLOGY_TYPE eType)

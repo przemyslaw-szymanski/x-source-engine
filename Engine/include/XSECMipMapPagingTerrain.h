@@ -168,7 +168,7 @@ namespace XSE
 
 					void		_SetSceneNode(CSceneNode* pNode);
 	
-					void		_CalcBaseIBStitch(u32 uiLOD, IndexBufferPtr& pIB, pfnCalcIBStitch Func1 = &CMipMapPagingTerrain::_CalcBaseIBStitchEmpty, pfnCalcIBStitch Func2 = &CMipMapPagingTerrain::_CalcBaseIBStitchEmpty);
+					void		_CalcBaseIBStitch(u32 uiLOD, const CPoint& VertexCount, IndexBufferPtr& pIB, pfnCalcIBStitch Func1 = &CMipMapPagingTerrain::_CalcBaseIBStitchEmpty, pfnCalcIBStitch Func2 = &CMipMapPagingTerrain::_CalcBaseIBStitchEmpty);
 					void		_CalcBaseIBStitchEmpty(CIndexData* pData, const SCalcIBStitchInfo& Info) {}
 
 					void		_CalcBaseIBStitchRightCCW(CIndexData* pData, const SCalcIBStitchInfo& Info);
@@ -215,7 +215,7 @@ namespace XSE
 			IBVec			m_vIndexBuffers;
 			VBVec			m_vpVertexBuffers; // vertex buffer pool for each page
 			VBVec			m_vpImpostorVertexBuffers; // vertex buffer pool for each page for rendering distant land
-			IIndexBuffer*	m_pImpostorIB;
+			IndexBufferPtr	m_pImpostorIB;
 			CVertexData		m_VertexData; // one big vertex data buffer
 			CPoint			m_TileCount;
 			xst_vector<ImagePtr> m_vpImages; // heightmap images

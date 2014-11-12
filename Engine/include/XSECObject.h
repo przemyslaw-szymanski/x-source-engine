@@ -16,7 +16,7 @@ namespace XSE
 
 		public:
 
-										CObject() {}
+										CObject();
 										CObject(ul32 ulType, lpcastr strDbgName, CObject* pParent = xst_null);
 										CObject(ul32 ulType, ul32 ulHandle, lpcastr strDbgName, CObject* pParent = xst_null);
 
@@ -102,7 +102,7 @@ namespace XSE
 										{ return m_ulObjType; }
 
 			virtual void				Disable(cu32& uiDisableReason) 
-										{ m_uiObjDisableReason = uiDisableReason; }
+										{ m_uiObjDisableReason = uiDisableReason; _OnObjectDisable( uiDisableReason ); }
 
 			virtual xst_fi u32			GetDisableReason() const
 										{ return m_uiObjDisableReason; }
@@ -172,6 +172,10 @@ namespace XSE
 												m_bDbgObject = bDbg;
 											#endif
 										}
+
+		protected:
+
+			virtual void				_OnObjectDisable(cu32& uDisableReason) {}
 
 		protected:
 

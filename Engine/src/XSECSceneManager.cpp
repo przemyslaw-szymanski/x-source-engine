@@ -493,6 +493,11 @@ namespace XSE
 		m_RenderQueue.AddObject( eType, pObj );
 	}
 
+	void CSceneManager::AddToPartitionSystem(CObject* pObj)
+	{
+		GetScenePartitionSystem( )->AddObject( pObj );
+	}
+
 	//TERRAIN
 	i32 CSceneManager::SetTerrainSystem(ITerrainSystem* pSystem)
 	{

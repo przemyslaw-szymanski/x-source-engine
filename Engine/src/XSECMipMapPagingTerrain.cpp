@@ -20,7 +20,15 @@ namespace XSE
 	Vec3* g_avecNormals = xst_null;
 	bool g_bCCW = true;
 
-	i32 CreateImpostorVertexBuffers( IVertexBuffer* *const *const pppVBs, u32 uVBCount, const CPoint& VertexCount, const Vec2& vecImpostorSize,
+	CPoint CalcImpostorVertexCount( const CPoint& PageVertexCount, u32 uLODCount )
+	{
+		CPoint vc;
+		vc.x = (PageVertexCount.x >> uLODCount) + 1;
+		vc.y = (PageVertexCount.y >> uLODCount) + 1;
+		return vc;
+	}
+
+	i32 SetImpostorVertexBufferData( IVertexBuffer* *const *const pppVBs, u32 uVBCount, const CPoint& VertexCount, const Vec2& vecImpostorSize,
 									 const IInputLayout* pIL )
 	{
 		xst_assert2( uVBCount > 0 );
@@ -67,18 +75,43 @@ namespace XSE
 				return XST_FAIL;
 		}
 
-        for( u32 i = 1; i < uVBCount; ++i )
-        {
-            pVB = apVBs[ i ];
-            if( XST_FAILED( pVB->Lock() ) )
-				return XST_FAIL;
-            CVertexData& VData = pVB->GetVertexData();
-            VData.SetData( apVBs[ 0 ]->GetVertexData() );
-            if( XST_FAILED( pVB->Unlock() ) )
-				return XST_FAIL;
-        }
+		for( u32 i = 1; i < uVBCount; ++i )
+		{
+			pVB = apVBs[ i ];
+			XST_RET_FAIL( pVB->Lock() );
+			XST_RET_FAIL( pVB->GetVertexData( ).SetData( apVBs[ 0 ]->GetVertexData() ) );
+			XST_RET_FAIL( pVB->Unlock() );
+		}
 
-        return XST_OK;
+		return XST_OK;
+	}
+
+	i32 SetImpostorVertexDataHeights(IVertexBuffer** ppVBOut, const CPoint& VertexCount, const Vec2& vecHeightRange, const Resources::IImage* pImg)
+	{
+		// Image must be scaled
+		if( pImg->GetWidth() < VertexCount.x || pImg->GetHeight() < VertexCount.y )
+		{
+			return XST_FAIL;
+		}
+
+		IVertexBuffer* pVB = ( *ppVBOut );
+		CVertexData& VData = pVB->GetVertexData();
+		Vec3 vecPos;
+		ul32 ulVertexId = 0;
+
+		for( u32 y = 0; y < VertexCount.y; ++y )
+		{
+			for( u32 x = 0; x < VertexCount.x; ++x )
+			{
+				u8 r = pImg->GetChannelColor( x, y, COLOR_CHANNEL::RED );
+				VData.GetPosition( ulVertexId, &vecPos );
+				vecPos.y = CMipMapTerrainTile::ColorToHeight( vecHeightRange, r );
+				VData.SetPosition( ulVertexId++, vecPos );
+			}
+		}
+
+		pVB->Update();
+		return XST_OK;
 	}
 
 	void DebugPrintVB(MeshPtr& pMesh)
@@ -284,14 +317,12 @@ namespace XSE
 			return XST_FAIL;
 		//Create pages
 		//u32 uiPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
-		const Vec3 vecRightTopCorner = Vec3::ZERO; //( -m_Options.Size.x * 0.5f, 0.0f, -m_Options.Size.y * 0.5f );
+		const Vec3 vecRightTopCorner = ( -m_Options.Size.x * 0.5f, 0.0f, -m_Options.Size.y * 0.5f );
 		Vec3 vecPos = vecRightTopCorner;
 		const Vec2 vecPageSize( m_Options.Size.x / m_Options.PageCount.x, m_Options.Size.y / m_Options.PageCount.y );
 		u32 uPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
 		m_vPages.resize( uPageCount, CMipMapTerrainPage( this ) );
-		u32 uTileCount = m_TileCount.x * m_TileCount.y;
-		u32 uMaxDiv = pow( 2.0, m_Options.uiLODCount + 1 );
-		const CPoint ImpVertCount( ceilf( ((f32)m_Options.PageVertexCount.x) / uMaxDiv ) + 1, ceilf( ((f32)m_Options.PageVertexCount.y) / uMaxDiv ) + 1 );
+		u32 uTileCount = (m_TileCount.x * m_TileCount.y);
 		
 		if( XST_FAILED( m_pSceneMgr->GetRenderSystem()->CreateVertexBuffers( &m_vpVertexBuffers[ 0 ], m_vpVertexBuffers.size() ) ) )
 		{
@@ -302,6 +333,11 @@ namespace XSE
 		{
 			return XST_FAIL;
 		}
+
+		const CPoint ImpVertCount = CalcImpostorVertexCount( m_Options.PageVertexCount, m_Options.uiLODCount );
+		IVertexBuffer* *const pTmpVBs = &m_vpImpostorVertexBuffers[ 0 ];
+		XST_RET_FAIL( SetImpostorVertexBufferData( &pTmpVBs, m_vpImpostorVertexBuffers.size(), ImpVertCount, vecPageSize, m_pInputLayout ) );
+		XST_RET_FAIL( SetImpostorVertexDataHeights( &(pTmpVBs[0]), ImpVertCount, m_Options.vecHeightRange, m_vpImages[1].GetPtr() ) );
 
 		for(u32 y = 0; y < m_Options.PageCount.y; ++y)
 		{
@@ -333,10 +369,7 @@ namespace XSE
 				Info.ImpostorVertexCount = ImpVertCount;
 				Info.pImpImg = m_vpImages[1].GetPtr(); // TEMP
 				
-				if( XST_FAILED( pPage->Init( Info ) ) )
-				{
-					return XST_FAIL;
-				}
+				XST_RET_FAIL( pPage->Init( Info ) );
 
 				vecPos.x += vecPageSize.x;
 			}
@@ -379,13 +412,8 @@ namespace XSE
 			pImg->Scale( uiWidth, uiHeight );
 			m_vpImages.push_back( pImg );
 			
-			u32 h = uiHeight-1;
-			u32 w = uiWidth-1;
-			h = h >> m_Options.uiLODCount;
-			w = w >> m_Options.uiLODCount;
-			uiHeight = h + 1;
-			uiWidth = w + 1;
-			pImpImg->Scale( uiWidth, uiHeight );
+			CPoint VC = CalcImpostorVertexCount( m_Options.PageVertexCount, m_Options.uiLODCount );
+			pImpImg->Scale( VC.x, VC.y );
 			m_vpImages.push_back( pImpImg );
 		}
 		return XST_OK;
@@ -473,11 +501,9 @@ namespace XSE
 		XSTSimpleProfiler();
 		for( auto& Page : m_vPages )
 		{
-			if( XST_FAILED( Page.CreateVertexBuffer() ) )
-			{
-				return XST_FAIL;
-			}
+			XST_RET_FAIL( Page.CreateVertexBuffer() );
 		}
+		
 		return XST_OK;
 	}
 
@@ -486,10 +512,7 @@ namespace XSE
 		XSTSimpleProfiler();
 		for( auto& Page : m_vPages )
 		{
-			if( XST_FAILED( Page.LockVertexBuffer() ) )
-			{
-				return XST_FAIL;
-			}
+			XST_RET_FAIL( Page.LockVertexBuffer() );
 		}
 		return XST_OK;
 	}
@@ -527,6 +550,24 @@ namespace XSE
 				return XST_FAIL;
 			}
 		}
+
+		// After vertex positions are calculated
+		// All tile bounding boxes are set
+		// Add tile objects to scene partition system
+		u32 uTileCount = m_TileCount.x * m_TileCount.y;
+		for( u32 i = uTileCount; i-- > 0; )
+		{
+			m_pSceneMgr->AddToPartitionSystem( &m_vTiles[ i ] );
+			SLineBoxOptions o;
+			o.vecPos = m_vTiles[ i ].GetPosition();
+			o.vecSize = m_vTiles[ i ].GetBoundingVolume( ).GetAABB( ).CalcSize();
+			o.colColor = CColor::GREEN;
+			char name[128];
+			xst_sprintf( name, sizeof( name ), "tile%d_aabb", i );
+			MeshPtr pM = CMeshManager::GetSingletonPtr( )->CreateMesh( name, ILEs::POSITION | ILEs::COLOR, BasicShapes::LINE_BOX, &o, "terrain" );
+			m_pSceneMgr->GetRootNode( )->AddObject( pM );
+		}
+
 		return XST_OK;
 	}
 
@@ -552,11 +593,18 @@ namespace XSE
 		}
 
 		xst_vector_clear( m_vIndexBuffers, IBVec::value_type );
+
+		m_pImpostorIB->Release();
 	}
 
 	i32	CMipMapPagingTerrain::CreateIndexBuffers()
 	{
 		XSTSimpleProfiler();
+		if( m_pImpostorIB.IsValid() || m_vIndexBuffers.size() > 0 )
+		{
+			return XST_OK;
+		}
+
 		const u32 uiIBCount = m_Options.uiLODCount * MipMapTerrainStitchTypes::_MAX_COUNT;
 
 		m_vIndexBuffers.reserve( uiIBCount );
@@ -573,7 +621,18 @@ namespace XSE
 				m_vIndexBuffers.push_back( IB );
 			}
 		}
-	
+
+		m_pImpostorIB = IndexBufferPtr( m_pSceneMgr->GetRenderSystem( )->CreateIndexBuffer() );
+		if( m_pImpostorIB.IsNull() )
+		{
+			return XST_FAIL;
+		}
+
+		m_pImpostorIB->SetUsage( BufferUsages::STATIC );
+		CPoint VC = CalcImpostorVertexCount( m_Options.PageVertexCount, m_Options.uiLODCount );
+		u32 usIndexCount = ( ( VC.x-1 ) * ( VC.y-1 ) * 2 ) * 3; // triangle count * 3 vertices per each for triangle list
+		m_pImpostorIB->SetIndexCount( usIndexCount );
+
 		return XST_OK;
 	}
 
@@ -614,6 +673,7 @@ namespace XSE
 				return XST_FAIL;
 			}
 		}
+		XST_RET_FAIL( m_pImpostorIB->Lock() );
 		return XST_OK;
 	}
 
@@ -734,6 +794,126 @@ namespace XSE
 		return XST_OK;
 	}
 
+	#define LEFT_UP		0
+	#define RIGHT_UP	1
+	#define RIGHT_DOWN	2
+	#define LEFT_DOWN	3
+
+
+	i32 CalcImpostorIndexBufferData(IIndexBuffer* pIB, const CPoint& PageVertexCount, u32 uiLODCount)
+	{
+		CPoint VC = CalcImpostorVertexCount( PageVertexCount, uiLODCount );
+		bool bBackslashTriangle = true;
+		u32 uiCurrTri = 0;
+		u32 uWidth = VC.x-1;
+		u32 uHeight = VC.y-1;
+
+		CIndexData& IData = pIB->GetIndexData();
+
+		if( g_bCCW )
+		{
+			for( u32 y = 0; y < uHeight; ++y )
+			{
+				bBackslashTriangle = y % 2 == 0;
+				for( u32 x = 0; x < uWidth; ++x )
+				{
+					cu32 uiIds[ 4 ] = 
+					{
+						XST_ARRAY_2D_TO_1D( x, y, VC.x ), //LEFT_UP
+						XST_ARRAY_2D_TO_1D( x + 1, y, VC.x ), //RIGHT_UP
+						XST_ARRAY_2D_TO_1D( x + 1, y + 1, VC.x ), //RIGHT_DOWN
+						XST_ARRAY_2D_TO_1D( x, y + 1, VC.x ) //LEFT_DOWN
+					};
+
+					if( bBackslashTriangle )
+					{
+						//Set the backslash triangle 
+						/* |\ */
+						//CW
+						//pData->SetTriangle( uiCurrTri++, uiIds[ LEFT_DOWN ], uiIds[ LEFT_UP ], uiIds[ RIGHT_DOWN ] );
+						//CCW
+						IData.SetTriangle( uiCurrTri++, uiIds[ LEFT_UP ], uiIds[ LEFT_DOWN ], uiIds[ RIGHT_DOWN ] );
+						//The second part 
+						/* \| */
+						//CW
+						//pData->SetTriangle( uiCurrTri++, uiIds[ LEFT_UP ], uiIds[ RIGHT_UP ], uiIds[ RIGHT_DOWN ] );
+						//CCW
+						IData.SetTriangle( uiCurrTri++, uiIds[ RIGHT_UP ], uiIds[ LEFT_UP ], uiIds[ RIGHT_DOWN ] );
+					}
+					else
+					{
+						//Set the slash triangle 
+						/* |/ */
+						//CW
+						//pData->SetTriangle( uiCurrTri++, uiIds[ LEFT_DOWN ], uiIds[ LEFT_UP ], uiIds[ RIGHT_UP ] );
+						//CCW
+						IData.SetTriangle( uiCurrTri++, uiIds[ LEFT_UP ], uiIds[ LEFT_DOWN ], uiIds[ RIGHT_UP ] );
+						//The second part 
+						/* /| */
+						//CW
+						//pData->SetTriangle( uiCurrTri++, uiIds[ RIGHT_UP ], uiIds[ RIGHT_DOWN ], uiIds[ LEFT_DOWN ] );
+						//CCW
+						IData.SetTriangle( uiCurrTri++, uiIds[ RIGHT_DOWN ], uiIds[ RIGHT_UP ], uiIds[ LEFT_DOWN ] );
+					}
+
+					bBackslashTriangle = !bBackslashTriangle;
+				}
+			}
+		}
+		else
+		{
+			for( u32 y = 0; y < uHeight; ++y )
+			{
+				bBackslashTriangle = y % 2 == 0;
+				for( u32 x = 0; x < uWidth; ++x )
+				{
+					cu32 uiIds[ 4 ] = 
+					{
+						XST_ARRAY_2D_TO_1D( x, y, uWidth ), //LEFT_UP
+						XST_ARRAY_2D_TO_1D( x + 1, y, uWidth ), //RIGHT_UP
+						XST_ARRAY_2D_TO_1D( x + 1, y + 1, uWidth ), //RIGHT_DOWN
+						XST_ARRAY_2D_TO_1D( x, y + 1, uWidth ) //LEFT_DOWN
+					};
+
+					if( bBackslashTriangle )
+					{
+						//Set the backslash triangle 
+						/* |\ */
+						//CW
+						IData.SetTriangle( uiCurrTri++, uiIds[ LEFT_DOWN ], uiIds[ LEFT_UP ], uiIds[ RIGHT_DOWN ] );
+						//CCW
+						//IData.SetTriangle( uiCurrTri++, uiIds[ LEFT_UP ], uiIds[ LEFT_DOWN ], uiIds[ RIGHT_DOWN ] );
+						//The second part 
+						/* \| */
+						//CW
+						IData.SetTriangle( uiCurrTri++, uiIds[ LEFT_UP ], uiIds[ RIGHT_UP ], uiIds[ RIGHT_DOWN ] );
+						//CCW
+						//IData.SetTriangle( uiCurrTri++, uiIds[ RIGHT_UP ], uiIds[ LEFT_UP ], uiIds[ RIGHT_DOWN ] );
+					}
+					else
+					{
+						//Set the slash triangle 
+						/* |/ */
+						//CW
+						IData.SetTriangle( uiCurrTri++, uiIds[ LEFT_DOWN ], uiIds[ LEFT_UP ], uiIds[ RIGHT_UP ] );
+						//CCW
+						//IData.SetTriangle( uiCurrTri++, uiIds[ LEFT_UP ], uiIds[ LEFT_DOWN ], uiIds[ RIGHT_UP ] );
+						//The second part 
+						/* /| */
+						//CW
+						IData.SetTriangle( uiCurrTri++, uiIds[ RIGHT_UP ], uiIds[ RIGHT_DOWN ], uiIds[ LEFT_DOWN ] );
+						//CCW
+						//IData.SetTriangle( uiCurrTri++, uiIds[ RIGHT_DOWN ], uiIds[ RIGHT_UP ], uiIds[ LEFT_DOWN ] );
+					}
+
+					bBackslashTriangle = !bBackslashTriangle;
+				}
+			}
+		}
+
+		return XST_OK;
+	}
+
 	i32	CMipMapPagingTerrain::CalcIndexBufferData()
 	{
 		XSTSimpleProfiler();
@@ -744,6 +924,7 @@ namespace XSE
 				return XST_FAIL;
 			}
 		}
+		XST_RET_FAIL( CalcImpostorIndexBufferData( m_pImpostorIB.GetPtr(), m_Options.PageVertexCount, m_Options.uiLODCount ) );
 		return XST_OK;
 	}
 
@@ -760,7 +941,7 @@ namespace XSE
 			}
 			++i;
 		}
-
+		XST_RET_FAIL( m_pImpostorIB->Unlock() );
 		return XST_OK;
 	}
 
@@ -876,10 +1057,6 @@ namespace XSE
 		}*/
 	}
 
-	#define LEFT_UP		0
-	#define RIGHT_UP	1
-	#define RIGHT_DOWN	2
-	#define LEFT_DOWN	3
 
 	void CMipMapPagingTerrain::_CalcQuadCW(CIndexData* pData, cu32& uiX, cu32& uiY, u32* puiCurrTri, cu32& uiLODStep, bool bBackslashTriangle)
 	{
@@ -985,7 +1162,7 @@ namespace XSE
 		*puiCurrTri = uiCurrTri;
 	}
 
-	void CMipMapPagingTerrain::_CalcBaseIBStitch(u32 uiLOD, IndexBufferPtr& pIB, pfnCalcIBStitch Func1,  pfnCalcIBStitch Func2)
+	void CMipMapPagingTerrain::_CalcBaseIBStitch(u32 uiLOD, const CPoint& VertexCount, IndexBufferPtr& pIB, pfnCalcIBStitch Func1,  pfnCalcIBStitch Func2)
 	{
 		//XSTSimpleProfiler();
 		u32 ulQuad = 0;
@@ -997,8 +1174,8 @@ namespace XSE
 		cu32 uiWidth = m_Options.TileVertexCount.x - uiLODStep;
 		cu32 uiLastX = uiWidth - uiLODStep;
 		cu32 uiLastY = uiHeight - uiLODStep;*/
-		cu32 uiHeight = m_Options.TileVertexCount.y - 1;
-		cu32 uiWidth = m_Options.TileVertexCount.x - 1;
+		cu32 uiHeight = VertexCount.y - 1;
+		cu32 uiWidth = VertexCount.x - 1;
 		cu32 uiLastX = uiWidth - uiLODStep;
 		cu32 uiLastY = uiHeight - uiLODStep;
 		u32 uiCurrId = 0;
@@ -1034,7 +1211,10 @@ namespace XSE
 
 			for(u32 x = 0; x < uiWidth; x += uiLODStep)
 			{
-				_CalcQuadCCW( &IData, x, z, &uiCurrTri, uiLODStep, bBackslash );
+				if( g_bCCW )
+					_CalcQuadCCW( &IData, x, z, &uiCurrTri, uiLODStep, bBackslash );
+				else
+					_CalcQuadCW( &IData, x, z, &uiCurrTri, uiLODStep, bBackslash );
 				bBackslash = !bBackslash;
 				Info.uiCurrID = uiCurrTri * 3;
 				Info.uiCurrX = x;
@@ -1210,42 +1390,42 @@ namespace XSE
 
 	void CMipMapPagingTerrain::_CalcIBStitchDownCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchDownLeftCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchLeftCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchRightCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchRightDownCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchUpCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchUpLeftCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchUpRightCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
 	}
 
 
@@ -1381,42 +1561,42 @@ namespace XSE
 
 	void CMipMapPagingTerrain::_CalcIBStitchDownCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchDownLeftCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCW, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCW, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchLeftCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchRightCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchRightDownCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchUpCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchUpLeftCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCW, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCW, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchUpRightCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		_CalcBaseIBStitch( uiLOD, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCW );
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCW );
 	}
 
 }//xse

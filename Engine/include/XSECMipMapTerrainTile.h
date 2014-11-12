@@ -37,7 +37,7 @@ namespace XSE
 
 	typedef MipMapTerrainStitchTypes::TYPE	MIPMAP_TERRAIN_STITCH_TYPE;
 
-	class XST_API CMipMapTerrainTile
+	class XST_API CMipMapTerrainTile : public CObject
 	{
 		friend class CMipMapPagingTerrain;
 		friend class CMipMapTerrainPage;
@@ -59,10 +59,9 @@ namespace XSE
 											CMipMapTerrainTile();
 			virtual							~CMipMapTerrainTile();
 
-			i32								Init(const CPoint& GridId);
+			i32								Init(const SInfo& Info);
 
-			void							SetInfo(const SInfo& Info)
-											{ m_Info = Info; }
+			ul32							GetObjectHandle() const xst_implement { return (ul32)this; }
 
 			i32								Lock(MeshWeakPtr pMesh, ul32 ulVertexCount);
 
@@ -83,46 +82,27 @@ namespace XSE
 
 			i32								SetVertexData(const CVertexData& Data);
 
-			void							SetBoundingVolume(const CBoundingVolume& Volume);
-
 			void							SetNeighbours(CMipMapTerrainTile* apNeigbours[ 4 ])
 											{ m_apNeighbours[ 0 ] = apNeigbours[ 0 ]; m_apNeighbours[ 1 ] = apNeigbours[ 1 ]; m_apNeighbours[ 2 ] = apNeigbours[ 2 ]; m_apNeighbours[ 3 ] = apNeigbours[ 3 ]; }
 
-			CMipMapTerrainTile*				GetNeighbour(u32 uiId)
-											{ return m_apNeighbours[ uiId ]; }
+			CMipMapTerrainTile*				GetNeighbour(u32 uiId) { return m_apNeighbours[ uiId ]; }
 
-			xst_fi	u32						GetLOD() const
-											{ return m_uiLOD; }
+			xst_fi	u32						GetLOD() const { return m_uiLOD; }
 
-			xst_fi MIPMAP_TERRAIN_STITCH_TYPE		GetStitchType() const
-											{ return m_eStitchType; }
+			xst_fi 
+			MIPMAP_TERRAIN_STITCH_TYPE		GetStitchType() const { return m_eStitchType; }
 
 		protected:
 
-			/*i32					_CreateVertexData(XSE::CVertexData& VData, u32 uiWidth, u32 uiHeight);
-
-			i32					_CreateIndexData(MeshPtr pMesh, u32 uiWidth, u32 uiHeight, u32 uiLOD);
-
-			i32					_CreateIndexDataNoStitch(CIndexData& IData, u32 uiWidth, u32 uiHeight, u32 uiLOD);
-
-			void				_CalcStripNoStitch(CIndexData& IData, u32 uiCurrHeight, u32 uiWidth, u32* puiCurrTri, u32 uiLodStep, bool bEvenStrip);
-
-			void				_CalcStripStitchUp(CIndexData& IData, u32 uiCurrHeight, u32 uiWidth, u32* puiCurrTri, u32 uiLodStep, bool bEvenStrip);
-
-			void				_CalcStripStitchLeft(CIndexData& IData, u32 uiCurrHeight, u32 uiWidth, u32* puiCurrTri, u32 uiLodStep, bool bEvenStrip);
-
-			void				_CalcStripStitchUpLeft(CIndexData& IData, u32 uiCurrHeight, u32 uiWidth, u32* puiCurrTri, u32 uiLodStep, bool bEvenStrip);
-
-			void				_CalcQuad(CIndexData& Data, u32 uiX, u32 uiY, u32 uiWidth, u32 uiLodStep, u32* puiCurrTri,  bool bBackslashTriangle);
-*/
+			void							_OnObjectDisable(cu32& uDisableReason);
 
 		protected:
 
-			SInfo				m_Info;
-			CMipMapTerrainTile*	m_apNeighbours[ 4 ];
-			u32					m_uiLOD = 0;
+			SInfo						m_Info;
+			CMipMapTerrainTile*			m_apNeighbours[ 4 ];
+			u32							m_uiLOD = 0;
 			MIPMAP_TERRAIN_STITCH_TYPE	m_eStitchType = MipMapTerrainStitchTypes::NONE;
-			xst_vector<bool>::iterator				m_pbIsVisible; // a pointer to a bool array from MipMapPagingTerrain (set in Init method)
+			xst_vector<bool>::iterator	m_pbIsVisible; // a pointer to a bool array from MipMapPagingTerrain (set in Init method)
 	};
 }//xse
 #endif
