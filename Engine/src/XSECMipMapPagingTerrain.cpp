@@ -579,7 +579,7 @@ namespace XSE
         if( XST_FAILED( CreateImpostorVertexBuffers( &apBuffs, m_vpImpostorVertexBuffers.size(), VertexCount, vecSize, m_pInputLayout ) ) )
         {
             return XST_FAIL;
-        }
+        } 
         return XST_OK;
     }
 
