@@ -28,7 +28,7 @@ namespace XSE
 		return vc;
 	}
 
-	i32 SetImpostorVertexBufferData( IVertexBuffer* *const *const pppVBs, u32 uVBCount, const CPoint& VertexCount, const Vec2& vecImpostorSize,
+	i32 CreateImpostorVertexBufferData( IVertexBuffer* *const *const pppVBs, u32 uVBCount, const CPoint& VertexCount, const Vec2& vecImpostorSize,
 									 const IInputLayout* pIL )
 	{
 		xst_assert2( uVBCount > 0 );
@@ -336,7 +336,7 @@ namespace XSE
 
 		const CPoint ImpVertCount = CalcImpostorVertexCount( m_Options.PageVertexCount, m_Options.uiLODCount );
 		IVertexBuffer* *const pTmpVBs = &m_vpImpostorVertexBuffers[ 0 ];
-		XST_RET_FAIL( SetImpostorVertexBufferData( &pTmpVBs, m_vpImpostorVertexBuffers.size(), ImpVertCount, vecPageSize, m_pInputLayout ) );
+		XST_RET_FAIL( CreateImpostorVertexBufferData( &pTmpVBs, m_vpImpostorVertexBuffers.size(), ImpVertCount, vecPageSize, m_pInputLayout ) );
 		XST_RET_FAIL( SetImpostorVertexDataHeights( &(pTmpVBs[0]), ImpVertCount, m_Options.vecHeightRange, m_vpImages[1].GetPtr() ) );
 
 		for(u32 y = 0; y < m_Options.PageCount.y; ++y)
@@ -573,13 +573,6 @@ namespace XSE
 
     i32 CMipMapPagingTerrain::CreateImpostors()
     {
-        Vec2 vecSize( m_Options.Size.x, m_Options.Size.y );
-        CPoint VertexCount( (m_Options.PageVertexCount.x-1) << m_Options.uiLODCount, (m_Options.PageVertexCount.y-1) << m_Options.uiLODCount );
-        IVertexBuffer** apBuffs = &m_vpImpostorVertexBuffers[ 0 ];
-        if( XST_FAILED( CreateImpostorVertexBuffers( &apBuffs, m_vpImpostorVertexBuffers.size(), VertexCount, vecSize, m_pInputLayout ) ) )
-        {
-            return XST_FAIL;
-        } 
         return XST_OK;
     }
 

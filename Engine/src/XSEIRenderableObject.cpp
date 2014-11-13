@@ -27,7 +27,7 @@ namespace XSE
     void IRenderableObject::SetVisible(bool bIs)
     {
         m_bVisible = bIs;
-        //this->Disable( ( bIs )? ODR::OTHER : ODR::NOT_DISABLED );
+		CObject::Disable( bIs ? RODR::NOT_VISIBLE : ODR::NOT_DISABLED );
     }
 
 

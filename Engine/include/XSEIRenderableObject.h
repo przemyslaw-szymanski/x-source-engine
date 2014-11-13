@@ -8,6 +8,18 @@
 
 namespace XSE
 {
+	struct RenderableObjectDisableReason
+	{
+		enum REASON
+		{
+			NOT_VISIBLE			= 0x00000010,
+			RENDER_SYSTEM_ERROR	= 0x00000020,
+			_ENUM_COUNT = 2
+		};
+	};
+	typedef RenderableObjectDisableReason RODR;
+	typedef RODR::REASON RENDERABLE_OBJECT_DISABLE_REASON;
+
 	//It is a base interface used by any object that should be rendered (visible on the screen)
 	//It inherits from CObject a base class for any object used in whole engine. 
 	//If something should be processed in the engine it need to be inherited from CObject
