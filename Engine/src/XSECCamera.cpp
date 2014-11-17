@@ -302,7 +302,7 @@ namespace XSE
 	{
 		CMeshManager* pMeshMgr = m_pSceneMgr->GetModelManager()->GetMeshManager();
 		IInputLayout* pIL = m_pRS->GetInputLayout( InputLayoutElements::POSITION );
-		MeshPtr pMesh = pMeshMgr->CreateMesh( this->m_strName, pIL, m_pSceneMgr->GetName() );
+		MeshPtr pMesh = pMeshMgr->CreateMesh( this->m_strName + "/frustum_dbg", pIL, m_pSceneMgr->GetName() );
 		Test( pMesh );
 		VertexBufferPtr pVB = pMesh->CreateVertexBuffer();
 		IndexBufferPtr pIB = pMesh->CreateIndexBuffer();
@@ -397,7 +397,7 @@ namespace XSE
 		m_pVolumeMesh = pMesh.GetPtr();
 		m_pVolumeMesh->SetVisible( false ); //by default do not show it
 
-		m_pSceneMgr->CreateNode( this->m_strName + "/volume_dbg" )->AddObject( pMesh );
+		m_pSceneMgr->CreateNode( this->m_strName + "/frustum_dbg" )->AddObject( pMesh );
 
 		return _UpdateVolumeMesh();
 	}

@@ -558,14 +558,6 @@ namespace XSE
 		for( u32 i = uTileCount; i-- > 0; )
 		{
 			m_pSceneMgr->AddToPartitionSystem( &m_vTiles[ i ] );
-			SLineBoxOptions o;
-			o.vecPos = m_vTiles[ i ].GetPosition();
-			o.vecSize = m_vTiles[ i ].GetBoundingVolume( ).GetAABB( ).CalcSize();
-			o.colColor = CColor::GREEN;
-			char name[128];
-			xst_sprintf( name, sizeof( name ), "tile%d_aabb", i );
-			MeshPtr pM = CMeshManager::GetSingletonPtr( )->CreateMesh( name, ILEs::POSITION | ILEs::COLOR, BasicShapes::LINE_BOX, &o, "terrain" );
-			m_pSceneMgr->GetRootNode( )->AddObject( pM );
 		}
 
 		return XST_OK;

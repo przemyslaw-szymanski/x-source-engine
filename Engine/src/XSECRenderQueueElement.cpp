@@ -48,9 +48,9 @@ namespace XSE
 		xst_stl_foreach( Itr, m_vObjects )
 		{
 			pObj = (*Itr);
-			
+			lpcastr dbg = pObj->_GetDbgName();
 			if( pObj->IsDisabled() )
-				continue;
+				continue; // TODO: Cache miss here
 
 			pMat = pObj->GetMaterial().GetPtr();
 			pObj->Update();

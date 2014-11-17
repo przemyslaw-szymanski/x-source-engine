@@ -25,6 +25,7 @@ namespace XSE
 		MaterialPtr pMat = pMgr->GetMaterialManager()->GetMaterial( CMaterialManager::DEFAULT_MAT_COLOR, DEFAULT_GROUP );
 		m_pAABBMesh->SetMaterial( pMat );
 		m_pAABBMesh->m_bDbgObject = true;
+		m_pAABBMesh->SetVisible(false);
 	}
 
 	CSceneDebug::~CSceneDebug()

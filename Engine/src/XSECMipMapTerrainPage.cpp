@@ -114,6 +114,8 @@ namespace XSE
 			vecTileMin.z = vecTilePos.z;
 			for( u32 uTileX = 0; uTileX < m_Info.TileCount.x; ++uTileX )
 			{
+				vecTileMin.y = XST_MAX_F32;
+				vecTileMax.y = XST_MIN_F32;
 				PixelPos.y = m_Info.ImgPixelStartPosition.y + uTileY * (m_Info.TileVertexCount.y-1);
                 vecTilePos.x = m_Info.vecPagePosition.x + uTileX * vecTileSize.x;
 				vecTileMin.x = vecTilePos.x;
@@ -129,8 +131,10 @@ namespace XSE
 					{
 						u8 uR = m_Info.pImg->GetChannelColor( PixelPos.x, PixelPos.y, Resources::IImage::CHANNEL::RED );
 						vecPos.y = CMipMapTerrainTile::ColorToHeight( m_Info.vecHeightRange, uR );
-						if( vecPos.y < vecTileMin.y ) vecTileMin.y = vecPos.y;
-						if( vecPos.y > vecTileMax.y ) vecTileMax.y = vecPos.y;
+						
+						vecTileMin.y = std::min( vecTileMin.y, vecPos.y );
+						vecTileMax.y = std::max( vecTileMax.y, vecPos.y );
+						
 						//sprintf( t, "(%.2f,%.2f)", vecPos.x, vecPos.z ); XST::CDebug::PrintDebug( t );
 						//sprintf( t, "(%d,%d)", PixelPos.x, PixelPos.y ); XST::CDebug::PrintDebug( t );
 						VData.SetPosition( ulVertexId, vecPos );
@@ -166,7 +170,7 @@ namespace XSE
 				vecTileMax.z = vecTileMin.z + vecTileSize.y;
 				CBoundingVolume Vol;
 				Vol.BuildFromMinMax( vecTileMin, vecTileMax );
-				sprintf( t, "[(%.2f,%.2f, %.2f)-(%.2f,%.2f, %.2f)]", vecTileMin.x, vecTileMin.y, vecTileMin.z, vecTileMax.x, vecTileMax.y, vecTileMax.z ); XST::CDebug::PrintDebugLN( t );
+				//sprintf( t, "[(%.2f,%.2f, %.2f)-(%.2f,%.2f, %.2f)]", vecTileMin.x, vecTileMin.y, vecTileMin.z, vecTileMax.x, vecTileMax.y, vecTileMax.z ); XST::CDebug::PrintDebugLN( t );
 				pTile->SetBoundingVolume( Vol );
 				pTile->SetPosition( Vol.GetAABB( ).CalcCenter() );
 #if defined(XSE_RENDERER_DEBUG)
