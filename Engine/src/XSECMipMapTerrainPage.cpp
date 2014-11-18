@@ -238,6 +238,37 @@ namespace XSE
 		return XST_OK;
 	}
 
+	i32 CMipMapTerrainPage::CalcVertexPositions(xst_vector<Vec3>* pvOut)
+	{
+		ul32 uVertexCount = m_Info.VertexCount.x * m_Info.VertexCount.y;
+		pvOut->resize( uVertexCount );
 
+		Vec3 vecPos = m_Info.vecPagePosition;
+		CPoint PixelPos = m_Info.ImgPixelStartPosition;
+		ul32 ulVertexOffsetStart = 0;
+		ul32 ulVertexDataSize = 0;
+		ul32 ulVertexId = 0;
+		cul32 ulTileVertexCount = m_Info.TileVertexCount.x * m_Info.TileVertexCount.y;
+		CMipMapTerrainTile::SInfo TileInfo;
+		Vec3 vecTilePos = m_Info.vecPagePosition;
+		Vec3 vecTilePosEnd = vecTilePos;
+		TileInfo.ulStartVertex = 0;
+		const Vec2 vecTileSize( m_Info.vecPageSize.x / m_Info.TileCount.x, m_Info.vecPageSize.y / m_Info.TileCount.y );
+		const Vec2 vecTileHalfSize( vecTileSize * 0.5f );
+		Vec2 vecStep( vecTileSize.x / (m_Info.TileVertexCount.x-1), vecTileSize.y / (m_Info.TileVertexCount.y-1) );
+		const IInputLayout* pIL = m_Info.pInputLayout;
+		u32 uCurrTileId = 0;
+		Vec4 vecCol(1,1,1,1);
+		Vec3 vecTileMin( XST_MAX_F32 ), vecTileMax( XST_MIN_F32 );
+
+		for( u32 y = 0; y < m_Info.VertexCount.y; ++y )
+		{
+			for( u32 x = 0; x < m_Info.VertexCount.x; ++x )
+			{
+
+			}
+		}
+		return XST_OK;
+	}
 
 }//xse

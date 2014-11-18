@@ -79,6 +79,8 @@ namespace XSE
 
 		i32				SetTileData(CMipMapTerrainTile *const (*const *paTiles), u32 uiStartTile, u32 uiEndTile);
 
+		i32				CalcVertexPositions(xst_vector<Vec3>* pvOut);
+
 		xst_fi	u32		CalcVertexDataId(cu32& uiX, cu32& uiY) const
 						{ return uiX + m_Info.TileCount.x * uiY; }
 
