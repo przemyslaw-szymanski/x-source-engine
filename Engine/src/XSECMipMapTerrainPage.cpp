@@ -261,12 +261,24 @@ namespace XSE
 		Vec4 vecCol(1,1,1,1);
 		Vec3 vecTileMin( XST_MAX_F32 ), vecTileMax( XST_MIN_F32 );
 
-		for( u32 y = 0; y < m_Info.VertexCount.y; ++y )
+		for( u32 uVertexY = 0; uVertexY < m_Info.TileVertexCount.y; ++uVertexY )
 		{
-			for( u32 x = 0; x < m_Info.VertexCount.x; ++x )
+			vecPos.x = 0;
+			PixelPos.x = m_Info.ImgPixelStartPosition.x;
+			for( u32 uVertexX = 0; uVertexX < m_Info.TileVertexCount.x; ++uVertexX )
 			{
+				u8 uR = m_Info.pImg->GetChannelColor( PixelPos.x, PixelPos.y, Resources::IImage::CHANNEL::RED );
+				vecPos.y = CMipMapTerrainTile::ColorToHeight( m_Info.vecHeightRange, uR );
+						
+				( *pvOut )[ulVertexId] = vecPos;
 
+				vecPos.x += vecStep.x;
+
+				ulVertexId++;
+				PixelPos.x++;
 			}
+			vecPos.z += vecStep.y;
+			PixelPos.y++;
 		}
 		return XST_OK;
 	}
