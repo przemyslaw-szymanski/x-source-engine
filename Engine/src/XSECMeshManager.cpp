@@ -618,8 +618,12 @@ namespace XSE
 
 		}
 
-		pIB->Unlock();
-		pIB->Create();
+		XST_RET_FAIL( pIB->Unlock() );
+		XST_RET_FAIL( pIB->Create() );
+
+		CBoundingVolume Vol;
+		Vol.BuildFromMinMax( -vecSize + Options.vecPos, vecSize + Options.vecPos );
+		pMesh->SetBoundingVolume( Vol );
 
 		return XST_OK;
 	}
@@ -741,6 +745,10 @@ namespace XSE
 		{
 			return XST_FAIL;
 		}
+
+		CBoundingVolume Vol;
+		Vol.BuildFromMinMax( aCorners[ BoxCorners::LEFT_BOTTOM_BACK ], aCorners[ BoxCorners::RIGHT_TOP_FRONT ] );
+		pMesh->SetBoundingVolume( Vol );
 
 		return XST_OK;
 	}

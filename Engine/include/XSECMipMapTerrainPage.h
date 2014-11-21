@@ -81,6 +81,8 @@ namespace XSE
 
 		i32				CalcVertexPositions(xst_vector<Vec3>* pvOut);
 
+		i32				CalcVertexNormals(const xst_vector<Vec3>& vPositions, xst_vector<Vec3>* pvNormalsOut);
+
 		xst_fi	u32		CalcVertexDataId(cu32& uiX, cu32& uiY) const
 						{ return uiX + m_Info.TileCount.x * uiY; }
 

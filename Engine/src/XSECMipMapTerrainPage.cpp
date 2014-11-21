@@ -104,6 +104,7 @@ namespace XSE
 		u32 uCurrTileId = 0;
 		Vec4 vecCol(1,1,1,1);
 		Vec3 vecTileMin( XST_MAX_F32 ), vecTileMax( XST_MIN_F32 );
+		ul32 ulCurrVertex = 0;
 		
 		CPoint VertexPos;
 		char t[256 ];
@@ -112,48 +113,48 @@ namespace XSE
 
 		for( u32 uTileY = 0; uTileY < m_Info.TileCount.y; ++uTileY )
 		{
-			
-			vecTileMin.z = vecTilePos.z;
 			for( u32 uTileX = 0; uTileX < m_Info.TileCount.x; ++uTileX )
 			{
-				VertexPos.y = uTileY * (m_Info.TileVertexCount.y-1);
+				VertexPos.y = uTileY * ( m_Info.TileVertexCount.y-1 );
 				
-				vecTileMin.y = XST_MAX_F32;
-				vecTileMax.y = XST_MIN_F32;
+				vecTileMin = XST_MAX_F32;
+				vecTileMax = XST_MIN_F32;
 				
-				vecTileMin.x = vecTilePos.x;
+				//vecTileMin.x = vecTilePos.x;
                 //sprintf( t, "[(%.2f,%.2f)", vecTilePos.x, vecTilePos.z ); XST::CDebug::PrintDebug( t );
-				TileInfo.VertexRange.x = ulVertexId;
-				vecPos.z = vecTilePos.z;
+				TileInfo.VertexRange.x = ulCurrVertex;
+
 				for( u32 uVertexY = 0; uVertexY < m_Info.TileVertexCount.y; ++uVertexY )
 				{
 					VertexPos.x = uTileX * ( m_Info.TileVertexCount.x-1 );
-					//vecPos.x = m_Info.vecPagePosition.x + uTileX * ( (m_Info.TileVertexCount.x-1) * vecStep.x );
-					vecPos.x = vecTilePos.x;
-					PixelPos.x = m_Info.ImgPixelStartPosition.x + uTileX * (m_Info.TileVertexCount.x-1);
+		
 					for( u32 uVertexX = 0; uVertexX < m_Info.TileVertexCount.x; ++uVertexX )
 					{
-						vecPos = vPositions[ulVertexId];
+						ulVertexId = XST_ARRAY_2D_TO_1D( VertexPos.x, VertexPos.y, m_Info.VertexCount.x );
+						vecPos = vPositions[ ulVertexId ];
 						vecTileMin.y = std::min( vecTileMin.y, vecPos.y );
+						vecTileMin.x = std::min( vecTileMin.x, vecPos.x );
+						vecTileMin.z = std::min( vecTileMin.z, vecPos.z );
 						vecTileMax.y = std::max( vecTileMax.y, vecPos.y );
+						vecTileMax.x = std::max( vecTileMin.x, vecPos.x );
+						vecTileMax.z = std::max( vecTileMax.z, vecPos.z );
 						
-						//sprintf( t, "(%.2f,%.2f)", vecPos.x, vecPos.z ); XST::CDebug::PrintDebug( t );
+						//sprintf( t, "(%.2f,%.2f)", vecPos.x, vecPos.z ); XST::CDebug::PrintDebugLN( t );
 						//sprintf( t, "(%d,%d)", PixelPos.x, PixelPos.y ); XST::CDebug::PrintDebug( t );
-						VData.SetPosition( ulVertexId, vecPos );
+						VData.SetPosition( ulCurrVertex, vecPos );
 
 						if( pIL->IsColor() )
 						{
-							VData.SetColor( ulVertexId, vecCol );
+							VData.SetColor( ulCurrVertex, vecCol );
 						}
 						VertexPos.x++;
+						ulCurrVertex++;
 					}
-					vecPos.z += vecStep.y;
-					PixelPos.y++;
+					
 					VertexPos.y++;
-					vecTilePosEnd.x = vecPos.x;
-					vecTilePosEnd.z = vecPos.z;
+
 				}
-				sprintf(t, "-(%d,%d)]", VertexPos.x, VertexPos.y); XST::CDebug::PrintDebug(t);
+				//sprintf(t, "-(%d,%d)]", VertexPos.x, VertexPos.y); XST::CDebug::PrintDebug(t);
 				// Calculate tile info
 				u32 uTileId = XST_ARRAY_2D_TO_1D( uTileX, uTileY, m_Info.TileCount.x );
 				xst_assert2( uTileId < m_Info.uTileCount );
@@ -161,7 +162,7 @@ namespace XSE
 				TileInfo.ulStartVertex = uCurrTileId * ulTileVertexCount;
 				TileInfo.ulVertexBufferOffset = TileInfo.ulStartVertex /*pIL->GetVertexSize()*/;
 				TileInfo.TilePart = CPoint( uTileX, uTileY );
-				TileInfo.VertexRange.y = ulVertexId - 1;
+				TileInfo.VertexRange.y = ulCurrVertex - 1;
 				TileInfo.pVB = m_Info.pVB;
 				pTile->Init( TileInfo );
 				pTile->SetPosition( vecTilePos + Vec3(vecTileHalfSize.x, 0, vecTileHalfSize.y) ); // calculate center: right_top_corner + half_size
@@ -169,7 +170,7 @@ namespace XSE
 				vecTileMax.z = vecTileMin.z + vecTileSize.y;
 				CBoundingVolume Vol;
 				Vol.BuildFromMinMax( vecTileMin, vecTileMax );
-				//sprintf( t, "[(%.2f,%.2f, %.2f)-(%.2f,%.2f, %.2f)]", vecTileMin.x, vecTileMin.y, vecTileMin.z, vecTileMax.x, vecTileMax.y, vecTileMax.z ); XST::CDebug::PrintDebugLN( t );
+				sprintf( t, "[(%.2f,%.2f, %.2f)-(%.2f,%.2f, %.2f)]", vecTileMin.x, vecTileMin.y, vecTileMin.z, vecTileMax.x, vecTileMax.y, vecTileMax.z ); XST::CDebug::PrintDebugLN( t );
 				pTile->SetBoundingVolume( Vol );
 				pTile->SetPosition( Vol.GetAABB( ).CalcCenter() );
 #if defined(XSE_RENDERER_DEBUG)
@@ -182,10 +183,10 @@ namespace XSE
 				//sprintf( t, "vertex range: (%d-%d) ", TileInfo.ulVertexBufferOffset, TileInfo.ulStartVertex ); XST::CDebug::PrintDebug( t );
 			}
 			
-			XST::CDebug::PrintDebugLN( "" );
+			//XST::CDebug::PrintDebugLN( "" );
 			vecPos.z = m_Info.vecPagePosition.y + uTileY * ( (m_Info.TileVertexCount.y-1) * vecStep.y );	
 		}
-		xst_assert2( ulVertexId == ulVertexCount );
+		//xst_assert2( ulVertexId == ulVertexCount );
 	}
 
 	void CMipMapTerrainPage::CalcVertexNormals()
@@ -261,11 +262,11 @@ namespace XSE
 		Vec4 vecCol(1,1,1,1);
 		Vec3 vecTileMin( XST_MAX_F32 ), vecTileMax( XST_MIN_F32 );
 
-		for( u32 uVertexY = 0; uVertexY < m_Info.TileVertexCount.y; ++uVertexY )
+		for( u32 uVertexY = 0; uVertexY < m_Info.VertexCount.y; ++uVertexY )
 		{
-			vecPos.x = 0;
+			vecPos.x = m_Info.vecPagePosition.x;
 			PixelPos.x = m_Info.ImgPixelStartPosition.x;
-			for( u32 uVertexX = 0; uVertexX < m_Info.TileVertexCount.x; ++uVertexX )
+			for( u32 uVertexX = 0; uVertexX < m_Info.VertexCount.x; ++uVertexX )
 			{
 				u8 uR = m_Info.pImg->GetChannelColor( PixelPos.x, PixelPos.y, Resources::IImage::CHANNEL::RED );
 				vecPos.y = CMipMapTerrainTile::ColorToHeight( m_Info.vecHeightRange, uR );
@@ -281,6 +282,73 @@ namespace XSE
 			PixelPos.y++;
 		}
 		return XST_OK;
+	}
+
+	i32 CMipMapTerrainPage::CalcVertexNormals(const xst_vector<Vec3>& vPositions, xst_vector<Vec3>* pvNormalsOut)
+	{
+		xst_assert2( vPositions.size() == m_Info.VertexCount.x * m_Info.VertexCount.y );
+
+		pvNormalsOut->resize( vPositions.size() );
+
+		Vec3 avecTriLeft[3];
+		Vec3 avecTriRight[3];
+		Vec3 avecNormals[2];
+		ul32 uIDs[4];
+
+		enum CORNER
+		{
+			TOP_LEFT,
+			TOP_RIGHT,
+			BOTTOM_LEFT,
+			BOTTOM_RIGHT
+		};
+
+		for( u32 y = 0; y < m_Info.VertexCount.y-1; ++y )
+		{
+			for( u32 x = 0; x < m_Info.VertexCount.x-1; ++x )
+			{
+				uIDs[ CORNER::TOP_LEFT ] = XST_ARRAY_2D_TO_1D( x, y, m_Info.VertexCount.x );
+				uIDs[ CORNER::TOP_RIGHT ] = XST_ARRAY_2D_TO_1D( x, y+1, m_Info.VertexCount.x );
+				uIDs[ CORNER::BOTTOM_RIGHT ] = XST_ARRAY_2D_TO_1D( x + 1, y + 1, m_Info.VertexCount.x );
+				uIDs[ CORNER::BOTTOM_LEFT ] = XST_ARRAY_2D_TO_1D( x, y + 1, m_Info.VertexCount.x );
+
+				// Create quad
+				// Left triangle |\.
+				avecTriLeft[ 0 ] = vPositions[ uIDs[ CORNER::TOP_LEFT ] ]; // top left
+				avecTriLeft[ 1 ] = vPositions[ uIDs[ CORNER::BOTTOM_LEFT ] ];  // bottom left
+				avecTriLeft[ 2 ] = vPositions[ uIDs[ CORNER::BOTTOM_RIGHT] ]; // botton right
+
+				Vec3& vecU = avecTriLeft[ 1 ];
+				Vec3& vecV = avecTriLeft[ 2 ];
+				vecU.Sub( avecTriLeft[ 0 ] );
+				vecV.Sub( avecTriLeft[ 0 ] );
+				avecNormals[ 0 ].x = ( vecU.y * vecV.z - vecU.z * vecV.y );
+				avecNormals[ 0 ].y = ( vecU.z * vecV.x - vecU.x * vecV.z );
+				avecNormals[ 0 ].z = ( vecU.x * vecV.y - vecU.y * vecV.x );
+
+				(*pvNormalsOut)[ uIDs[ CORNER::TOP_LEFT ] ] += avecNormals[0];
+				(*pvNormalsOut)[ uIDs[ CORNER::BOTTOM_LEFT ] ] += avecNormals[0];
+				(*pvNormalsOut)[ uIDs[ CORNER::BOTTOM_RIGHT ] ] += avecNormals[0];
+
+
+				// Right triangle \|
+				avecTriRight[ 0 ] = vPositions[ uIDs[ CORNER::TOP_LEFT ] ]; // top left
+				avecTriRight[ 1 ] = vPositions[ uIDs[ CORNER::BOTTOM_RIGHT ] ]; // bottom right
+				avecTriRight[ 2 ] = vPositions[ uIDs[ CORNER::TOP_RIGHT ] ]; // top right
+
+				vecU = avecTriRight[ 1 ];
+				vecV = avecTriRight[ 2 ];
+				vecU.Sub( avecTriRight[ 0 ] );
+				vecV.Sub( avecTriRight[ 0 ] );
+				avecNormals[ 1 ].x = ( vecU.y * vecV.z - vecU.z * vecV.y );
+				avecNormals[ 1 ].y = ( vecU.z * vecV.x - vecU.x * vecV.z );
+				avecNormals[ 1 ].z = ( vecU.x * vecV.y - vecU.y * vecV.x );
+
+				(*pvNormalsOut)[ uIDs[ CORNER::TOP_LEFT ] ] += avecNormals[1];
+				(*pvNormalsOut)[ uIDs[ CORNER::BOTTOM_RIGHT ] ] += avecNormals[1];
+				(*pvNormalsOut)[ uIDs[ CORNER::TOP_RIGHT ] ] += avecNormals[1];
+			}
+		}
 	}
 
 }//xse

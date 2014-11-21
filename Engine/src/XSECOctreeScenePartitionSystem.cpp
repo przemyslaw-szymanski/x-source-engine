@@ -201,9 +201,11 @@ g_uiObjDisabled++;
 		for(u32 o = vObjs.size(); o --> 0;)
 		{
 			pObj = vObjs[ o ];
+			lpcastr dbg = pObj->_GetDbgName();
 			//If this object is disabled for other reason
 			// TODO: Cache miss here
-			if( pObj->GetDisableReason() != ODR::NOT_DISABLED && pObj->GetDisableReason() != ODR::FRUSTUM_CULLING )
+			u32 uDisableReason = pObj->GetDisableReason();
+			if( uDisableReason != ODR::NOT_DISABLED && uDisableReason != ODR::FRUSTUM_CULLING )
 				continue; //skip it
 
 			//const CBoundingSphere& ObjSphere = pObj->GetBoundingVolume().GetSphere();
@@ -254,7 +256,8 @@ g_uiObjChecked++;
 			const CAABB& ObjAABB = pObj->GetBoundingVolume().GetAABB();
 
 			//If this object is disabled by other test do not test it
-			if( pObj->GetDisableReason() != ODR::NOT_DISABLED && pObj->GetDisableReason() != ODR::RANGE_CULLING )
+			u32 uDisableReason = pObj->GetDisableReason();
+			if( uDisableReason != ODR::NOT_DISABLED && uDisableReason != ODR::RANGE_CULLING )
 				continue;
 
 			fDist = CamSphere.CalcDistance( pObj->GetPosition() );
