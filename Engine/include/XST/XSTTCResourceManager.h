@@ -113,19 +113,16 @@ namespace XST
 			template<class _M_, class _K_>
 			static xst_fi bool FindPlace(_M_& map, const _K_& key, typename _M_::iterator* pItrOut = xst_null)
 			{
-
+				xst_assert( pItrOut, "(MapUtil::FindPlace) Output iterator pointer is null" );
 				//ResourceIterator Itr = m_mResources.lower_bound(_ulID);
 				typename _M_::iterator Itr = map.lower_bound( key );
+				*pItrOut = Itr;
 				if( Itr != map.end() && !( map.key_comp()( key, Itr->first ) ) )
 				{
 					//Resource already exists
-                    if( pItrOut ) *pItrOut = map.end();
 					return false;
 				}
-
-                if( pItrOut ) *pItrOut = Itr;
 				return true;
-
 			}
 
 			template<class _M_, class _K_>

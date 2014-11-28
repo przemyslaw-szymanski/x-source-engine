@@ -172,11 +172,27 @@ namespace XSE
         f32 fConstDist = 100;
         f32 fLODDist = fConstDist;
         f32 fPrevDist;
+		u32 uMaxLOD = m_Options.uiLODCount;
         CCamera* pCam = m_pSceneMgr->GetComputeCamera();
 
 		for( u32 i = 0; i < m_vPages.size(); ++i )
 		{
 			m_vPages[ i ].Update( pCam );
+		}
+
+		for( u32 t = 0; t < m_vTiles.size(); ++t )
+		{
+			auto& Tile = m_vTiles[ t ];
+			f32 fDist = Tile.GetDistanceToCamera();
+			Tile.m_uiLOD = uMaxLOD-1;
+			for( u32 i = uMaxLOD; i-->0; )
+			{
+				if( fDist < fConstDist * ( i + 1 ) )
+				{
+					Tile.m_uiLOD = i;
+					Tile.m_eStitchType = MipMapTerrainStitchTypes::NONE;
+				}
+			}
 		}
 
         /*for( u32 i = 0; i < m_vTiles.size(); ++i )
@@ -359,6 +375,7 @@ namespace XSE
 				Info.pImg = m_vpImages[0].GetPtr(); // TEMP use only one heightmap at this moment
 				Info.uPageId = m_vPages.size() - 1;
 				Info.ImgPixelStartPosition = CPoint( x, y );
+				Info.GridPosition = CPoint( x, y );
 				//Info.apTiles = &m_vTiles[ CalcFirstTileIdForPage( uCurrPageId, uTileCount ) ];
 				u32 uTileId = CalcFirstTileIdForPage( uCurrPageId, uTileCount );
 				xst_assert2( uTileId < m_vTiles.size() );
@@ -477,7 +494,7 @@ namespace XSE
 				{
 					// TODO: probably cache miss here. Use array of pVB,ulStartVertex structures
 					const auto& TileInfo = m_vTiles[t].m_Info;
-					pIB = GetIndexBuffer( 0, MipMapTerrainStitchTypes::NONE ).pIndexBuffer.GetPtr();
+					pIB = GetIndexBuffer( m_vTiles[t].m_uiLOD, m_vTiles[i].m_eStitchType ).pIndexBuffer.GetPtr();
 					pRS->SetVertexBufferWithCheck( TileInfo.pVB );
 					pRS->SetIndexBufferWithCheck( pIB );
 					pRS->DrawIndexed( pIB->GetIndexCount(), 0, TileInfo.ulStartVertex );
@@ -558,14 +575,14 @@ namespace XSE
 		for( u32 i = uTileCount; i-- > 0; )
 		{
 			m_pSceneMgr->AddToPartitionSystem( &m_vTiles[ i ] );
-			SLineBoxOptions o;
+			/*SLineBoxOptions o;
 			o.vecPos = m_vTiles[ i ].GetPosition();
 			o.vecSize = m_vTiles[ i ].GetBoundingVolume( ).GetAABB( ).CalcSize();
 			o.colColor = CColor::GREEN;
 			char name[128];
 			xst_sprintf( name, sizeof( name ), "tile%d_aabb", i );
 			MeshPtr pM = CMeshManager::GetSingletonPtr( )->CreateMesh( name, ILEs::POSITION | ILEs::COLOR, BasicShapes::LINE_BOX, &o, "terrain" );
-			m_pSceneMgr->GetRootNode( )->AddObject( pM );
+			m_pSceneMgr->GetRootNode( )->AddObject( pM );*/
 		}
 
 		return XST_OK;

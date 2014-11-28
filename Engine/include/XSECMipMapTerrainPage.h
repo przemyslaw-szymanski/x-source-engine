@@ -25,6 +25,7 @@ namespace XSE
 		struct SInfo
 		{
 			Vec3 vecPagePosition; // position in 3d space. Top left corner position
+			CPoint GridPosition; // position of this page in a global terrain grid
 			CPoint VertexCount; // vertex count for this page
 			CPoint TileCount; // tile count for this page for x and y
 			CPoint TileVertexCount; // vertex count per one tile

@@ -39,6 +39,8 @@ namespace XSE
 
 					i32				SetData(const CVertexData& SrcData);
 
+					i32				SetData(cu8* const pData, ul32 ulDataSize);
+
 			xst_fi	
 			XST::CBinaryData&		GetBinaryData()
 									{ return m_Data; }

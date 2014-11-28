@@ -88,6 +88,8 @@ class CToString
 
 xst_fi CToString ToString() { return CToString(); }
 
+#define DEBUG_CAMERA 1
+
 i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 {
 	m_pWnd = pWnd;
@@ -110,29 +112,25 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 
 	this->CreateSceneManager( pEngine, 1250 );
     this->m_pSceneMgr->GetRenderSystem( )->GetCurrentViewport()->SetFillMode( XSE::FillModes::WIREFRAME );
-	//this->m_pSceneMgr->GetCurrentCamera()->SetPosition( 0, 5, -10 );
-	//this->m_pSceneMgr->GetCurrentCamera()->SetMoveSpeed( 1 );
 	this->m_pViewCam->SetAngleX( 0.397f );
 	this->m_pViewCam->SetAngleY( 0.580f );
-	//this->m_pViewCam->SetPosition( -18, 101, -56 );
 	this->m_pViewCam->SetPosition( 32, 100, 24 );
 	this->m_pViewCam->SetSpeed( 200, 1.1f, 1.1f );
 	this->m_pViewCam->SetFar( 1000 );
 
-	//this->m_pDbgCam->SetPosition( 0, 100, 0 );
+	// DEBUG CAMERA
+#if DEBUG_CAMERA
 	this->m_pDbgCam->SetPosition( this->m_pViewCam->GetPosition() );
 	this->m_pDbgCam->SetAngleX( this->m_pViewCam->GetAngles().x );
 	this->m_pDbgCam->SetAngleY( this->m_pViewCam->GetAngles().y );
 	this->m_pDbgCam->SetFOV( XST::DegreesToRadians( 45 ), 0.1f, 1000.0f );
-	this->m_pDbgCam->ShowFrustumMesh( false );
-
-	this->EnableDbgCamera( false );
-
-	//this->m_pSceneMgr->SetViewFrustumCullType( XSE::ViewFrustumCullTypes::NONE );
-
-	//this->m_pMoveCam = this->m_pDbgCam;
-
-	//this->m_pSceneMgr->SetCamera( this->m_pViewCam );
+	this->m_pDbgCam->ShowFrustumMesh( true );
+	this->EnableDbgCamera( true );
+	this->m_pViewCam->SetPosition( -389, 450, 230 );
+	this->m_pViewCam->SetAngleX( 1.879f );
+	this->m_pViewCam->SetAngleY( 0.701f );
+#endif
+	/////////////////////////////////////////
 
 	XSE::CSceneManager::CameraIterator Itr = m_pSceneMgr->GetCameraIterator();
 	while( Itr.HasMoreElements() )
@@ -150,12 +148,12 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	//Options.TileVertexCount = XSE::CPoint( 16 * 1 + 1 );
 	//Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
 	//Options.TileVertexCount = XSE::CPoint( 16 + 1 );
-	Options.PageVertexCount = XSE::CPoint( 8 + 1 );
-	Options.TileVertexCount = XSE::CPoint( 4 + 1 );
+	Options.PageVertexCount = XSE::CPoint( 1024 + 1 );
+	Options.TileVertexCount = XSE::CPoint( 32 + 1 );
 	Options.uiLODCount = 4;
 	//Options.bColor = true;
 	Options.bBinormal = Options.bNormal = Options.bTangent = Options.bTexCoord = false;
-	//Options.bNormal = true;
+	Options.bNormal = true;
 
 	{
 		XSTSimpleProfiler2( "CreateTerrain");

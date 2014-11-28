@@ -124,7 +124,7 @@ namespace XSE
 	void CFrustum::CreateFromMatrix(const Mtx4& mtxProj)
 	{
 		// Corners of the projection frustum in homogenous space.
-		static Vec4 HomogenousPoints[6] =
+		static const Vec4 HomogenousPoints[6] =
 		{
 			{  1.0f,  0.0f, 1.0f, 1.0f },   // right (at far plane)
 			{ -1.0f,  0.0f, 1.0f, 1.0f },   // left

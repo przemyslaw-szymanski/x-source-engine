@@ -1,9 +1,14 @@
 #include "XSECMipMapTerrainPage.h"
 #include <XSTCToString.h>
 #include "XSECMeshManager.h"
+#include "XSECMipMapPagingTerrain.h"
+#include "XSECSceneManager.h"
+#include "XSECSceneNode.h"
 
 namespace XSE
 {
+#define XSE_TERRAIN_NORMAL_DEBUG 0
+
 	CMipMapTerrainPage::CMipMapTerrainPage(CMipMapPagingTerrain* pTerrain) : 
 		m_pTerrain( pTerrain )
 	{
@@ -85,7 +90,7 @@ namespace XSE
 		xst_assert2( Range.x >= m_Info.VertexCount.x && Range.y >= m_Info.VertexCount.y );
 
 		CVertexData& VData = m_Info.pVB->GetVertexData();
-
+	
 		Vec3 vecPos = m_Info.vecPagePosition;
 		CPoint PixelPos = m_Info.ImgPixelStartPosition;
 		ul32 ulVertexOffsetStart = 0;
@@ -105,12 +110,38 @@ namespace XSE
 		Vec4 vecCol(1,1,1,1);
 		Vec3 vecTileMin( XST_MAX_F32 ), vecTileMax( XST_MIN_F32 );
 		ul32 ulCurrVertex = 0;
-		
+		Vec3 vecNormal;
+
 		CPoint VertexPos;
 		char t[256 ];
 		xst_vector<Vec3> vPositions;
+		xst_vector<Vec3> vNormals;
 		CalcVertexPositions( &vPositions );
+		CalcVertexNormals( vPositions, &vNormals );
+#if (XSE_TERRAIN_NORMAL_DEBUG)
+		xst_vector<Vec3> vNormPos;
+		vNormPos.reserve( ulVertexCount *2 );
+		xst_vector<u16> vNormIds;
+		MeshPtr pNormMesh = CMeshManager::GetSingletonPtr()->CreateMesh("tmp_normal_mesh");
+		m_pTerrain->m_pSceneMgr->GetRootNode()->AddObject(pNormMesh);
+		VertexBufferPtr pVB = pNormMesh->CreateVertexBuffer();
+		IndexBufferPtr pIB = pNormMesh->CreateIndexBuffer();
 
+		pVB->SetInputLayout(m_Info.pInputLayout);
+		pVB->SetTopologyType(TopologyTypes::LINE_LIST);
+		pVB->SetUsage(BufferUsages::STATIC);
+		pVB->SetVertexCount( ulVertexCount * 2 );
+		pIB->SetIndexCount( ulVertexCount * 2 );
+		pIB->SetUsage(BufferUsages::STATIC);
+		pIB->SetIndexSize( IndexElementSizes::UNSIGNED_32 );
+		pVB->Lock();
+		pIB->Lock();
+		ul32 ulCurrNormVid = 0;
+		ul32 ulCurrNormId = 0;
+		CVertexData& VNData = pVB->GetVertexData();
+		CIndexData& INData = pIB->GetIndexData();
+#endif
+		
 		for( u32 uTileY = 0; uTileY < m_Info.TileCount.y; ++uTileY )
 		{
 			for( u32 uTileX = 0; uTileX < m_Info.TileCount.x; ++uTileX )
@@ -119,9 +150,7 @@ namespace XSE
 				
 				vecTileMin = XST_MAX_F32;
 				vecTileMax = XST_MIN_F32;
-				
-				//vecTileMin.x = vecTilePos.x;
-                //sprintf( t, "[(%.2f,%.2f)", vecTilePos.x, vecTilePos.z ); XST::CDebug::PrintDebug( t );
+
 				TileInfo.VertexRange.x = ulCurrVertex;
 
 				for( u32 uVertexY = 0; uVertexY < m_Info.TileVertexCount.y; ++uVertexY )
@@ -132,21 +161,35 @@ namespace XSE
 					{
 						ulVertexId = XST_ARRAY_2D_TO_1D( VertexPos.x, VertexPos.y, m_Info.VertexCount.x );
 						vecPos = vPositions[ ulVertexId ];
-						vecTileMin.y = std::min( vecTileMin.y, vecPos.y );
+						vecNormal = vNormals[ ulVertexId ];
+						vecTileMin.Min( vecPos );
+						vecTileMax.Max( vecPos );
+#if (XSE_TERRAIN_NORMAL_DEBUG)
+						VNData.SetPosition( ulCurrNormVid++, vecPos );
+						VNData.SetPosition( ulCurrNormVid++, vecPos + vecNormal * 10 );
+						INData.SetIndex( ulCurrNormId++, ulCurrNormVid - 2 );
+						INData.SetIndex( ulCurrNormId++, ulCurrNormVid - 1 );
+#endif
+						/*vecTileMin.y = std::min( vecTileMin.y, vecPos.y );
 						vecTileMin.x = std::min( vecTileMin.x, vecPos.x );
 						vecTileMin.z = std::min( vecTileMin.z, vecPos.z );
 						vecTileMax.y = std::max( vecTileMax.y, vecPos.y );
 						vecTileMax.x = std::max( vecTileMin.x, vecPos.x );
-						vecTileMax.z = std::max( vecTileMax.z, vecPos.z );
+						vecTileMax.z = std::max( vecTileMax.z, vecPos.z );*/
 						
-						//sprintf( t, "(%.2f,%.2f)", vecPos.x, vecPos.z ); XST::CDebug::PrintDebugLN( t );
-						//sprintf( t, "(%d,%d)", PixelPos.x, PixelPos.y ); XST::CDebug::PrintDebug( t );
+
 						VData.SetPosition( ulCurrVertex, vecPos );
 
 						if( pIL->IsColor() )
 						{
 							VData.SetColor( ulCurrVertex, vecCol );
 						}
+
+						if( pIL->IsNormal() )
+						{
+							VData.SetNormal( ulCurrVertex, vecNormal );
+						}
+
 						VertexPos.x++;
 						ulCurrVertex++;
 					}
@@ -160,7 +203,7 @@ namespace XSE
 				xst_assert2( uTileId < m_Info.uTileCount );
 				CMipMapTerrainTile* pTile = &m_Info.aTiles[ uTileId ];
 				TileInfo.ulStartVertex = uCurrTileId * ulTileVertexCount;
-				TileInfo.ulVertexBufferOffset = TileInfo.ulStartVertex /*pIL->GetVertexSize()*/;
+				TileInfo.ulVertexBufferOffset = TileInfo.ulStartVertex;
 				TileInfo.TilePart = CPoint( uTileX, uTileY );
 				TileInfo.VertexRange.y = ulCurrVertex - 1;
 				TileInfo.pVB = m_Info.pVB;
@@ -170,10 +213,10 @@ namespace XSE
 				vecTileMax.z = vecTileMin.z + vecTileSize.y;
 				CBoundingVolume Vol;
 				Vol.BuildFromMinMax( vecTileMin, vecTileMax );
-				sprintf( t, "[(%.2f,%.2f, %.2f)-(%.2f,%.2f, %.2f)]", vecTileMin.x, vecTileMin.y, vecTileMin.z, vecTileMax.x, vecTileMax.y, vecTileMax.z ); XST::CDebug::PrintDebugLN( t );
+				//sprintf( t, "[(%.2f,%.2f, %.2f)-(%.2f,%.2f, %.2f)]", vecTileMin.x, vecTileMin.y, vecTileMin.z, vecTileMax.x, vecTileMax.y, vecTileMax.z ); XST::CDebug::PrintDebugLN( t );
 				pTile->SetBoundingVolume( Vol );
 				pTile->SetPosition( Vol.GetAABB( ).CalcCenter() );
-#if defined(XSE_RENDERER_DEBUG)
+#if (XSE_TERRAIN_NORMAL_DEBUG)
 				xst_sprintf( t, sizeof(t), "terr_p%d_t%dx%d", m_Info.uPageId, TileInfo.TilePart.x, TileInfo.TilePart.y );
 				pTile->_SetDbgName( t );
 #endif
@@ -187,6 +230,11 @@ namespace XSE
 			vecPos.z = m_Info.vecPagePosition.y + uTileY * ( (m_Info.TileVertexCount.y-1) * vecStep.y );	
 		}
 		//xst_assert2( ulVertexId == ulVertexCount );
+
+#if (XSE_TERRAIN_NORMAL_DEBUG)
+		pVB->Unlock();
+		pIB->Unlock();
+#endif
 	}
 
 	void CMipMapTerrainPage::CalcVertexNormals()
@@ -241,6 +289,7 @@ namespace XSE
 
 	i32 CMipMapTerrainPage::CalcVertexPositions(xst_vector<Vec3>* pvOut)
 	{
+		XSTSimpleProfiler2("CMipMapTerrainPage::CalcVertexPositions(xst_vector<Vec3>* pvOut)");
 		ul32 uVertexCount = m_Info.VertexCount.x * m_Info.VertexCount.y;
 		pvOut->resize( uVertexCount );
 
@@ -286,14 +335,17 @@ namespace XSE
 
 	i32 CMipMapTerrainPage::CalcVertexNormals(const xst_vector<Vec3>& vPositions, xst_vector<Vec3>* pvNormalsOut)
 	{
+		XSTSimpleProfiler();
 		xst_assert2( vPositions.size() == m_Info.VertexCount.x * m_Info.VertexCount.y );
 
-		pvNormalsOut->resize( vPositions.size() );
+		pvNormalsOut->resize( vPositions.size(), Vec3::ZERO );
+		xst_vector<Vec3> vTmp( vPositions.size() );
 
 		Vec3 avecTriLeft[3];
 		Vec3 avecTriRight[3];
 		Vec3 avecNormals[2];
 		ul32 uIDs[4];
+		Vec3 vecU, vecV;
 
 		enum CORNER
 		{
@@ -308,7 +360,7 @@ namespace XSE
 			for( u32 x = 0; x < m_Info.VertexCount.x-1; ++x )
 			{
 				uIDs[ CORNER::TOP_LEFT ] = XST_ARRAY_2D_TO_1D( x, y, m_Info.VertexCount.x );
-				uIDs[ CORNER::TOP_RIGHT ] = XST_ARRAY_2D_TO_1D( x, y+1, m_Info.VertexCount.x );
+				uIDs[ CORNER::TOP_RIGHT ] = XST_ARRAY_2D_TO_1D( x+1, y, m_Info.VertexCount.x );
 				uIDs[ CORNER::BOTTOM_RIGHT ] = XST_ARRAY_2D_TO_1D( x + 1, y + 1, m_Info.VertexCount.x );
 				uIDs[ CORNER::BOTTOM_LEFT ] = XST_ARRAY_2D_TO_1D( x, y + 1, m_Info.VertexCount.x );
 
@@ -318,28 +370,23 @@ namespace XSE
 				avecTriLeft[ 1 ] = vPositions[ uIDs[ CORNER::BOTTOM_LEFT ] ];  // bottom left
 				avecTriLeft[ 2 ] = vPositions[ uIDs[ CORNER::BOTTOM_RIGHT] ]; // botton right
 
-				Vec3& vecU = avecTriLeft[ 1 ];
-				Vec3& vecV = avecTriLeft[ 2 ];
-				vecU.Sub( avecTriLeft[ 0 ] );
-				vecV.Sub( avecTriLeft[ 0 ] );
+				vecU = avecTriLeft[ 1 ] - avecTriLeft[ 0 ];
+				vecV = avecTriLeft[ 2 ] - avecTriLeft[ 0 ];
 				avecNormals[ 0 ].x = ( vecU.y * vecV.z - vecU.z * vecV.y );
 				avecNormals[ 0 ].y = ( vecU.z * vecV.x - vecU.x * vecV.z );
 				avecNormals[ 0 ].z = ( vecU.x * vecV.y - vecU.y * vecV.x );
 
-				(*pvNormalsOut)[ uIDs[ CORNER::TOP_LEFT ] ] += avecNormals[0];
-				(*pvNormalsOut)[ uIDs[ CORNER::BOTTOM_LEFT ] ] += avecNormals[0];
-				(*pvNormalsOut)[ uIDs[ CORNER::BOTTOM_RIGHT ] ] += avecNormals[0];
-
+				pvNormalsOut->at( uIDs[ CORNER::TOP_LEFT ] ) += avecNormals[0];
+				pvNormalsOut->at( uIDs[ CORNER::BOTTOM_LEFT ] ) += avecNormals[0];
+				pvNormalsOut->at( uIDs[ CORNER::BOTTOM_RIGHT ] ) += avecNormals[0];
 
 				// Right triangle \|
 				avecTriRight[ 0 ] = vPositions[ uIDs[ CORNER::TOP_LEFT ] ]; // top left
 				avecTriRight[ 1 ] = vPositions[ uIDs[ CORNER::BOTTOM_RIGHT ] ]; // bottom right
 				avecTriRight[ 2 ] = vPositions[ uIDs[ CORNER::TOP_RIGHT ] ]; // top right
 
-				vecU = avecTriRight[ 1 ];
-				vecV = avecTriRight[ 2 ];
-				vecU.Sub( avecTriRight[ 0 ] );
-				vecV.Sub( avecTriRight[ 0 ] );
+				vecU = avecTriRight[ 1 ] - avecTriRight[ 0 ];
+				vecV = avecTriRight[ 2 ] - avecTriRight[ 0 ];
 				avecNormals[ 1 ].x = ( vecU.y * vecV.z - vecU.z * vecV.y );
 				avecNormals[ 1 ].y = ( vecU.z * vecV.x - vecU.x * vecV.z );
 				avecNormals[ 1 ].z = ( vecU.x * vecV.y - vecU.y * vecV.x );
@@ -349,6 +396,18 @@ namespace XSE
 				(*pvNormalsOut)[ uIDs[ CORNER::TOP_RIGHT ] ] += avecNormals[1];
 			}
 		}
+
+		// TODO: speed up this. Implement a function: NormalizeVectors and use SSE
+		for( u32 i = pvNormalsOut->size(); i-- > 0; )
+		{
+			pvNormalsOut->at( i ).Normalize();
+			//Vec3& v = ( *pvNormalsOut )[i];
+			//v.Normalize();
+			//Vec3 vecNormal = pvNormalsOut->at( i );
+			//XST::CDebug::PrintDebugLN( XST::ToStr() << vecNormal.x << " " << vecNormal.y << " " << vecNormal.z );
+		}
+
+		return XST_OK;
 	}
 
 }//xse

@@ -26,7 +26,7 @@ namespace XSE
 						
 						i32				Unlock(bool bCreate);
 
-						void			SetIndexSize(cu32& uiSizeInBytes);
+						void			SetIndexSize(INDEX_ELEMENT_SIZE eSize) xst_implement;
 						
 						void			SetUsage(BUFFER_USAGE eUsage);
 						

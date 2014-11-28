@@ -42,6 +42,8 @@ namespace XSE
 			xst_fi	void		SetIndex(cul32& ulIndexId, cul32& ulIndex)
 								{ m_Data.Write( ulIndex, _CalcOffset( ulIndexId ), m_usIndexSize ); }
 
+					i32			SetData(cu8* pData, ul32 ulDataSize);
+
 			xst_fi	ul32		GetIndex(cul32& ulIndexId)
 								{ return XST_CALL_MEMBER_FN_PTR( this, _GetIndex )( ulIndexId ); }
 

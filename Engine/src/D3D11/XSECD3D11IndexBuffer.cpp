@@ -61,12 +61,14 @@ namespace XSE
 			return XST_OK;
 		}
 
-		void CIndexBuffer::SetIndexSize(cu32& uiSize)
+		void CIndexBuffer::SetIndexSize(INDEX_ELEMENT_SIZE eSize)
 		{
-			if( uiSize == sizeof( u32 ) || uiSize == sizeof( u16 ) )
-				m_uiIndexSize = uiSize;
-			else
-				m_uiIndexSize = sizeof( u16 );
+			switch( eSize )
+			{
+				case IndexElementSizes::UNSIGNED_16: m_uiIndexSize = sizeof( u16 ); break;
+				case IndexElementSizes::UNSIGNED_32: m_uiIndexSize = sizeof( u32 ); break;
+				default: m_uiIndexSize = sizeof( u16 ); break;
+			}
 		}
 
 		i32 CIndexBuffer::Create()

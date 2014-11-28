@@ -131,6 +131,11 @@ namespace XSE
 		++m_ulCurrentTriangleId;
 	}
 
+	i32 CIndexData::SetData(cu8* pData, ul32 ulDataSize)
+	{
+		return m_Data.SetData( pData, ulDataSize );
+	}
+
 	ul32 CIndexData::_CalcOffset(cul32 &ulIndexId) const
 	{
 		return ulIndexId * m_usIndexSize;

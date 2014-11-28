@@ -20,6 +20,7 @@ namespace XSE
 		friend class CTerrainManager;
 		friend class CTerrainSystem;
 		friend class ITerrainSystem;
+		friend class CMipMapTerrainPage;
 
 		public:
 

@@ -432,6 +432,22 @@ namespace XST
 									( z + VecRight.z ) * 0.5f	);
 				}
 
+				xst_i const Vec3& Min(const Vec3& vecOther)
+				{
+					if( x > vecOther.x ) x = vecOther.x;
+					if( y > vecOther.y ) y = vecOther.y;
+					if( z > vecOther.z ) z = vecOther.z;
+					return *this;
+				}
+
+				xst_i const Vec3& Max(const Vec3& vecOther)
+				{
+					if( x < vecOther.x ) x = vecOther.x;
+					if( y < vecOther.y ) y = vecOther.y;
+					if( z < vecOther.z ) z = vecOther.z;
+					return *this;
+				}
+
 				Vec3		Abs() const;
 				void		Abs();
 				static Vec3 Abs(const Vec3& vecOther);

@@ -117,6 +117,11 @@ namespace XSE
 		return XST_OK;
 	}
 
+	i32 CVertexData::SetData(cu8* const pData, ul32 ulDataSize)
+	{
+		return m_Data.SetData( pData, ulDataSize );
+	}
+
 	i32 CVertexData::Clone(CFixedVertexData* pData)
 	{
 

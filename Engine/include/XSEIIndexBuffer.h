@@ -17,7 +17,7 @@ namespace XSE
 			virtual void				SetUsage(BUFFER_USAGE eUsage) = 0;
 			virtual BUFFER_USAGE		GetUsage() = 0;
 			virtual i32					Create() = 0;
-			virtual void				SetIndexSize(cu32& uiSizeInBytes) = 0;
+			virtual void				SetIndexSize(INDEX_ELEMENT_SIZE eSize) = 0;
 			virtual i32					SetIndexCount(ul32 ulIndexCount) = 0;
 			virtual ul32				GetIndexCount() const = 0;
 			virtual void				SetLocationType(BUFFER_LOCATION_TYPE eLocType) = 0;

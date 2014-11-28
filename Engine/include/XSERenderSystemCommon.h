@@ -396,6 +396,17 @@ namespace XSE
 	};
 	typedef CullModes::MODE	CULL_MODE;
 
+	struct IndexElementSizes
+	{
+		enum SIZE
+		{
+			UNSIGNED_16,
+			UNSIGNED_32,
+			_ENUM_COUNT
+		};
+	};
+	typedef IndexElementSizes::SIZE INDEX_ELEMENT_SIZE;
+
 
 	struct XST_API SViewportOptions
 	{

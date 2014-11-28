@@ -138,21 +138,21 @@ namespace XSE
 
         m_LastUsedGroupHandle = Handle;
         ResGroupMapItr Itr;
-        XST::MapUtils::FindPlace( m_mGroups, Handle, &Itr );
-        if( Itr != m_mGroups.end() ) // if resource exists
+        if( !XST::MapUtils::FindPlace( m_mGroups, Handle, &Itr ) ) // if resource exists
         {
-            m_pLastUsedGroup = Itr->second;
+            m_pLastUsedGroup = Itr->second; // Return already found group pointer
             return m_pLastUsedGroup;
         }
 
         GroupPtr pGroup( _CreateGroup( strName, Handle ) );
-        if( !pGroup )
+        if( pGroup.IsNull() )
         {
             XST_LOG_ERR( "Unable to allocate memory for resource group: " << strName );
             return GroupWeakPtr();
         }
 
-        XST::MapUtils::InsertOnPlace( m_mGroups, Handle, pGroup, Itr );
+        //XST::MapUtils::InsertOnPlace( m_mGroups, Handle, pGroup, Itr );
+		m_mGroups.insert( Itr, ResGroupMap::value_type( Handle, pGroup ) );
 
         m_pLastUsedGroup = pGroup;
         m_LastUsedGroupHandle = Handle;
