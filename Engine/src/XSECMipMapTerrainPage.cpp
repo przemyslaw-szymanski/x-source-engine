@@ -204,7 +204,7 @@ namespace XSE
 				CMipMapTerrainTile* pTile = &m_Info.aTiles[ uTileId ];
 				TileInfo.ulStartVertex = uCurrTileId * ulTileVertexCount;
 				TileInfo.ulVertexBufferOffset = TileInfo.ulStartVertex;
-				TileInfo.TilePart = CPoint( uTileX, uTileY );
+				TileInfo.TilePart = CPoint( m_Info.GridPosition.x + uTileX, m_Info.GridPosition.y + uTileY );
 				TileInfo.VertexRange.y = ulCurrVertex - 1;
 				TileInfo.pVB = m_Info.pVB;
 				pTile->Init( TileInfo );

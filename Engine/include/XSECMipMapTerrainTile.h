@@ -78,7 +78,7 @@ namespace XSE
 
 			i32								Unlock();
 
-			void							SetLOD(u32 uiMeshLOD, u32 uiLOD, MIPMAP_TERRAIN_STITCH_TYPE eType);
+			void							SetLOD(u32 uiLOD, MIPMAP_TERRAIN_STITCH_TYPE eType);
 
 			i32								SetVertexData(const CVertexData& Data);
 

@@ -141,7 +141,7 @@ namespace XSE
 		return 0;
 	}
 		
-	void CMipMapTerrainTile::SetLOD(u32 uiMeshLOD, u32 uiLOD, MIPMAP_TERRAIN_STITCH_TYPE eType)
+	void CMipMapTerrainTile::SetLOD(u32 uiLOD, MIPMAP_TERRAIN_STITCH_TYPE eType)
 	{
 		m_uiLOD = uiLOD;
 		m_eStitchType = eType;

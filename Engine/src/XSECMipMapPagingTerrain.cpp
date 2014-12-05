@@ -19,6 +19,9 @@ namespace XSE
 
 	Vec3* g_avecNormals = xst_null;
 	bool g_bCCW = true;
+	typedef xst_vector< CMipMapTerrainTile* > TileVec;
+	xst_vector< TileVec > g_vTileGrid;
+	TileVec g_vVisibleTiles;
 
 	CPoint CalcImpostorVertexCount( const CPoint& PageVertexCount, u32 uLODCount )
 	{
@@ -175,112 +178,111 @@ namespace XSE
 		u32 uMaxLOD = m_Options.uiLODCount;
         CCamera* pCam = m_pSceneMgr->GetComputeCamera();
 
+		g_vVisibleTiles.clear();
+		for( u32 i = 0; i < m_vTileVisibility.size(); ++i )
+		{
+			if( m_vTileVisibility[ i ] )
+				g_vVisibleTiles.push_back( &m_vTiles[ i ] );
+		}
+
+		// Sort from nearest from the camera
+		std::sort( g_vVisibleTiles.begin(), g_vVisibleTiles.end(), [] (const CMipMapTerrainTile* l, const CMipMapTerrainTile* r){ return l->GetDistanceToCamera() < r->GetDisableReason();  } );
+
 		for( u32 i = 0; i < m_vPages.size(); ++i )
 		{
 			m_vPages[ i ].Update( pCam );
 		}
 
-		for( u32 t = 0; t < m_vTiles.size(); ++t )
+		for( u32 t = 0; t < g_vVisibleTiles.size(); ++t )
 		{
-			auto& Tile = m_vTiles[ t ];
-			f32 fDist = Tile.GetDistanceToCamera();
-			Tile.m_uiLOD = uMaxLOD-1;
+			auto& Tile = g_vVisibleTiles[ t ];
+			f32 fDist = Tile->GetDistanceToCamera();
+			Tile->m_uiLOD = uMaxLOD-1;
 			for( u32 i = uMaxLOD; i-->0; )
 			{
 				if( fDist < fConstDist * ( i + 1 ) )
 				{
-					Tile.m_uiLOD = i;
-					Tile.m_eStitchType = MipMapTerrainStitchTypes::NONE;
+					Tile->m_uiLOD = i;
+					Tile->m_eStitchType = MipMapTerrainStitchTypes::NONE;
 				}
 			}
 		}
 
-        /*for( u32 i = 0; i < m_vTiles.size(); ++i )
-        {
-            pCurrTile = m_vTiles[ i ];
-            pCurrMesh = pCurrTile->m_pMesh.GetPtr();
-            if( !pCurrMesh->IsVisible() || pCurrMesh->IsDisabled() )
-                continue;
-            const CAABB& AABB = pCurrMesh->GetBoundingVolume().GetAABB();
-            Vec3 vecSize = AABB.CalcSize();
-            fConstDist = vecSize.x * 1;
-			f32 fDist = pCurrMesh->GetDistanceToCamera();
-            fLODDist = 0;
-			// Set the max lod by default
-			//pCurrTile->SetLOD( CalcLOD( 3, MipMapTerrainStitchTypes::LEFT ), m_Options.uiLODCount - 1, MipMapTerrainStitchTypes::NONE );
-			pCurrTile->SetLOD( CalcLOD( m_Options.uiLODCount - 1, MipMapTerrainStitchTypes::NONE ), m_Options.uiLODCount - 1, MipMapTerrainStitchTypes::NONE );
-            lpcastr pName = pCurrTile->GetMesh()->_GetDbgName();
-			for( u32 l = 0; l < m_Options.uiLODCount; ++l )
+		return;
+
+		for( u32 i = 0; i < m_vTileVisibility.size(); ++i )
+		{
+			if( !m_vTileVisibility[ i ] )
+				continue;
+
+			CMipMapTerrainTile* pTile = &m_vTiles[ i ];
+			u32 uTileId;
+			const CPoint& Pos = pTile->m_Info.TilePart;
+			bool bNeedLeft = false, bNeedRight = false, bNeedUp = false, bNeedDown = false;
+			if( Pos.x > 0 )
 			{
-                //strcmp( pName, "Terrain_5_4" ) == 0 || strcmp( pName, "Terrain_6_4" ) == 0
-				// Get lod of all neighbours
-				// This block costs 2fps
-                fPrevDist = fLODDist;
-				fLODDist += fConstDist; // multiply by l begins from 1
-				//if( fDist < fLODDist + 0 )
-				{
-                    const CAABB ViewAABB(   Vec3( pCam->GetPosition().x - fLODDist, pCam->GetPosition().y - fLODDist, pCam->GetPosition().z - fLODDist ), 
-                                            Vec3( Vec3( pCam->GetPosition().x + fLODDist, pCam->GetPosition().y + fLODDist, pCam->GetPosition().z + fLODDist ) ) );
-                    f32 fMaxLenX = ViewAABB.vecMax.x - ViewAABB.vecMin.x + AABB.vecMax.x - AABB.vecMin.x;
-                    f32 fMaxLenZ = ViewAABB.vecMax.z - ViewAABB.vecMin.z + AABB.vecMax.z - AABB.vecMin.z;
-                    // Check if this tile intersects the view square (not only view sphere)
-
-                    f32 fDistX = ViewAABB.vecMax.x - AABB.vecMin.x;
-                    f32 fDistZ = ViewAABB.vecMax.z - AABB.vecMin.z;
-                    if( ( fDistX < fMaxLenX && fDistX > 0.0f ) &&
-                        ( fDistZ < fMaxLenZ && fDistZ > 0.0f ) )
-                    {
-                        pCurrTile->SetLOD( CalcLOD( l, MipMapTerrainStitchTypes::NONE ), l, MipMapTerrainStitchTypes::NONE );
-                        break;
-                    }
-				}
+				//uTileId = XST_ARRAY_2D_TO_1D( pTile->m_Info.TilePart.x - 1, pTile->m_Info.TilePart.y, m_TileCount.x * m_Options.PageCount.x );
+				CMipMapTerrainTile* pLeft = g_vTileGrid[ Pos.y ][ Pos.x ];
+				bNeedLeft = pLeft->GetLOD() > pTile->GetLOD();
 			}
+			else
+			if( Pos.x < m_TileCount.x-1 )
+			{
+				//uTileId = XST_ARRAY_2D_TO_1D( pTile->m_Info.TilePart.x + 1, pTile->m_Info.TilePart.y, m_TileCount.x * m_Options.PageCount.x );
+				CMipMapTerrainTile* pRight = g_vTileGrid[ Pos.y ][ Pos.x ];
+				bNeedRight = pRight->GetLOD() > pTile->GetLOD();
+			}
+
+			if( Pos.y > 0 )
+			{
+				//uTileId = XST_ARRAY_2D_TO_1D( pTile->m_Info.TilePart.x, pTile->m_Info.TilePart.y - 1, m_TileCount.x * m_Options.PageCount.x );
+				CMipMapTerrainTile* pUp = g_vTileGrid[ Pos.y ][ Pos.x ];
+				bNeedUp = pUp->GetLOD() > pTile->GetLOD();
+			}
+			else
+			if( Pos.y < m_TileCount.y-1 )
+			{
+				//uTileId = XST_ARRAY_2D_TO_1D( pTile->m_Info.TilePart.x, pTile->m_Info.TilePart.y + 1, m_TileCount.x * m_Options.PageCount.x );
+				CMipMapTerrainTile* pDown = g_vTileGrid[ Pos.y ][ Pos.x ];
+				bNeedDown = pDown->GetLOD() > pTile->GetLOD();
+			}
+
+			MIPMAP_TERRAIN_STITCH_TYPE eStitchType = MipMapTerrainStitchTypes::NONE;
+			if( bNeedLeft && bNeedUp )
+			{
+				eStitchType = MipMapTerrainStitchTypes::LEFT_UP;
+			}
+			else if( bNeedLeft && bNeedDown )
+			{
+				eStitchType = MipMapTerrainStitchTypes::LEFT_DOWN;
+			}
+			else if( bNeedRight && bNeedDown )
+			{
+				eStitchType = MipMapTerrainStitchTypes::RIGHT_DOWN;
+			}
+			else if( bNeedRight && bNeedUp )
+			{
+				eStitchType = MipMapTerrainStitchTypes::RIGHT_UP;
+			}
+			else if( bNeedUp )
+			{
+				eStitchType = MipMapTerrainStitchTypes::UP;
+			}
+			else if( bNeedDown )
+			{
+				eStitchType = MipMapTerrainStitchTypes::DOWN;
+			}
+			else if( bNeedLeft )
+			{
+				eStitchType = MipMapTerrainStitchTypes::LEFT;
+			}
+			else if( bNeedRight )
+			{
+				eStitchType = MipMapTerrainStitchTypes::RIGHT;
+			}
+
+			pTile->SetLOD( pTile->GetLOD(), eStitchType );
 		}
-
-        CMipMapTerrainTile* pLeft, *pRight, *pUp, *pDown;
-        u32 uiLOD;
-        bool bLeftLOD, bRightLOD, bUpLOD, bDownLOD;
-        MIPMAP_TERRAIN_STITCH_TYPE eStitchType = MipMapTerrainStitchTypes::NONE;
-        // TODO: first and last tiles also should be computed
-        for( u32 y = 1; y < m_TileCount.y - 1; ++y )
-        {
-            for( u32 x = 1; x < m_TileCount.x - 1; ++x )
-            {
-                eStitchType = MipMapTerrainStitchTypes::NONE;
-                pCurrTile = m_vTileGrid[ x ][ y ];
-                if( !pCurrTile->GetMesh()->IsVisible() )
-                    continue;
-                uiLOD = pCurrTile->GetLOD();
-                pLeft = m_vTileGrid[ x - 1 ][ y ];
-                pRight = m_vTileGrid[ x + 1 ][ y ];
-                pUp = m_vTileGrid[ x ][ y - 1 ];
-                pDown = m_vTileGrid[ x ][ y + 1 ];
-
-                bLeftLOD = pLeft->GetLOD() > uiLOD;
-                bRightLOD = pRight->GetLOD() > uiLOD;
-                bUpLOD = pUp->GetLOD() > uiLOD;
-                bDownLOD = pDown->GetLOD() > uiLOD;
-
-                if( bLeftLOD && bUpLOD )
-                    eStitchType = MipMapTerrainStitchTypes::LEFT_UP;
-                else if( bLeftLOD && bDownLOD )
-                    eStitchType = MipMapTerrainStitchTypes::LEFT_DOWN;
-                else if( bRightLOD && bUpLOD )
-                    eStitchType = MipMapTerrainStitchTypes::RIGHT_UP;
-                else if( bRightLOD && bDownLOD )
-                    eStitchType = MipMapTerrainStitchTypes::RIGHT_DOWN;
-                else if( bLeftLOD )
-                    eStitchType = MipMapTerrainStitchTypes::LEFT;
-                else if( bRightLOD )
-                    eStitchType = MipMapTerrainStitchTypes::RIGHT;
-                else if( bUpLOD )
-                    eStitchType = MipMapTerrainStitchTypes::UP;
-                else if( bDownLOD )
-                    eStitchType = MipMapTerrainStitchTypes::DOWN;
-
-                pCurrTile->SetLOD( CalcLOD( uiLOD, eStitchType ), uiLOD, eStitchType );
-            }
-        }*/
 	}
 
 	i32 CMipMapPagingTerrain::Init(const STerrainOptions& Options)
@@ -297,6 +299,10 @@ namespace XSE
 		m_vPageVisibility.resize( uPageCount, false );
 		m_vpVertexBuffers.resize( uPageCount );
 		m_vpImpostorVertexBuffers.resize( uPageCount );
+
+		// Create tile grid
+		g_vTileGrid.resize( m_TileCount.y * m_Options.PageCount.y );
+		std::for_each( g_vTileGrid.begin(), g_vTileGrid.end(), [&] (TileVec& v){ v.resize( m_TileCount.x * m_Options.PageCount.x, xst_null ); } );
 
 		// Set visible pointers
 		for( u32 i = 0; i < m_vTiles.size(); ++i )
@@ -488,17 +494,31 @@ namespace XSE
 			pRS->UpdateObjectInputs();
 				
 			//Draw object
-			for( u32 t = 0; t < m_vTiles.size(); ++t )
+			/*for( u32 t = 0; t < m_vTiles.size(); ++t )
 			{
 				if( m_vTileVisibility[t] )
 				{
 					// TODO: probably cache miss here. Use array of pVB,ulStartVertex structures
-					const auto& TileInfo = m_vTiles[t].m_Info;
-					pIB = GetIndexBuffer( m_vTiles[t].m_uiLOD, m_vTiles[i].m_eStitchType ).pIndexBuffer.GetPtr();
+					const auto& Tile = m_vTiles[ t ];
+					const auto& TileInfo = Tile.m_Info;
+					pIB = GetIndexBuffer( Tile.m_uiLOD, Tile.m_eStitchType ).pIndexBuffer.GetPtr();
+					//pIB = GetIndexBuffer(0, 1 ).pIndexBuffer.GetPtr();
+					lpcastr n = pIB->_GetDbgName();
 					pRS->SetVertexBufferWithCheck( TileInfo.pVB );
 					pRS->SetIndexBufferWithCheck( pIB );
 					pRS->DrawIndexed( pIB->GetIndexCount(), 0, TileInfo.ulStartVertex );
 				}
+			}*/
+			for( u32 t = 0; t < g_vVisibleTiles.size(); ++t )
+			{
+				auto* Tile = g_vVisibleTiles[ t ];
+				// TODO: probably cache miss here. Use array of pVB,ulStartVertex structures
+				const auto& TileInfo = Tile->m_Info;
+				pIB = GetIndexBuffer( Tile->m_uiLOD, Tile->m_eStitchType ).pIndexBuffer.GetPtr();
+				//lpcastr n = pIB->_GetDbgName();
+				pRS->SetVertexBufferWithCheck( TileInfo.pVB );
+				pRS->SetIndexBufferWithCheck( pIB );
+				pRS->DrawIndexed( pIB->GetIndexCount(), 0, TileInfo.ulStartVertex );
 			}
 		}
 	}
@@ -566,6 +586,17 @@ namespace XSE
 			{
 				return XST_FAIL;
 			}
+
+			// Update grid
+			for( u32 i = 0; i < Page.m_Info.uTileCount; ++i )
+			{
+				CMipMapTerrainTile& Tile = Page.m_Info.aTiles[ i ];
+				//u32 uTileId = XST_ARRAY_2D_TO_1D( Tile.m_Info.TilePart.x, Tile.m_Info.TilePart.y, m_TileCount.x * m_Options.PageCount.x ); 
+				//u32 uSize = g_vTileGrid.size();
+				//g_vTileGrid[ uTileId ] = &Tile;
+				g_vTileGrid[ Tile.m_Info.TilePart.y ][ Tile.m_Info.TilePart.x ] = &Tile;
+			}
+			
 		}
 
 		// After vertex positions are calculated
@@ -574,7 +605,9 @@ namespace XSE
 		u32 uTileCount = m_TileCount.x * m_TileCount.y;
 		for( u32 i = uTileCount; i-- > 0; )
 		{
-			m_pSceneMgr->AddToPartitionSystem( &m_vTiles[ i ] );
+			CMipMapTerrainTile* pTile = &m_vTiles[ i ];
+			m_pSceneMgr->AddToPartitionSystem( pTile );
+			
 			/*SLineBoxOptions o;
 			o.vecPos = m_vTiles[ i ].GetPosition();
 			o.vecSize = m_vTiles[ i ].GetBoundingVolume( ).GetAABB( ).CalcSize();
@@ -618,13 +651,15 @@ namespace XSE
 		const u32 uiIBCount = m_Options.uiLODCount * MipMapTerrainStitchTypes::_MAX_COUNT;
 
 		m_vIndexBuffers.reserve( uiIBCount );
-
+		ch8 tmp[32];
 		for(u32 l = 0; l < m_Options.uiLODCount; ++l)
 		{
 			for(u32 s = 0; s < MipMapTerrainStitchTypes::_MAX_COUNT; ++s)
 			{
 				u16 usIndexCount = CalcIndexCount( l );
 				IndexBufferPtr pIB = IndexBufferPtr( m_pSceneMgr->GetRenderSystem()->CreateIndexBuffer() );
+				xst_sprintf( tmp, 32, "terr_%d_%d", l, s );
+				pIB->_SetDbgName( tmp );
 				pIB->SetUsage( BufferUsages::STATIC );
 				pIB->SetIndexCount( usIndexCount );
 				SMipMapIndexBuffer IB = { (MIPMAP_TERRAIN_STITCH_TYPE)s, pIB, l };
@@ -1400,41 +1435,49 @@ namespace XSE
 
 	void CMipMapPagingTerrain::_CalcIBStitchDownCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
+		pIB->_SetDbgName("terr_ib_st_d");
 		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchDownLeftCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
+		pIB->_SetDbgName("terr_ib_st_dl");
 		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchLeftCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
+		pIB->_SetDbgName("terr_ib_st_l");
 		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchRightCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
+		pIB->_SetDbgName("terr_ib_st_r");
 		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchRightDownCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
+		pIB->_SetDbgName("terr_ib_st_rd");
 		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchUpCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
+		pIB->_SetDbgName("terr_ib_st_u");
 		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchUpLeftCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
+		pIB->_SetDbgName("terr_ib_st_ul");
 		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
 	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchUpRightCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
+		pIB->_SetDbgName("terr_ib_st_ur");
 		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
 	}
 
