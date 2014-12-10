@@ -120,9 +120,8 @@ namespace XSE
 		return pMat;
 	}
 
-	MaterialPtr CMaterialManager::GetDefaultMaterial(const Resources::CMesh *pMesh)
+	MaterialPtr CMaterialManager::GetDefaultMaterial(const IInputLayout* pIL)
 	{
-		const IInputLayout* pIL = pMesh->GetInputLayout();
 		xst_assert( pIL != xst_null, "(CMaterialManager::GetDefaultMaterial) Input layout must be set" );
 		//Get or create default material for this input layout
 		DefaultMatMap::iterator Itr;
@@ -139,7 +138,7 @@ namespace XSE
 
 			//Set defaults
 			IPass* pPass = pMat->GetCurrentTechnique()->GetPass( 0 );
-			pPass->SetVertexShader( m_pShaderMgr->GetDefaultVertexShader( pMesh ) );
+			pPass->SetVertexShader( m_pShaderMgr->GetDefaultVertexShader( pIL ) );
 			pPass->SetPixelShader( m_pShaderMgr->GetDefaultPixelShader() );
 
 			//Add material to the buffer

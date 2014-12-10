@@ -111,6 +111,12 @@ namespace XSE
 		Vec3 vecTileMin( XST_MAX_F32 ), vecTileMax( XST_MIN_F32 );
 		ul32 ulCurrVertex = 0;
 		Vec3 vecNormal;
+		Vec2 vecTexCoords[] = { Vec2::ZERO };
+
+		// Input Layout
+		bool bAreTexCoords[] = { pIL->IsTexCoord( 0 ) };
+		bool bIsNormal = pIL->IsNormal();
+		bool bIsColor = pIL->IsColor();
 
 		CPoint VertexPos;
 		char t[256 ];
@@ -177,15 +183,20 @@ namespace XSE
 						vecTileMax.x = std::max( vecTileMin.x, vecPos.x );
 						vecTileMax.z = std::max( vecTileMax.z, vecPos.z );*/
 						
-
 						VData.SetPosition( ulCurrVertex, vecPos );
 
-						if( pIL->IsColor() )
+						if( bAreTexCoords[ 0 ] )
+						{
+							vecTexCoords[ 0 ] = Vec2( (f32)m_Info.TileVertexCount.x / uVertexX, (f32)m_Info.TileVertexCount.y / uVertexY );
+							VData.SetTexCoord( ulCurrVertex, 0, vecTexCoords[ 0 ] );
+						}
+
+						if( bIsColor )
 						{
 							VData.SetColor( ulCurrVertex, vecCol );
 						}
 
-						if( pIL->IsNormal() )
+						if( bIsNormal )
 						{
 							VData.SetNormal( ulCurrVertex, vecNormal );
 						}

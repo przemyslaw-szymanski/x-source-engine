@@ -1,5 +1,6 @@
 #define XST_ENABLE_PROFILER 1
 #include "CTerrain.h"
+#include "XSECMaterialManager.h"
 #include <QtCore\qdebug.h>
 
 template<class _T_, u32 _COUNT_>
@@ -155,10 +156,13 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	Options.bBinormal = Options.bNormal = Options.bTangent = Options.bTexCoord = false;
 	Options.bNormal = true;
 
+	XSE::MaterialPtr pMat = XSE::CMaterialManager::GetSingletonPtr()->CreateMaterial( "terrain" );
+
 	{
 		XSTSimpleProfiler2( "CreateTerrain");
 	XSE::ITerrain* pTerrain = this->m_pSceneMgr->CreateTerrain( "Terrain", Options );
     xst_assert( pTerrain != xst_null, "(CTerrain::Init) Terrain sample creation failed. Engine error!!!" );
+	pTerrain->SetMaterial( pMat );
 	}
 	return XSE::RESULT::OK;
 }

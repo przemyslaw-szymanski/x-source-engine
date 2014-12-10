@@ -249,7 +249,7 @@ namespace XSE
 
 	VertexShaderPtr CShaderManager::GetDefaultVertexShader(const IInputLayout* pIL)
 	{
-		xst_assert( pIL->GetVertexShader() != xst_null, "(CShaderManager::GetdefaultVertexShader) Vertex shader for input layout must be created!" );
+		xst_assert( pIL && pIL->GetVertexShader() != xst_null, "(CShaderManager::GetdefaultVertexShader) Vertex shader for input layout must be created!" );
 		//Try to get this shader
 		VShaderMap::iterator Itr;
 		if( XST::MapUtils::FindPlace( m_mDefaultVShaders, pIL, &Itr ) )
@@ -261,8 +261,29 @@ namespace XSE
 		return Itr->second;
 	}
 
+	PixelShaderPtr CShaderManager::GetDefaultPixelShader(const IInputLayout* pIL)
+	{
+		xst_assert( pIL != xst_null, "(CShaderManager::GetdefaultVertexShader) Vertex shader for input layout must be created!" );
+		//Try to get this shader
+		PShaderMap::iterator Itr;
+		if( XST::MapUtils::FindPlace( m_mDefaultPShaders, pIL, &Itr ) )
+		{
+			XST::MapUtils::InsertOnPlace( m_mDefaultPShaders, pIL, PixelShaderPtr( pIL->GetPixelShader() ), Itr );
+		}
+
+		//If found return it
+		return Itr->second;
+	}
+
+	PixelShaderPtr CShaderManager::GetDefaultPixelShader(const CMesh* pMesh)
+	{
+		xst_assert2( pMesh );
+		return GetDefaultPixelShader( pMesh->GetInputLayout() );
+	}
+
 	VertexShaderPtr CShaderManager::GetDefaultVertexShader(const CMesh* pMesh)
 	{
+		xst_assert2( pMesh );
 		return GetDefaultVertexShader( pMesh->GetInputLayout() );
 	}
 

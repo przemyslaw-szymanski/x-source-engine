@@ -308,7 +308,7 @@ namespace XSE
 			return Desc;
 		}
 
-		void AddVertexShaderInput(xst_astring& strVS, lpcastr lpszSemantic, lpcastr lpszType, bool bIsNextParameter)
+		void AddShaderInput(xst_astring& strVS, lpcastr lpszSemantic, lpcastr lpszType, bool bIsNextParameter)
 		{
 			ch8 aBuff[ 256 ];
 			#if defined (XST_VISUAL_STUDIO)
@@ -317,6 +317,11 @@ namespace XSE
 				sprintf( aBuff, "%s %s : %s%s\n", lpszType, XST::StringUtil::ToLower( lpszSemantic ).data(), lpszSemantic, ( bIsNextParameter )? "," : "" );
 			#endif
 			strVS += aBuff;
+		}
+
+		void AddShaderInput( xst_astring& strVS, lpcastr lpszSemantic, lpcastr lpszType, bool bIsNextParameter )
+		{
+
 		}
  
 		i32 CInputLayout::_Build()
@@ -329,7 +334,7 @@ namespace XSE
 			m_strVSCode += m_pRS->GetShaderSystem()->GetShaderCode( IShaderSystem::ShaderCodes::PER_OBJECT_CBUFFER ) + "\n";
 			m_strVSCode += "\nfloat4 VS(";
 			xst_astring strName = "";
-			//AddVertexShaderInput( m_strVSCode, "POSITION", "float4", m_Elements.size() > 0 );
+			//AddShaderInput( m_strVSCode, "POSITION", "float4", m_Elements.size() > 0 );
 
 			//Add default POSITION
 			//m_aInputElements[ 0 ] = CreateInputElement( "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 );
@@ -344,7 +349,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetPositionSize();
-						AddVertexShaderInput( m_strVSCode, "POSITION", "float4", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "POSITION", "float4", i + 1 < m_Elements.size() );
 						strName += "Position";
 					}
 					break;
@@ -353,7 +358,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetNormalSize();
-						AddVertexShaderInput( m_strVSCode, "NORMAL", "float3", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "NORMAL", "float3", i + 1 < m_Elements.size() );
 						strName += "Normal";
 					}
 					break;
@@ -362,7 +367,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD0", "float2", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "TEXCOORD0", "float2", i + 1 < m_Elements.size() );
 						strName += "Texcoord0";
 					}
 					break;
@@ -371,7 +376,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD1", "float2", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "TEXCOORD1", "float2", i + 1 < m_Elements.size() );
 						strName += "Texcoord1";
 					}
 					break;
@@ -380,7 +385,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD2", "float2", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "TEXCOORD2", "float2", i + 1 < m_Elements.size() );
 						strName += "Texcoord2";
 					}
 					break;
@@ -389,7 +394,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD3", "float2", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "TEXCOORD3", "float2", i + 1 < m_Elements.size() );
 						strName += "Texcoord3";
 					}
 					break;
@@ -398,7 +403,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD4", "float2", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "TEXCOORD4", "float2", i + 1 < m_Elements.size() );
 						strName += "Texcoord4";
 					}
 					break;
@@ -407,7 +412,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD5", "float2", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "TEXCOORD5", "float2", i + 1 < m_Elements.size() );
 						strName += "Texcoord5";
 					}
 					break;
@@ -416,7 +421,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD6", "float2", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "TEXCOORD6", "float2", i + 1 < m_Elements.size() );
 						strName += "Texcoord6";
 					}
 					break;
@@ -425,7 +430,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD7", "float2", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "TEXCOORD7", "float2", i + 1 < m_Elements.size() );
 						strName += "Texcoord7";
 					}
 					break;
@@ -434,7 +439,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetBinormalSize();
-						AddVertexShaderInput( m_strVSCode, "BINORMAL", "float3", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "BINORMAL", "float3", i + 1 < m_Elements.size() );
 						strName += "Binormal";
 					}
 					break;
@@ -443,7 +448,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTangentSize();
-						AddVertexShaderInput( m_strVSCode, "TANGENT", "float3", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "TANGENT", "float3", i + 1 < m_Elements.size() );
 						strName += "Tangent";
 					}
 					break;
@@ -452,7 +457,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetColorSize();
-						AddVertexShaderInput( m_strVSCode, "COLOR", "float4", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "COLOR", "float4", i + 1 < m_Elements.size() );
 						strName += "Color";
 					}
 					break;
@@ -461,7 +466,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "SPECULAR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetSpecularSize();
-						AddVertexShaderInput( m_strVSCode, "SPECULAR", "float3", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "SPECULAR", "float3", i + 1 < m_Elements.size() );
 						strName += "Specular";
 					}
 					break;
@@ -470,7 +475,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "DIFFUSE", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetDiffuseSize();
-						AddVertexShaderInput( m_strVSCode, "DIFFUSE", "float3", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "DIFFUSE", "float3", i + 1 < m_Elements.size() );
 						strName += "Diffuse";
 					}
 					break;
@@ -485,16 +490,7 @@ namespace XSE
 			
 			lpcastr lpszText = m_strVSCode.data();
 			ul32 ulTextLen = m_strVSCode.length();
-			//XST::CDebug::PrintDebugLN( lpszText );
-			/*if( XST_FAILED( m_pRS->_CompileShaderFromMemory(lpszText, ulTextLen, "TmpVS", xst_null, xst_null,
-															"VS", "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, xst_null, &m_pD3DVertexShaderBlob, xst_null ) ) )
-			{
-				return XST_FAIL;
-			}*/
-
-			//static ch8 b[1024];
-//#define xa(_Expression) if( !( _Expression ) ) { sprintf( b, "file: %s\nline: %d\nfunc: %s\nreason: %s", __FILE__, __LINE__, __FUNCTION__, #_Expression ); if( MessageBoxA( 0, b, "Error", MB_ABORTRETRYIGNORE | MB_ICONERROR ) == IDABORT ) { exit( XST_FAIL ); }  }
-			
+		
 			IShaderSystem* pSS = m_pRS->GetShaderSystem();
 			CVertexShader* pVS = (CVertexShader*)pSS->CreateVertexShader( this, xst_null, 0, strName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, xst_null );
 			if( pVS == xst_null )

@@ -16,7 +16,7 @@ namespace XSE
 		protected:
 
 			typedef xst_map< const IInputLayout*, VertexShaderPtr >	VShaderMap;
-
+			typedef xst_map< const IInputLayout*, PixelShaderPtr > PShaderMap;
 
 		public:
 
@@ -41,6 +41,8 @@ namespace XSE
 					VertexShaderPtr			GetDefaultVertexShader(const IInputLayout* pIL);
 					VertexShaderPtr			GetDefaultVertexShader(const Resources::CMesh* pMesh);
 
+					PixelShaderPtr			GetDefaultPixelShader(const IInputLayout* pIL);
+					PixelShaderPtr			GetDefaultPixelShader(const Resources::CMesh* pMesh);
 			xst_fi	PixelShaderPtr			GetDefaultPixelShader()
 											{ return m_pDefaultPS; }
 
@@ -84,6 +86,7 @@ namespace XSE
 				VertexShaderPtr		m_pDefaultVS;
 				xst_astring			m_strEntryPoint;
 				VShaderMap			m_mDefaultVShaders;
+				PShaderMap			m_mDefaultPShaders;
 	};
 
 };

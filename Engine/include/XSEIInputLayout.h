@@ -57,6 +57,9 @@ namespace XSE
 
 			virtual VertexShaderPtr					GetVertexShader() = 0;
 
+			virtual const PixelShaderWeakPtr		GetPixelShader() const = 0;
+			virtual PixelShaderWeakPtr				GetPixelShader() = 0;
+
 			virtual cul32							GetVertexSize() const = 0;
 
 			virtual bool							IsPosition() const { return m_aAvailableElements[ ILEIds::POSITION ]; }
@@ -64,6 +67,7 @@ namespace XSE
 			virtual bool							IsBinormal() const { return m_aAvailableElements[ ILEIds::BINORMAL ]; }
 			virtual bool							IsTangent()	const { return m_aAvailableElements[ ILEIds::TANGENT ]; }
 			virtual bool							IsColor() const { return m_aAvailableElements[ ILEIds::COLOR ]; }
+			virtual bool							IsTexCoord(cu32& uTexCoord) const { return m_aAvailableElements[ ILEIds::TEXCOORD0 + uTexCoord ]; }
 			virtual bool							IsTexCoord0() const { return m_aAvailableElements[ ILEIds::TEXCOORD0 ]; }
 			virtual bool							IsTexCoord1() const { return m_aAvailableElements[ ILEIds::TEXCOORD1 ]; }
 			virtual bool							IsTexCoord2() const { return m_aAvailableElements[ ILEIds::TEXCOORD2 ]; }

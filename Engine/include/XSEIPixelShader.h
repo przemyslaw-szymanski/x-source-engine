@@ -21,6 +21,8 @@ namespace XSE
 
 	typedef XST::TCObjectSmartPointer< Resources::IPixelShader >	PixelShaderPtr;
 	XST_TEMPLATE_CLASS XST::TCObjectSmartPointer< Resources::IPixelShader >;
+	typedef XST::TCObjectSmartPointer< Resources::IPixelShader >	PixelShaderWeakPtr;
+	XST_TEMPLATE_CLASS XST::TCWeakPointer< Resources::IPixelShader >;
 
 }//xse
 

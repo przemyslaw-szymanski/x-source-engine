@@ -4,6 +4,7 @@
 #include "XSEIInputLayout.h"
 #include "XSED3D11Common.h"
 #include "XSEIVertexShader.h"
+#include "XSEIPixelShader.h"
 
 #if defined (XST_WINDOWS)
 namespace XSE
@@ -27,11 +28,16 @@ namespace XSE
 						xst_castring&			GetVertexShaderCode() const
 												{ return m_strVSCode; }
 
-				const	VertexShaderPtr			GetVertexShader() const
+				const	VertexShaderPtr			GetVertexShader() const xst_implement
 												{ return m_pVS; }
 
-						VertexShaderPtr			GetVertexShader()
+						VertexShaderPtr			GetVertexShader() xst_implement
 												{ return m_pVS; }
+				
+				const	PixelShaderWeakPtr		GetPixelShader() const xst_implement
+												{ return m_pPS; }
+						PixelShaderWeakPtr		GetPixelShader() xst_implement
+												{ return m_pPS; }
 			
 				const	SInputLayoutElement*	GetElements() const
 												{ return &m_Elements[ 0 ]; } 
@@ -73,7 +79,9 @@ namespace XSE
 				CRenderSystem*						m_pRS;
 				ul32								m_ulVertexSize;
 				xst_astring							m_strVSCode;
+				xst_astring							m_strPSCode;
 				VertexShaderPtr						m_pVS;
+				PixelShaderPtr						m_pPS;
 		};
 
 	}//d3d11
