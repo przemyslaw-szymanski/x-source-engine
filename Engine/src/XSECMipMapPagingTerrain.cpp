@@ -208,7 +208,7 @@ namespace XSE
 			}
 		}
 
-		return;
+		//return;
 
 		for( u32 i = 0; i < m_vTileVisibility.size(); ++i )
 		{
@@ -222,28 +222,28 @@ namespace XSE
 			if( Pos.x > 0 )
 			{
 				//uTileId = XST_ARRAY_2D_TO_1D( pTile->m_Info.TilePart.x - 1, pTile->m_Info.TilePart.y, m_TileCount.x * m_Options.PageCount.x );
-				CMipMapTerrainTile* pLeft = g_vTileGrid[ Pos.y ][ Pos.x ];
+				CMipMapTerrainTile* pLeft = g_vTileGrid[ Pos.y ][ Pos.x - 1 ];
 				bNeedLeft = pLeft->GetLOD() > pTile->GetLOD();
 			}
-			else
+			//else
 			if( Pos.x < m_TileCount.x-1 )
 			{
 				//uTileId = XST_ARRAY_2D_TO_1D( pTile->m_Info.TilePart.x + 1, pTile->m_Info.TilePart.y, m_TileCount.x * m_Options.PageCount.x );
-				CMipMapTerrainTile* pRight = g_vTileGrid[ Pos.y ][ Pos.x ];
+				CMipMapTerrainTile* pRight = g_vTileGrid[ Pos.y ][ Pos.x + 1 ];
 				bNeedRight = pRight->GetLOD() > pTile->GetLOD();
 			}
 
 			if( Pos.y > 0 )
 			{
 				//uTileId = XST_ARRAY_2D_TO_1D( pTile->m_Info.TilePart.x, pTile->m_Info.TilePart.y - 1, m_TileCount.x * m_Options.PageCount.x );
-				CMipMapTerrainTile* pUp = g_vTileGrid[ Pos.y ][ Pos.x ];
+				CMipMapTerrainTile* pUp = g_vTileGrid[ Pos.y - 1 ][ Pos.x ];
 				bNeedUp = pUp->GetLOD() > pTile->GetLOD();
 			}
-			else
+			//else
 			if( Pos.y < m_TileCount.y-1 )
 			{
 				//uTileId = XST_ARRAY_2D_TO_1D( pTile->m_Info.TilePart.x, pTile->m_Info.TilePart.y + 1, m_TileCount.x * m_Options.PageCount.x );
-				CMipMapTerrainTile* pDown = g_vTileGrid[ Pos.y ][ Pos.x ];
+				CMipMapTerrainTile* pDown = g_vTileGrid[ Pos.y + 1 ][ Pos.x ];
 				bNeedDown = pDown->GetLOD() > pTile->GetLOD();
 			}
 
@@ -514,7 +514,7 @@ namespace XSE
 				auto* Tile = g_vVisibleTiles[ t ];
 				// TODO: probably cache miss here. Use array of pVB,ulStartVertex structures
 				const auto& TileInfo = Tile->m_Info;
-				pIB = GetIndexBuffer( Tile->m_uiLOD, Tile->m_eStitchType ).pIndexBuffer.GetPtr();
+				pIB = GetIndexBuffer( Tile->m_uiLOD, Tile->m_eStitchType /*XSE::MipMapTerrainStitchTypes::DOWN*/ ).pIndexBuffer.GetPtr();
 				//lpcastr n = pIB->_GetDbgName();
 				pRS->SetVertexBufferWithCheck( TileInfo.pVB );
 				pRS->SetIndexBufferWithCheck( pIB );
