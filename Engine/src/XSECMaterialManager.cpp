@@ -9,6 +9,7 @@
 #include "XSECMesh.h"
 #include "XSECmaterial.h"
 #include "XSEIRenderSystem.h"
+#include "XSEIInputLayout.h"
 
 namespace XSE
 {
@@ -19,6 +20,8 @@ namespace XSE
 	"function Color3(fR, fG, fB) return { r = fR, g = fG, b = fB } end " 
 	"function Color4(fR, fG, fB, fA) return { r = fR, g = fG, b = fB, a = fA } end " 
 	"materials = {}";
+
+	xst_map< u32, MaterialPtr > g_mDefaultMaterials;
 
 	xst_castring CMaterialManager::DEFAULT_MAT_COLOR( "xse_default_color" );
 
@@ -37,11 +40,12 @@ namespace XSE
 
 	CMaterialManager::~CMaterialManager()
 	{
-        int a = m_pDefaultMat->GetRefCount();
+		m_mDefaultMaterials.clear();
 	}
 
 	i32 CMaterialManager::Init()
 	{
+		m_mDefaultMaterials.clear();
 		//Create default material
 		Resources::CMaterial* pMat = xst_new Resources::CMaterial( m_pShaderMgr, this, 0, "xse_default_material", XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED, xst_null );
 		if( pMat == xst_null )
@@ -122,7 +126,12 @@ namespace XSE
 
 	MaterialPtr CMaterialManager::GetDefaultMaterial(const Resources::CMesh *pMesh)
 	{
-		const IInputLayout* pIL = pMesh->GetInputLayout();
+		xst_assert( pMesh != xst_null, "(CMaterialManager::GetDefaultMaterial) Mesh must not be null" );
+		return GetDefaultMaterial( pMesh->GetInputLayout() );
+	}
+
+	MaterialPtr CMaterialManager::GetDefaultMaterial(const IInputLayout *pIL)
+	{
 		xst_assert( pIL != xst_null, "(CMaterialManager::GetDefaultMaterial) Input layout must be set" );
 		//Get or create default material for this input layout
 		DefaultMatMap::iterator Itr;
@@ -130,7 +139,8 @@ namespace XSE
 		if( XST::MapUtils::FindPlace( m_mDefaultMaterials, pIL, &Itr ) )
 		{
 			//Create new material	
-			CMaterial* pMat = xst_new CMaterial( m_pShaderMgr, this, 0, "Default", XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED, xst_null );
+			u32 uILHandle = pIL->GetHandle();
+			CMaterial* pMat = xst_new CMaterial( m_pShaderMgr, this, uILHandle, XST::StringUtil::EmptyAString, XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED, xst_null );
 			if( pMat == xst_null )
 			{
 				XST_LOG_ERR( "Default material creation failed. Memory error." );
@@ -139,8 +149,8 @@ namespace XSE
 
 			//Set defaults
 			IPass* pPass = pMat->GetCurrentTechnique()->GetPass( 0 );
-			pPass->SetVertexShader( m_pShaderMgr->GetDefaultVertexShader( pMesh ) );
-			pPass->SetPixelShader( m_pShaderMgr->GetDefaultPixelShader() );
+			pPass->SetVertexShader( pIL->GetVertexShader() );
+			pPass->SetPixelShader( pIL->GetPixelShader() );
 
 			//Add material to the buffer
 			MaterialPtr pMaterial( pMat );

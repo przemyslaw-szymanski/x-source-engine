@@ -15,6 +15,7 @@ class CRenderThread : public QThread
 	enum class MESSAGE
 	{
 		NONE,
+		SET_RENDER_ONE_FRAME,
 		SET_RENDER_TYPE_WIREFRAME,
 		SET_RENDER_TYPE_SOLID,
 	};

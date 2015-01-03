@@ -44,6 +44,7 @@ namespace XSE
 									{ return m_pDefaultMat; }	
 
 					MaterialPtr		GetDefaultMaterial(const Resources::CMesh* pMesh);
+					MaterialPtr		GetDefaultMaterial(const IInputLayout* pIL);
 
 			xst_fi	CShaderManager*	GetShaderManager() const
 									{ return m_pShaderMgr; }

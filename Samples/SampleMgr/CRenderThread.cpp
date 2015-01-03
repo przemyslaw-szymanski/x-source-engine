@@ -48,6 +48,7 @@ void CRenderThread::Unlock()
 void CRenderThread::ProcessMessages()
 {
 	while( !m_sMessages.empty() )
+	//if( !m_sMessages.empty() )
 	{
 		MESSAGE eMsg = m_sMessages.top();
 		m_sMessages.pop();
@@ -77,6 +78,7 @@ void CRenderThread::run()
 			ProcessMessages();
 			g_pWnd->EndRenderFrame();
 			Unlock();
+			Sleep( 10 );
 		}
 
 		Sleep( 1 );

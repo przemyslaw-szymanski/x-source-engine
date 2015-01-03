@@ -29,10 +29,11 @@ namespace XSE
 		"mtxView",
 		"mtxProjection",
 		"mtxWVP",
-		"mtxObjWorld",
-		"mtxObjView",
-		"mtxObjProjection",
-		"mtxObjWVP",
+		"mtxObjWorld", // object world
+		"mtxObjView", // object view
+		"mtxObjProjection", // object projection
+		"mtxObjWVP", // object world view projection
+		"mtxObjWInvT", // world inverse transpose
 		"fTime",
 		"f3LightPos",
 		"f4LightSpecular",

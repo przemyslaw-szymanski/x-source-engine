@@ -3,7 +3,6 @@
 
 #include "XSEIInputLayout.h"
 #include "XSED3D11Common.h"
-#include "XSEIVertexShader.h"
 
 #if defined (XST_WINDOWS)
 namespace XSE
@@ -24,14 +23,23 @@ namespace XSE
 
 						i32						Create(cul32& ulElements);
 
+						ul32					GetHandle() const xst_implement
+												{ return m_ulHandle; }
+
 						xst_castring&			GetVertexShaderCode() const
 												{ return m_strVSCode; }
 
-				const	VertexShaderPtr			GetVertexShader() const
+				const	VertexShaderPtr			GetVertexShader() const xst_implement
 												{ return m_pVS; }
 
-						VertexShaderPtr			GetVertexShader()
+						VertexShaderPtr			GetVertexShader() xst_implement
 												{ return m_pVS; }
+
+				const	PixelShaderPtr			GetPixelShader() const xst_implement
+												{ return m_pPS; }
+
+						PixelShaderPtr			GetPixelShader() xst_implement
+												{ return m_pPS; }
 			
 				const	SInputLayoutElement*	GetElements() const
 												{ return &m_Elements[ 0 ]; } 
@@ -71,9 +79,12 @@ namespace XSE
 				ID3D11InputLayout*					m_pD3DInputLayout;
 				ID3DBlob*							m_pD3DVertexShaderBlob;
 				CRenderSystem*						m_pRS;
-				ul32								m_ulVertexSize;
 				xst_astring							m_strVSCode;
+				xst_astring							m_strPSCode;
 				VertexShaderPtr						m_pVS;
+				PixelShaderPtr						m_pPS;
+				ul32								m_ulVertexSize;
+				ul32								m_ulHandle;
 		};
 
 	}//d3d11

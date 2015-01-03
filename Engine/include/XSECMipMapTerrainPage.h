@@ -37,6 +37,7 @@ namespace XSE
 			const IInputLayout* pInputLayout = xst_null;
 			CMipMapTerrainTile* aTiles = xst_null; // a begin pointer to the tile buffer
 			IVertexBuffer* pVB = xst_null;
+			const IIndexBuffer* pIB = xst_null;
 			IVertexBuffer* pImpVB = xst_null; // impostor vertex buffer to render distant land
 			const Resources::IImage* pImpImg = xst_null; // impostor image
 			u32 uTileCount = 0; // a end indicator in the tile buffer
@@ -83,6 +84,7 @@ namespace XSE
 		i32				CalcVertexPositions(xst_vector<Vec3>* pvOut);
 
 		i32				CalcVertexNormals(const xst_vector<Vec3>& vPositions, xst_vector<Vec3>* pvNormalsOut);
+		i32				CalcVertexNormals(CVertexData& VData, const IIndexBuffer* pIB);
 
 		xst_fi	u32		CalcVertexDataId(cu32& uiX, cu32& uiY) const
 						{ return uiX + m_Info.TileCount.x * uiY; }

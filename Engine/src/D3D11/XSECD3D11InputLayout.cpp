@@ -1,6 +1,7 @@
 #include "XSECD3D11InputLayout.h"
 #include "XSECD3D11RenderSystem.h"
 #include "XSECD3D11VertexShader.h"
+#include "XSECD3D11PixelShader.h"
 
 #if defined (XST_WINDOWS)
 namespace XSE
@@ -17,7 +18,7 @@ namespace XSE
 		CInputLayout::~CInputLayout()
 		{
 			//xst_release( m_pVS );
-			xst_release( m_pD3DVertexShaderBlob );
+			//xst_release( m_pD3DVertexShaderBlob );
 		}
 
 		i32 CInputLayout::Create(cul32& ulElements)
@@ -308,28 +309,105 @@ namespace XSE
 			return Desc;
 		}
 
-		void AddVertexShaderInput(xst_astring& strVS, lpcastr lpszSemantic, lpcastr lpszType, bool bIsNextParameter)
+		void AddShaderInput(xst_astring& str, lpcastr lpszSemantic, lpcastr lpszType, bool bIsNextParameter)
 		{
 			ch8 aBuff[ 256 ];
-			#if defined (XST_VISUAL_STUDIO)
-				sprintf_s( aBuff, 256, "%s %s : %s%s\n", lpszType, XST::StringUtil::ToLower( lpszSemantic ).data(), lpszSemantic, ( bIsNextParameter )? "," : "" );
-			#else
-				sprintf( aBuff, "%s %s : %s%s\n", lpszType, XST::StringUtil::ToLower( lpszSemantic ).data(), lpszSemantic, ( bIsNextParameter )? "," : "" );
-			#endif
+			xst_sprintf( aBuff, 256, "%s i%s : %s%s\n", lpszType, lpszSemantic, lpszSemantic, ( bIsNextParameter )? "," : "" );
+			str += aBuff;
+		}
+
+		void AddShaderInput(xst_astring& str, lpcastr lpszSemantic, lpcastr lpszType)
+		{
+			ch8 aBuff[ 256 ];
+			xst_sprintf( aBuff, 256, "%s i%s : %s;\n", lpszType, lpszSemantic, lpszSemantic );
+			str += aBuff;
+		}
+
+		void AddShaderOutput(xst_astring& strVS, xst_astring& strPS, lpcastr lpszSemantic, lpcastr lpszType, bool bIsNextParameter)
+		{
+			ch8 aBuff[ 256 ];
+			xst_sprintf( aBuff, 256, "%s o%s : %s%s\n", lpszType, lpszSemantic, lpszSemantic, ( bIsNextParameter )? "," : "" );
 			strVS += aBuff;
+			xst_zero( aBuff, 256 );
+			xst_sprintf( aBuff, 256, "%s i%s : %s%s\n", lpszType, lpszSemantic, lpszSemantic, ( bIsNextParameter )? "," : "" );
+			strPS += aBuff;
+		}
+
+		void AddShaderOutput(xst_astring& strVS, xst_astring& strPS, lpcastr lpszSemantic, lpcastr lpszType)
+		{
+			ch8 aBuff[ 256 ];
+			xst_sprintf( aBuff, 256, "%s o%s : %s;\n", lpszType, lpszSemantic, lpszSemantic );
+			strVS += aBuff;
+			xst_zero( aBuff, 256 );
+			xst_sprintf( aBuff, 256, "%s i%s : %s;\n", lpszType, lpszSemantic, lpszSemantic );
+			strPS += aBuff;
+		}
+
+		void AddShaderInOut(xst_astring& strVS, xst_astring& strPS, lpcastr lpszSemantic, lpcastr lpszType, bool bIsNextParameter)
+		{
+			AddShaderInput( strVS, lpszSemantic, lpszType, bIsNextParameter );
+			AddShaderOutput( strVS, strPS, lpszSemantic, lpszType, bIsNextParameter );
+		}
+
+		void AddShaderInOut(xst_astring& strVS, xst_astring& strPS, lpcastr lpszSemantic, lpcastr lpszType)
+		{
+			ch8 aBuff[ 256 ];
+			xst_sprintf( aBuff, 256, "%s %s : %s;\n", lpszType, XST::StringUtil::ToLower( lpszSemantic ).c_str(), lpszSemantic );
+			strVS += aBuff;
+			strPS += aBuff;
+		}
+
+		void AddShaderInOut(xst_astring& strVS, xst_astring& strPS, lpcastr lpszVSSemantic, lpcastr lpszPSSemantic, lpcastr lpszType)
+		{
+			ch8 aBuff[ 256 ];
+			xst_sprintf( aBuff, 256, "%s %s : %s;\n", lpszType, XST::StringUtil::ToLower( lpszVSSemantic ).c_str(), lpszVSSemantic );
+			strVS += aBuff;
+
+			xst_zero( aBuff, sizeof( aBuff ) );
+			xst_sprintf( aBuff, 256, "%s %s : %s;\n", lpszType, XST::StringUtil::ToLower( lpszVSSemantic ).c_str(), lpszPSSemantic );
+			strPS += aBuff;
+		}
+
+		xst_astring g_strVS_OUT;
+		xst_astring g_strVS_IN;
+
+		void FindAndReplace(xst_astring* pOut, xst_castring& strFind, xst_castring& strNew)
+		{
+			std::size_t uPos = 0;
+			while( ( uPos = pOut->find( strFind, uPos ) ) != xst_astring::npos )
+			{
+				pOut->replace( uPos, strFind.length(), strNew );
+				uPos += strNew.length();
+			}
 		}
  
 		i32 CInputLayout::_Build()
 		{
+			g_strVS_OUT.clear();
+			g_strVS_OUT.reserve( 1024 );
+			g_strVS_IN.clear();
+			g_strVS_IN.reserve( 1024 );
+
 			//Build shader
 			//xst_astring strVS;
 			m_strVSCode.clear();
 			m_strVSCode.reserve( 1024 );
 			m_strVSCode += m_pRS->GetShaderSystem()->GetShaderCode( IShaderSystem::ShaderCodes::PER_FRAME_CBUFFER ) + "\n";
 			m_strVSCode += m_pRS->GetShaderSystem()->GetShaderCode( IShaderSystem::ShaderCodes::PER_OBJECT_CBUFFER ) + "\n";
-			m_strVSCode += "\nfloat4 VS(";
+			
+			g_strVS_IN += "\nstruct VS_IN {\n";
+			g_strVS_OUT += "\nstruct VS_OUT {\n";
+			
+			m_strVSCode += "$VS_IN\n$VS_OUT\nVS_OUT VS(VS_IN IN) {\nVS_OUT OUT;";
+
+			m_strPSCode.clear();
+			m_strPSCode.reserve( 1024 );
+			m_strPSCode += m_pRS->GetShaderSystem()->GetShaderCode( IShaderSystem::ShaderCodes::PER_FRAME_CBUFFER ) + "\n";
+			m_strPSCode += m_pRS->GetShaderSystem()->GetShaderCode( IShaderSystem::ShaderCodes::PER_OBJECT_CBUFFER ) + "\n";
+			m_strPSCode += "\n$VS_OUT\nfloat4 PS(VS_OUT IN) : COLOR {\nfloat4 C = float4(1,0.02,0.5,0);";
+
 			xst_astring strName = "";
-			//AddVertexShaderInput( m_strVSCode, "POSITION", "float4", m_Elements.size() > 0 );
+			//AddShaderInput( m_strVSCode, "POSITION", "float4", m_Elements.size() > 0 );
 
 			//Add default POSITION
 			//m_aInputElements[ 0 ] = CreateInputElement( "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 );
@@ -338,14 +416,29 @@ namespace XSE
 
 			for(u32 i = 0; i < m_Elements.size(); ++i)
 			{
+				bool bNext = i + 1 < m_Elements.size();
+				m_ulHandle |= m_Elements[ i ].eType;
+
 				switch( m_Elements[ i ].eType )
 				{
 					case InputLayoutElements::POSITION:
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetPositionSize();
-						AddVertexShaderInput( m_strVSCode, "POSITION", "float4", i + 1 < m_Elements.size() );
+						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "POSITION", "POSITION", "float4" );
+						g_strVS_OUT += "\nfloat3 pos : TEXCOORD0;";
+						m_strVSCode += "\nOUT.position = mul( IN.position, &WVP ); OUT.pos = IN.position.xyz;";
 						strName += "Position";
+					}
+					break;
+
+					case InputLayoutElements::COLOR:
+					{
+						m_aInputElements[ i + 0 ] = CreateInputElement( "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
+						ulOffset += GetColorSize();
+						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "COLOR", "float4" );
+						m_strVSCode += "\nOUT.color = IN.color;";
+						strName += "Color";
 					}
 					break;
 
@@ -353,7 +446,8 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetNormalSize();
-						AddVertexShaderInput( m_strVSCode, "NORMAL", "float3", i + 1 < m_Elements.size() );
+						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "NORMAL", "float3" );
+						m_strVSCode += "\nOUT.normal=(mul((IN.normal),&W));";
 						strName += "Normal";
 					}
 					break;
@@ -362,7 +456,8 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD0", "float2", i + 1 < m_Elements.size() );
+						AddShaderInOut( m_strVSCode, m_strPSCode, "TEXCOORD0", "float2", bNext );
+						m_strVSCode += "\nOUT.texcoord0 = IN.texcoord0;";
 						strName += "Texcoord0";
 					}
 					break;
@@ -371,7 +466,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD1", "float2", i + 1 < m_Elements.size() );
+						AddShaderInOut( m_strVSCode, m_strPSCode, "TEXCOORD1", "float2", bNext );
 						strName += "Texcoord1";
 					}
 					break;
@@ -380,7 +475,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD2", "float2", i + 1 < m_Elements.size() );
+						AddShaderInOut( m_strVSCode, m_strPSCode, "TEXCOORD2", "float2", bNext );
 						strName += "Texcoord2";
 					}
 					break;
@@ -389,7 +484,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD3", "float2", i + 1 < m_Elements.size() );
+						AddShaderInOut( m_strVSCode, m_strPSCode, "TEXCOORD3", "float2", bNext );
 						strName += "Texcoord3";
 					}
 					break;
@@ -398,7 +493,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD4", "float2", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "TEXCOORD4", "float2", bNext );
 						strName += "Texcoord4";
 					}
 					break;
@@ -407,7 +502,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD5", "float2", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "TEXCOORD5", "float2", i + 1 < m_Elements.size() );
 						strName += "Texcoord5";
 					}
 					break;
@@ -416,7 +511,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD6", "float2", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "TEXCOORD6", "float2", i + 1 < m_Elements.size() );
 						strName += "Texcoord6";
 					}
 					break;
@@ -425,7 +520,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddVertexShaderInput( m_strVSCode, "TEXCOORD7", "float2", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "TEXCOORD7", "float2", i + 1 < m_Elements.size() );
 						strName += "Texcoord7";
 					}
 					break;
@@ -434,7 +529,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetBinormalSize();
-						AddVertexShaderInput( m_strVSCode, "BINORMAL", "float3", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "BINORMAL", "float3", i + 1 < m_Elements.size() );
 						strName += "Binormal";
 					}
 					break;
@@ -443,17 +538,8 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTangentSize();
-						AddVertexShaderInput( m_strVSCode, "TANGENT", "float3", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "TANGENT", "float3", i + 1 < m_Elements.size() );
 						strName += "Tangent";
-					}
-					break;
-
-					case InputLayoutElements::COLOR:
-					{
-						m_aInputElements[ i + 0 ] = CreateInputElement( "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
-						ulOffset += GetColorSize();
-						AddVertexShaderInput( m_strVSCode, "COLOR", "float4", i + 1 < m_Elements.size() );
-						strName += "Color";
 					}
 					break;
 
@@ -461,7 +547,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "SPECULAR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetSpecularSize();
-						AddVertexShaderInput( m_strVSCode, "SPECULAR", "float3", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "SPECULAR", "float3", i + 1 < m_Elements.size() );
 						strName += "Specular";
 					}
 					break;
@@ -470,7 +556,7 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "DIFFUSE", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetDiffuseSize();
-						AddVertexShaderInput( m_strVSCode, "DIFFUSE", "float3", i + 1 < m_Elements.size() );
+						AddShaderInput( m_strVSCode, "DIFFUSE", "float3", i + 1 < m_Elements.size() );
 						strName += "Diffuse";
 					}
 					break;
@@ -478,23 +564,28 @@ namespace XSE
 				}//switch
 			}//for
 
+			g_strVS_IN += "};\n";
+			g_strVS_OUT += "};\n";
 			//End shader build
-			m_strVSCode += ") : SV_POSITION { return ";
-			m_strVSCode += "mul( position, " + IShaderSystem::GetConstantName( ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION );
-			m_strVSCode += " ); }";
+			m_strVSCode += "\nreturn OUT;\n}";
+			FindAndReplace( &m_strVSCode, "$VS_IN", g_strVS_IN );
+			FindAndReplace( &m_strVSCode, "$VS_OUT", g_strVS_OUT );
+			FindAndReplace( &m_strVSCode, "&WVP", IShaderSystem::GetConstantName( ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION ) );
+			FindAndReplace( &m_strVSCode, "&W", IShaderSystem::GetConstantName( ShaderConstants::MTX_OBJ_WORLD ) );
+
+			if( this->m_aAvailableElements[ InputLayoutElementIds::COLOR ] )
+				m_strPSCode += "\nC=saturate(IN.color);";
+			
+			if( this->m_aAvailableElements[ InputLayoutElementIds::NORMAL ] )
+				m_strPSCode += "\nfloat3 P=IN.pos;\nfloat3 N=normalize(IN.normal);\nfloat3 L=normalize(float3(0,1000,0)-P);\nfloat DL=max(dot(N,L),0);\nfloat3 V=normalize(float3(-389,450,230)-P);\nfloat3 H=normalize(L+V);C=C*DL;";
+				//m_strPSCode += "C.xyz = IN.normal; C.w=1;";
+
+			m_strPSCode += "\nreturn C;\n}";
+			FindAndReplace( &m_strPSCode, "$VS_OUT", g_strVS_OUT );
 			
 			lpcastr lpszText = m_strVSCode.data();
 			ul32 ulTextLen = m_strVSCode.length();
-			//XST::CDebug::PrintDebugLN( lpszText );
-			/*if( XST_FAILED( m_pRS->_CompileShaderFromMemory(lpszText, ulTextLen, "TmpVS", xst_null, xst_null,
-															"VS", "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, xst_null, &m_pD3DVertexShaderBlob, xst_null ) ) )
-			{
-				return XST_FAIL;
-			}*/
-
-			//static ch8 b[1024];
-//#define xa(_Expression) if( !( _Expression ) ) { sprintf( b, "file: %s\nline: %d\nfunc: %s\nreason: %s", __FILE__, __LINE__, __FUNCTION__, #_Expression ); if( MessageBoxA( 0, b, "Error", MB_ABORTRETRYIGNORE | MB_ICONERROR ) == IDABORT ) { exit( XST_FAIL ); }  }
-			
+		
 			IShaderSystem* pSS = m_pRS->GetShaderSystem();
 			CVertexShader* pVS = (CVertexShader*)pSS->CreateVertexShader( this, xst_null, 0, strName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, xst_null );
 			if( pVS == xst_null )
@@ -503,24 +594,45 @@ namespace XSE
 			}
 
 			pVS->m_strShaderEntryPoint = "VS";
-			pVS->m_eProfile = ShaderProfiles::VS_1_1;
+			pVS->m_eProfile = ShaderProfiles::VS_BEST;
 		
 			if( XST_FAILED( pSS->CompileVertexShader( pVS, m_strVSCode.data(), m_strVSCode.length(), pVS->m_strShaderEntryPoint.data(), pVS->m_eProfile ) ) )
 			{
 				return XST_FAIL;
 			}
 
-			m_pD3DVertexShaderBlob = pVS->m_pBlob;
-
-			//Create d3d input layout
-			if( XST_FAILED( m_pRS->_CreateInputLayout( this ) ) )
+			// Pixel Shader
+			CPixelShader* pPS = (CPixelShader*)pSS->CreatePixelShader( xst_null, 0, strName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, xst_null );
+			if( pPS == xst_null )
 			{
-				xst_release( m_pD3DVertexShaderBlob );
 				return XST_FAIL;
 			}
 
-			xst_release( m_pD3DVertexShaderBlob );
+			pPS->m_strShaderEntryPoint = "PS";
+			pPS->m_eProfile = ShaderProfiles::PS_BEST;
+		
+			if( XST_FAILED( pSS->CompilePixelShader( pPS, m_strPSCode.data(), m_strPSCode.length(), pPS->m_strShaderEntryPoint.data(), pPS->m_eProfile ) ) )
+			{
+				return XST_FAIL;
+			}
+
+			ID3DBlob* pPSBlob = pPS->m_pBlob;
+
+			//Create d3d input layout
+			m_pD3DVertexShaderBlob = pVS->m_pBlob; // Need for D3D11 CreateInputLayout, after that it must be released
+			if( XST_FAILED( m_pRS->_CreateInputLayout( this ) ) )
+			{
+				xst_release( pVS->m_pBlob );
+				xst_release( pPS->m_pBlob );
+				return XST_FAIL;
+			}
+
+			xst_release( pVS->m_pBlob );
+			xst_release( pPS->m_pBlob );
+			m_pD3DVertexShaderBlob = xst_null;
+
 			m_pVS = VertexShaderPtr( pVS );
+			m_pPS = PixelShaderPtr( pPS );
 			return XST_OK;
 		}
 

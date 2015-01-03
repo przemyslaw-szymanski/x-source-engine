@@ -311,7 +311,7 @@ namespace XSE
 			m_vTiles[ i ].m_pbIsVisible = it;
 		}
 
-		this->m_pMaterial = CMaterialManager::GetSingletonPtr( )->GetDefaultMaterial();
+		this->m_pMaterial = CMaterialManager::GetSingletonPtr()->GetDefaultMaterial( m_pInputLayout );
 
 		//Load heightmap images
 		if( XST_FAILED( LoadImages( Options.vHeightmaps ) ) )
@@ -390,6 +390,7 @@ namespace XSE
 				Info.pVB = m_vpVertexBuffers[ uCurrPageId ];
 				Info.pImpVB = m_vpImpostorVertexBuffers[ uCurrPageId ];
 				Info.ImpostorVertexCount = ImpVertCount;
+				//Info.pIB = GetIndexBuffer( 0, 0 ).pIndexBuffer.GetPtr();
 				Info.pImpImg = m_vpImages[1].GetPtr(); // TEMP
 				
 				XST_RET_FAIL( pPage->Init( Info ) );
@@ -580,6 +581,7 @@ namespace XSE
 		XSTSimpleProfiler();
 		for( auto& Page : m_vPages )
 		{
+			//Page.m_Info.pIB = GetIndexBuffer( 0, 0 ).pIndexBuffer.GetPtr();
 			Page.CalcVertexPositions();
 			Page.CalcVertexNormals();
 			if( XST_FAILED( Page.FillVertexBuffer() ) )

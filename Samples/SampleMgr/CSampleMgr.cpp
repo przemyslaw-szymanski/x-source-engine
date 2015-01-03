@@ -143,6 +143,7 @@ void CSampleMgr::RenderSample()
 	//g_RenderThread.Lock();
 	if( m_pCurrSample != xst_null/* && m_pCurrSample->IsReady()*/ )
 	{
+		//g_RenderThread.SendMessage( CRenderThread::MESSAGE::SET_RENDER_ONE_FRAME );
 		//m_pRenderWnd->BeginRenderFrame();
 		//m_pRenderWnd->EndRenderFrame();
 		//bool b = m_pRenderWnd->GetKeyboard()->IsKeyPressed( XSE::KeyCodes::CAPITAL_W );

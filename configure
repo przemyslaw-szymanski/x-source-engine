@@ -1,2 +1,5 @@
 WINDOWS
 link: psapi.lib
+
+GIT
+git config --global core.autocrlf true

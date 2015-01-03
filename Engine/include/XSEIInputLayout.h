@@ -3,6 +3,7 @@
 
 #include "XSERenderSystemCommon.h"
 #include "XSEIVertexShader.h"
+#include "XSEIPixelShader.h"
 
 namespace XSE
 {
@@ -37,6 +38,8 @@ namespace XSE
 
 			virtual	i32								Create(cul32& ulElements) = 0;
 
+			virtual ul32							GetHandle() const = 0;
+
 			virtual	xst_fi const bool*				GetAvailableElements() const { return m_aAvailableElements; }
 			virtual xst_fi u32						GetAvailableElementCount() const { return ILEs::_ENUM_COUNT; }
 			virtual xst_fi bool						IsElementAvailable(cul32& ulElId) const { return m_aAvailableElements[ ulElId ]; }
@@ -56,6 +59,10 @@ namespace XSE
 			virtual const VertexShaderPtr			GetVertexShader() const = 0;
 
 			virtual VertexShaderPtr					GetVertexShader() = 0;
+
+			virtual const PixelShaderPtr			GetPixelShader() const = 0;
+
+			virtual PixelShaderPtr					GetPixelShader() = 0;
 
 			virtual cul32							GetVertexSize() const = 0;
 

@@ -7,7 +7,7 @@
 
 namespace XSE
 {
-#define XSE_TERRAIN_NORMAL_DEBUG 0
+#define XSE_TERRAIN_NORMAL_DEBUG 1
 
 	CMipMapTerrainPage::CMipMapTerrainPage(CMipMapPagingTerrain* pTerrain) : 
 		m_pTerrain( pTerrain )
@@ -117,7 +117,10 @@ namespace XSE
 		xst_vector<Vec3> vPositions;
 		xst_vector<Vec3> vNormals;
 		CalcVertexPositions( &vPositions );
-		CalcVertexNormals( vPositions, &vNormals );
+		if( !m_Info.pIB )
+			CalcVertexNormals( vPositions, &vNormals );
+		else
+			vNormals.resize(vPositions.size(), Vec3::ZERO);
 #if (XSE_TERRAIN_NORMAL_DEBUG)
 		xst_vector<Vec3> vNormPos;
 		vNormPos.reserve( ulVertexCount *2 );
@@ -166,7 +169,7 @@ namespace XSE
 						vecTileMax.Max( vecPos );
 #if (XSE_TERRAIN_NORMAL_DEBUG)
 						VNData.SetPosition( ulCurrNormVid++, vecPos );
-						VNData.SetPosition( ulCurrNormVid++, vecPos + vecNormal * 10 );
+						VNData.SetPosition( ulCurrNormVid++, vecPos + vecNormal * 1 );
 						INData.SetIndex( ulCurrNormId++, ulCurrNormVid - 2 );
 						INData.SetIndex( ulCurrNormId++, ulCurrNormVid - 1 );
 #endif
@@ -230,6 +233,9 @@ namespace XSE
 			vecPos.z = m_Info.vecPagePosition.y + uTileY * ( (m_Info.TileVertexCount.y-1) * vecStep.y );	
 		}
 		//xst_assert2( ulVertexId == ulVertexCount );
+
+		if( m_Info.pIB )
+			CalcVertexNormals( VData, m_Info.pIB );
 
 #if (XSE_TERRAIN_NORMAL_DEBUG)
 		pVB->Unlock();
@@ -333,18 +339,28 @@ namespace XSE
 		return XST_OK;
 	}
 
+	void CalcTriangleNormal( Vec3* pvecOut, const Vec3& vecV1, const Vec3& vecV2, const Vec3& vecV3 )
+	{
+		const Vec3 vecU = vecV2 - vecV1;
+		const Vec3 vecV = vecV3 - vecV1;
+		pvecOut->x = ( vecU.y * vecV.z - vecU.z * vecV.y );
+		pvecOut->y = ( vecU.z * vecV.x - vecU.x * vecV.z );
+		pvecOut->z = ( vecU.x * vecV.y - vecU.y * vecV.x );
+	}
+
 	i32 CMipMapTerrainPage::CalcVertexNormals(const xst_vector<Vec3>& vPositions, xst_vector<Vec3>* pvNormalsOut)
 	{
 		XSTSimpleProfiler();
 		xst_assert2( vPositions.size() == m_Info.VertexCount.x * m_Info.VertexCount.y );
 
 		pvNormalsOut->resize( vPositions.size(), Vec3::ZERO );
-		xst_vector<Vec3> vTmp( vPositions.size() );
+		//xst_vector<u32> vTmp( vPositions.size() );
 
 		Vec3 avecTriLeft[3];
 		Vec3 avecTriRight[3];
 		Vec3 avecNormals[2];
 		ul32 uIDs[4];
+		ul32 uTmpIds[6];
 		Vec3 vecU, vecV;
 
 		enum CORNER
@@ -365,35 +381,52 @@ namespace XSE
 				uIDs[ CORNER::BOTTOM_LEFT ] = XST_ARRAY_2D_TO_1D( x, y + 1, m_Info.VertexCount.x );
 
 				// Create quad
-				// Left triangle |\.
-				avecTriLeft[ 0 ] = vPositions[ uIDs[ CORNER::TOP_LEFT ] ]; // top left
-				avecTriLeft[ 1 ] = vPositions[ uIDs[ CORNER::BOTTOM_LEFT ] ];  // bottom left
-				avecTriLeft[ 2 ] = vPositions[ uIDs[ CORNER::BOTTOM_RIGHT] ]; // botton right
+				if( y % 2 == 0 )
+				{
+					uTmpIds[0] = uIDs[ CORNER::TOP_LEFT ];
+					uTmpIds[1] = uIDs[ CORNER::BOTTOM_LEFT ];
+					uTmpIds[2] = uIDs[ CORNER::BOTTOM_RIGHT ];
+					uTmpIds[3] = uIDs[ CORNER::TOP_LEFT ];
+					uTmpIds[4] = uIDs[ CORNER::BOTTOM_RIGHT ];
+					uTmpIds[5] = uIDs[ CORNER::TOP_RIGHT ];
 
-				vecU = avecTriLeft[ 1 ] - avecTriLeft[ 0 ];
-				vecV = avecTriLeft[ 2 ] - avecTriLeft[ 0 ];
-				avecNormals[ 0 ].x = ( vecU.y * vecV.z - vecU.z * vecV.y );
-				avecNormals[ 0 ].y = ( vecU.z * vecV.x - vecU.x * vecV.z );
-				avecNormals[ 0 ].z = ( vecU.x * vecV.y - vecU.y * vecV.x );
+					// Left triangle |\.
+					avecTriLeft[ 0 ] = vPositions[ uTmpIds[0] ]; // top left
+					avecTriLeft[ 1 ] = vPositions[ uTmpIds[1] ];  // bottom left
+					avecTriLeft[ 2 ] = vPositions[ uTmpIds[2] ]; // botton right
+					// Right triangle \|
+					avecTriRight[ 0 ] = vPositions[ uTmpIds[3] ]; // top left
+					avecTriRight[ 1 ] = vPositions[ uTmpIds[4] ]; // bottom right
+					avecTriRight[ 2 ] = vPositions[ uTmpIds[5] ]; // top right
+				}
+				else
+				{
+					uTmpIds[0] = uIDs[ CORNER::TOP_LEFT ];
+					uTmpIds[1] = uIDs[ CORNER::BOTTOM_LEFT ];
+					uTmpIds[2] = uIDs[ CORNER::TOP_RIGHT ];
+					uTmpIds[3] = uIDs[ CORNER::BOTTOM_LEFT ];
+					uTmpIds[4] = uIDs[ CORNER::BOTTOM_RIGHT ];
+					uTmpIds[5] = uIDs[ CORNER::TOP_RIGHT ];
 
-				pvNormalsOut->at( uIDs[ CORNER::TOP_LEFT ] ) += avecNormals[0];
-				pvNormalsOut->at( uIDs[ CORNER::BOTTOM_LEFT ] ) += avecNormals[0];
-				pvNormalsOut->at( uIDs[ CORNER::BOTTOM_RIGHT ] ) += avecNormals[0];
+					// Left triangle |/.
+					avecTriLeft[ 0 ] = vPositions[ uTmpIds[0] ]; // top left
+					avecTriLeft[ 1 ] = vPositions[ uTmpIds[1] ];  // bottom left
+					avecTriLeft[ 2 ] = vPositions[ uTmpIds[2] ]; // botton right
+					// Right triangle /|
+					avecTriRight[ 0 ] = vPositions[ uTmpIds[3] ]; // top left
+					avecTriRight[ 1 ] = vPositions[ uTmpIds[4] ]; // bottom right
+					avecTriRight[ 2 ] = vPositions[ uTmpIds[5] ]; // top right
+				}
 
-				// Right triangle \|
-				avecTriRight[ 0 ] = vPositions[ uIDs[ CORNER::TOP_LEFT ] ]; // top left
-				avecTriRight[ 1 ] = vPositions[ uIDs[ CORNER::BOTTOM_RIGHT ] ]; // bottom right
-				avecTriRight[ 2 ] = vPositions[ uIDs[ CORNER::TOP_RIGHT ] ]; // top right
+				CalcTriangleNormal(&avecNormals[0], avecTriLeft[0], avecTriLeft[1], avecTriLeft[2]);
+				pvNormalsOut->at( uTmpIds[0] ) += avecNormals[0];
+				pvNormalsOut->at( uTmpIds[1] ) += avecNormals[0];
+				pvNormalsOut->at( uTmpIds[2] ) += avecNormals[0];			
 
-				vecU = avecTriRight[ 1 ] - avecTriRight[ 0 ];
-				vecV = avecTriRight[ 2 ] - avecTriRight[ 0 ];
-				avecNormals[ 1 ].x = ( vecU.y * vecV.z - vecU.z * vecV.y );
-				avecNormals[ 1 ].y = ( vecU.z * vecV.x - vecU.x * vecV.z );
-				avecNormals[ 1 ].z = ( vecU.x * vecV.y - vecU.y * vecV.x );
-
-				(*pvNormalsOut)[ uIDs[ CORNER::TOP_LEFT ] ] += avecNormals[1];
-				(*pvNormalsOut)[ uIDs[ CORNER::BOTTOM_RIGHT ] ] += avecNormals[1];
-				(*pvNormalsOut)[ uIDs[ CORNER::TOP_RIGHT ] ] += avecNormals[1];
+				CalcTriangleNormal(&avecNormals[1], avecTriRight[0], avecTriRight[1], avecTriRight[2]);
+				pvNormalsOut->at( uTmpIds[3] ) += avecNormals[1];
+				pvNormalsOut->at( uTmpIds[4] ) += avecNormals[1];
+				pvNormalsOut->at( uTmpIds[5] ) += avecNormals[1];
 			}
 		}
 
@@ -404,6 +437,54 @@ namespace XSE
 			//Vec3& v = ( *pvNormalsOut )[i];
 			//v.Normalize();
 			//Vec3 vecNormal = pvNormalsOut->at( i );
+			//XST::CDebug::PrintDebugLN( XST::ToStr() << vecNormal.x << " " << vecNormal.y << " " << vecNormal.z );
+		}
+
+		return XST_OK;
+	}
+
+	i32 CMipMapTerrainPage::CalcVertexNormals(CVertexData& VData, const IIndexBuffer* pIB)
+	{
+		XSTSimpleProfiler();
+
+		xst_vector<Vec3> vNormals( VData.GetVertexCount(), Vec3::ZERO );
+		//xst_vector<u32> vTmp( vPositions.size() );
+
+		Vec3 avecTri[3];
+		u32 auTri[3];
+
+		const CIndexData& IData = pIB->GetIndexData();
+		u32 uTriCount = IData.GetTriangleCount();
+		ul32 uIdCount = IData.GetIndexCount();
+		u32 uTileCount = m_Info.TileCount.x * m_Info.TileCount.y;
+
+		for( u32 t = 0; t < uTileCount; ++t )
+		{
+			u32 uOffset = t * uIdCount;
+			for( u32 i = 0; i < uIdCount; i += 3 )
+			{
+				auTri[ 0 ] = IData.GetIndex( i + 0 ) + uOffset;
+				auTri[ 1 ] = IData.GetIndex( i + 1 ) + uOffset;
+				auTri[ 2 ] = IData.GetIndex( i + 2 ) + uOffset;
+
+				VData.GetPosition( auTri[ 0 ], &avecTri[ 0 ] );
+				VData.GetPosition( auTri[ 1 ], &avecTri[ 1 ] );
+				VData.GetPosition( auTri[ 2 ], &avecTri[ 2 ] );
+				Vec3 vecNormal;
+				CalcTriangleNormal( &vecNormal, avecTri[ 0 ], avecTri[ 1 ], avecTri[ 2 ] );
+
+				vNormals[auTri[0]] += vecNormal;
+				vNormals[auTri[1]] += vecNormal;
+				vNormals[auTri[2]] += vecNormal;
+			}
+		}
+		for( u32 i = vNormals.size(); i-- > 0; )
+		{
+			vNormals[ i ].Normalize();
+			VData.SetNormal( i, vNormals[ i ] );
+			//Vec3& v = ( *pvNormalsOut )[i];
+			//v.Normalize();
+			//Vec3 vecNormal = vNormals[ i ];
 			//XST::CDebug::PrintDebugLN( XST::ToStr() << vecNormal.x << " " << vecNormal.y << " " << vecNormal.z );
 		}
 

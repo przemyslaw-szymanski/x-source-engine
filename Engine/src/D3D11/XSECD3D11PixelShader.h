@@ -13,6 +13,7 @@ namespace XSE
 			friend class CRenderSystem;
 			friend class CHLSLShaderSystem;
 			friend class CCGShaderSystem;
+			friend class CInputLayout;
 
 			public:
 

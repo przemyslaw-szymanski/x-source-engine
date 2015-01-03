@@ -82,7 +82,7 @@ namespace XSE
 		CMipMapPagingTerrain* pTerrain = xst_new CMipMapPagingTerrain( strName, pIL, m_pSceneMgr );
 		m_vTerrains.push_back( pTerrain );
 		
-		if( XST_FAILED( pTerrain->Init( Options ) ) )
+ 		if( XST_FAILED( pTerrain->Init( Options ) ) )
 		{
 			return xst_null;
 		}
