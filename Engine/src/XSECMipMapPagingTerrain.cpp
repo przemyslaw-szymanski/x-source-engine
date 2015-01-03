@@ -16,6 +16,7 @@
 namespace XSE
 {
 	#define CALC_XY(_x, _y, _width) ( (_x) + (_y) * (_width) )
+#define ADD_TILE_TO_PARTITION_SYSTEM 1
 
 	Vec3* g_avecNormals = xst_null;
 	bool g_bCCW = true;
@@ -186,8 +187,9 @@ namespace XSE
 		}
 
 		// Sort from nearest from the camera
-		std::sort( g_vVisibleTiles.begin(), g_vVisibleTiles.end(), [] (const CMipMapTerrainTile* l, const CMipMapTerrainTile* r){ return l->GetDistanceToCamera() < r->GetDisableReason();  } );
-
+#if ADD_TILE_TO_PARTITION_SYSTEM
+		std::sort( g_vVisibleTiles.begin(), g_vVisibleTiles.end(), [] (const CMipMapTerrainTile* l, const CMipMapTerrainTile* r){ return l->GetDistanceToCamera() < r->GetDistanceToCamera();  } );
+#endif
 		for( u32 i = 0; i < m_vPages.size(); ++i )
 		{
 			m_vPages[ i ].Update( pCam );
@@ -608,7 +610,9 @@ namespace XSE
 		for( u32 i = uTileCount; i-- > 0; )
 		{
 			CMipMapTerrainTile* pTile = &m_vTiles[ i ];
+#if (ADD_TILE_TO_PARTITION_SYSTEM)
 			m_pSceneMgr->AddToPartitionSystem( pTile );
+#endif
 			
 			/*SLineBoxOptions o;
 			o.vecPos = m_vTiles[ i ].GetPosition();

@@ -7,7 +7,7 @@
 
 namespace XSE
 {
-#define XSE_TERRAIN_NORMAL_DEBUG 1
+#define XSE_TERRAIN_NORMAL_DEBUG 0
 
 	CMipMapTerrainPage::CMipMapTerrainPage(CMipMapPagingTerrain* pTerrain) : 
 		m_pTerrain( pTerrain )
@@ -82,6 +82,98 @@ namespace XSE
 		return XST_OK;
 	}
 
+	u32 GetId( i32 x, i32 y, u32 w, u32 h )
+	{
+		x = (x<0? 0 : (x>=w)? w-1 : x);
+		y = (y<0? 0 : (y>=h)? h-1 : y);
+		return XST_ARRAY_2D_TO_1D( x, y, w );
+	}
+
+#define CENTER 0
+#define LEFT 1
+#define RIGHT 2
+#define TOP 3
+#define BOTTOM 4
+
+	void CalcTriangleNormal( Vec3* pvecOut, const Vec3& vecV1, const Vec3& vecV2, const Vec3& vecV3 )
+	{
+		const Vec3 vecU = vecV2 - vecV1;
+		const Vec3 vecV = vecV3 - vecV1;
+		pvecOut->x = ( vecU.y * vecV.z - vecU.z * vecV.y );
+		pvecOut->y = ( vecU.z * vecV.x - vecU.x * vecV.z );
+		pvecOut->z = ( vecU.x * vecV.y - vecU.y * vecV.x );
+	}
+
+	void CalcNormal(Vec3 aVertices[5], Vec3* pN)
+	{
+		/*Vec3 vecL = aVertices[LEFT] - aVertices[CENTER];
+		Vec3 vecR = aVertices[RIGHT] - aVertices[CENTER];
+		Vec3 vecT = aVertices[TOP] - aVertices[CENTER];
+		Vec3 vecB = aVertices[BOTTOM] - aVertices[CENTER];
+		
+		Vec3 vecNormalLT = vecL.Cross(vecT).Normalize();
+		Vec3 vecNormalRT = vecR.Cross(vecT).Normalize();
+		Vec3 vecNormalLB = vecL.Cross(vecB).Normalize();
+		Vec3 vecNormalRB = vecR.Cross(vecB).Normalize();
+
+		Vec3 vecAVGNormal = (vecNormalLT + vecNormalRT + vecNormalLB + vecNormalRB) / 4.0f;
+		vecAVGNormal.Normalize();*/
+		/*vecAVGNormal.x = ( vecNormalACB.x + vecNormalBCE.x + vecNormalECD.x + vecNormalDCA.x ) / 4.0f;
+		vecAVGNormal.x = ( vecNormalACB.x + vecNormalBCE.x + vecNormalECD.x + vecNormalDCA.x ) / 4.0f;
+		vecAVGNormal.x = ( vecNormalACB.x + vecNormalBCE.x + vecNormalECD.x + vecNormalDCA.x ) / 4.0f;*/
+		//pN->Set( vecAVGNormal );
+		Vec3 aNs[4];
+		CalcTriangleNormal( &aNs[0], aVertices[CENTER], aVertices[TOP], aVertices[LEFT] );
+		CalcTriangleNormal( &aNs[1], aVertices[CENTER], aVertices[RIGHT], aVertices[TOP] );
+		CalcTriangleNormal( &aNs[2], aVertices[CENTER], aVertices[BOTTOM], aVertices[RIGHT] );
+		CalcTriangleNormal( &aNs[3], aVertices[CENTER], aVertices[LEFT], aVertices[BOTTOM] );
+
+		pN->Set( aNs[0] + aNs[1] + aNs[2] + aNs[3] );
+		pN->Normalize();
+	}
+
+	i32 CalcVertexNormals(const xst_vector<Vec3>& vPositions, const CPoint& VertexCount, xst_vector<Vec3>* pvNormalsOut)
+	{
+		XSTSimpleProfiler();
+		xst_assert2( vPositions.size() == VertexCount.x * VertexCount.y );
+
+		pvNormalsOut->resize( vPositions.size(), Vec3::ZERO );
+		//xst_vector<u32> vTmp( vPositions.size() );
+
+		Vec3 avecVertices[5];
+
+		enum CORNER
+		{
+			TOP_LEFT,
+			TOP_RIGHT,
+			BOTTOM_LEFT,
+			BOTTOM_RIGHT
+		};
+
+		for( u32 y = 0; y < VertexCount.y; ++y )
+		{
+			for( u32 x = 0; x < VertexCount.x; ++x )
+			{
+				i32 ids[5]; 
+				ids[CENTER] = GetId( x, y, VertexCount.x, VertexCount.y );
+				ids[LEFT] = GetId( x-1, y, VertexCount.x, VertexCount.y );
+				ids[RIGHT] = GetId( x+1, y, VertexCount.x, VertexCount.y );
+				ids[TOP] = GetId( x, y-1, VertexCount.x, VertexCount.y );
+				ids[BOTTOM] = GetId( x, y+1, VertexCount.x, VertexCount.y );
+				
+				avecVertices[0] = vPositions[ ids[0] ];
+				avecVertices[1] = vPositions[ ids[1] ];
+				avecVertices[2] = vPositions[ ids[2] ];
+				avecVertices[3] = vPositions[ ids[3] ];
+				avecVertices[4] = vPositions[ ids[4] ];
+				Vec3 vecN;
+				CalcNormal(avecVertices, &vecN);
+				pvNormalsOut->at(ids[CENTER]) = vecN;
+			}
+		}
+		return XST_OK;
+	}
+
 	void CMipMapTerrainPage::CalcVertexPositions()
 	{
 		cu32 uImgWidth	= m_Info.pImg->GetWidth();
@@ -118,7 +210,7 @@ namespace XSE
 		xst_vector<Vec3> vNormals;
 		CalcVertexPositions( &vPositions );
 		if( !m_Info.pIB )
-			CalcVertexNormals( vPositions, &vNormals );
+			XSE::CalcVertexNormals( vPositions, m_Info.VertexCount, &vNormals );
 		else
 			vNormals.resize(vPositions.size(), Vec3::ZERO);
 #if (XSE_TERRAIN_NORMAL_DEBUG)
@@ -339,14 +431,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-	void CalcTriangleNormal( Vec3* pvecOut, const Vec3& vecV1, const Vec3& vecV2, const Vec3& vecV3 )
-	{
-		const Vec3 vecU = vecV2 - vecV1;
-		const Vec3 vecV = vecV3 - vecV1;
-		pvecOut->x = ( vecU.y * vecV.z - vecU.z * vecV.y );
-		pvecOut->y = ( vecU.z * vecV.x - vecU.x * vecV.z );
-		pvecOut->z = ( vecU.x * vecV.y - vecU.y * vecV.x );
-	}
+	
 
 	i32 CMipMapTerrainPage::CalcVertexNormals(const xst_vector<Vec3>& vPositions, xst_vector<Vec3>* pvNormalsOut)
 	{
@@ -381,7 +466,6 @@ namespace XSE
 				uIDs[ CORNER::BOTTOM_LEFT ] = XST_ARRAY_2D_TO_1D( x, y + 1, m_Info.VertexCount.x );
 
 				// Create quad
-				if( y % 2 == 0 )
 				{
 					uTmpIds[0] = uIDs[ CORNER::TOP_LEFT ];
 					uTmpIds[1] = uIDs[ CORNER::BOTTOM_LEFT ];
@@ -395,24 +479,6 @@ namespace XSE
 					avecTriLeft[ 1 ] = vPositions[ uTmpIds[1] ];  // bottom left
 					avecTriLeft[ 2 ] = vPositions[ uTmpIds[2] ]; // botton right
 					// Right triangle \|
-					avecTriRight[ 0 ] = vPositions[ uTmpIds[3] ]; // top left
-					avecTriRight[ 1 ] = vPositions[ uTmpIds[4] ]; // bottom right
-					avecTriRight[ 2 ] = vPositions[ uTmpIds[5] ]; // top right
-				}
-				else
-				{
-					uTmpIds[0] = uIDs[ CORNER::TOP_LEFT ];
-					uTmpIds[1] = uIDs[ CORNER::BOTTOM_LEFT ];
-					uTmpIds[2] = uIDs[ CORNER::TOP_RIGHT ];
-					uTmpIds[3] = uIDs[ CORNER::BOTTOM_LEFT ];
-					uTmpIds[4] = uIDs[ CORNER::BOTTOM_RIGHT ];
-					uTmpIds[5] = uIDs[ CORNER::TOP_RIGHT ];
-
-					// Left triangle |/.
-					avecTriLeft[ 0 ] = vPositions[ uTmpIds[0] ]; // top left
-					avecTriLeft[ 1 ] = vPositions[ uTmpIds[1] ];  // bottom left
-					avecTriLeft[ 2 ] = vPositions[ uTmpIds[2] ]; // botton right
-					// Right triangle /|
 					avecTriRight[ 0 ] = vPositions[ uTmpIds[3] ]; // top left
 					avecTriRight[ 1 ] = vPositions[ uTmpIds[4] ]; // bottom right
 					avecTriRight[ 2 ] = vPositions[ uTmpIds[5] ]; // top right
