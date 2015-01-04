@@ -38,7 +38,11 @@ namespace XSE
 										CResourceFileManager(XST::CFileManager* pFileMgr);
 			virtual						~CResourceFileManager();
 
-					i32					AddExtension(xst_castring& strExt, i32 iResourceType = XST::ResourceType::UNKNOWN, i32 iLoadingOrder = DEFAULT_ORDER, IResourceManager* pMgr = xst_null);
+					i32					AddExtension(xst_castring& strExt, i32 iResourceType, i32 iLoadingOrder, IResourceManager* pMgr);
+
+					i32					SetManager(i32 iResourceType, IResourceManager* pMgr);
+					i32					AddExtension(xst_castring& strExt, i32 iResourceType);
+					i32					SetLoadingOrder(i32 iResourceType, i32 iLoadingOrder = DEFAULT_ORDER);
 
 					i32					AddLocation(xst_castring& strDirectory, xst_castring& strGroupName, xst_castring& strLoaderName, bool bRecursive = false);
 

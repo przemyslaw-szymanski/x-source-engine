@@ -2,6 +2,22 @@
 
 namespace XSE
 {
+	xst_map<i32, IResourceManager*> g_mResTypeMgr;
+	xst_map<xst_castring, i32> g_mExtResType;
+	xst_map<i32, i32> g_mResTypeLoadingOrder;
+
+	IResourceManager* GetMgrByResType(i32 iResType)
+	{ return g_mResTypeMgr[ iResType ]; }
+
+	i32 GetResTypeByExt( xst_castring& strExt )
+	{ return g_mExtResType[ strExt ]; }
+
+	IResourceManager* GetMgrByExt( xst_castring& strExt )
+	{
+		i32 iResType = GetResTypeByExt( strExt );
+		return GetMgrByResType( iResType );
+	}
+
 	CResourceFileManager::CResourceFileManager(XST::CFileManager* pFileMgr)
 	{
 		m_pFileMgr = pFileMgr;//XST::CFileManager::GetSingletonPtr();
@@ -12,23 +28,32 @@ namespace XSE
 	{
 	}
 
+	i32	CResourceFileManager::SetManager( i32 iResourceType, IResourceManager* pMgr )
+	{
+		g_mResTypeMgr[ iResourceType ] = pMgr;
+		return XST_OK;
+	}
+					
+	i32	CResourceFileManager::AddExtension( xst_castring& strExt, i32 iResourceType )
+	{
+		g_mExtResType[ strExt ] = iResourceType;
+		return XST_OK;
+	}
+	
+	i32	CResourceFileManager::SetLoadingOrder( i32 iResourceType, i32 iLoadingOrder )
+	{
+		g_mResTypeLoadingOrder[ iResourceType ] = iLoadingOrder;
+		return XST_OK;
+	}
+
 	i32	CResourceFileManager::AddExtension(xst_castring& strExt, i32 iResourceType, i32 iLoadingOrder, IResourceManager* pMgr)
 	{
 		SExt Ext = { strExt, pMgr, iLoadingOrder };
-
-		//ExtList::iterator Itr = m_lExts.begin();
-
-		/*if( iLoadingOrder > (i32)m_lExts.size() || iLoadingOrder < 0 )
-		{
-			Itr = m_lExts.end();
-		}
-		else
-		{
-			for(i32 i = 0; i < iLoadingOrder; ++i, ++Itr);
-		}
-
-		m_lExts.insert( Itr, Ext );*/
 		m_aResTypes.push_back( Ext );
+
+		AddExtension( strExt, iResourceType );
+		SetLoadingOrder( iResourceType, iLoadingOrder );
+		SetManager( iResourceType, pMgr );
 
 		m_pFileMgr->AddFileExtension( strExt );
 

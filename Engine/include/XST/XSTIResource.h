@@ -42,6 +42,7 @@ namespace XST
 			SOUND,
 			TEXTURE,
 			MESH,
+			MODEL,
 			MATERIAL,
 			SHADER
 		};
