@@ -484,10 +484,18 @@ namespace XSE
 
 			g_aMatrices[ MatrixTypes::TRANSPOSED_PROJ ]			= XMMatrixTranspose( g_aMatrices[ MatrixTypes::PROJECTION ] );
 			g_aMatrices[ MatrixTypes::TRANSPOSED_VIEW ]			= XMMatrixTranspose( g_aMatrices[ MatrixTypes::VIEW ] );
-			g_aMatrices[ MatrixTypes::TRANSPOSED_WORLD ]		= XMMatrixTranspose( g_aMatrices[ MatrixTypes::WORLD ] );
+			//g_aMatrices[ MatrixTypes::TRANSPOSED_WORLD ]		= XMMatrixTranspose( g_aMatrices[ MatrixTypes::WORLD ] );
 			g_aMatrices[ MatrixTypes::TRANSPOSED_VIEW_PROJ ]	= XMMatrixTranspose( XMMatrixMultiply( g_aMatrices[ MatrixTypes::VIEW ], g_aMatrices[ MatrixTypes::PROJECTION ] ) );
 
 			m_pCurrentShaderSystem->UpdateFrameInputs();
+		}
+
+		static XMMATRIX InverseTranspose( CXMMATRIX M )
+		{
+			XMMATRIX A = M;
+			A.r[3] = XMVectorSet(0.0f,0.0f,0.0f,1.0f);
+			XMVECTOR det = XMMatrixDeterminant(A);
+			return XMMatrixTranspose(XMMatrixInverse(&det, A));
 		}
 
 		//EACH FRAME
@@ -498,12 +506,13 @@ namespace XSE
 
 			//Update constant buffers
 
-			g_aMatrices[ MatrixTypes::TRANSPOSED_PROJ ]			= XMMatrixTranspose( g_aMatrices[ MatrixTypes::PROJECTION ] );
-			g_aMatrices[ MatrixTypes::TRANSPOSED_VIEW ]			= XMMatrixTranspose( g_aMatrices[ MatrixTypes::VIEW ] );
-			g_aMatrices[ MatrixTypes::TRANSPOSED_WORLD ]		= XMMatrixTranspose( g_aMatrices[ MatrixTypes::WORLD ] );
-			g_aMatrices[ MatrixTypes::VIEW_PROJ ]				= XMMatrixMultiply( g_aMatrices[ MatrixTypes::VIEW ], g_aMatrices[ MatrixTypes::PROJECTION ] );
-			g_aMatrices[ MatrixTypes::TRANSPOSED_VIEW_PROJ ]	= XMMatrixTranspose( g_aMatrices[ MatrixTypes::VIEW_PROJ ] );
-			g_aMatrices[ MatrixTypes::INVERTED_VIEW_PROJ ]		= XMMatrixInverse( &g_vecDeterminant, g_aMatrices[ MatrixTypes::VIEW_PROJ ] );
+			g_aMatrices[ MatrixTypes::TRANSPOSED_PROJ ]				= XMMatrixTranspose( g_aMatrices[ MatrixTypes::PROJECTION ] );
+			g_aMatrices[ MatrixTypes::TRANSPOSED_VIEW ]				= XMMatrixTranspose( g_aMatrices[ MatrixTypes::VIEW ] );
+			//g_aMatrices[ MatrixTypes::TRANSPOSED_WORLD ]			= XMMatrixTranspose( g_aMatrices[ MatrixTypes::WORLD ] );
+			//g_aMatrices[ MatrixTypes::INVERTED_TRANSPOSED_WORLD]	= InverseTranspose( g_aMatrices[ MatrixTypes::WORLD ] );
+			g_aMatrices[ MatrixTypes::VIEW_PROJ ]					= XMMatrixMultiply( g_aMatrices[ MatrixTypes::VIEW ], g_aMatrices[ MatrixTypes::PROJECTION ] );
+			g_aMatrices[ MatrixTypes::TRANSPOSED_VIEW_PROJ ]		= XMMatrixTranspose( g_aMatrices[ MatrixTypes::VIEW_PROJ ] );
+			g_aMatrices[ MatrixTypes::INVERTED_VIEW_PROJ ]			= XMMatrixInverse( &g_vecDeterminant, g_aMatrices[ MatrixTypes::VIEW_PROJ ] );
 
 			m_pCurrentShaderSystem->UpdateFrameInputs();
 

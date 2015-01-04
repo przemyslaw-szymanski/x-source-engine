@@ -35,6 +35,7 @@ namespace XSE
 				{
 					DirectX::XMMATRIX	mtxWorld;
 					DirectX::XMMATRIX	mtxWorldViewProj;
+					DirectX::XMMATRIX	mtxWorldInvT; // world inverse transpose
 				};
 
 				struct SPSOncePerObject

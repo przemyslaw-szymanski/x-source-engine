@@ -64,6 +64,7 @@ namespace XSE
 				ss << "{" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_OBJ_WORLD ]					<< ";" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION ]	<< ";" << xst_endl;
+				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE ]	<< ";" << xst_endl;
 				ss << "}" << xst_endl;
 				g_strPerFrameCBuffer = ss.str();
 				return g_strPerFrameCBuffer;
@@ -244,10 +245,11 @@ namespace XSE
 
 		void CHLSLShaderSystem::UpdateFrameInputs()
 		{
-			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_PROJ,			&g_VSOncePerFrame.mtxProj );
-			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_VIEW,			&g_VSOncePerFrame.mtxView );
-			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_WORLD,		&g_VSOncePerFrame.mtxWorld );
-			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_VIEW_PROJ,	&g_VSOncePerFrame.mtxViewProj );
+			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_PROJ,				&g_VSOncePerFrame.mtxProj );
+			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_VIEW,				&g_VSOncePerFrame.mtxView );
+			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_WORLD,			&g_VSOncePerFrame.mtxWorld );
+			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_VIEW_PROJ,		&g_VSOncePerFrame.mtxViewProj );
+			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_VIEW_PROJ,		&g_VSOncePerFrame.mtxViewProj );
 			g_PSOncePerFrame.vecSceneAmbient = Vec4( 0.3f, 0.3f, 0.3f, 1.0f );
 
 			g_VSOncePerFrame.vecScreenSize.x = (f32)m_pRS->GetOptions().uiResolutionWidth;
@@ -265,6 +267,14 @@ namespace XSE
 			m_pRS->m_pDeviceContext->PSSetConstantBuffers( CB_PS_ONCE_PER_FRAME, 1, &m_apD3DConstantBuffers[ CB_PS_ONCE_PER_FRAME ] );
 		}
 
+		static DirectX::XMMATRIX InverseTranspose( DirectX::CXMMATRIX M )
+		{
+			DirectX::XMMATRIX A = M;
+			A.r[3] = DirectX::XMVectorSet(0.0f,0.0f,0.0f,1.0f);
+			DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(A);
+			return DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(&det, A));
+		}
+
 		//MULTIPLE PER FRAME
 		void CHLSLShaderSystem::UpdateObjectInputs()
 		{
@@ -273,8 +283,8 @@ namespace XSE
 			m_pRS->GetMatrix( MatrixTypes::WORLD,	&g_VSOncePerObj.mtxWorld );
 			m_pRS->GetMatrix( MatrixTypes::PROJECTION,	&mtxProj );
 			m_pRS->GetMatrix( MatrixTypes::VIEW,	&mtxView );
+			g_VSOncePerObj.mtxWorldInvT = InverseTranspose( g_VSOncePerObj.mtxWorld );
 			g_VSOncePerObj.mtxWorldViewProj = XMMatrixTranspose( XMMatrixMultiply( XMMatrixMultiply( g_VSOncePerObj.mtxWorld, mtxView ), mtxProj ) );
-			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_WORLD, &g_VSOncePerObj.mtxWorld );
 
 			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ CB_VS_ONCE_PER_OBJECT ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
 			xst_memcpy( g_MappedSubresource.pData, sizeof( SVSOncePerObject ), &g_VSOncePerObj, sizeof( SVSOncePerObject ) );

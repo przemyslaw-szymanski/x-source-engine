@@ -713,6 +713,15 @@ namespace XSE
 		return XST_OK;
 	}
 
+	Resources::IResourceLoader* IResourceManager::GetLoader(xst_castring& strFileExtension)
+	{
+		ul32 uId = XST::CHash::GetCRC( strFileExtension );
+		ResLoaderMap::iterator Itr = m_mLoaders.find( uId );
+		if( Itr == m_mLoaders.end() )
+			return xst_null;
+		return Itr->second;
+	}
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	IResourceManager2::IResourceManager2() : m_pMemoryMgr( xst_null ), m_pFileMgr( xst_null )

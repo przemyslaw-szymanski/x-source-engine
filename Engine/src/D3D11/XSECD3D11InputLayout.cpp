@@ -398,13 +398,13 @@ namespace XSE
 			g_strVS_IN += "\nstruct VS_IN {\n";
 			g_strVS_OUT += "\nstruct VS_OUT {\n";
 			
-			m_strVSCode += "$VS_IN\n$VS_OUT\nVS_OUT VS(VS_IN IN) {\nVS_OUT OUT;";
+			m_strVSCode += "[VS_IN]\n[VS_OUT]\nVS_OUT VS(VS_IN IN) {\nVS_OUT OUT;";
 
 			m_strPSCode.clear();
 			m_strPSCode.reserve( 1024 );
 			m_strPSCode += m_pRS->GetShaderSystem()->GetShaderCode( IShaderSystem::ShaderCodes::PER_FRAME_CBUFFER ) + "\n";
 			m_strPSCode += m_pRS->GetShaderSystem()->GetShaderCode( IShaderSystem::ShaderCodes::PER_OBJECT_CBUFFER ) + "\n";
-			m_strPSCode += "\n$VS_OUT\nfloat4 PS(VS_OUT IN) : COLOR {\nfloat4 C = float4(1,0.02,0.5,0);";
+			m_strPSCode += "\n[VS_OUT]\nfloat4 PS(VS_OUT IN) : COLOR {\nfloat4 C = float4(1,0.02,0.5,0);";
 
 			xst_astring strName = "";
 			//AddShaderInput( m_strVSCode, "POSITION", "float4", m_Elements.size() > 0 );
@@ -427,7 +427,7 @@ namespace XSE
 						ulOffset += GetPositionSize();
 						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "POSITION", "POSITION", "float4" );
 						g_strVS_OUT += "\nfloat3 pos : TEXCOORD0;";
-						m_strVSCode += "\nOUT.position = mul( IN.position, &WVP ); OUT.pos = IN.position.xyz;";
+						m_strVSCode += "\nOUT.position = mul( IN.position, [WVP] ); OUT.pos = mul(IN.position.xyz, [W]);";
 						strName += "Position";
 					}
 					break;
@@ -447,7 +447,7 @@ namespace XSE
 						m_aInputElements[ i + 0 ] = CreateInputElement( "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetNormalSize();
 						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "NORMAL", "float3" );
-						m_strVSCode += "\nOUT.normal=(mul((IN.normal),&W));";
+						m_strVSCode += "\nOUT.normal=(mul((IN.normal),[WINVT]));";
 						strName += "Normal";
 					}
 					break;
@@ -568,10 +568,11 @@ namespace XSE
 			g_strVS_OUT += "};\n";
 			//End shader build
 			m_strVSCode += "\nreturn OUT;\n}";
-			FindAndReplace( &m_strVSCode, "$VS_IN", g_strVS_IN );
-			FindAndReplace( &m_strVSCode, "$VS_OUT", g_strVS_OUT );
-			FindAndReplace( &m_strVSCode, "&WVP", IShaderSystem::GetConstantName( ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION ) );
-			FindAndReplace( &m_strVSCode, "&W", IShaderSystem::GetConstantName( ShaderConstants::MTX_OBJ_WORLD ) );
+			FindAndReplace( &m_strVSCode, "[VS_IN]", g_strVS_IN );
+			FindAndReplace( &m_strVSCode, "[VS_OUT]", g_strVS_OUT );
+			FindAndReplace( &m_strVSCode, "[WVP]", IShaderSystem::GetConstantName( ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION ) );
+			FindAndReplace( &m_strVSCode, "[W]", IShaderSystem::GetConstantName( ShaderConstants::MTX_OBJ_WORLD ) );
+			FindAndReplace( &m_strVSCode, "[WINVT]", IShaderSystem::GetConstantName( ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE ) );
 
 			if( this->m_aAvailableElements[ InputLayoutElementIds::COLOR ] )
 				m_strPSCode += "\nC=saturate(IN.color);";
@@ -581,7 +582,7 @@ namespace XSE
 				//m_strPSCode += "C.xyz = IN.normal; C.w=1;";
 
 			m_strPSCode += "\nreturn C;\n}";
-			FindAndReplace( &m_strPSCode, "$VS_OUT", g_strVS_OUT );
+			FindAndReplace( &m_strPSCode, "[VS_OUT]", g_strVS_OUT );
 			
 			lpcastr lpszText = m_strVSCode.data();
 			ul32 ulTextLen = m_strVSCode.length();

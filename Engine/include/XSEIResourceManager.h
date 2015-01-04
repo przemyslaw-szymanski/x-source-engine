@@ -121,7 +121,7 @@ namespace XSE
 			virtual i32				RegisterLoader(xst_castring& strFileExtension, Resources::IResourceLoader* pLoader);
 
 			virtual 
-			Resources::IResourceLoader*		GetLoader(xst_castring& strFileExtension) const;
+			Resources::IResourceLoader*		GetLoader(xst_castring& strFileExtension);
 
         protected:
 
