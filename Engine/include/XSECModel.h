@@ -116,6 +116,7 @@ namespace XSE
 	}//resources
 
 	typedef XST::TCObjectSmartPointer< Resources::CModel >	ModelPtr;
+	typedef XST::TCWeakPointer< Resources::CModel >	ModelWeakPtr;
 
 }//xse
 

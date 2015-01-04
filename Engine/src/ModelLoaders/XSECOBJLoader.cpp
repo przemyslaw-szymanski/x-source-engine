@@ -10,7 +10,7 @@ namespace XSE
 	{
 	}
 
-	i32 COBJLoader::LoadModel(Resources::CModel** ppOut, const XST::CBinaryData& Data)
+	i32 COBJLoader::LoadModel(Resources::CModel** ppOut, cu8* pData, cul32 uDataSize)
 	{
 		return XST_OK;
 	}

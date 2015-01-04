@@ -55,6 +55,8 @@ namespace XST
 				xst_fi	xst_castring	GetName() const
 										{ return m_strName; }
 
+						xst_astring		GetExtension() const;
+
 				xst_fi	bool			IsLoaded() const
 										{ return m_Data.IsLoaded(); }
 

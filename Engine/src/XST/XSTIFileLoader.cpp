@@ -42,6 +42,14 @@ namespace XST
 			m_ulCompSize = m_ulOffset = 0;
 		}
 
+		xst_astring CFile::GetExtension() const
+		{
+			u32 uPos = m_strName.find_last_of( "." );
+			if( uPos == xst_astring::npos )
+				return XST::StringUtil::EmptyAString;
+			return m_strName.substr( uPos + 1, m_strName.length() - uPos );
+		}
+
 		CDirectory::CDirectory(CDirectory* pParentDir, xst_castring& strName, xst_castring& strPath) : m_pParentDir( pParentDir ), m_strName( strName )
 		{
 			if( m_pParentDir && strPath.length() == 0 )

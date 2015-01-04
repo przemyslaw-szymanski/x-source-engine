@@ -16,7 +16,7 @@ namespace XSE
 
 				virtual i32				Init(xst_unknown pData) = 0;
 
-				virtual i32				Load(IResource** ppResOut, const XST::CBinaryData& Data) = 0;
+				virtual i32				Load(IResource** ppResOut, cu8* pData, cul32 uDataSize) = 0;
 
 				virtual void			Destroy(IResource* pRes) = 0;
 		};

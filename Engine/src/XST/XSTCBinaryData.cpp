@@ -64,6 +64,17 @@ namespace XST
 		return XST_OK;
 	}
 
+	i32 CBinaryData::MoveData(u8** ppData, cul32& uDataSize)
+	{
+		xst_assert( (*ppData) != xst_null, "(CBinaryData::GrabData) Data source must not be null" );
+		Delete();
+		m_pData = (*ppData);
+		m_ulCurrentSize = 0;
+		m_pCurrentPosition = m_pData;
+		m_ulCapacity = uDataSize;
+		(*ppData) = xst_null;
+	}
+
 	bool CBinaryData::IsEndOfBuffer() const
 	{
 		//return m_pCurrentPosition >= m_pData + m_ulCapacity;

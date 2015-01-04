@@ -30,6 +30,8 @@ namespace XST
 
 					i32				SetData(cu8* pData, cul32& ulDataSize);
 
+					i32				MoveData(u8** ppData, cul32& ulDataSize);
+
 					void			SetData(cu8& byValue);
 
 			xst_fi	u8*				GetData()

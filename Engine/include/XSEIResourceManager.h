@@ -31,7 +31,8 @@ namespace XSE
             typedef ResGroupMap::const_iterator                 ResGroupMapConstItr;
             typedef std::function< void ( ResourcePtr, GroupWeakPtr ) >   ResourceCallback;
             typedef std::function< void ( GroupWeakPtr ) >     GroupCallback;
-			typedef xst_map< ul32, Resources::IResourceLoader* >	ResLoaderMap;
+			typedef XST::TCSmartPointer< Resources::IResourceLoader* > LoaderPtr;
+			typedef xst_map< ul32, LoaderPtr >					ResLoaderMap;
 
         public:
 

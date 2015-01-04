@@ -12,7 +12,7 @@ namespace XSE
 							COBJLoader();
 			virtual			~COBJLoader();
 
-			virtual i32		LoadModel(Resources::CModel** ppOut, const XST::CBinaryData& Data) xst_implement;
+			virtual i32		LoadModel(Resources::CModel** ppOut, cu8* pData, cul32 uDataSize) xst_implement;
 	};
 } //xse
 

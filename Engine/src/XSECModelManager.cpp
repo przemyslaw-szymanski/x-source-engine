@@ -6,6 +6,8 @@
 #include "XSECSceneNode.h"
 #include "XSECSceneManager.h"
 #include "XSEIRenderSystem.h"
+#include "XSEIResourceLoader.h"
+#include "ModelLoaders\XSECOBJLoader.h"
 
 namespace XSE
 {
@@ -19,7 +21,24 @@ namespace XSE
 
 	CModelManager::~CModelManager()
 	{
-		
+	}
+
+	i32 CModelManager::Init()
+	{
+		XST_RET_FAIL( XSE::IResourceManager::Init() );
+
+		// Register loaders
+		this->RegisterLoader( "obj", xst_new COBJLoader() );
+	}
+
+	void CModelManager::Destroy()
+	{
+		//for( auto& Pair : this->m_mLoaders )
+		//{
+		//	xst_delete( Pair.second );
+		//}
+
+		IResourceManager::Destroy();
 	}
 
 	/*i32	CModelManager::_CreateMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator)
@@ -72,6 +91,25 @@ namespace XSE
 		pModel = xst_null;
 
 		return XST_OK;
+	}
+
+	ModelWeakPtr CModelManager::LoadModel(xst_castring& strFileName, xst_castring& strGroupName)
+	{
+		//ul32 uNameHash = this->_CalcHash( strFileName );
+		//ul32 uGroupHash = this->_CalcHash( strGroupName );
+		ModelWeakPtr pModel = CreateResource( strFileName, strGroupName );
+		if( pModel.IsValid() )
+			return pModel;
+		FilePtr pFile = m_pFileMgr->LoadFile( strFileName, strGroupName );
+		if( pFile.IsNull() )
+			return ModelWeakPtr();
+		pModel->_SetResourceFile( pFile );
+		if( XST_FAILED( PrepareResource( pModel ) ) )
+		{
+			DestroyResource( pModel );
+			return ModelWeakPtr();
+		}
+		return pModel;
 	}
 
 	ResourceWeakPtr CModelManager::CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName /* = XST::StringUtil::EmptyAString */, bool bFullClone /* = true */)
@@ -254,8 +292,18 @@ namespace XSE
 	i32	CModelManager::PrepareResource(ResourcePtr pRes)
 	{
 		ModelPtr pModel = pRes;
-
-		return 0;
+		FilePtr pFile = pModel->GetResourceFile();
+		if( pFile.IsValid() )
+		{
+			Resources::IResourceLoader* pLoader = GetLoader( pFile->GetExtension() );
+			if( !pLoader )
+			{
+				return XST_FAIL;
+			}
+			Resources::CModel* pMdl = pModel.GetPtr();
+			XST_RET_FAIL( pLoader->Load( (Resources::IResource**)&pMdl, pFile->GetData().GetData(), pFile->GetData().GetSize() ) );
+		}
+		return XST_OK;
 	}
 
 }//xse
