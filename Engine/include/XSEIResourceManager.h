@@ -7,6 +7,11 @@
 namespace XSE
 {
     class IResourceGroup;
+	
+	namespace Resources
+	{
+		class IResourceLoader;
+	}
 
     class XST_API IResourceManager
     {
@@ -26,6 +31,7 @@ namespace XSE
             typedef ResGroupMap::const_iterator                 ResGroupMapConstItr;
             typedef std::function< void ( ResourcePtr, GroupWeakPtr ) >   ResourceCallback;
             typedef std::function< void ( GroupWeakPtr ) >     GroupCallback;
+			typedef xst_map< ul32, Resources::IResourceLoader* >	ResLoaderMap;
 
         public:
 
@@ -112,6 +118,11 @@ namespace XSE
 
             virtual void                ForEachGroup(GroupCallback Callback);
 
+			virtual i32				RegisterLoader(xst_castring& strFileExtension, Resources::IResourceLoader* pLoader);
+
+			virtual 
+			Resources::IResourceLoader*		GetLoader(xst_castring& strFileExtension) const;
+
         protected:
 
             virtual Resources::IResource*   _CreateResource(xst_castring& strName, const ResourceHandle& ResHandle, GroupWeakPtr pGroup) = 0;
@@ -136,6 +147,7 @@ namespace XSE
 
             ResGroupMap         m_mGroups;
 			ResStack			m_sUnusedResources;
+			ResLoaderMap		m_mLoaders;
             xst_stringstream    m_ssTmpName;
             XST::IAllocator*    m_pMemoryMgr = xst_null;
             XST::CFileManager*	m_pFileMgr = xst_null;

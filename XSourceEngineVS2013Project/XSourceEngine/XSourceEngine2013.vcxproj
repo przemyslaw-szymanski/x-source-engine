@@ -73,6 +73,7 @@
     <ClInclude Include="..\..\Engine\include\XSEIKeyboard.h" />
     <ClInclude Include="..\..\Engine\include\XSEIKeyboardListener.h" />
     <ClInclude Include="..\..\Engine\include\XSEIMaterialReader.h" />
+    <ClInclude Include="..\..\Engine\include\XSEIModelLoader.h" />
     <ClInclude Include="..\..\Engine\include\XSEIMouse.h" />
     <ClInclude Include="..\..\Engine\include\XSEIMouseListener.h" />
     <ClInclude Include="..\..\Engine\include\XSEIPass.h" />
@@ -258,6 +259,7 @@
     <ClInclude Include="..\..\Engine\src\D3D9\XSECD3D9Viewport.h" />
     <ClInclude Include="..\..\Engine\src\DevILSystem\XSECDevILImage.h" />
     <ClInclude Include="..\..\Engine\src\DevILSystem\XSECDevILSystem.h" />
+    <ClInclude Include="..\..\Engine\src\ModelLoaders\XSECOBJLoader.h" />
     <ClInclude Include="..\..\Engine\src\ThirdParty\DevIL\config.h" />
     <ClInclude Include="..\..\Engine\src\ThirdParty\DevIL\devil_cpp_wrapper.hpp" />
     <ClInclude Include="..\..\Engine\src\ThirdParty\DevIL\devil_internal_exports.h" />
@@ -317,6 +319,7 @@
     <ClCompile Include="..\..\Engine\src\GUI\XSECGUIRenderer.cpp" />
     <ClCompile Include="..\..\Engine\src\GUI\XSECPanel.cpp" />
     <ClCompile Include="..\..\Engine\src\GUI\XSECWindow.cpp" />
+    <ClCompile Include="..\..\Engine\src\ModelLoaders\XSECOBJLoader.cpp" />
     <ClCompile Include="..\..\Engine\src\Win32\XSECWin32Keyboard.cpp" />
     <ClCompile Include="..\..\Engine\src\Win32\XSECWin32Mouse.cpp" />
     <ClCompile Include="..\..\Engine\src\Win32\XSECWin32RenderWindow.cpp" />

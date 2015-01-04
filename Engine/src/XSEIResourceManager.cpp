@@ -1,5 +1,5 @@
-#include "../include/XSEIResourceManager.h"
-
+#include "XSEIResourceManager.h"
+#include "XSTCHash.h"
 
 namespace XSE
 {
@@ -701,6 +701,16 @@ namespace XSE
 	bool IResourceManager::IsUnusedResourceAvailable()
 	{
 		return m_sUnusedResources.size() > 0;
+	}
+
+	i32 IResourceManager::RegisterLoader(xst_castring& strFileExtension, Resources::IResourceLoader* pLoader)
+	{
+		ul32 uId = XST::CHash::GetCRC( strFileExtension );
+		ResLoaderMap::iterator Itr = m_mLoaders.find( uId );
+		if( Itr == m_mLoaders.end() )
+			return XST_OK;
+		m_mLoaders.insert( ResLoaderMap::value_type( uId, pLoader ) );
+		return XST_OK;
 	}
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////

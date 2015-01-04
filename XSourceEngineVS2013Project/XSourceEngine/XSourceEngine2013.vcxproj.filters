@@ -69,6 +69,12 @@
     <Filter Include="include\XST\Impl">
       <UniqueIdentifier>{20559051-2a1d-4998-bca0-529b6082efd3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Interfaces">
+      <UniqueIdentifier>{6cfc0d89-9e13-4fb2-bd13-adf3d3323ae1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ModelLoaders">
+      <UniqueIdentifier>{cabfb7a0-ee82-4d44-937b-f0d8005afd7a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine\include\XST\mtrand.h">
@@ -897,6 +903,12 @@
     <ClInclude Include="..\..\Engine\include\XST\XSTCTaskGroup.h">
       <Filter>include\XST</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIModelLoader.h">
+      <Filter>include\Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\ModelLoaders\XSECOBJLoader.h">
+      <Filter>src\ModelLoaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine\dllmain.cpp">
@@ -1519,6 +1531,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine\src\XST\XSTCTaskGroup.cpp">
       <Filter>src\XST</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\ModelLoaders\XSECOBJLoader.cpp">
+      <Filter>src\ModelLoaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
