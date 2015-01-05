@@ -709,7 +709,7 @@ namespace XSE
 		ResLoaderMap::iterator Itr = m_mLoaders.find( uId );
 		if( Itr == m_mLoaders.end() )
 			return XST_OK;
-		m_mLoaders.insert( ResLoaderMap::value_type( uId, pLoader ) );
+		m_mLoaders.insert( uId, LoaderPtr( (Resources::IResourceLoader*)pLoader ) );
 		return XST_OK;
 	}
 
@@ -719,7 +719,7 @@ namespace XSE
 		ResLoaderMap::iterator Itr = m_mLoaders.find( uId );
 		if( Itr == m_mLoaders.end() )
 			return xst_null;
-		return Itr->second;
+		return Itr->second.GetPointer();
 	}
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
