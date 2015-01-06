@@ -73,6 +73,7 @@ namespace XST
 		m_pCurrentPosition = m_pData;
 		m_ulCapacity = uDataSize;
 		(*ppData) = xst_null;
+		return XST_OK;
 	}
 
 	bool CBinaryData::IsEndOfBuffer() const

@@ -145,7 +145,7 @@ namespace XST
 
 						TCSmartPointer(const TCSmartPointer& _Ptr) : m_pPtr( 0 )
                         {
-                            if( m_pPtr != &_Ptr.m_pPtr )
+                            if( m_pPtr != _Ptr.m_pPtr )
                             {
 								delete m_pPtr;
                             }
@@ -154,7 +154,7 @@ namespace XST
 
 						TCSmartPointer(TCSmartPointer&& _Ptr)
 						{
-							if( m_pPtr != &_Ptr.m_pPtr )
+							if( m_pPtr != _Ptr.m_pPtr )
                             {
                                 delete m_pPtr;
                             }

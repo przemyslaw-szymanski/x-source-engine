@@ -29,6 +29,7 @@ namespace XSE
 
 		// Register loaders
 		this->RegisterLoader( "obj", xst_new COBJLoader() );
+		return XST_OK;
 	}
 
 	void CModelManager::Destroy()
@@ -95,11 +96,12 @@ namespace XSE
 
 	ModelWeakPtr CModelManager::LoadModel(xst_castring& strFileName, xst_castring& strGroupName)
 	{
-		//ul32 uNameHash = this->_CalcHash( strFileName );
-		//ul32 uGroupHash = this->_CalcHash( strGroupName );
-		ModelWeakPtr pModel = CreateResource( strFileName, strGroupName );
+		Hash uNameHash = this->CalcHash( strFileName.c_str() );
+		Hash uGroupHash = this->CalcHash( strGroupName.c_str() );
+		ModelWeakPtr pModel = GetResource( uNameHash, uGroupHash );
 		if( pModel.IsValid() )
 			return pModel;
+		pModel = CreateResource( strFileName, strGroupName );
 		FilePtr pFile = m_pFileMgr->LoadFile( strFileName, strGroupName );
 		if( pFile.IsNull() )
 			return ModelWeakPtr();

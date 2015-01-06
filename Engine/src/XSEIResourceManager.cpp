@@ -703,13 +703,21 @@ namespace XSE
 		return m_sUnusedResources.size() > 0;
 	}
 
+	IResourceManager::Hash IResourceManager::CalcHash( lpcastr& strString ) const
+	{
+		return XST::CHash::GetCRC( strString );
+	}
+
 	i32 IResourceManager::RegisterLoader(xst_castring& strFileExtension, Resources::IResourceLoader* pLoader)
 	{
 		ul32 uId = XST::CHash::GetCRC( strFileExtension );
-		ResLoaderMap::iterator Itr = m_mLoaders.find( uId );
+		/*ResLoaderMap::iterator Itr = m_mLoaders.find( uId );
 		if( Itr == m_mLoaders.end() )
-			return XST_OK;
-		m_mLoaders.insert( uId, LoaderPtr( (Resources::IResourceLoader*)pLoader ) );
+		{
+			m_mLoaders.erase( Itr );
+		}*/
+		//m_mLoaders.insert( uId, LoaderPtr( (Resources::IResourceLoader*)pLoader ) );
+		m_mLoaders[uId] = LoaderPtr( pLoader );
 		return XST_OK;
 	}
 

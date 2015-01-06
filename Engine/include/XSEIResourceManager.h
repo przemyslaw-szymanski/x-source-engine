@@ -33,6 +33,7 @@ namespace XSE
             typedef std::function< void ( GroupWeakPtr ) >     GroupCallback;
 			typedef XST::TCSmartPointer< Resources::IResourceLoader > LoaderPtr;
 			typedef xst_map< ul32, LoaderPtr >					ResLoaderMap;
+			typedef ul32										Hash;
 
         public:
 
@@ -123,6 +124,8 @@ namespace XSE
 
 			virtual 
 			Resources::IResourceLoader*		GetLoader(xst_castring& strFileExtension);
+
+			virtual ResourceHandle		CalcHandle(lpcastr& strString) const;
 
         protected:
 
