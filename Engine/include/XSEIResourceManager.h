@@ -97,19 +97,20 @@ namespace XSE
 
 			virtual ResourceWeakPtr				CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName = XST::StringUtil::EmptyAString, bool bFullClone = true);
 
-        virtual	ResourceWeakPtr				LoadResource(xst_castring& strName, xst_castring& strGroupName = ALL_GROUPS);
+        virtual	ResourceWeakPtr				LoadResource(xst_castring& strName, xst_castring& strGroupName, bool bFullLoad = true);
 
-			virtual ResourceWeakPtr				LoadResource(xst_castring &strFileName, xst_castring& strResName, xst_castring &strGroupName);
+			virtual ResourceWeakPtr				LoadResource(xst_castring &strFileName, xst_castring& strResName, xst_castring &strGroupName, bool bFullLoad = true);
 
-			virtual i32						LoadResource(ResourcePtr pRes, xst_castring& strGroupName = ALL_GROUPS);
-			virtual i32						LoadResource(ResourcePtr pRes, xst_castring& strFileName, xst_castring& strGroupName);
+			virtual i32						LoadResource(ResourcePtr pRes, xst_castring& strGroupName, bool bFullLoad = true);
+			virtual i32						LoadResource(ResourcePtr pRes, xst_castring& strFileName, xst_castring& strGroupName, bool bFullLoad = true);
 
 			virtual ResourceWeakPtr				PrepareResource(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
             virtual ResourceWeakPtr				PrepareResource(xst_castring& strName, GroupWeakPtr pGroup);
-            virtual i32						PrepareResource(ResourcePtr pRes) { return XST_OK; };
+            virtual i32						PrepareResource(ResourceWeakPtr pRes) { return XST_OK; };
 
             ResourceWeakPtr				GetResource(xst_castring& strName, GroupWeakPtr pGroup);
             ResourceWeakPtr				GetResource(xst_castring& strName, xst_castring& strGroupName = ALL_GROUPS);
+			ResourceWeakPtr				GetResource(const ResourceHandle& ResHandle, const GroupHandle& GroupHandle);
 
             ResourceWeakPtr				GetOrCreateResource(xst_castring& strName, xst_castring& strGroupName = ALL_GROUPS, bool* pbCreatedOut = xst_null);
 			ResourceWeakPtr				GetOrCreateResource(xst_castring& strName, GroupWeakPtr pGroup, bool* pbCreatedOut = xst_null);
@@ -125,7 +126,7 @@ namespace XSE
 			virtual 
 			Resources::IResourceLoader*		GetLoader(xst_castring& strFileExtension);
 
-			virtual ResourceHandle		CalcHandle(lpcastr& strString) const;
+			virtual ResourceHandle		CalcHandle(lpcastr strString) const;
 
         protected:
 
@@ -207,7 +208,7 @@ namespace XSE
 			//virtual i32						LoadResource(ResourcePtr pRes);
 
 			virtual ResourcePtr				PrepareResource(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
-			virtual i32						PrepareResource(ResourcePtr pRes) = 0;
+			virtual i32						PrepareResource(ResourceWeakPtr pRes) = 0;
 
 			xst_fi	void					AddListener(Listener* pListener)
 											{ m_lListeners.push_back( pListener ); }

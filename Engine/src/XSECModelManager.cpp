@@ -94,10 +94,10 @@ namespace XSE
 		return XST_OK;
 	}
 
-	ModelWeakPtr CModelManager::LoadModel(xst_castring& strFileName, xst_castring& strGroupName)
+	/*ModelWeakPtr CModelManager::LoadModel(xst_castring& strFileName, xst_castring& strGroupName)
 	{
-		Hash uNameHash = this->CalcHash( strFileName.c_str() );
-		Hash uGroupHash = this->CalcHash( strGroupName.c_str() );
+		Hash uNameHash = this->CalcHandle( strFileName.c_str() );
+		Hash uGroupHash = this->CalcHandle( strGroupName.c_str() );
 		ModelWeakPtr pModel = GetResource( uNameHash, uGroupHash );
 		if( pModel.IsValid() )
 			return pModel;
@@ -112,7 +112,7 @@ namespace XSE
 			return ModelWeakPtr();
 		}
 		return pModel;
-	}
+	}*/
 
 	ResourceWeakPtr CModelManager::CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName /* = XST::StringUtil::EmptyAString */, bool bFullClone /* = true */)
 	{
@@ -291,8 +291,9 @@ namespace XSE
 		return pModel;
 	}
 
-	i32	CModelManager::PrepareResource(ResourcePtr pRes)
+	i32	CModelManager::PrepareResource(ResourceWeakPtr pRes)
 	{
+		xst_assert( pRes.IsValid(), "(CModelManager::PrepareResource) Resource pointer is invalid" );
 		ModelPtr pModel = pRes;
 		FilePtr pFile = pModel->GetResourceFile();
 		if( pFile.IsValid() )

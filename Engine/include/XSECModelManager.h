@@ -17,7 +17,7 @@ namespace XSE
 				i32						Init() xst_implement;
 				void					Destroy() xst_implement;
 
-				i32						PrepareResource(ResourcePtr pRes) xst_implement;
+				i32						PrepareResource(ResourceWeakPtr pRes) xst_implement;
 
 				ModelPtr				CreateModel(xst_castring& strName, xst_castring& strGroup = DEFAULT_GROUP);
 				ModelPtr				CreateModel(xst_castring& strName, BASIC_SHAPE eShape, IInputLayout* pLayout, xst_unknown pOptions = xst_null, xst_castring& strGroup = DEFAULT_GROUP);
@@ -28,7 +28,7 @@ namespace XSE
 				ModelPtr				CreateModel(xst_castring& strName, xst_castring& strMeshName, xst_castring& strModelGroup, xst_castring& strMeshGroup);
 				ModelPtr				CreateModel(CSceneManager* pSceneMgr, xst_castring& strName, xst_castring& strMeshName, xst_castring& strNodeName, xst_castring& strModelGroup, xst_castring& strMeshGroup);
 
-				ModelWeakPtr			LoadModel(xst_castring& strFileName, xst_castring& strGroupName = DEFAULT_GROUP);
+				//ModelWeakPtr			LoadModel(xst_castring& strFileName, xst_castring& strGroupName = DEFAULT_GROUP);
 
 				xst_fi i32				DestroyModel(xst_castring& strModelName, bool bDestroySceneNodeIfEmpty = true, xst_castring& strGroupName = ALL_GROUPS)
 										{ return DestroyModel( (ModelPtr)GetResource( strModelName, strGroupName ), bDestroySceneNodeIfEmpty, strGroupName ); }

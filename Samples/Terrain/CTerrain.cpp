@@ -161,7 +161,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
     xst_assert( pTerrain != xst_null, "(CTerrain::Init) Terrain sample creation failed. Engine error!!!" );
 	}
 
-	XSE::ModelPtr pSphere = XSE::CModelManager::GetSingleton().LoadModel("Data/untitled.obj");
+	XSE::ModelPtr pSphere = XSE::CModelManager::GetSingleton().LoadResource("untitled.obj", "Terrain");
 
 	return XSE::RESULT::OK;
 }

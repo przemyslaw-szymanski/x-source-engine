@@ -17,7 +17,7 @@ namespace XSE
 
 					LuaScriptPtr			LoadScript(xst_castring& strName, xst_castring& strGroupName, XST::CLuaApi* pApi = xst_null);
 
-					i32						PrepareResource(ResourcePtr pRes) xst_implement;
+					i32						PrepareResource(ResourceWeakPtr pRes) xst_implement;
 
 		protected:
 

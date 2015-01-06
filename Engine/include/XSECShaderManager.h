@@ -25,7 +25,7 @@ namespace XSE
 
                     i32						Init() xst_implement;
 
-					i32						PrepareResource(ResourcePtr pRes) xst_implement;
+					i32						PrepareResource(ResourceWeakPtr pRes) xst_implement;
 
 					VertexShaderPtr			CompileVertexShader(xst_castring& strName, xst_castring& strEntryPoint, xst_castring& strCode, xst_castring& strGroupName = DEFAULT_GROUP);
 

@@ -18,7 +18,7 @@ namespace XSE
 
                     i32					Init() xst_implement;
 
-					i32					PrepareResource(ResourcePtr pRes) xst_implement;
+					i32					PrepareResource(ResourceWeakPtr pRes) xst_implement;
 
 			xst_fi	void				SetDefaultMeshLODCount(u16 usCount)
 										{ m_usDefaultLODCount = usCount; }
