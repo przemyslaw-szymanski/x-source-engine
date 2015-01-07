@@ -304,7 +304,9 @@ namespace XSE
 				return XST_FAIL;
 			}
 			Resources::CModel* pMdl = pModel.GetPtr();
-			XST_RET_FAIL( pLoader->Load( (Resources::IResource**)&pMdl, pFile->GetData().GetData(), pFile->GetData().GetSize() ) );
+			cu8* pData = pFile->GetData().GetData();
+			ul32 uSize = pFile->GetData().GetSize();
+			XST_RET_FAIL( pLoader->Load( (Resources::IResource**)&pMdl, pData, uSize ) );
 		}
 		return XST_OK;
 	}

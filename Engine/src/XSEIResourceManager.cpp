@@ -1,18 +1,16 @@
 #include "XSEIResourceManager.h"
 #include "XSTCHash.h"
+#include "XSEIResourceLoader.h"
 
 namespace XSE
 {
-    xst_castring IResourceManager::ALL_GROUPS = "";
-	xst_castring IResourceManager::DEFAULT_GROUP = "Default";
-
-	xst_castring IResourceManager2::ALL_GROUPS = "";
-	xst_castring IResourceManager2::DEFAULT_GROUP = "Default";
+	xst_castring IResourceManager2::ALL_GROUPS = XST::ALL_GROUPS;
+	xst_castring IResourceManager2::DEFAULT_GROUP = XST::DEFAULT_GROUP;
 
 #define XSE_HASH(_string) XST::CHash::GetCRC( (_string).c_str(), (_string).length() )
 #define XSE_NULLRES ResourcePtr()
 
-    IResourceManager::GroupHandle g_DefaultGroupHandle = XSE_HASH( IResourceManager::DEFAULT_GROUP );
+    IResourceManager::GroupHandle g_DefaultGroupHandle = XSE_HASH( DEFAULT_GROUP );
 
 	namespace Resources
 	{
@@ -312,79 +310,39 @@ namespace XSE
 
     ResourceWeakPtr IResourceManager::LoadResource(xst_castring &strName, xst_castring &strGroupName, bool bFullLoad)
 	{
+		return LoadResource( strName, strName, strGroupName, bFullLoad );
+	}
+
+	ResourceWeakPtr IResourceManager::LoadResource(xst_castring &strFileName, xst_castring& strResName, xst_castring &strGroupName, bool bFullLoad)
+	{
 		xst_assert( m_pFileMgr, "(IResourceManager::LoadResource) File manager not created" );
 		
-		ResourceHandle ResHandle = CalcHandle( strName.c_str() );
-		GroupHandle GrHandle = CalcHandle( strGroupName.c_str() );
+		ResourceHandle ResHandle = CalcHandle( strResName.c_str(), strResName.length() );
+		GroupHandle GrHandle = CalcHandle( strGroupName.c_str(), strResName.length() );
 		ResourceWeakPtr pRes = GetResource( ResHandle, GrHandle );
 		if( pRes.IsValid() )
 		{
 			return pRes;
 		}
 
-		ResourcePtr pRes = CreateResource( strName, strGroupName );
-		if( pRes.IsNull() )
-		{
-			return XSE_NULLRES;
-		}
-
-		XST::FilePtr pFile = m_pFileMgr->LoadFile( strName, strGroupName );
-		if( pFile.IsNull() )
+		pRes = CreateResource( strResName, strGroupName );
+		if( LoadResource( pRes, strFileName, strGroupName, bFullLoad ) )
 		{
 			DestroyResource( pRes );
-			return XSE_NULLRES;
+			pRes = XSE_NULLRES;
 		}
-
-		pRes->_SetResourceFile( pFile );
-
-		if( XST_FAILED( PrepareResource( pRes ) ) )
-		{
-			DestroyResource( pRes );
-		}
-
 		return pRes;
 	}
 
-	ResourceWeakPtr IResourceManager::LoadResource(xst_castring &strFileName, xst_castring& strResName, xst_castring &strGroupName, bool bFullLoad)
+	i32	IResourceManager::LoadResource(ResourceWeakPtr pRes, xst_castring& strGroupName, bool bFullLoad)
 	{
-		xst_assert( m_pFileMgr, "File manager not created" );
-
-		ResourcePtr pRes = GetOrCreateResource( strResName, strGroupName );
-		if( pRes.IsNull() )
-		{
-			return XSE_NULLRES;
-		}
-
-		XST::FilePtr pFile;
-		if( strGroupName == ALL_GROUPS )
-		{
-			pFile = m_pFileMgr->LoadFile( strFileName );
-		}
-		else
-		{
-			pFile = m_pFileMgr->LoadFile( strFileName, strGroupName );
-		}
-
-		if( pFile.IsNull() )
-		{
-			return XSE_NULLRES;
-		}
-
-		pRes->m_pResourceFile = pFile;
-		pRes->_SetResourceFile( pFile );
-
-		return pRes;
+		return LoadResource( pRes, pRes->GetResourceName(), strGroupName, bFullLoad );
 	}
 
-	i32	IResourceManager::LoadResource(ResourcePtr pRes, xst_castring& strGroupName, bool bFullLoad)
-	{
-		return LoadResource( pRes, pRes->GetResourceName(), strGroupName );
-	}
-
-	i32	IResourceManager::LoadResource(ResourcePtr pRes, xst_castring& strFileName, xst_castring& strGroupName, bool bFullLoad)
+	i32	IResourceManager::LoadResource(ResourceWeakPtr pRes, xst_castring& strFileName, xst_castring& strGroupName, bool bFullLoad)
 	{
 		xst_assert( m_pFileMgr, "(IResourceManager::LoadResource) File manager not created" );
-		xst_assert2( pRes != xst_null );
+		xst_assert2( pRes.IsValid() );
 
 		if( pRes.IsNull() )
 		{
@@ -392,23 +350,27 @@ namespace XSE
 			return XST_FAIL;
 		}
 
-		XST::FilePtr pFile;
-		if( strGroupName == ALL_GROUPS )
-		{
-			pFile = m_pFileMgr->LoadFile( strFileName );
-		}
-		else
-		{
-			pFile = m_pFileMgr->LoadFile( strFileName, strGroupName );
-		}
-
-		if( pFile.IsNull() )
+		if( pRes.IsNull() )
 		{
 			return XST_FAIL;
 		}
 
-		pRes->m_pResourceFile = pFile;
+		XST::FilePtr pFile = m_pFileMgr->LoadFile( strFileName, strGroupName );
+		if( pFile.IsNull() )
+		{
+			DestroyResource( pRes );
+			return XST_FAIL;
+		}
+
 		pRes->_SetResourceFile( pFile );
+
+		if( bFullLoad )
+		{
+			if( XST_FAILED( PrepareResource( pRes ) ) )
+			{
+				return XST_FAIL;
+			}
+		}
 
 		return XST_OK;
 	}
@@ -715,31 +677,39 @@ namespace XSE
 		return m_sUnusedResources.size() > 0;
 	}
 
-	IResourceManager::Hash IResourceManager::CalcHash( lpcastr& strString ) const
+	IResourceManager::Hash IResourceManager::CalcHandle(lpcastr strString, u32 uLen) const
 	{
-		return XST::CHash::GetCRC( strString );
+		return XST::CHash::GetCRC( strString, uLen );
 	}
 
-	i32 IResourceManager::RegisterLoader(xst_castring& strFileExtension, Resources::IResourceLoader* pLoader)
+	i32 IResourceManager::RegisterLoader(xst_castring& strFileExtension, LoaderPtr pLoader)
 	{
 		ul32 uId = XST::CHash::GetCRC( strFileExtension );
-		/*ResLoaderMap::iterator Itr = m_mLoaders.find( uId );
-		if( Itr == m_mLoaders.end() )
+		ResLoaderMap::iterator Itr = m_mLoaders.find( uId );
+		if( Itr != m_mLoaders.end() )
 		{
-			m_mLoaders.erase( Itr );
-		}*/
-		//m_mLoaders.insert( uId, LoaderPtr( (Resources::IResourceLoader*)pLoader ) );
-		m_mLoaders[uId] = LoaderPtr( pLoader );
+			if( Itr->second && !Itr->second->IsManualDestroy() )
+			{
+				xst_delete( Itr->second );
+				m_mLoaders.erase( Itr );
+			}
+			else
+			{
+				XST_LOG_ERR( "Unable to register the resource loader. Resource loader for files: " << strFileExtension << " is already registered and is set for manual destroy" );
+				return XST_FAIL;
+			}
+		}
+		m_mLoaders[uId] = pLoader;
 		return XST_OK;
 	}
 
-	Resources::IResourceLoader* IResourceManager::GetLoader(xst_castring& strFileExtension)
+	IResourceManager::LoaderPtr IResourceManager::GetLoader(xst_castring& strFileExtension)
 	{
 		ul32 uId = XST::CHash::GetCRC( strFileExtension );
 		ResLoaderMap::iterator Itr = m_mLoaders.find( uId );
 		if( Itr == m_mLoaders.end() )
 			return xst_null;
-		return Itr->second.GetPointer();
+		return Itr->second;
 	}
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////

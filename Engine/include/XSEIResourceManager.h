@@ -18,9 +18,6 @@ namespace XSE
         friend class IResourceGroup;
         public:
 
-            static xst_castring IResourceManager::ALL_GROUPS;
-	        static xst_castring IResourceManager::DEFAULT_GROUP;
-
             typedef XST::TCObjectSmartPointer< IResourceGroup > GroupPtr;
             typedef XST::TCWeakPointer< IResourceGroup >        GroupWeakPtr;
             typedef IResourceGroup::ResourceHandle              ResourceHandle;
@@ -30,8 +27,8 @@ namespace XSE
             typedef ResGroupMap::iterator                       ResGroupMapItr;
             typedef ResGroupMap::const_iterator                 ResGroupMapConstItr;
             typedef std::function< void ( ResourcePtr, GroupWeakPtr ) >   ResourceCallback;
-            typedef std::function< void ( GroupWeakPtr ) >     GroupCallback;
-			typedef XST::TCSmartPointer< Resources::IResourceLoader > LoaderPtr;
+            typedef std::function< void ( GroupWeakPtr ) >		GroupCallback;
+			typedef Resources::IResourceLoader*					LoaderPtr;
 			typedef xst_map< ul32, LoaderPtr >					ResLoaderMap;
 			typedef ul32										Hash;
 
@@ -101,8 +98,8 @@ namespace XSE
 
 			virtual ResourceWeakPtr				LoadResource(xst_castring &strFileName, xst_castring& strResName, xst_castring &strGroupName, bool bFullLoad = true);
 
-			virtual i32						LoadResource(ResourcePtr pRes, xst_castring& strGroupName, bool bFullLoad = true);
-			virtual i32						LoadResource(ResourcePtr pRes, xst_castring& strFileName, xst_castring& strGroupName, bool bFullLoad = true);
+			virtual i32						LoadResource(ResourceWeakPtr pRes, xst_castring& strGroupName, bool bFullLoad = true);
+			virtual i32						LoadResource(ResourceWeakPtr pRes, xst_castring& strFileName, xst_castring& strGroupName, bool bFullLoad = true);
 
 			virtual ResourceWeakPtr				PrepareResource(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
             virtual ResourceWeakPtr				PrepareResource(xst_castring& strName, GroupWeakPtr pGroup);
@@ -121,12 +118,11 @@ namespace XSE
 
             virtual void                ForEachGroup(GroupCallback Callback);
 
-			virtual i32				RegisterLoader(xst_castring& strFileExtension, Resources::IResourceLoader* pLoader);
+			virtual i32				RegisterLoader(xst_castring& strFileExtension, LoaderPtr pLoader);
 
-			virtual 
-			Resources::IResourceLoader*		GetLoader(xst_castring& strFileExtension);
+			virtual LoaderPtr			GetLoader(xst_castring& strFileExtension);
 
-			virtual ResourceHandle		CalcHandle(lpcastr strString) const;
+			virtual ResourceHandle		CalcHandle(lpcastr strString, u32 uStringLength) const;
 
         protected:
 

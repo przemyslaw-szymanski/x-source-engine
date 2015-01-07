@@ -148,8 +148,8 @@ namespace XSE
 	typedef XST::Math::CQuaternion	Quaternion;
 	typedef Quaternion				Quat;
 
-	static xst_castring	ALL_GROUPS( "" );
-	static xst_castring DEFAULT_GROUP( "Default" );
+	static xst_castring	ALL_GROUPS( XST::ALL_GROUPS );
+	static xst_castring DEFAULT_GROUP( XST::DEFAULT_GROUP );
 
 	template<class _T_>
 	using ConstPtr = _T_ *const;

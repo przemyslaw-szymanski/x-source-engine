@@ -99,7 +99,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32	CImageManager::PrepareResource(ResourcePtr pRes)
+	i32	CImageManager::PrepareResource(ResourceWeakPtr pRes)
 	{
 		if( XST_FAILED( m_pImgSystem->PrepareResource( pRes.GetPtr() ) ) )
 		{

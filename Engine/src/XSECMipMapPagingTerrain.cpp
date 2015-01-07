@@ -420,15 +420,15 @@ namespace XSE
 				return XST_FAIL;
 			}
 
-			if( XST_FAILED( pImgMgr->LoadResource( pImg ) ) )
+			if( XST_FAILED( pImgMgr->LoadResource( pImg, ALL_GROUPS ) ) ) // search this file in all prepared resource groups
 			{
 				return XST_FAIL;
 			}
 
-			if( XST_FAILED( pImgMgr->PrepareResource( pImg ) ) )
+			/*if( XST_FAILED( pImgMgr->PrepareResource( pImg ) ) )
 			{
 				return XST_FAIL;
-			}
+			}*/
 
 			ImageWeakPtr pImpImg = pImgMgr->CloneResource( pImg, vHeightmapNames[ i ] + "/impostor" );
 

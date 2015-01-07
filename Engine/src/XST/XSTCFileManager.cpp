@@ -431,14 +431,27 @@ namespace XST
 			return pNull;
 		}
 
-		GroupPtr pGr = this->GetGroup( strGroupName );
-		if( pGr.IsNull() )
+		GroupPtr pGr;
+		Resource File;
+
+		if( strGroupName != ALL_GROUPS )
 		{
-			XST_LOG_ERR( "No group: " << strGroupName << " found in the file manager" );
-			return pNull;
+			pGr = this->GetGroup( strGroupName );
+			if( pGr.IsNull() )
+			{
+				XST_LOG_ERR( "No group: " << strGroupName << " found in the file manager" );
+				return pNull;
+			}
+		}
+		else
+		{
+			for(_GroupIterator Itr = this->m_mResources.begin(); Itr != this->m_mResources.end(); ++Itr)
+			{
+				pGr = Itr->second;
+				break;
+			}
 		}
 
-		Resource File;
 		if( pGr->GetResource( strFileName, &File ) != RESULT::OK )
 		{
 			XST_LOG_ERR( "File: " << strFileName << " does not exists in group: " << strGroupName << " in the file manager" );
@@ -466,7 +479,7 @@ namespace XST
 		return File.pFile;
 	}
 
-	Resources::FilePtr CFileManager::LoadFile(xst_castring &strFileName)
+	/*Resources::FilePtr CFileManager::LoadFile(xst_castring &strFileName)
 	{
 		Resources::FilePtr pNull;
 
@@ -513,7 +526,7 @@ namespace XST
 		}
 
 		return File.pFile;
-	}
+	}*/
 
 	i32 CFileManager::RemoveListener(XST::IFileListener *pListener)
 	{

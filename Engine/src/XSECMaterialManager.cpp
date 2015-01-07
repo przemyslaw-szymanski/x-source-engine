@@ -162,7 +162,7 @@ namespace XSE
 		return Itr->second;
 	}
 
-	i32	CMaterialManager::PrepareResource(ResourcePtr pRes)
+	i32	CMaterialManager::PrepareResource(ResourceWeakPtr pRes)
 	{
 		MaterialPtr pMat = pRes;
 		//Compile material

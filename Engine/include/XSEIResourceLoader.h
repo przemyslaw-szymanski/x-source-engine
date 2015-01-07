@@ -19,6 +19,8 @@ namespace XSE
 				virtual i32				Load(IResource** ppResOut, cu8* pData, cul32 uDataSize) = 0;
 
 				virtual void			Destroy(IResource* pRes) = 0;
+
+				virtual bool			IsManualDestroy() const { return false; }
 		};
 	}//resources
 }//xse

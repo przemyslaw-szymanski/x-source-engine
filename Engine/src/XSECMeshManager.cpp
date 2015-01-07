@@ -146,7 +146,7 @@ namespace XSE
 		return pNewRes;
 	}
 
-	i32	CMeshManager::PrepareResource(ResourcePtr pRes)
+	i32	CMeshManager::PrepareResource(ResourceWeakPtr pRes)
 	{
 		Resources::CMesh* pMesh = (Resources::CMesh*)pRes.GetPtr();
 		//Resource has to be in created state

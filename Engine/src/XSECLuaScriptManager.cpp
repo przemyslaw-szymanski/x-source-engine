@@ -35,7 +35,7 @@ namespace XSE
 		return RESULT::OK;
 	}*/
 
-	i32	CLuaScriptManager::PrepareResource(ResourcePtr pRes)
+	i32	CLuaScriptManager::PrepareResource(ResourceWeakPtr pRes)
 	{
 		//Compile script
 		LuaScriptPtr pScript = pRes;

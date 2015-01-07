@@ -266,7 +266,7 @@ namespace XSE
 		return GetDefaultVertexShader( pMesh->GetInputLayout() );
 	}
 
-	i32	CShaderManager::PrepareResource(ResourcePtr pRes)
+	i32	CShaderManager::PrepareResource(ResourceWeakPtr pRes)
 	{
 		xst_assert( pRes != xst_null, "(CShaderManager::PrepareResource)" );
 		if( XST_FAILED( m_pRenderSystem->GetShaderSystem()->PrepareResource( pRes.GetPtr() ) ) )

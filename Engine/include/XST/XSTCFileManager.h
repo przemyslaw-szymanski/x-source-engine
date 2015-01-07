@@ -11,7 +11,9 @@
 
 namespace XST
 {
-	
+	static const xst_astring ALL_GROUPS( "" );
+	static const xst_astring DEFAULT_GROUP( "DEFAULT" );
+
 	class CFileLocation
 	{
 		public:
@@ -113,9 +115,9 @@ namespace XST
 
 					i32					RegisterLoader(xst_castring& strLoaderName, IFileLoader* pLoader);
 
-					Resources::FilePtr	LoadFile(xst_castring& strFileName, xst_castring& strGroupName);
+					Resources::FilePtr	LoadFile(xst_castring& strFileName, xst_castring& strGroupName = ALL_GROUPS);
 
-					Resources::FilePtr	LoadFile(xst_castring& strFileName);
+					//Resources::FilePtr	LoadFile(xst_castring& strFileName);
 
 					Resources::FilePtr	LoadFile(xst_castring& strDirPath, xst_castring& strFileName, xst_castring& strLoaderName, xst_castring& strGroupName);
 
