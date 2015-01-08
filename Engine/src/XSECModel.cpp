@@ -124,11 +124,13 @@ namespace XSE
 
 		u32 CModel::AddMesh(MeshPtr pMesh, bool bSetModelMaterial)
 		{ 
-			this->m_pSceneNode->AddObject( pMesh );
+			if( this->m_pSceneNode )
+				this->m_pSceneNode->AddObject( pMesh );
 			m_vMeshes.push_back( pMesh ); 
 			this->CalcObjectBoundingVolume();
 			CObject::IsDirty( true );
-			this->m_pSceneNode->ReorganizeObject( this );
+			if( this->m_pSceneNode )
+				this->m_pSceneNode->ReorganizeObject( this );
 			if( bSetModelMaterial )
 				pMesh->SetMaterial( this->m_pMaterial );
 			if( pMesh->IsVisible() )
@@ -163,11 +165,6 @@ namespace XSE
 		void CModel::SetPosition(cf32& fX, cf32& fY, cf32& fZ)
 		{
 			IRenderableObject::SetPosition( fX, fY, fZ );
-			for( MeshPtr& pMesh : m_vMeshes )
-			{
-				// Meshes need to be updated
-				pMesh->IsDirty( true );
-			}
 		}
 
 	}//resources

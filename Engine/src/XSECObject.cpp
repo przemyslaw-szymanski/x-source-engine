@@ -41,6 +41,30 @@ namespace XSE
 		IsDirty( false );
 	}
 
+	i32 CObject::_SetParent(CObject* pParent)
+	{
+		m_pParent = pParent;
+	}
+
+	Vec3 CObject::CalcWorldPosition() const
+	{
+		Vec3 v;
+		CalcWorldPosition( &v );
+		return v;
+	}
+
+	void CObject::CalcWorldPosition(Vec3* pOut) const
+	{
+		xst_assert2( pOut );
+		if( m_pParent )
+		{
+			Vec3 v;
+			m_pParent->CalcWorldPosition( &v );
+			pOut->Set( v.x + m_vecPosition.x, v.y + m_vecPosition.y, v.z + m_vecPosition.z );
+		}
+		pOut->Set( m_vecPosition );
+	}
+
 	const Vec3&	CObject::MoveObject(cf32& fDistance, const Vec3& vecDirection)
 	{
 		m_vecPosition.AddAssign( vecDirection.Mul( fDistance ) );

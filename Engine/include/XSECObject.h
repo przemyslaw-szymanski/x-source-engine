@@ -173,6 +173,11 @@ namespace XSE
 											#endif
 										}
 
+			virtual i32					_SetParent(CObject* pParent);
+
+			virtual Vec3				CalcWorldPosition() const;
+			virtual void				CalcWorldPosition(Vec3* pOut) const;;
+
 		protected:
 
 			virtual void				_OnObjectDisable(cu32& uDisableReason) {}

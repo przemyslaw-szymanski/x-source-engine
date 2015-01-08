@@ -214,8 +214,7 @@ namespace XSE
 			switch( pObject->GetObjectType() )
 			{
 				case OT::TERRAIN:
-				case OT::MESH: 
-				case OT::MODEL: 
+				case OT::MESH:  
 				case OT::STATIC_GEOMETRY: 
 				case OT::DYNAMIC_GEOMETRY:
 				case OT::DYNAMIC_GEOMETRY_GROUP:
@@ -223,7 +222,17 @@ namespace XSE
 				{
 					IRenderableObject* pObj = (IRenderableObject*)pObject;
 					pObj->_SetSceneNode( this );
-					m_pSceneMgr->_AddObject( pObj );
+					m_pSceneMgr->_AddObject( pObj ); // add object to other rendering subsystems like render queue, partitioning, etc
+				}
+				break;
+
+				case OT::MODEL:
+				{
+					CModel* pModel = (CModel*)pObject;
+					for( auto& pMesh : pModel->GetMeshes() )
+					{
+						this->AddObject( pMesh );
+					}
 				}
 				break;
 

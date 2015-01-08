@@ -97,7 +97,7 @@ namespace XSE
 
 			virtual void				SetRenderableObject(const IRenderableObject* pOther);
 
-			virtual void				CalcWorldPosition(Vec3* pVecOut);
+			virtual void				CalcWorldPosition(Vec3* pVecOut) const xst_implement;
 
 			virtual void				CalcWorldScale(Vec3* pVecOut);
 

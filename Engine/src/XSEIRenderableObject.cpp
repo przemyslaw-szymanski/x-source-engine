@@ -51,7 +51,7 @@ namespace XSE
 		}
 	}*/
 
-	void IRenderableObject::CalcWorldPosition(Vec3* pVecOut)
+	void IRenderableObject::CalcWorldPosition(Vec3* pVecOut) const
 	{
 		xst_assert( pVecOut != xst_null, "(IRenderableObject::CalcWorldPosition)" );
 		xst_assert( m_pSceneNode != xst_null, "(IRenderableObject::CalcWorldPosition) Scene node is not set" );

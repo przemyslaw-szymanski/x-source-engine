@@ -24,6 +24,8 @@ namespace XSE
 				typedef MeshVec::iterator			MeshVecItr;
 				typedef MeshVec::const_iterator		MeshVecConstItr;
 
+				using IRenderableObject::SetPosition;
+
 			public:
 
 										CModel(IRenderSystem* pRS, IInputLayout* pIL, XSE_IRESOURCE_DECL_PARAMS_DEFAULT);
