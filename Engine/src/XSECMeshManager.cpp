@@ -189,6 +189,12 @@ namespace XSE
 		return CreateMesh( strName, pIL, strGroupName );
 	}
 
+	MeshWeakPtr CMeshManager::CreateMesh(xst_castring& strName, const IResourceManager::GroupHandle& GrHandle)
+	{
+		GroupWeakPtr pGr = this->GetGroup( GrHandle );
+		return CreateMesh( strName, pGr );
+	}
+
 	MeshWeakPtr	CMeshManager::CreateMesh(xst_castring& strName, ul32 ulInputLayout, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName)
 	{
 		IInputLayout* pIL = m_pRenderSystem->GetInputLayout( ulInputLayout );

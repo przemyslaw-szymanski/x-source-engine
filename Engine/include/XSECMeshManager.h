@@ -26,7 +26,7 @@ namespace XSE
 			xst_fi	u16					GetDefaultMeshLODCount() const
 										{ return m_usDefaultLODCount; }
 
-					MeshWeakPtr 		CreateMesh(xst_castring& strName, ul32 ulInputLayout, xst_castring& strGroupName = DEFAULT_GROUP);
+					MeshWeakPtr 		CreateMesh(xst_castring& strName, ul32 ulInputLayout, xst_castring& strGroupName);
 
 					MeshWeakPtr			CreateMesh(xst_castring& strName, ul32 ulInputLayout, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName = DEFAULT_GROUP);
 
@@ -35,6 +35,8 @@ namespace XSE
 					MeshWeakPtr			CreateMesh(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
 
 					MeshWeakPtr			CreateMesh(xst_castring& strName, GroupWeakPtr pResourceGroup);
+
+					MeshWeakPtr			CreateMesh(xst_castring& strName, const IResourceManager::GroupHandle& GrHandle);
 
 					MeshWeakPtr			CreateMesh(xst_castring& strName, const IInputLayout* pIL, BASIC_SHAPE eShape, xst_unknown pShapeOptions, xst_castring& strGroupName = DEFAULT_GROUP);
 

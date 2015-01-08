@@ -145,6 +145,7 @@ namespace XSE
 				//xst_fi	xst_castring&		GetObjectName() const
 				//							{ return this->_GetDbgName(); /*this->m_strResourceName;*/ }
 
+						void				SetInputLayout(cul32& ulInputLayout);
 						void				SetInputLayout(const IInputLayout* pIL);
 
 			protected:

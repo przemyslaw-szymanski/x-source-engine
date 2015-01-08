@@ -178,6 +178,11 @@ namespace XSE
 			this->m_pSceneNode = pNode;
 		}
 
+		void CMesh::SetInputLayout(cul32& ulIL)
+		{
+			SetInputLayout( this->m_pRS->GetInputLayout( ulIL ) );
+		}
+
 		void CMesh::SetInputLayout(const IInputLayout* pIL)
 		{
 			xst_assert( pIL != xst_null, "(CMesh::SetInputLayout)" );
