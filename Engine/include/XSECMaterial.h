@@ -26,6 +26,7 @@ namespace XSE
 			public:
 
 				typedef XST::TCObjectSmartPointer< CMaterial >	MaterialPtr;
+				typedef XST::TCWeakPointer< CMaterial >			MaterialWeakPtr;
 				typedef XST::TCIterator< TechniqueVector >		TechniqueIterator;
 				typedef XST::TCConstIterator< TechniqueVector >	ConstTechniqueIterator;
 
@@ -92,8 +93,10 @@ namespace XSE
 
 	}//resources
 
-	typedef Resources::CMaterial::MaterialPtr	MaterialPtr;
+	typedef Resources::CMaterial::MaterialPtr		MaterialPtr;
 	XST_TEMPLATE_CLASS XST::TCObjectSmartPointer< Resources::CMaterial >;
+	typedef Resources::CMaterial::MaterialWeakPtr	MaterialWeakPtr;
+	XST_TEMPLATE_CLASS XST::TCWeakPointer< Resources::CMaterial >;
 
 }//xse
 

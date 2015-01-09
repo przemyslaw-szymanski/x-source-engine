@@ -176,10 +176,10 @@ namespace XSE
 
 	protected:
 
-		        void			_AddObject(IRenderableObject* pObj);
+		        void			_AddObject(IRenderableObject* pObj, bool bAddToScenePartition);
 
-		xst_fi	void			_AddObject(const RenderableObjectPtr& pObj)
-		                        { _AddObject( pObj.GetPtr() ); }
+		xst_fi	void			_AddObject(const RenderableObjectPtr& pObj, bool bAddToScenePartition)
+		                        { _AddObject( pObj.GetPtr(), bAddToScenePartition ); }
 
 
 	protected:

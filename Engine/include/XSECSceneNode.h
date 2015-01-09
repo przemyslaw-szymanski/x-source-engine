@@ -66,10 +66,10 @@ namespace XSE
 					i32				DestroyChildNode(cul32& ulHandle);
 					i32				DestroyChildNode(CSceneNode* pNode);
 
-					i32				AddObject(RenderableObjectWeakPtr pObject);
-					i32				AddUniqueObject(RenderableObjectWeakPtr pObject);
-					i32				AddObject(CObject* pObject);
-					i32				AddUniqueObject(CObject* pObject);
+					i32				AddObject(RenderableObjectWeakPtr pObject, bool bAddToScenePartition = true);
+					i32				AddUniqueObject(RenderableObjectWeakPtr pObject, bool bAddToScenePartition = true);
+					i32				AddObject(CObject* pObject, bool bAddToScenePartition = true);
+					i32				AddUniqueObject(CObject* pObject, bool bAddToScenePartition = true);
 
 					i32				RemoveObject(RenderableObjectWeakPtr pObject);
 					i32				RemoveObject(const CObject* pObject);

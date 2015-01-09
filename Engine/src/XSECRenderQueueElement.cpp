@@ -69,7 +69,7 @@ namespace XSE
 				//const Vec3& vecPos = pObj->GetPosition();
 				//pRenderSystem->SetTranslation( vecPos );
 				//const Mtx4& mtxTransform = pObj->GetTransformMatrix();
-				pObj->GetTransformMatrix( &mtxTmp );
+				pObj->GetWorldTransformMatrix( &mtxTmp );
 				pRenderSystem->SetMatrix( MatrixTypes::WORLD, mtxTmp );
 				//Update shaders input
 				pRenderSystem->UpdateObjectInputs();

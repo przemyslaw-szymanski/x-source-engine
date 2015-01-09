@@ -304,10 +304,11 @@ namespace XSE
 		return m_mCameras;
 	}
 
-	void CSceneManager::_AddObject(IRenderableObject* pObj)
+	void CSceneManager::_AddObject(IRenderableObject* pObj, bool bAddToScenePartition)
 	{ 
 		m_pDbg->_CreateObjectAABBMesh( pObj );
-		m_pScenePartitionSystem->AddObject( pObj );
+		if( bAddToScenePartition )
+			m_pScenePartitionSystem->AddObject( pObj );
 		m_RenderQueue.AddObject( pObj ); 
 	}
 

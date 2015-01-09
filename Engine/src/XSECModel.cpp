@@ -35,20 +35,8 @@ namespace XSE
 
 		void CModel::SetMesh(MeshPtr pMesh, cu32& uiId)
 		{
-			//xst_assert( m_pMesh != xst_null, "Mesh is already set" );
-
-			//m_pMesh = pMesh;
-			////Mesh material has higher priority so set model material to mesh material
-			//if( m_pMesh->GetMaterial() )
-			//{
-			//	m_pMaterial = m_pMesh->GetMaterial();
-			//}
-			//else
-			//if( m_pMaterial )
-			//{
-			//	m_pMesh->SetMaterial( m_pMaterial );
-			//}
 			m_vMeshes[ uiId ] = pMesh;
+			pMesh->_SetParent( this );
 			if( m_vMeshes[ uiId ]->m_pMaterial == xst_null )
 			{
 				m_vMeshes[ uiId ]->m_pMaterial = this->m_pMaterial;
@@ -67,6 +55,7 @@ namespace XSE
 		void CModel::_SetSceneNode(CSceneNode* pNode)
 		{
 			this->m_pSceneNode = pNode;
+			this->_SetParent( pNode );
 			xst_stl_foreach( m_MeshItr, m_vMeshes )
 			{
 				(*m_MeshItr)->_SetSceneNode( pNode );
@@ -127,6 +116,7 @@ namespace XSE
 			if( this->m_pSceneNode )
 				this->m_pSceneNode->AddObject( pMesh );
 			m_vMeshes.push_back( pMesh ); 
+			pMesh->_SetParent( this );
 			this->CalcObjectBoundingVolume();
 			CObject::IsDirty( true );
 			if( this->m_pSceneNode )

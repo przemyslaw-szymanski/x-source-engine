@@ -139,6 +139,9 @@ namespace XSE
 
 						void				SetMaterial(MaterialPtr pMat, cu32& uiLODId = 0);
 
+						MaterialWeakPtr		GetMaterial() xst_implement;
+				const	MaterialWeakPtr		GetMaterial() const xst_implement;
+
 				xst_fi	bool				IsGeometryIndexed() const
 											{ return m_bIndexedGeometry; }
 

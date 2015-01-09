@@ -64,10 +64,11 @@ namespace XSE
 
 			virtual i32					SetMaterial(xst_castring& strMatName, xst_castring& strMatGroup = ALL_GROUPS);
 
-			virtual MaterialPtr			GetMaterial()
+			virtual MaterialWeakPtr		GetMaterial()
 										{ return m_pMaterial; }
 
-			virtual const MaterialPtr&	GetMaterial() const
+			virtual 
+			const	MaterialWeakPtr		GetMaterial() const
 										{ return m_pMaterial; }
 
 			virtual 
@@ -86,18 +87,20 @@ namespace XSE
 			xst_fi	const CSceneNode*	GetSceneNode() const
 										{ return m_pSceneNode; }
 
-			virtual xst_fi const Mtx4&	GetTransformMatrix() const
+			virtual xst_fi const Mtx4&	GetWorldTransformMatrix() const
 										{ return m_mtxTransform; }
 
-			virtual xst_fi void			GetTransformMatrix(Mtx4* pMtxOut) const
+			virtual xst_fi void			GetWorldTransformMatrix(Mtx4* pMtxOut) const
 										{ pMtxOut->Set( m_mtxTransform ); }
 
-			virtual xst_fi void			SetTransformMatrix(const Mtx4& mtxTransform)
+			virtual xst_fi void			SetWorldTransformMatrix(const Mtx4& mtxTransform)
 										{ m_mtxTransform = mtxTransform; }
+
+			virtual void				CalcLocalTransformMatrix(Mtx4* pOut) const;
 
 			virtual void				SetRenderableObject(const IRenderableObject* pOther);
 
-			virtual void				CalcWorldPosition(Vec3* pVecOut) const xst_implement;
+			//virtual void				CalcWorldPosition(Vec3* pVecOut) const xst_implement;
 
 			virtual void				CalcWorldScale(Vec3* pVecOut);
 

@@ -44,6 +44,8 @@ namespace XSE
 	i32 CObject::_SetParent(CObject* pParent)
 	{
 		m_pParent = pParent;
+		m_bObjDirty = true;
+		return XST_OK;
 	}
 
 	Vec3 CObject::CalcWorldPosition() const
@@ -52,7 +54,7 @@ namespace XSE
 		CalcWorldPosition( &v );
 		return v;
 	}
-
+	// TODO: not efficient. Optimize world position calculation or store in a member
 	void CObject::CalcWorldPosition(Vec3* pOut) const
 	{
 		xst_assert2( pOut );
@@ -62,7 +64,10 @@ namespace XSE
 			m_pParent->CalcWorldPosition( &v );
 			pOut->Set( v.x + m_vecPosition.x, v.y + m_vecPosition.y, v.z + m_vecPosition.z );
 		}
-		pOut->Set( m_vecPosition );
+		else
+		{
+			pOut->Set( m_vecPosition );
+		}
 	}
 
 	const Vec3&	CObject::MoveObject(cf32& fDistance, const Vec3& vecDirection)

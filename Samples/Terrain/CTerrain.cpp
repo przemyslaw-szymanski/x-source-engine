@@ -115,6 +115,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	this->m_pViewCam->SetAngleX( 0.397f );
 	this->m_pViewCam->SetAngleY( 0.580f );
 	this->m_pViewCam->SetPosition( 32, 100, 24 );
+	//this->m_pViewCam->SetPosition( 0, 0, 0 );
 	this->m_pViewCam->SetSpeed( 200, 1.1f, 1.1f );
 	this->m_pViewCam->SetFar( 1000 );
 
@@ -162,8 +163,8 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	}
 
 	XSE::ModelPtr pSphere = XSE::CModelManager::GetSingleton().LoadResource("untitled.obj", XSE::ALL_GROUPS);
-	pSphere->SetPosition(m_pDbgCam->GetPosition());
-	m_pSceneMgr->GetRootNode()->CreateChildNode()->AddObject( pSphere );
+	//pSphere->SetPosition(m_pDbgCam->GetPosition());
+	m_pSceneMgr->GetRootNode()->CreateChildNode()->AddObject( pSphere, false );
 	return XSE::RESULT::OK;
 }
 

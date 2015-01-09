@@ -198,7 +198,7 @@ namespace XSE
 			//XSTSimpleProfiler2( "CreateResource::AddResourceByHandle" ); //~0.0007sec in debug
 		if( pGroup->AddResource( Handle, pRes ) != RESULT::OK )
 		{
-			XST_LOG_ERR( "Resource: " << strName << " already exists in group: " << pGroup->GetName() );
+			XST_LOG_ERR( "Resource: '" << strName << "' already exists in group: " << pGroup->GetName() );
 			return XSE_NULLRES;
 		}
 		}

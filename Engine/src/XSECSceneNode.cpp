@@ -207,7 +207,7 @@ namespace XSE
 		return xst_null;
 	}
 
-	i32 CSceneNode::AddUniqueObject(CObject* pObject)
+	i32 CSceneNode::AddUniqueObject(CObject* pObject, bool bAddToScenePartition)
 	{
 		xst_assert( pObject != xst_null, "(CSceneNode::AddUniqueObject)" );
 		{
@@ -222,7 +222,7 @@ namespace XSE
 				{
 					IRenderableObject* pObj = (IRenderableObject*)pObject;
 					pObj->_SetSceneNode( this );
-					m_pSceneMgr->_AddObject( pObj ); // add object to other rendering subsystems like render queue, partitioning, etc
+					m_pSceneMgr->_AddObject( pObj, bAddToScenePartition ); // add object to other rendering subsystems like render queue, partitioning, etc
 				}
 				break;
 
@@ -231,7 +231,7 @@ namespace XSE
 					CModel* pModel = (CModel*)pObject;
 					for( auto& pMesh : pModel->GetMeshes() )
 					{
-						this->AddObject( pMesh );
+						this->AddObject( pMesh, bAddToScenePartition );
 					}
 				}
 				break;
@@ -262,7 +262,7 @@ namespace XSE
 		return XST_FAIL;
 	}
 
-	i32 CSceneNode::AddObject(CObject* pObject)
+	i32 CSceneNode::AddObject(CObject* pObject, bool bAddToScenePartition)
 	{
 		xst_assert( pObject, "" );
 		ObjectMap::iterator Itr;
@@ -275,24 +275,24 @@ namespace XSE
 			return XST_FAIL;
 		}
 
-		return AddUniqueObject( pObject );
+		return AddUniqueObject( pObject , bAddToScenePartition);
 	}
 
-	i32 CSceneNode::AddObject(RenderableObjectWeakPtr pObject)
+	i32 CSceneNode::AddObject(RenderableObjectWeakPtr pObject, bool bAddToScenePartition)
 	{
 		xst_assert( !pObject.IsNull(), "(CSceneNode::AddObject) Object is nul" );
 
 		IRenderableObject* pObj = pObject.GetPtr();
 		pObj->_SetSceneNode( this );
-		return AddObject( pObj );
+		return AddObject( pObj, bAddToScenePartition );
 	}
 
-	i32 CSceneNode::AddUniqueObject(RenderableObjectWeakPtr pObject)
+	i32 CSceneNode::AddUniqueObject(RenderableObjectWeakPtr pObject, bool bAddToScenePartition)
 	{
 		xst_assert( !pObject.IsNull(), "(CSceneNode::AddObject) Object is nul" );
 		IRenderableObject* pObj = pObject.GetPtr();
 		pObj->_SetSceneNode( this );
-		return AddUniqueObject( pObj );
+		return AddUniqueObject( pObj, bAddToScenePartition );
 	}
 
 	i32 CSceneNode::RemoveObject(RenderableObjectWeakPtr pObject)

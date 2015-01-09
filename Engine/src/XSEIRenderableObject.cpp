@@ -10,7 +10,7 @@ namespace XSE
 	{
 		this->SetObject( pOther );
 		this->SetMaterial( pOther->GetMaterial() );
-		this->SetTransformMatrix( pOther->GetTransformMatrix() );
+		this->SetWorldTransformMatrix( pOther->GetWorldTransformMatrix() );
 		this->SetVisible( pOther->IsVisible() );
 		this->m_pInputLayout = pOther->GetInputLayout();
 		this->m_bManualRendering = pOther->IsManualRendering();
@@ -51,12 +51,26 @@ namespace XSE
 		}
 	}*/
 
-	void IRenderableObject::CalcWorldPosition(Vec3* pVecOut) const
+	//void IRenderableObject::CalcWorldPosition(Vec3* pVecOut) const
+	//{
+	//	xst_assert( pVecOut != xst_null, "(IRenderableObject::CalcWorldPosition)" );
+	//	xst_assert( m_pSceneNode != xst_null, "(IRenderableObject::CalcWorldPosition) Scene node is not set" );
+	//	pVecOut->Set( m_pSceneNode->GetPosition() );
+	//	pVecOut->AddAssign( this->m_vecPosition );
+	//}
+
+	// TODO: performance issue. Optimize matrices usage.
+	void CalcTransformMatrix(Mtx4* pMtxOut, const Vec3& vecPos, const Vec3& vecScale, const Vec3& vecRotation)
 	{
-		xst_assert( pVecOut != xst_null, "(IRenderableObject::CalcWorldPosition)" );
-		xst_assert( m_pSceneNode != xst_null, "(IRenderableObject::CalcWorldPosition) Scene node is not set" );
-		pVecOut->Set( m_pSceneNode->GetPosition() );
-		pVecOut->AddAssign( this->m_vecPosition );
+		Mtx4 mtxTranslate( Mtx4::IDENTITY ), mtxScale ( Mtx4::IDENTITY ), mtxRotation( Mtx4::IDENTITY );
+		mtxTranslate.Translate( vecPos.x, vecPos.y, vecPos.z );
+
+		pMtxOut->Set( mtxScale * ( mtxTranslate * mtxRotation ) );
+	}
+
+	void IRenderableObject::CalcLocalTransformMatrix(Mtx4* pMtxOut) const
+	{
+
 	}
 
 	void IRenderableObject::CalcWorldScale(Vec3* pVecOut)
@@ -76,10 +90,10 @@ namespace XSE
 		// TODO: implement
 		pVecOut->Set( 0.0f );
 	}
-
+	// TODO: performance issue. Optimize matrices usage.
 	void IRenderableObject::Update(cf32& fTime)
 	{
-		if( !this->IsDirty() )
+		if( !this->m_bObjDirty )
 			return;
 		CObject::Update( fTime );
 		//this->m_bDbgObject = false;
@@ -88,22 +102,16 @@ namespace XSE
 		IRenderSystem* pRS = m_pSceneNode->GetSceneManager()->GetRenderSystem();
 
 		m_mtxTransform.Identity();
-
-		Mtx4 mtxTranslate( Mtx4::IDENTITY ), mtxScale ( Mtx4::IDENTITY ), mtxRotation( Mtx4::IDENTITY );
-		//pRS->SetTranslation( this->m_vecPosition.x, this->m_vecPosition.y, this->m_vecPosition.z );
-		//pRS->GetMatrix( MatrixTypes::WORLD, &mtxTransform );
 		CalcWorldPosition( &m_vecWorldPosition );
-		mtxTranslate.Translate( m_vecWorldPosition.x, m_vecWorldPosition.y, m_vecWorldPosition.z );
-		//pRS->SetTranslation( &mtxTranslate, m_vecWorldPosition );
 		Vec3 vecScale, vecRotate;
-		// TODO: implmenet scale and rotation
+		//Mtx4 mtxTranslate( Mtx4::IDENTITY ), mtxScale ( Mtx4::IDENTITY ), mtxRotation( Mtx4::IDENTITY );
+		//mtxTranslate.Translate( m_vecWorldPosition.x, m_vecWorldPosition.y, m_vecWorldPosition.z );
+		//// TODO: implmenet scale and rotation
+		//m_mtxTransform = mtxScale * ( mtxTranslate * mtxRotation );
+		CalcTransformMatrix( &m_mtxTransform, m_vecWorldPosition, m_vecScale, Vec3::ZERO );
 		f32 fAngle;
 		Vec3 vecAxis;
 		this->GetOrientation().ToAngleAxis( &fAngle, &vecAxis );
-		//pRS->SetRotation( &mtxRotation, fAngle, vecAxis );
-		//pRS->SetScale( &mtxScale, this->GetScale() );
-		
-		m_mtxTransform = mtxScale * ( mtxTranslate * mtxRotation );
 	}
 
 }//xse

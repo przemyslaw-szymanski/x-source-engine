@@ -86,6 +86,16 @@ namespace XSE
 			IRenderableObject::Update(fTime);
 		}
 
+		MaterialWeakPtr CMesh::GetMaterial()
+		{
+			return m_pCurrentLOD->pMaterial;
+		}
+
+		const MaterialWeakPtr CMesh::GetMaterial() const
+		{
+			return m_pCurrentLOD->pMaterial;
+		}
+
 		VertexBufferPtr CMesh::CreateVertexBuffer(bool bUseAsDefault)
 		{
 			IVertexBuffer* pVB;

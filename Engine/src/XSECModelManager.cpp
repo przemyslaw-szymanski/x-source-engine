@@ -134,7 +134,7 @@ namespace XSE
 			}
 
 			pModel->SetMaterial( pSrcModel->GetMaterial() );
-			pModel->SetTransformMatrix( pSrcModel->GetTransformMatrix() );
+			pModel->SetWorldTransformMatrix( pSrcModel->GetWorldTransformMatrix() );
 			pModel->SetVisible( pSrcModel->IsVisible() );
 			pModel->Disable( pSrcModel->GetDisableReason() );
 			pModel->SetMaxLOD( pSrcModel->GetMaxLOD() );
