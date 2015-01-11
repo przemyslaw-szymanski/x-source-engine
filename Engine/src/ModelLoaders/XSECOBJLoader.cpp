@@ -41,7 +41,7 @@ namespace XSE
 		char* strLine = strtok( strData, "\n" );
 		while( strLine )
 		{
-			printf( "%s\n", strLine );
+			//printf( "%s\n", strLine );
 			if( strLine[ 0 ] == 'v' && strLine[1] == ' ' )
 			{
 				Vec3 vecData;
@@ -101,6 +101,16 @@ namespace XSE
 					vUVIds.push_back( auTIds[ 0 ] - 1 );
 					vUVIds.push_back( auTIds[ 0 ] - 1 );
 				}
+				else if( !vVertices.empty() )
+				{
+					sscanf( strLine, "f %d %d %d",
+						&auVIds[ 0 ],
+						&auVIds[ 1 ],
+						&auVIds[ 2 ] );
+					vVertexIds.push_back( auVIds[ 0 ] - 1 );
+					vVertexIds.push_back( auVIds[ 1 ] - 1 );
+					vVertexIds.push_back( auVIds[ 2 ] - 1 );
+				}
 
 				SFace Face;
 				Face.uVertexIds[ 0 ] = auVIds[ 0 ]-1;
@@ -134,10 +144,9 @@ namespace XSE
 			}
 		}
 
-		//http://www.braynzarsoft.net/index.php?p=D3D11OBJMODEL
 		Resources::CModel* pModel = *ppOut;
 		CMeshManager* pMeshMgr = CMeshManager::GetSingletonPtr();
-		u32 uIL = ILEs::POSITION | ILEs::COLOR;
+		u32 uIL = ILEs::POSITION;
 		
 		if( !vNormals.empty() )
 			uIL |= ILEs::NORMAL;
@@ -151,7 +160,7 @@ namespace XSE
 			return XST_FAIL;
 		
 		pMesh->SetInputLayout( uIL );
-		pMesh->SetMaterial( CMaterialManager::GetSingletonPtr()->GetDefaultMaterial( pMesh.GetPtr() ) );
+		pModel->SetMaterial( CMaterialManager::GetSingletonPtr()->GetDefaultMaterial( pMesh.GetPtr() ) );
 
 		IVertexBuffer* pVB = pMesh->CreateVertexBuffer().GetPtr();
 		IIndexBuffer* pIB = pMesh->CreateIndexBuffer().GetPtr();
@@ -169,7 +178,6 @@ namespace XSE
 		for( ul32 v = 0; v < vVertices.size(); ++v )
 		{
 			VData.SetPosition( v, vVertices[ v ] );
-			VData.SetColor( v, CColor::BLUE.ToVector4() );
 			if( !vNormals2.empty() )
 			{
 				VData.SetNormal( v, vNormals2[ v ] );

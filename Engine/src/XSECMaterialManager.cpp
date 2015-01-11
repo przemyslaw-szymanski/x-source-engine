@@ -24,6 +24,7 @@ namespace XSE
 	xst_map< u32, MaterialPtr > g_mDefaultMaterials;
 
 	xst_castring CMaterialManager::DEFAULT_MAT_COLOR( "xse_default_color" );
+	static xst_castring DEFAULT_TECHNIQUE( "xse_default_tech" );
 
 	using namespace Resources;
 
@@ -47,7 +48,7 @@ namespace XSE
 	{
 		m_mDefaultMaterials.clear();
 		//Create default material
-		Resources::CMaterial* pMat = xst_new Resources::CMaterial( m_pShaderMgr, this, 0, "xse_default_material", XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED, xst_null );
+		Resources::CMaterial* pMat = xst_new Resources::CMaterial( m_pShaderMgr, DEFAULT_TECHNIQUE, this, 0, "xse_default_material", XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED, xst_null );
 		if( pMat == xst_null )
 		{
 			return XST_FAIL;
@@ -66,7 +67,7 @@ namespace XSE
 		{
 			MaterialPtr pMat = CreateMaterial( DEFAULT_MAT_COLOR, DEFAULT_GROUP );
             // TODO: implement case if pMat is null if( !pMat ) this resource should be destroyed
-			IPass* pPass = pMat->GetCurrentTechnique()->GetPass( 0 );
+			IPass* pPass = pMat->CreateTechnique( DEFAULT_TECHNIQUE, true )->GetPass( 0 );
 			strShaderCode = m_pShaderMgr->CreateShaderCode( ILEs::POSITION | ILEs::COLOR, ILEs::POSITION | ILEs::COLOR );	
 			VertexShaderPtr pVS = m_pShaderMgr->CompileVertexShader( "xse_default_color_vs", "vs_main", strShaderCode );
 			PixelShaderPtr pPS = m_pShaderMgr->CompilePixelShader( "xse_default_color_ps", "ps_main", strShaderCode );
@@ -140,7 +141,7 @@ namespace XSE
 		{
 			//Create new material	
 			u32 uILHandle = pIL->GetHandle();
-			CMaterial* pMat = xst_new CMaterial( m_pShaderMgr, this, uILHandle, XST::StringUtil::EmptyAString, XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED, xst_null );
+			CMaterial* pMat = xst_new CMaterial( m_pShaderMgr, DEFAULT_TECHNIQUE, this, uILHandle, XST::StringUtil::EmptyAString, XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED, xst_null );
 			if( pMat == xst_null )
 			{
 				XST_LOG_ERR( "Default material creation failed. Memory error." );

@@ -83,9 +83,9 @@ namespace XST
 				return RESULT::FAILED;
 			}
 
-			xst_i i32		ReadAll(u8* _pDataBuffer, cul32& _ulBufferSize)
+			xst_i i32		ReadAll(u8** ppDataBufferOut, cul32& ulBufferSize)
 			{
-				if( IFile::ReadAll( m_hFile, _pDataBuffer, _ulBufferSize ) )
+				if( IFile::ReadAll( m_hFile, ppDataBufferOut, ulBufferSize ) )
 				{
 					return RESULT::OK;
 				}
@@ -160,45 +160,47 @@ namespace XST
 				return ReadSimpleData<f64>();
 			}
 
-			xst_fi	void	ReadChars(ch8* _pOutBuffer, const u32& _uiBytesToRead)
+			xst_fi	void	ReadChars(ch8** ppOutBuffer, const u32& uiBytesToRead)
 			{
+				xst_assert2( ppOutBuffer && *ppOutBuffer );
 				m_bIsError = false;
 				if( m_pData )
 				{
 					xst_assert(m_pData != 0, "File not read");
-					xst_memcpy(_pOutBuffer, _uiBytesToRead, m_pCurrPtr, _uiBytesToRead);
-					m_pCurrPtr += _uiBytesToRead;
-					_pOutBuffer[ _uiBytesToRead ] = 0;
+					xst_memcpy( ppOutBuffer, uiBytesToRead, m_pCurrPtr, uiBytesToRead );
+					m_pCurrPtr += uiBytesToRead;
+					(*ppOutBuffer)[ uiBytesToRead ] = 0;
 				}
 				else
 				{
-					if( !IFile::Read( m_hFile, _pOutBuffer, _uiBytesToRead ) )
+					if( !IFile::Read( m_hFile, (u8**)ppOutBuffer, uiBytesToRead ) )
 					{
 						m_bIsError = true;
 					}
-					_pOutBuffer[ _uiBytesToRead ] = 0;
-					m_pCurrPtr += _uiBytesToRead;
+					(*ppOutBuffer)[ uiBytesToRead ] = 0;
+					m_pCurrPtr += uiBytesToRead;
 				}
 			}
 
-			xst_fi	void	ReadBytes(u8* _pOutBuffer, const u32& _uiBytesToRead)
+			xst_fi	void	ReadBytes(u8** ppOutBuffer, const u32& uiBytesToRead)
 			{
+				xst_assert2( ppOutBuffer && *ppOutBuffer );
 				m_bIsError = false;
 				if( m_pData )
 				{
 					xst_assert(m_pData != 0, "File not read");
-					xst_memcpy(_pOutBuffer, _uiBytesToRead, m_pCurrPtr, _uiBytesToRead);
-					m_pCurrPtr += _uiBytesToRead;
-					_pOutBuffer[ _uiBytesToRead ] = 0;
+					xst_memcpy( ppOutBuffer, uiBytesToRead, m_pCurrPtr, uiBytesToRead );
+					m_pCurrPtr += uiBytesToRead;
+					(*ppOutBuffer)[ uiBytesToRead ] = 0;
 				}
 				else
 				{
-					if( !IFile::Read( m_hFile, _pOutBuffer, _uiBytesToRead ) )
+					if( !IFile::Read( m_hFile, ppOutBuffer, uiBytesToRead ) )
 					{
 						m_bIsError = true;
 					}
-					_pOutBuffer[ _uiBytesToRead ] = 0;
-					m_pCurrPtr += _uiBytesToRead;
+					(*ppOutBuffer)[ uiBytesToRead ] = 0;
+					m_pCurrPtr += uiBytesToRead;
 				}
 			}
 
@@ -214,7 +216,9 @@ namespace XST
 						return "";
 
 					ch8* pBuff = (ch8*)xst_malloc( iSize + 1 );
-					ReadChars( pBuff, iSize );
+					if( !pBuff )
+						return XST::StringUtil::EmptyAString;
+					ReadChars( &pBuff, iSize );
 					xst_astring s( pBuff, iSize );
 					xst_free( pBuff );
 					return s;
@@ -226,8 +230,9 @@ namespace XST
 						return "";
 
 					ch8* pBuff = (ch8*)xst_malloc( iSize + 1 );
-
-					if( !IFile::Read( m_hFile, pBuff, iSize ) )
+					if( !pBuff )
+						return XST::StringUtil::EmptyAString;
+					if( !IFile::Read( m_hFile, (u8**)&pBuff, iSize ) )
 					{
 						m_bIsError = true;
 					}
@@ -285,7 +290,7 @@ namespace XST
 				else
 				{
 					_T_ tValue;
-					if( !IFile::Read( m_hFile, &tValue, sizeof( _T_ ) ) )
+					if( !IFile::Read( m_hFile, (u8**)&tValue, sizeof( _T_ ) ) )
 					{
 						m_bIsError = true;
 					}

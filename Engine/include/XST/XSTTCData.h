@@ -21,58 +21,65 @@ namespace XST
 
 		public:
 
-							TCData() : m_pData(0), m_ulSize(0)
+							TCData() : m_pData(0), m_ulSize(0), m_bNullTerminated(false)
 							{}
 
-							~TCData()
+				virtual		~TCData()
 							{
 								Delete();
 							}
 
-		xst_fi	DataPtr		GetData() const
+		xst_fi	DataPtr		GetPointer()
 							{ return m_pData; }
 
-		xst_fi	void		SetData(DataPtr _pData, ul32 _ulSize)
-							{ Delete(); m_pData = _pData; m_ulSize = _ulSize; }
+		xst_fi	
+		const	DataPtr		GetPointer() const
+							{ return m_pData; }
+
+		xst_fi	bool		Copy(const DataPtr pSrc, ul32 ulSize, bool bIsNullTerminated)
+							{ 
+								if( !Create( pSrc, ulSize, bIsNullTerminated ) )
+									return false;
+							}
+
+		xst_fi	void		Move(DataPtr* ppData, ul32 uSize, bool bIsNullTerminated)
+							{
+								Delete();
+								m_pData = (*ppData);
+								m_ulSize = uSize;
+								m_bNullTerminated = bIsNullTerminated;
+								Terminate();
+								(*ppData) = xst_null;
+							}
 
 				bool		Create(ul32 _ulSize, bool _bNullTerminated = false)
 							{
 								xst_assert(_ulSize > 0, "Size should be greater than 0");
 								Delete();
 								m_pData = xst_new DataType[ _ulSize + (i32)_bNullTerminated ];
-								m_ulSize = _ulSize;
-								m_bNullTerminated = _bNullTerminated;
-								if( m_bNullTerminated )
-									m_pData[ _ulSize ] = 0;
 								if(!m_pData)
 									return false;
-
+								m_ulSize = _ulSize;
+								m_bNullTerminated = _bNullTerminated;
+								Terminate();
 								return true;
 							}
 
 				bool		Create(const xst_unknown pSrcData, cul32& ulSrcDataSize, bool bNullTerminated = false)
 							{
 								if( !Create( ulSrcDataSize, bNullTerminated ) )
-								{
 									return false;
-								}
-
 								xst_memcpy( m_pData, ulSrcDataSize, pSrcData, ulSrcDataSize );
 								Terminate();
-								
 								return true;
 							}
 
 				bool		Create(const _T_* pSrcData, cul32& ulSrcDataSize, bool bNullTerminated = false)
 							{
 								if( !Create( ulSrcDataSize, bNullTerminated ) )
-								{
 									return false;
-								}
-
 								xst_memcpy( m_pData, ulSrcDataSize, pSrcData, ulSrcDataSize );					
 								Terminate();
-
 								return true;
 							}
 
@@ -80,13 +87,9 @@ namespace XST
 				bool		Create(const xst_unknown pSrcData, cul32& ulSrcDataSize, cul32& ulBufferSize, bool bNullTerminated = false)
 							{
 								if( !Create( ulBufferSize, bNullTerminated ) )
-								{
 									return false;
-								}
-
 								xst_memcpy( m_pData, ulBufferSize * DATA_TYPE_SIZE, pSrcData, ulSrcDataSize );
 								Terminate();
-
 								return true;
 							}
 
@@ -94,37 +97,37 @@ namespace XST
 							{
 								xst_deletea( m_pData );
 								m_ulSize = 0;
+								m_bNullTerminated = false;
 							}
 
-				bool		Resize(ul32 _ulNewSize)
+				bool		Resize(ul32 ulNewSize)
 							{
 								DataPtr pData = Copy();
 								ul32 ulSize = m_ulSize;
-
 								Delete();
-								if(!Create(_ulNewSize))
+								if( !Create( ulNewSize ) )
 								{
-									SetData(pData, ulSize);
+									Move( &pData, ulSize, m_bNullTerminated );
 									return false;
 								}
-
+								m_ulSize = ulNewSize;
 								return true;
 							}
 
-				DataPtr		Copy(ul32 xst_out _pulSize)
+				DataPtr		Copy(ul32* pulSize)
 							{
-								xst_out _pulSize = m_ulSize;
+								*pulSize = m_ulSize;
 								return Copy();
 							}
 
 				DataPtr		Copy()
 							{
-								DataPtr pData = xst_new DataType[m_ulSize];
-								if(!pData)
-									return 0;
-
-								xst_memcpy(pData, m_ulSize, m_pData, m_ulSize);
-
+								DataPtr pData = xst_new DataType[ m_ulSize + m_bNullTerminated ];
+								if( !pData )
+									return xst_null;
+								xst_memcpy( pData, m_ulSize, m_pData, m_ulSize );
+								if( m_bNullTerminated )
+									pData[ m_ulSize ] = (DataType)0;
 								return pData;
 							}
 
@@ -141,7 +144,7 @@ namespace XST
 							{ if( m_bNullTerminated ) m_pData[ m_ulSize ] = _tValue; }
 
 			xst_fi	void	Terminate()
-							{ if( m_bNullTerminated ) m_pData[ m_ulSize ] = xst_null; }
+							{ if( m_bNullTerminated ) m_pData[ m_ulSize ] = (DataType)0; }
 
 		protected:
 

@@ -149,8 +149,8 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	//Options.TileVertexCount = XSE::CPoint( 16 * 1 + 1 );
 	//Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
 	//Options.TileVertexCount = XSE::CPoint( 16 + 1 );
-	Options.PageVertexCount = XSE::CPoint( 1024 + 1 );
-	Options.TileVertexCount = XSE::CPoint( 32 + 1 );
+	Options.PageVertexCount = XSE::CPoint( 128 + 1 );
+	Options.TileVertexCount = XSE::CPoint( 64 + 1 );
 	Options.uiLODCount = 3;
 	//Options.bColor = true;
 	Options.bBinormal = Options.bNormal = Options.bTangent = Options.bTexCoord = false;
@@ -158,12 +158,19 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 
 	{
 		XSTSimpleProfiler2( "CreateTerrain");
+		XSE::MaterialWeakPtr pMat = XSE::CMaterialManager::GetSingletonPtr()->CreateMaterial( "terrain" );
+	XSE::VertexShaderPtr pVS = XSE::CShaderManager::GetSingletonPtr()->LoadVertexShader("terrain.vs", "terr.vs", "vs", XSE::ShaderProfiles::VS_BEST);
+	pVS->SetInputLayout( this->m_pEngine->GetRenderSystem()->GetInputLayout( XSE::ILEs::POSITION | XSE::ILEs::NORMAL ) );
+	XSE::PixelShaderPtr pPS = XSE::CShaderManager::GetSingletonPtr()->LoadPixelShader("terrain.ps", "terr.ps", "ps", XSE::ShaderProfiles::PS_BEST);
+	pMat->CreateTechnique("tech", pVS, pPS);
+	xst_assert2(pVS.IsValid() && pPS.IsValid());
 	XSE::ITerrain* pTerrain = this->m_pSceneMgr->CreateTerrain( "Terrain", Options );
     xst_assert( pTerrain != xst_null, "(CTerrain::Init) Terrain sample creation failed. Engine error!!!" );
+	pTerrain->SetMaterial( pMat );
 	}
 
 	XSE::ModelPtr pSphere = XSE::CModelManager::GetSingleton().LoadResource("untitled.obj", XSE::ALL_GROUPS);
-	//pSphere->SetPosition(m_pDbgCam->GetPosition());
+	pSphere->SetPosition(m_pDbgCam->GetPosition());
 	m_pSceneMgr->GetRootNode()->CreateChildNode()->AddObject( pSphere, false );
 	return XSE::RESULT::OK;
 }

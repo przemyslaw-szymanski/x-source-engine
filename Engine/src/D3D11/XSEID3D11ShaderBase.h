@@ -27,7 +27,7 @@ namespace XSE
 
 			protected:
 
-				virtual	cu8*			_GetShaderData() = 0;
+				virtual	lpcastr			_GetShaderData() = 0;
 
 				virtual ul32			_GetShaderDataSize() = 0;
 

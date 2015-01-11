@@ -80,7 +80,7 @@ namespace XST
 
 		//pScript->m_pResourceFile = pFile;
 		pScript->_SetFile( pFile );
-		if( pScript->GetApi()->LoadScript( pFile->GetData().GetData(), pFile->GetData().GetSize() ) != RESULT::OK )
+		if( pScript->GetApi()->LoadScript( pFile->GetData().GetPointer(), pFile->GetData().GetSize() ) != RESULT::OK )
 		{
 			//Destroy script
 			this->RemoveResource( strScriptName );

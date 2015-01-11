@@ -33,11 +33,12 @@ namespace XSE
 			public:
 
 											CMaterial(CShaderManager* pShaderMgr, XSE_IRESOURCE_DECL_PARAMS_DEFAULT);
+											CMaterial(CShaderManager* pShaderMgr, xst_castring& strDefaultTechniqueName, XSE_IRESOURCE_DECL_PARAMS_DEFAULT);
 				virtual						~CMaterial();
 
-						ITechnique*			CreateTechnique(xst_castring& strName);
-						ITechnique*			CreateTechnique(xst_castring& strName, const VertexShaderPtr& pVS, const PixelShaderPtr& pPS);
-						ITechnique*			CreateTechnique(xst_castring& strName, xst_castring& strEffectName); //For directx or cg
+						ITechnique*			CreateTechnique(xst_castring& strName, bool bSetAsCurrent = true);
+						ITechnique*			CreateTechnique(xst_castring& strName, const VertexShaderPtr& pVS, const PixelShaderPtr& pPS, bool bSetAsCurrent = true);
+						ITechnique*			CreateTechnique(xst_castring& strName, xst_castring& strEffectName, bool bSetAsCurrent = true); //For directx or cg
 
 						ConstTechniqueIterator	GetTechniqueIterator() const;
 						TechniqueIterator	GetTechniqueIterator();

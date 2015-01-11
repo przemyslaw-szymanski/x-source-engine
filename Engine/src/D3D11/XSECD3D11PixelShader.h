@@ -39,16 +39,16 @@ namespace XSE
 
 			protected:
 
-						void			_Destroy();
+						void				_Destroy();
 
-						cu8*			_GetShaderData() 
-										{ return this->m_pResourceFile->GetData().GetData(); }
+						lpcastr				_GetShaderData() xst_implement
+											{ return (lpcastr)this->m_pResourceFile->GetData().GetPointer(); }
 
-						ul32			_GetShaderDataSize()
-										{ return this->m_pResourceFile->GetData().GetSize(); }
+						ul32				_GetShaderDataSize() xst_implement
+											{ return this->m_pResourceFile->GetData().GetSize(); }
 
-						lpcastr			_GetEntryPoint()
-										{ return this->m_strShaderEntryPoint.data(); }
+						lpcastr				_GetEntryPoint() xst_implement
+											{ return this->m_strShaderEntryPoint.data(); }
 
 			protected:
 

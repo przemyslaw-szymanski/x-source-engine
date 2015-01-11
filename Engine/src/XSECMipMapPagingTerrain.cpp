@@ -473,8 +473,8 @@ namespace XSE
 		IIndexBuffer* pIB = m_vIndexBuffers[0].pIndexBuffer.GetPtr();
 		Mtx4 mtxTransform = Mtx4::IDENTITY;
 
-		pRS->SetInputLayoutWithCheck( m_pInputLayout );
-		pRS->SetTopology( TopologyTypes::TRIANGLE_LIST );
+		//pRS->SetInputLayoutWithCheck( m_pInputLayout );
+		//pRS->SetTopology( TopologyTypes::TRIANGLE_LIST );
 
 		CMaterial* pMat = m_pMaterial.GetPtr();
 		ITechnique* pTech = pMat->GetCurrentTechnique();
@@ -486,6 +486,9 @@ namespace XSE
 			pPass = pTech->GetPass( i );
 			pVS = pPass->GetVertexShader().GetPtr();
 			pPS = pPass->GetPixelShader().GetPtr();
+
+			pRS->SetInputLayoutWithCheck( pVS->GetInputLayout() );
+		    pRS->SetTopology( TopologyTypes::TRIANGLE_LIST );
 
 			//Set shaders
 			pRS->SetVertexShaderWithCheck( pVS );

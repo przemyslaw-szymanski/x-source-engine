@@ -31,16 +31,19 @@ namespace XST
 			public:
 
 				typedef XST::TCObjectSmartPointer<CFile>		FilePtr;
+				typedef u8										DataType;
+				typedef DataType*								DataTypePtr;
+				typedef TCData< DataType >						Data;
 
 			public:
 
-										CFile(xst_castring& strFileName, xst_castring& strPath = StringUtil::EmptyAString, u8* pData = xst_null, cul32& ulDataSize = 0, cul32& ulCompressedSize = 0, cul32& ulOffset = 0);
-										CFile(CDirectory* pParentDir, xst_castring& strFileName, u8* pData, cul32& ulDataSize, cul32& ulCompressedSize = 0, cul32& ulOffset = 0);
+										CFile(xst_castring& strFileName, xst_castring& strPath = StringUtil::EmptyAString, u8** ppData = xst_null, cul32& ulDataSize = 0, cul32& ulCompressedSize = 0, cul32& ulOffset = 0);
+										CFile(CDirectory* pParentDir, xst_castring& strFileName, u8** ppData, cul32& ulDataSize, cul32& ulCompressedSize = 0, cul32& ulOffset = 0);
 
 										//CFile(const CFile& File);
 				virtual					~CFile();
 
-				xst_fi	TCData<u8>&		GetData()
+				xst_fi	Data&			GetData()
 										{ return m_Data; }
 
 				xst_fi	u32				GetSize() const

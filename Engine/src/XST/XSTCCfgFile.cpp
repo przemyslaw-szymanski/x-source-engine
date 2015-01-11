@@ -184,14 +184,14 @@ namespace XST
 		Resources::FilePtr pFile = m_pFileMgr->LoadFile( strFileName, strGroupName );
 		if( !pFile.IsNull() )
 		{
-			m_eFileEncoding = ITextFile::GetEncoding( pFile->GetData().GetData(), pFile->GetSize() );
+			m_eFileEncoding = ITextFile::GetEncoding( pFile->GetData().GetPointer(), pFile->GetSize() );
 			if( ITextFile::IsUTF16( m_eFileEncoding ) )
 			{
-				ch16* pData = (ch16*)pFile->GetData().GetData();
+				ch16* pData = (ch16*)pFile->GetData().GetPointer();
 				pData[ pFile->GetSize() / sizeof( u16 ) ] = 0;
 			}
 
-			return LoadFromMemory( pFile->GetData().GetData(), pFile->GetData().GetSize(), m_eFileEncoding );
+			return LoadFromMemory( pFile->GetData().GetPointer(), pFile->GetData().GetSize(), m_eFileEncoding );
 		}
 
 		return RESULT::FAILED;

@@ -1,5 +1,5 @@
-#include "../../include/XST/XSTIFile.h"
-#include "../../include/XST/XSTCLogger.h"
+#include "XSTIFile.h"
+#include "XSTCLogger.h"
 
 namespace XST
 {
@@ -256,14 +256,14 @@ namespace XST
 		#endif
 	}
 
-	bool	IFile::Read(xst_unknown _hFile, void *_pData, ul32 _ulDataSize)
+	bool	IFile::Read(xst_unknown hFile, u8** ppData, ul32 ulDataSize)
 	{
 		#if defined(XST_WINDOWS)
 			DWORD ulBytesRead;
-			if( ::ReadFile(_hFile, _pData, _ulDataSize, &ulBytesRead, 0) != TRUE )
+			if( ::ReadFile(hFile, (*ppData), ulDataSize, &ulBytesRead, 0) != TRUE )
 				return false;
 
-			return _ulDataSize == ulBytesRead;
+			return ulDataSize == ulBytesRead;
 		#else
 			return 0;
 		#endif
@@ -271,28 +271,6 @@ namespace XST
 
 	bool	IFile::ReadAll(xst_unknown _hFile, u8 **_ppOutData, ul32 *_pulOutDataSize)
 	{
-		/**_ppOutData = 0;
-
-		*_pulOutDataSize = GetSize(_hFile);
-		if(*_pulOutDataSize < 0)
-		{
-			return false;
-		}
-
-		*_ppOutData = xst_new u8[*_pulOutDataSize+1];
-
-		if(!Read(_hFile, *_ppOutData, *_pulOutDataSize))
-		{
-			delete [] *_ppOutData;
-			*_ppOutData = 0;
-			*_pulOutDataSize = 0;
-			return false;
-		}
-
-		(*_ppOutData)[*_pulOutDataSize] = 0;
-
-		return true;*/
-
 		cl32 lSize = GetSize( _hFile );
 		if( lSize < 0 )
 		{
@@ -301,7 +279,7 @@ namespace XST
 
 		u8* pBuffer = xst_new u8[ lSize + 1 ];
 
-		if( !Read( _hFile, pBuffer, lSize ) )
+		if( !Read( _hFile, &pBuffer, lSize ) )
 		{
 			xst_deletea( pBuffer );
 			pBuffer = 0;
@@ -315,9 +293,9 @@ namespace XST
 		return true;
 	}
 
-	bool	IFile::ReadAll(xst_unknown _hFile, u8 *_ppOutData, cul32& _pulOutDataSize)
+	bool	IFile::ReadAll(xst_unknown hFile, u8** ppOutData, cul32& pulOutDataSize)
 	{
-		if(!Read(_hFile, _ppOutData, _pulOutDataSize))
+		if(!Read( hFile, ppOutData, pulOutDataSize))
 		{
 			return false;
 		}

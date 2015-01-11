@@ -13,7 +13,7 @@ namespace XSE
 
 		protected:
 
-			static	xst_astring					CONSTANT_NAMES[ ShaderConstants::_ENUM_COUNT ];
+			static	xst_astring	CONSTANT_NAMES[ ShaderConstants::_ENUM_COUNT ];
 
 		public:
 
@@ -21,8 +21,10 @@ namespace XSE
 			{
 				enum CODE
 				{
-					PER_FRAME_CBUFFER,
-					PER_OBJECT_CBUFFER,
+					PER_FRAME_VS_CBUFFER,
+					PER_OBJECT_VS_CBUFFER,
+					PER_FRAME_PS_CBUFFER,
+					PER_OBJECT_PS_CBUFFER,
 					_ENUM_COUNT
 				};
 			};

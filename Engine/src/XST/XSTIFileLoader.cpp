@@ -1,36 +1,21 @@
-#include "../../include/XST/XSTIFileLoader.h"
+#include "XSTIFileLoader.h"
 
 namespace XST
 {
 	namespace Resources
 	{
-		/*CFile::CFile(xst_castring& strFileName) : m_strName( strFileName ), m_strPath( strFileName ), m_pParentDir( xst_null )
+		CFile::CFile(xst_castring& strFileName, xst_castring& strPath, u8** ppData, cul32& ulDataSize, cul32& ulCompressedSize, cul32& ulOffset) : 
+			m_pParentDir( xst_null ), m_strName( strFileName ), m_strPath( strPath ), m_ulSize( ulDataSize ), m_ulCompSize( ulCompressedSize ), m_ulOffset( ulOffset )
 		{
+			if( ppData && *ppData )
+				m_Data.Move( ppData, ulDataSize, true );
 		}
 
-		CFile::CFile(xst_castring& strPath, xst_castring& strFileName) : m_strPath( strPath ), m_pParentDir( xst_null ), m_strName( strFileName )
+		CFile::CFile(CDirectory* pParentDir, xst_castring& strFileName, u8** ppData, cul32& ulDataSize, cul32& ulCompressedSize, cul32& ulOffset) : 
+			m_pParentDir( pParentDir ), m_strName( strFileName ), m_ulSize( ulDataSize ), m_ulCompSize( ulCompressedSize ), m_ulOffset( ulOffset )
 		{
-		}
-
-		CFile::CFile(CDirectory* pParentDir, xst_castring& strFileName) : m_strPath( pParentDir->GetPath() ), m_pParentDir( pParentDir ), m_strName( strFileName )
-		{
-		}
-
-		CFile::CFile(u8* pData, cul32& ulDataSize, xst_castring& strPath, xst_castring& strFileName) : m_strPath( strPath ), m_strName( strFileName ), m_pParentDir( xst_null )
-		{
-			m_Data.SetData( pData, ulDataSize );
-		}*/
-
-		CFile::CFile(xst_castring& strFileName, xst_castring& strPath, u8* pData, cul32& ulDataSize, cul32& ulCompressedSize, cul32& ulOffset) : m_pParentDir( xst_null ), m_strName( strFileName ), m_strPath( strPath ), m_ulSize( ulDataSize ), m_ulCompSize( ulCompressedSize ), m_ulOffset( ulOffset )
-		{
-			if( pData != xst_null )
-				m_Data.SetData( pData, ulDataSize );
-		}
-
-		CFile::CFile(CDirectory* pParentDir, xst_castring& strFileName, u8* pData, cul32& ulDataSize, cul32& ulCompressedSize, cul32& ulOffset) : m_pParentDir( pParentDir ), m_strName( strFileName ), m_ulSize( ulDataSize ), m_ulCompSize( ulCompressedSize ), m_ulOffset( ulOffset )
-		{
-			if( pData != xst_null )
-				m_Data.SetData( pData, ulDataSize );
+			if( ppData && *ppData )
+				m_Data.Move( ppData, ulDataSize, true );
 			if( pParentDir != xst_null )
 			{
 				m_strPath = pParentDir->GetPath();

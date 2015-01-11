@@ -21,7 +21,7 @@ namespace XSE
 				return RESULT::FAILED;
 			}
 
-			if( m_pApi->LoadBuffer( (lpcastr)this->m_pResourceFile->GetData().GetData(), this->m_pResourceFile->GetSize(), this->m_pResourceFile->GetName().data() ) != 0 )
+			if( m_pApi->LoadBuffer( (lpcastr)this->m_pResourceFile->GetData().GetPointer(), this->m_pResourceFile->GetSize(), this->m_pResourceFile->GetName().data() ) != 0 )
 			{
 				XST_LOG_ERR( m_pApi->GetLastError() );
 				return RESULT::FAILED;
@@ -42,7 +42,7 @@ namespace XSE
 				return RESULT::FAILED;
 			}
 			
-			if( m_pApi->LoadBuffer( (lpcastr)pFile->GetData().GetData(), pFile->GetSize(), pFile->GetName().data() ) != 0 )
+			if( m_pApi->LoadBuffer( (lpcastr)pFile->GetData().GetPointer(), pFile->GetSize(), pFile->GetName().data() ) != 0 )
 			{
 				XST_LOG_ERR( m_pApi->GetLastError() );
 				return RESULT::FAILED;

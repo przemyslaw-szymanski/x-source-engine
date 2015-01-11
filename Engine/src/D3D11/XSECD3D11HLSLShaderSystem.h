@@ -94,6 +94,9 @@ namespace XSE
 
 						i32				PrepareResource(Resources::IResource* pRes);
 
+			protected:
+
+						i32				_AddConstantBuffers(IShader** ppShader, xst_castring& strPerFrameCB, xst_castring& strPerObjCB);
 
 			protected:
 

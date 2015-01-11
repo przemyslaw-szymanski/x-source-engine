@@ -17,7 +17,7 @@ namespace XSE
 
 		//Read header name
 		ch8 strHeader[ 4 ];
-		Reader.ReadChars( strHeader, 3 );
+		Reader.ReadChars( (ch8**)&strHeader, 3 );
 		strHeader[ 3 ] = 0;
 		//Version
 		u16 uiVer = Reader.ReadUInt16();

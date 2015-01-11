@@ -78,11 +78,11 @@ namespace XST
 
 			static  bool	Write(FileHandle _hFile, void *_pData, ul32 _ulDataSize);
 
-			static  bool	Read(FileHandle _hFile, void *_pData, ul32 _ulDataSize);
+			static  bool	Read(FileHandle hFile, u8** ppData, ul32 ulDataSize);
 
-			static  bool	ReadAll(FileHandle _hFile, u8 **_ppOutData, ul32 *_pulOutDataSize);
+			static  bool	ReadAll(FileHandle hFile, u8** ppOutData, ul32 *pulOutDataSize);
 
-			static  bool	ReadAll(FileHandle _hFile, u8 *_ppOutData, cul32& _pulOutDataSize);
+			static  bool	ReadAll(FileHandle hFile, u8** ppOutData, cul32& pulOutDataSize);
 
 			static  bool	Close(FileHandle _hFile);
 

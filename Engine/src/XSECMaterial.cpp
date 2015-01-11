@@ -12,22 +12,13 @@ namespace XSE
 			m_pShaderMgr( pShaderMgr ), 
 			m_pCurrentTechnique( xst_null )
 		{
-			//Create default technique
-			CTechnique* pTech = xst_new CTechnique( strName );
-			if( pTech == xst_null )
-			{
-				XST_LOG_ERR( "Failed to create technique: " << strName << " for material: " << this->GetResourceName() << ". Memory error." );
-				return;
-			}
-			pTech->m_lTechniqueID = m_vTechniques.size();
-			pTech->m_ulTechniqueNameHash = XST::CHash::GetCRC( strName );
-			IPass* pPass = pTech->CreatePass( "pass0" );
-			//Set default vertex and pixel shaders
-			pPass->SetVertexShader( m_pShaderMgr->GetDefaultVertexShader() );
-			pPass->SetPixelShader( m_pShaderMgr->GetDefaultPixelShader() );
+		}
 
-			m_vTechniques.push_back( pTech );
-			m_pCurrentTechnique = pTech;
+		CMaterial::CMaterial(CShaderManager* pShaderMgr, xst_castring& strDefaultTechniqueName, XSE_IRESOURCE_DECL_PARAMS) :
+			CMaterial( pShaderMgr, pCreator, Handle, strName, iType, iState, pAllocator )
+		{
+			ITechnique* pTech = CreateTechnique( strDefaultTechniqueName, true );
+			xst_assert2( pTech );
 		}
 
 		CMaterial::~CMaterial()
@@ -40,7 +31,7 @@ namespace XSE
 			m_vTechniques.clear();
 		}
 
-		ITechnique*	CMaterial::CreateTechnique(xst_castring& strName)
+		ITechnique*	CMaterial::CreateTechnique(xst_castring& strName, bool bSetAsCurrent)
 		{
 			//Find this technique
 			ITechnique* pTech = GetTechniqueByName( strName );
@@ -61,18 +52,20 @@ namespace XSE
 
 				m_vTechniques.push_back( pTech );
 			}
+			if( bSetAsCurrent )
+				m_pCurrentTechnique = pTech;
 			return pTech;
 		}
 
-		ITechnique*	CMaterial::CreateTechnique(xst_castring& strName, const VertexShaderPtr& pVS, const PixelShaderPtr& pPS)
+		ITechnique*	CMaterial::CreateTechnique(xst_castring& strName, const VertexShaderPtr& pVS, const PixelShaderPtr& pPS, bool bSetAsCurrent)
 		{
-			ITechnique* pTech = CreateTechnique( strName );
+			ITechnique* pTech = CreateTechnique( strName, bSetAsCurrent );
 			pTech->GetPass( 0 )->SetVertexShader( pVS );
 			pTech->GetPass( 0 )->SetPixelShader( pPS );
 			return pTech;
 		}
 
-		ITechnique*	CMaterial::CreateTechnique(xst_castring& strName, xst_castring& strEffectName)
+		ITechnique*	CMaterial::CreateTechnique(xst_castring& strName, xst_castring& strEffectName, bool bSetAsCurrent)
 		{
 			return xst_null;
 		}
@@ -143,7 +136,7 @@ namespace XSE
 
 		ITechnique*	CMaterial::GetTechniqueByNameHash(cul32& ulHash)
 		{
-			if( m_pCurrentTechnique->m_ulTechniqueNameHash == ulHash )
+			if( m_pCurrentTechnique && m_pCurrentTechnique->m_ulTechniqueNameHash == ulHash )
 			{
 				return m_pCurrentTechnique;
 			}

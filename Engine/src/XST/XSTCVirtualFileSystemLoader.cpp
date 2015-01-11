@@ -119,7 +119,7 @@ namespace XST
 		}
 
 		ch8 strHeader[4];
-		m_Reader.ReadChars(strHeader, 3);
+		m_Reader.ReadChars( (ch8**)&strHeader, 3);
 
 		if( strcmp( strHeader, "VFS" ) != 0 )
 		{
@@ -308,7 +308,7 @@ namespace XST
 		}
 		else
 		{
-			pFileOut = LoadFile( pDir, strFileName, m_Buffer.GetData(), m_Buffer.GetSize() );
+			pFileOut = LoadFile( pDir, strFileName, m_Buffer.GetPointer(), m_Buffer.GetSize() );
 		}
 
 		//for(int i = 0; i < 10; ++i) std::cout<< "load main" << std::endl;
@@ -357,10 +357,10 @@ namespace XST
 		if( pData == xst_null )
 		{
 			Buff.Create( pFile->m_ulCompSize + 1 );
-			pData = Buff.GetData();
+			pData = Buff.GetPointer();
 		}
 
-		m_Reader.ReadBytes( pData, pFile->m_ulCompSize );
+		m_Reader.ReadBytes( &pData, pFile->m_ulCompSize );
 		if( m_Reader.IsReadError() )
 		{
 			return pNull;
@@ -370,7 +370,7 @@ namespace XST
 		Resources::FilePtr pFileOut( xst_new Resources::CFile( pFile->m_pParentDir, pFile->m_strName, xst_null, 0, 0, 0 ) );
 		//pFileOut->m_aData = aData;
 		pFileOut->m_Data.Create( pFile->m_ulSize );
-		u8* aData = pFileOut->GetData().GetData();
+		u8* aData = pFileOut->GetData().GetPointer();
 		pFileOut->m_ulSize = pFile->m_ulSize;
 
 		//i32 iResult = ZLibUncompress( aData, (uLongf*)&pFile->m_ulSize, pData, pFile->m_ulCompSize );

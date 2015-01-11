@@ -85,7 +85,7 @@ namespace XST
 
 				IFile::SetPosition( hFile, 0, IFile::BEGIN );
 				u8 abyHeader[ 4 ];
-				IFile::Read( hFile, abyHeader, 4 );
+				IFile::Read( hFile, (u8**)&abyHeader, 4 );
 
 				IFile::SetPosition( hFile, lCurrPos, IFile::BEGIN );
 				return GetEncoding( abyHeader, 4 );

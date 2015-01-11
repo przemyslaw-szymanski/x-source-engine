@@ -289,7 +289,7 @@ namespace XSE
 			if( pImage->m_pResourceFile != xst_null )
 			{
 				XST::TCData< u8 >& Data = pImage->m_pResourceFile->GetData();
-				if( !ilLoadL( (ILenum)_GetImageType( XST::IFile::GetFileExtension( pImage->GetResourceName() ) ), Data.GetData(), Data.GetSize() ) )
+				if( !ilLoadL( (ILenum)_GetImageType( XST::IFile::GetFileExtension( pImage->GetResourceName() ) ), Data.GetPointer(), Data.GetSize() ) )
 				{
 					return XST_FAIL;
 				}

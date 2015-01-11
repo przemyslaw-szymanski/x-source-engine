@@ -35,27 +35,26 @@ namespace XST
 			return Resources::FilePtr( xst_null );
 		}
 
-		u8* pData = xst_new u8[ m_Reader.GetSize() + 1 ];
-		Resources::FilePtr pFile( xst_new Resources::CFile( XST::Path::GetFileName( strFullPath ), strFullPath, pData, m_Reader.GetSize() ) );
-		//pFile->m_Data.Create( m_Reader->GetSize() );
-		//this->CreateFileBuffer( pFile, m_Reader.GetSize(), true );
-		//u8* pData = this->GetFileBuffer( pFile );
+		ul32 ulDataSize = m_Reader.GetSize();
+		u8* pData = xst_new u8[ ulDataSize + 1 ];
 
 		//-1 size has to be set because during creation of the buffer it is set size +1 
 		//so the buffer size is bigger than should be
 		//Reader compares bytes read with buffer size and if it is not equals reader returns fail
 		//It is important to create biggest buffer because it should be set null at the end 
-		if( this->m_Reader.ReadAll( pData, pFile->GetSize() ) != RESULT::OK )
+		if( this->m_Reader.ReadAll( &pData, ulDataSize ) != RESULT::OK )
 		{
 			XST_LOG_ERR( "Failed to load file: " << strFullPath );
 			//this->DeleteFileBuffer( pFile );
 			m_Reader.Close();
-			return Resources::FilePtr( xst_null );
+			return Resources::FilePtr();
 		}
 		
 		pData[ m_Reader.GetSize() ] = '\0';
-	
 		m_Reader.Close();
+
+		Resources::FilePtr pFile( xst_new Resources::CFile( XST::Path::GetFileName( strFullPath ), strFullPath, &pData, ulDataSize ) );
+
 		return pFile;
 	}
 

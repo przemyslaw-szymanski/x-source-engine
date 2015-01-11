@@ -179,10 +179,11 @@ namespace XSE
 		return pShader;
 	}
 
-	ShaderPtr CShaderManager::_LoadShader(SHADER_TYPE eType, xst_castring& strFileName, xst_castring& strShaderName, xst_castring& strEntryPoint, xst_castring& strGroupName)
+	ShaderPtr CShaderManager::_LoadShader(SHADER_TYPE eType, xst_castring& strFileName, xst_castring& strShaderName, xst_castring& strEntryPoint, SHADER_PROFILE eProfile, xst_castring& strGroupName)
 	{
 		this->m_eShaderType = eType;
 		this->m_strEntryPoint = strEntryPoint;
+		this->m_eShaderProfile = eProfile;
 
 		ResourcePtr pRes = this->LoadResource( strFileName, strShaderName, strGroupName );
 		if( pRes.IsNull() )
@@ -190,20 +191,22 @@ namespace XSE
 			return ShaderPtr();
 		}
 
-		ShaderPtr pShader( pRes );
-		pShader->m_eShaderType = eType;
+		//ShaderPtr pShader( pRes );
+		//pShader->m_eShaderType = eType;
 		
-		if( XST_FAILED( this->AddResource( strShaderName, pShader, strGroupName ) ) )
+		/*if( XST_FAILED( this->AddResource( strShaderName, pShader, strGroupName ) ) )
 		{
 			this->DestroyResource( pShader );
 			return ShaderPtr();
-		}
+		}*/
 
 		this->m_eShaderType = ( SHADER_TYPE )0;
-		return pShader;
+		this->m_strEntryPoint.clear();
+		this->m_eShaderProfile = ( SHADER_PROFILE )0;
+		return pRes;
 	}
 
-	VertexShaderPtr	CShaderManager::LoadVertexShader(xst_castring& strFileName, xst_castring& strShaderName, xst_castring& strEntryPoint, xst_castring& strGroupName)
+	VertexShaderPtr	CShaderManager::LoadVertexShader(xst_castring& strFileName, xst_castring& strShaderName, xst_castring& strEntryPoint, SHADER_PROFILE eProfile, xst_castring& strGroupName)
 	{
 		/*this->m_eShaderType = ShaderTypes::VERTEX;
 		this->m_strEntryPoint = strEntryPoint;
@@ -220,10 +223,10 @@ namespace XSE
 		this->m_eShaderType = ( SHADER_TYPE )0;
 
 		return pVS;*/
-		return _LoadShader( ShaderTypes::VERTEX, strFileName, strShaderName, strEntryPoint, strGroupName );
+		return _LoadShader( ShaderTypes::VERTEX, strFileName, strShaderName, strEntryPoint, eProfile, strGroupName );
 	}
 
-	PixelShaderPtr	CShaderManager::LoadPixelShader(xst_castring& strFileName, xst_castring& strShaderName, xst_castring& strEntryPoint, xst_castring& strGroupName)
+	PixelShaderPtr	CShaderManager::LoadPixelShader(xst_castring& strFileName, xst_castring& strShaderName, xst_castring& strEntryPoint, SHADER_PROFILE eProfile, xst_castring& strGroupName)
 	{
 		/*this->m_eShaderType = ShaderTypes::PIXEL;
 		this->m_strEntryPoint = strEntryPoint;
@@ -239,7 +242,7 @@ namespace XSE
 		pPS->m_eShaderType = ShaderTypes::PIXEL;
 		this->m_eShaderType = ( SHADER_TYPE )0;
 		return pPS;*/
-		return _LoadShader( ShaderTypes::PIXEL, strFileName, strShaderName, strEntryPoint, strGroupName );
+		return _LoadShader( ShaderTypes::PIXEL, strFileName, strShaderName, strEntryPoint, eProfile, strGroupName );
 	}
 
 	xst_astring CShaderManager::CreateShaderCode(u32 uiVSInput, u32 uiPSInput)
@@ -269,12 +272,15 @@ namespace XSE
 	i32	CShaderManager::PrepareResource(ResourceWeakPtr pRes)
 	{
 		xst_assert( pRes != xst_null, "(CShaderManager::PrepareResource)" );
+		IShader* pShader = (IShader*)pRes.GetPtr();
+		pShader->m_eProfile = this->m_eShaderProfile;
+		pShader->m_eShaderLanguage = this->m_eShaderLang;
+		pShader->m_eShaderType = this->m_eShaderType;
 		if( XST_FAILED( m_pRenderSystem->GetShaderSystem()->PrepareResource( pRes.GetPtr() ) ) )
 		{
 			return XST_FAIL;
 		}
 		//pRes->m_iResourceState = ResourceStates::PREPARED;
-		IShader* pShader = (IShader*)pRes.GetPtr();
 		pShader->m_iResourceState = ResourceStates::PREPARED;
 
 		return XST_OK;

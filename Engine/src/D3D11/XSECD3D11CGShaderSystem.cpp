@@ -194,8 +194,8 @@ namespace XSE
 			xst_stringstream ssVS;
 			ssVS<< "struct VS_INPUT{" << xst_endl
 				<< "	float4 pos : POSITION;" << xst_endl
-				<< GetShaderCode( ShaderCodes::PER_FRAME_CBUFFER ) << xst_endl
-				<< GetShaderCode( ShaderCodes::PER_OBJECT_CBUFFER ) << xst_endl;
+				<< GetShaderCode( ShaderCodes::PER_FRAME_VS_CBUFFER ) << xst_endl
+				<< GetShaderCode( ShaderCodes::PER_OBJECT_VS_CBUFFER ) << xst_endl;
 
 			if( uiVSInput & ILEs::COLOR )
 			{
@@ -294,7 +294,7 @@ namespace XSE
 				pShader->SetCGProfile( this->m_aeProfiles[ pShader->GetProfile() ] );
 			}
 
-			xst_castring& strData = (lpcastr)pShader->GetResourceFile().GetPtr()->GetData().GetData();
+			xst_astring strData = (lpcastr)pShader->GetResourceFile().GetPtr()->GetData().GetPointer();
 			CG::CreateVShader( strData, pShader->GetEntryPoint() );
 
 			//if( XST_FAILED( XSE::CCGShaderSystem::CompileVertexShader( pVS ) ) )
@@ -329,7 +329,7 @@ namespace XSE
 				return XST_FAIL;
 			}*/
 
-			xst_castring& strData = (lpcastr)pShader->GetResourceFile().GetPtr()->GetData().GetData();
+			xst_astring strData = (lpcastr)pShader->GetResourceFile().GetPtr()->GetData().GetPointer();
 			CG::CreatePShader( strData, pShader->GetEntryPoint() );
 
 			//if( XST_FAILED( XSE::CCGShaderSystem::CompileVertexShader( pVS ) ) )

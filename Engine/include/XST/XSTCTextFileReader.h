@@ -103,7 +103,7 @@ namespace XST
 					{
 						m_ulCharCount = m_ulSize;
 						m_pAsciiFile = xst_new ch8[ m_ulCharCount + 1 ];
-						IFile::Read( m_hFile, m_pAsciiFile, m_ulSize );
+						IFile::Read( m_hFile, (u8**)&m_pAsciiFile, m_ulSize );
 						m_pAsciiFile[ m_ulCharCount ] = 0;
 					}
 					else if( m_eEncoding == ITextFile::UTF8 )
@@ -113,7 +113,7 @@ namespace XST
 						m_pAsciiFile = xst_new ch8[ m_ulCharCount + 1 ];
 						ch8* pTmp = xst_new ch8[ m_ulCharCount + 1 ];
 						IFile::SetPosition( m_hFile, 3, IFile::BEGIN );
-						IFile::Read( m_hFile, pTmp, m_ulSize );
+						IFile::Read( m_hFile, (u8**)pTmp, m_ulSize );
 						pTmp[ m_ulCharCount ] = 0;
 						
 						u8* pSrc = (u8*)pTmp, *pDst = (u8*)m_pAsciiFile;
@@ -141,7 +141,7 @@ namespace XST
 						m_ulCharCount = ( m_ulSize - 2 ) / sizeof( ch16 );
 						m_pUnicodeFile = xst_new ch16[ m_ulCharCount + 1 ];
 						IFile::SetPosition( m_hFile, 2, IFile::BEGIN );
-						IFile::Read( m_hFile, m_pUnicodeFile, m_ulSize - 2 );
+						IFile::Read( m_hFile, (u8**)m_pUnicodeFile, m_ulSize - 2 );
 						m_pUnicodeFile[ m_ulCharCount ] = 0;
 					}
 

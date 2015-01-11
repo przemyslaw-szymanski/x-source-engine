@@ -1,0 +1,18 @@
+
+struct VS_OUT
+{
+	float4 f4VertexPos : SV_POSITION;
+	float3 f3Normal : NORMAL;
+};
+
+float4 ps(VS_OUT IN) : SV_TARGET
+{
+	const float3 f3LightPos = { 100, 1000, 100 };
+	const float3 f3CamPos = { -389,450,230 };
+	const float3 f3VertexPos = IN.f4VertexPos;
+	float3 f3N = normalize( IN.f3Normal );
+	float3 f3L = normalize( f3LightPos - f3VertexPos );
+	float fDL = max( dot( f3N, f3L ), 0.0 );
+	float3 f3V = normalize( f3CamPos - f3VertexPos );
+	return float4( 1, 1, 1, 1 ) * fDL;
+}
