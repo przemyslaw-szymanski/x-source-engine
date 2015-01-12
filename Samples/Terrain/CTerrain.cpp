@@ -159,9 +159,9 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	{
 		XSTSimpleProfiler2( "CreateTerrain");
 		XSE::MaterialWeakPtr pMat = XSE::CMaterialManager::GetSingletonPtr()->CreateMaterial( "terrain" );
-	XSE::VertexShaderPtr pVS = XSE::CShaderManager::GetSingletonPtr()->LoadVertexShader("terrain.vs", "terr.vs", "vs", XSE::ShaderProfiles::VS_BEST);
+	XSE::VertexShaderPtr pVS = XSE::CShaderManager::GetSingletonPtr()->LoadVertexShader("terrain.vsh", "terr.vs", "vs", XSE::ShaderProfiles::VS_BEST);
 	pVS->SetInputLayout( this->m_pEngine->GetRenderSystem()->GetInputLayout( XSE::ILEs::POSITION | XSE::ILEs::NORMAL ) );
-	XSE::PixelShaderPtr pPS = XSE::CShaderManager::GetSingletonPtr()->LoadPixelShader("terrain.ps", "terr.ps", "ps", XSE::ShaderProfiles::PS_BEST);
+	XSE::PixelShaderPtr pPS = XSE::CShaderManager::GetSingletonPtr()->LoadPixelShader("terrain.psh", "terr.ps", "ps", XSE::ShaderProfiles::PS_BEST);
 	pMat->CreateTechnique("tech", pVS, pPS);
 	xst_assert2(pVS.IsValid() && pPS.IsValid());
 	XSE::ITerrain* pTerrain = this->m_pSceneMgr->CreateTerrain( "Terrain", Options );

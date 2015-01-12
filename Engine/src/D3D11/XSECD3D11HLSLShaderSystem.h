@@ -23,12 +23,21 @@ namespace XSE
 					DirectX::XMMATRIX	mtxView;
 					DirectX::XMMATRIX	mtxProj;
 					DirectX::XMMATRIX	mtxViewProj;
-					Vec2		vecScreenSize;
+					Vec4				vecLightColor;
+					Vec3				vecCamPos;
+					Vec3				vecCamDir;
+					Vec3				vecLightPos;
+					Vec2				vecScreenSize;
 				};
 
 				struct SPSOncePerFrame
 				{
+					Vec4		vecLightPos;
 					Vec4		vecSceneAmbient;
+					Vec3		vecLightPos;
+					Vec3		vecCamPos;
+					Vec3		vecCamDir;
+					Vec2		vecScreenSize;
 				};
 
 				struct SVSOncePerObject
@@ -86,9 +95,18 @@ namespace XSE
 
 						i32				ApplyShaderConstantNames();
 
-						void			UpdateObjectInputs();
+						i32				SetConstantValue(xst_castring& strName, const Mtx3& value) xst_implement;
+						i32				SetConstantValue(xst_castring& strName, const Mtx4& value) xst_implement;
+						i32				SetConstantValue(xst_castring& strName, const f32& value) xst_implement;
+						i32				SetConstantValue(xst_castring& strName, const Vec2& value) xst_implement;
+						i32				SetConstantValue(xst_castring& strName, const Vec3& value) xst_implement;
+						i32				SetConstantValue(xst_castring& strName, const Vec4& value) xst_implement;
+						i32				SetConstantValue(xst_castring& strName, const i32& value) xst_implement;
+						i32				SetConstantValue(xst_castring& strName, const bool& value) xst_implement;
 
-						void			UpdateFrameInputs();
+						void			UpdateObjectInputs() xst_implement;
+
+						void			UpdateFrameInputs() xst_implement;
 
 						void			SetSceneAmbient(const XST::CColor& Color);
 

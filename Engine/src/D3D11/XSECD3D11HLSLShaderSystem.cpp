@@ -50,6 +50,8 @@ namespace XSE
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_VIEW ]				<< ";" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_PROJECTION ]		<< ";" << xst_endl;
 				ss << "\tfloat2 " << astrConstants[ ShaderConstants::FLOAT2_SCREEN_SIZE ]	<< ";" << xst_endl;
+				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_POSITION ]		<< ";" << xst_endl;
+				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_DIRECTION ]		<< ";" << xst_endl;
 				ss << "}" << xst_endl;
 				g_strPerFrameVSCBuffer = ss.str();
 				return g_strPerFrameVSCBuffer;
@@ -86,6 +88,8 @@ namespace XSE
 				ss << "\tfloat4 " << astrConstants[ ShaderConstants::LIGHT_SPECULAR ]		<< ";" << xst_endl;
 				ss << "\tfloat4 " << astrConstants[ ShaderConstants::SCENE_AMBIENT ]		<< ";" << xst_endl;
 				ss << "\tfloat2 " << astrConstants[ ShaderConstants::FLOAT2_SCREEN_SIZE ]	<< ";" << xst_endl;
+				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_POSITION ]		<< ";" << xst_endl;
+				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_DIRECTION ]		<< ";" << xst_endl;
 				ss << "}" << xst_endl;
 				g_strPerFramePSCBuffer = ss.str();
 				return g_strPerFramePSCBuffer;

@@ -7,6 +7,8 @@
 
 namespace XSE
 {
+	class CSceneManager;
+
 	class XST_API IShaderSystem
 	{
 		friend class IRenderSystem;
@@ -64,6 +66,15 @@ namespace XSE
 
 			static	xst_fi	xst_castring&		GetConstantName(SHADER_CONSTANT eConstant)
 												{ return CONSTANT_NAMES[ eConstant ]; }
+
+			virtual i32							SetConstantValue(xst_castring& strName, const Mtx3& value) = 0;
+			virtual i32							SetConstantValue(xst_castring& strName, const Mtx4& value) = 0;
+			virtual i32							SetConstantValue(xst_castring& strName, const f32& value) = 0;
+			virtual i32							SetConstantValue(xst_castring& strName, const Vec2& value) = 0;
+			virtual i32							SetConstantValue(xst_castring& strName, const Vec3& value) = 0;
+			virtual i32							SetConstantValue(xst_castring& strName, const Vec4& value) = 0;
+			virtual i32							SetConstantValue(xst_castring& strName, const i32& value) = 0;
+			virtual i32							SetConstantValue(xst_castring& strName, const bool& value) = 0;
 
 			virtual	xst_fi xst_castring&		GetShaderCode(ShaderCodes::CODE eCode)
 												{ return m_astrShaderCodes[ eCode ]; }
