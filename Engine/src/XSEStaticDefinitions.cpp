@@ -25,10 +25,9 @@ namespace XSE
 
 	xst_astring IShaderSystem::CONSTANT_NAMES[ ShaderConstants::_ENUM_COUNT ] = 
 	{
-		"mtxWorld",
 		"mtxView",
 		"mtxProjection",
-		"mtxWVP",
+		"mtxViewProj",
 		"mtxObjWorld", // object world
 		"mtxObjView", // object view
 		"mtxObjProjection", // object projection
@@ -37,10 +36,36 @@ namespace XSE
 		"fTime",
 		"f3LightPos",
 		"f4LightSpecular",
-		"f4LightDiffuse",
-		"f4SceneAmbient",
-		"f2ScreenSize"
+		"f4LightColor",
+		"f4SceneAmbientColor",
+		"f2ScreenSize",
+		"f3CameraPos",
+		"f3CameraDir"
 	};
+
+	/*struct ShaderConstants
+	{
+		enum CONSTANT
+		{
+			MTX_VIEW,
+			MTX_PROJECTION,
+			MTX_VIEW_PROJ,
+			MTX_OBJ_WORLD,
+			MTX_OBJ_VIEW,
+			MTX_OBJ_PROJECTION,
+			MTX_OBJ_WORLD_VIEW_PROJECTION,
+			MTX_OBJ_WORLD_INVERSE_TRANSPOSE,
+			TIME,
+			LIGHT_POSITION,
+			LIGHT_SPECULAR,
+			LIGHT_COLOR,
+			SCENE_AMBIENT_COLOR,
+			SCREEN_SIZE,
+			CAMERA_POSITION,
+			CAMERA_DIRECTION,
+			_ENUM_COUNT
+		};
+	};*/
 
 }//xse
 

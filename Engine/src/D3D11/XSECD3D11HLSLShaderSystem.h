@@ -32,7 +32,7 @@ namespace XSE
 
 				struct SPSOncePerFrame
 				{
-					Vec4		vecLightPos;
+					Vec4		vecLightColor;
 					Vec4		vecSceneAmbient;
 					Vec3		vecLightPos;
 					Vec3		vecCamPos;
@@ -52,14 +52,18 @@ namespace XSE
 					DirectX::XMMATRIX	mtxTemp;
 				};
 
-				enum CONSTANT_BUFFERS
+				XST_ALIGN(16) union UConstantValue
 				{
-					CB_VS_ONCE_PER_FRAME,
-					CB_VS_ONCE_PER_OBJECT,
-					CB_PS_ONCE_PER_FRAME,
-					CB_PS_ONCE_PER_OBJECT,
-					_CB_COUNT
+					f32		float4x4[16];
+					f32		float4[4];
+					f32		float3[3];
+					f32		float2[2];
+					f32		float1[1];
+					i32		int1[1];
 				};
+
+				typedef xst_vector< UConstantValue >	ConstantValueVec;
+				typedef xst_vector< f32 >				FloatVec;
 
 			public:
 
@@ -95,14 +99,14 @@ namespace XSE
 
 						i32				ApplyShaderConstantNames();
 
-						i32				SetConstantValue(xst_castring& strName, const Mtx3& value) xst_implement;
-						i32				SetConstantValue(xst_castring& strName, const Mtx4& value) xst_implement;
-						i32				SetConstantValue(xst_castring& strName, const f32& value) xst_implement;
-						i32				SetConstantValue(xst_castring& strName, const Vec2& value) xst_implement;
-						i32				SetConstantValue(xst_castring& strName, const Vec3& value) xst_implement;
-						i32				SetConstantValue(xst_castring& strName, const Vec4& value) xst_implement;
-						i32				SetConstantValue(xst_castring& strName, const i32& value) xst_implement;
-						i32				SetConstantValue(xst_castring& strName, const bool& value) xst_implement;
+						i32				SetConstantValue(u32 uConstant, const Mtx3& value) xst_implement;
+						i32				SetConstantValue(u32 uConstant, const Mtx4& value) xst_implement;
+						i32				SetConstantValue(u32 uConstant, const f32& value) xst_implement;
+						i32				SetConstantValue(u32 uConstant, const Vec2& value) xst_implement;
+						i32				SetConstantValue(u32 uConstant, const Vec3& value) xst_implement;
+						i32				SetConstantValue(u32 uConstant, const Vec4& value) xst_implement;
+						i32				SetConstantValue(u32 uConstant, const i32& value) xst_implement;
+						i32				SetConstantValue(u32 uConstant, const bool& value) xst_implement;
 
 						void			UpdateObjectInputs() xst_implement;
 
@@ -120,7 +124,10 @@ namespace XSE
 
 				CRenderSystem*		m_pRS;
 				XST::xst_astr16		m_astrProfiles[ ShaderProfiles::_ENUM_COUNT ];
-				ID3D11Buffer*		m_apD3DConstantBuffers[ _CB_COUNT ];
+				ID3D11Buffer*		m_apD3DConstantBuffers[ ConstantBuffers::_ENUM_COUNT ];
+				FloatVec			m_vConstantValues[ ConstantBuffers::_ENUM_COUNT ];
+				ConstantValueVec	m_vAllConstantValues;
+				ConstantValueVec	m_vUserConstantValues;
 		};
 	}//d3d11
 }//xse

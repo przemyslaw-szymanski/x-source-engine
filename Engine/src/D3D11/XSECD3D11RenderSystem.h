@@ -189,6 +189,7 @@ namespace XSE
 						void				GetMatrix(const MATRIX_TYPE& eMtx, DirectX::XMMATRIX* pMtxOut) const;
 						void				GetMatrix(const MATRIX_TYPE& eMtx, Mtx4* pMtxOut) const;
 				const	DirectX::XMMATRIX*	GetMatrix(const MATRIX_TYPE& eMtx) const;
+						void				GetMatrix(const MATRIX_TYPE& eMtx, f32** ppBuffOut) const;
 
 						i32					ResizeBuffers(cu32& uiWidth, cu32& uiHeight);
 

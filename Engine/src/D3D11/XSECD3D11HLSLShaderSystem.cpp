@@ -8,6 +8,73 @@ namespace XSE
 {
 	namespace D3D11
 	{
+		static const u32 MATRIX4_SIZE = sizeof(DirectX::XMMATRIX);
+		static const u32 FLOAT_SIZE = sizeof(f32);
+		static const u32 FLOAT2_SIZE = sizeof(DirectX::XMFLOAT2);
+		static const u32 FLOAT3_SIZE = sizeof(DirectX::XMFLOAT3);
+		static const u32 FLOAT4_SIZE = sizeof(DirectX::XMFLOAT4);
+		static const u32 INT_SIZE = sizeof(i32);
+		static const u32 INT2_SIZE = sizeof(i32);
+
+		// Offsets counted in floats
+		struct ConstantOffsets
+		{
+			static const u32 MTX4 = 16;
+			static const u32 FLOAT1 = 1;
+			static const u32 FLOAT2 = 2;
+			static const u32 FLOAT3 = 3;
+			static const u32 FLOAT4 = 4;
+			struct PerFrameVS
+			{
+				enum
+				{
+					MTX_VIEW = 0,
+					MTX_PROJECTION = MTX_VIEW + MTX4,
+					MTX_VIEW_PROJ = MTX_PROJECTION + MTX4,
+					TIME = MTX_VIEW_PROJ + MTX4,
+					LIGHT_POSITION = TIME + FLOAT1,
+					LIGHT_SPECULAR = LIGHT_POSITION + FLOAT3,
+					LIGHT_COLOR = LIGHT_SPECULAR + FLOAT1,
+					SCENE_AMBIENT_COLOR = LIGHT_COLOR + FLOAT4,
+					SCREEN_SIZE = SCENE_AMBIENT_COLOR + FLOAT4,
+					CAMERA_POSITION = SCREEN_SIZE + FLOAT2,
+					CAMERA_DIRECTION = CAMERA_POSITION + FLOAT3,
+					_TOTAL_COUNT = CAMERA_DIRECTION + FLOAT3
+				};
+			};
+			struct PerObjVS
+			{
+				enum
+				{
+					MTX_OBJ_WORLD = 0,
+					MTX_OBJ_WORLD_VIEW_PROJECTION = MTX_OBJ_WORLD + MTX4,
+					MTX_OBJ_WORLD_INVERSE_TRANSPOSE = MTX_OBJ_WORLD_VIEW_PROJECTION + MTX4,
+					_TOTAL_COUNT = MTX_OBJ_WORLD_INVERSE_TRANSPOSE + FLOAT3
+				};
+			};
+			struct PerFramePS
+			{
+				enum
+				{
+					TIME = 0,
+					LIGHT_POSITION = TIME + FLOAT1,
+					LIGHT_SPECULAR = LIGHT_POSITION + FLOAT3,
+					LIGHT_COLOR = LIGHT_SPECULAR + FLOAT1,
+					SCENE_AMBIENT_COLOR = LIGHT_COLOR + FLOAT4,
+					SCREEN_SIZE = SCENE_AMBIENT_COLOR + FLOAT4,
+					CAMERA_POSITION = SCREEN_SIZE + FLOAT2,
+					CAMERA_DIRECTION = CAMERA_POSITION + FLOAT3,
+					_TOTAL_COUNT = CAMERA_DIRECTION + FLOAT3
+				};
+			};
+			struct PerObjPS
+			{
+				enum
+				{
+					_TOTAL_COUNT
+				};
+			};
+		};
 
 		CHLSLShaderSystem::SVSOncePerFrame	g_VSOncePerFrame;
 		CHLSLShaderSystem::SVSOncePerObject	g_VSOncePerObj;
@@ -46,10 +113,9 @@ namespace XSE
 				xst_stringstream ss;
 				ss << "cbuffer cbPerFrame : register( b0 )" << xst_endl;
 				ss << "{" << xst_endl;
-				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_WORLD ]			<< ";" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_VIEW ]				<< ";" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_PROJECTION ]		<< ";" << xst_endl;
-				ss << "\tfloat2 " << astrConstants[ ShaderConstants::FLOAT2_SCREEN_SIZE ]	<< ";" << xst_endl;
+				ss << "\tfloat2 " << astrConstants[ ShaderConstants::SCREEN_SIZE ]			<< ";" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_POSITION ]		<< ";" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_DIRECTION ]		<< ";" << xst_endl;
 				ss << "}" << xst_endl;
@@ -84,10 +150,10 @@ namespace XSE
 				ss << "cbuffer cbPerFrame : register( b0 )" << xst_endl;
 				ss << "{" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ ShaderConstants::LIGHT_POSITION ]		<< ";" << xst_endl;
-				ss << "\tfloat4 " << astrConstants[ ShaderConstants::LIGHT_DIFFUSE ]		<< ";" << xst_endl;
+				ss << "\tfloat4 " << astrConstants[ ShaderConstants::LIGHT_COLOR ]		<< ";" << xst_endl;
 				ss << "\tfloat4 " << astrConstants[ ShaderConstants::LIGHT_SPECULAR ]		<< ";" << xst_endl;
-				ss << "\tfloat4 " << astrConstants[ ShaderConstants::SCENE_AMBIENT ]		<< ";" << xst_endl;
-				ss << "\tfloat2 " << astrConstants[ ShaderConstants::FLOAT2_SCREEN_SIZE ]	<< ";" << xst_endl;
+				ss << "\tfloat4 " << astrConstants[ ShaderConstants::SCENE_AMBIENT_COLOR ]		<< ";" << xst_endl;
+				ss << "\tfloat2 " << astrConstants[ ShaderConstants::SCREEN_SIZE ]			<< ";" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_POSITION ]		<< ";" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_DIRECTION ]		<< ";" << xst_endl;
 				ss << "}" << xst_endl;
@@ -193,7 +259,7 @@ namespace XSE
 
 		void CHLSLShaderSystem::Destroy()
 		{
-			for(u32 i = _CB_COUNT; i --> 0;)
+			for(u32 i = ConstantBuffers::_ENUM_COUNT; i --> 0;)
 			{
 				xst_release( m_apD3DConstantBuffers[ i ] );
 			}
@@ -226,6 +292,19 @@ namespace XSE
 				return XST_FAIL;
 			}
 
+			// Create constant values each buffer MUST be multiple of 16bytes
+			ul32 uBufferSize = 0;
+			uBufferSize = ConstantOffsets::PerFrameVS::_TOTAL_COUNT + (16 - (ConstantOffsets::PerFrameVS::_TOTAL_COUNT % 16));
+			m_vConstantValues[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ].resize( uBufferSize, 0 );
+			uBufferSize = ConstantOffsets::PerObjVS::_TOTAL_COUNT + (16 - (ConstantOffsets::PerObjVS::_TOTAL_COUNT % 16));;
+			m_vConstantValues[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ].resize( uBufferSize, 0 );
+			uBufferSize = ConstantOffsets::PerFramePS::_TOTAL_COUNT + (16 - (ConstantOffsets::PerFramePS::_TOTAL_COUNT % 16));;
+			m_vConstantValues[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ].resize( uBufferSize, 0 );
+			uBufferSize = ConstantOffsets::PerObjPS::_TOTAL_COUNT + (16 - (ConstantOffsets::PerObjPS::_TOTAL_COUNT % 16));;
+			m_vConstantValues[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ].resize( uBufferSize, 0 );
+
+			m_vAllConstantValues.resize( ShaderConstants::_ENUM_COUNT );
+
 			HRESULT hr;
 			//Create constant buffers
 			D3D11_BUFFER_DESC BufferDesc;
@@ -235,8 +314,9 @@ namespace XSE
 			BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			
 			//Per frame
-			BufferDesc.ByteWidth = sizeof( SVSOncePerFrame );
-			hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ CB_VS_ONCE_PER_FRAME ] );
+			//BufferDesc.ByteWidth = sizeof( SVSOncePerFrame );
+			BufferDesc.ByteWidth = m_vConstantValues[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ].size() * sizeof( f32 );
+			hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ] );
 			if( FAILED( hr ) )
 			{
 				XST_LOG_ERR( "[D3D11]: Could not create per frame constant buffer: " << m_pRS->_ErrorToString( hr ) );
@@ -246,7 +326,7 @@ namespace XSE
 			BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 			BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			BufferDesc.ByteWidth = sizeof( SPSOncePerFrame );
-			hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ CB_PS_ONCE_PER_FRAME ] );
+			hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ] );
 			if( FAILED( hr ) )
 			{
 				XST_LOG_ERR( "[D3D11]: Could not create per object constant buffer: " << m_pRS->_ErrorToString( hr ) );
@@ -257,7 +337,7 @@ namespace XSE
 			BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 			BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			BufferDesc.ByteWidth = sizeof( SVSOncePerObject );
-			hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ CB_VS_ONCE_PER_OBJECT ] );
+			hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ] );
 			if( FAILED( hr ) )
 			{
 				XST_LOG_ERR( "[D3D11]: Could not create per object constant buffer: " << m_pRS->_ErrorToString( hr ) );
@@ -267,7 +347,7 @@ namespace XSE
 			BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 			BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			BufferDesc.ByteWidth = sizeof( SPSOncePerObject );
-			hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ CB_PS_ONCE_PER_OBJECT ] );
+			hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ] );
 			if( FAILED( hr ) )
 			{
 				XST_LOG_ERR( "[D3D11]: Could not create per object constant buffer: " << m_pRS->_ErrorToString( hr ) );
@@ -288,28 +368,132 @@ namespace XSE
 			g_PSOncePerFrame.vecSceneAmbient = Color.ToVector4();
 		}
 
+		template<class _T_>
+		xst_fi i32 UpdateConstant(u32 uConstantOffset, const _T_& tValue, CHLSLShaderSystem::FloatVec& vValues)
+		{
+			// If it is a standard constant defined by the engine
+			cul32 uSize = sizeof( _T_ ) / 4;
+			if( uConstantOffset + uSize < vValues.size() )
+			{
+				// Calc offset
+				ul32 uOffset = uConstantOffset;
+				//u32 uFloats = sizeof( _T_ ) / sizeof( f32 );
+				xst_memcpy( &vValues[ uConstantOffset ], sizeof( _T_ ), &tValue, sizeof( _T_ ) );
+				return XST_OK;
+			}
+
+			return XST_FAIL;
+		}
+
+		xst_fi i32 UpdateConstant(u32 uConstantOffset, const f32* pArray, u32 uCount, CHLSLShaderSystem::FloatVec& vValues)
+		{
+			// If it is a standard constant defined by the engine
+			if( uConstantOffset + uCount < vValues.size() )
+			{
+				// Calc offset
+				ul32 uOffset = uConstantOffset;
+				cu32 uFloats = sizeof( f32 ) * uCount;
+				for( u32 i = 0; i < uCount; ++i )
+				{
+					vValues[uConstantOffset + i] = pArray[ i ];
+				}
+				return XST_OK;
+			}
+
+			return XST_FAIL;
+		}
+
+		template<class _T_>
+		xst_fi i32 UpdateConstant(u32 uConstantId, const _T_& tValue, CHLSLShaderSystem::ConstantValueVec& vValues, CHLSLShaderSystem::ConstantValueVec& vUserValues)
+		{
+			// If it is a standard constant defined by the engine
+			if( uConstantId < vValues.size() )
+			{
+				xst_memcpy( &vValues[ uConstantId ], sizeof( _T_ ), &tValue, sizeof( _T_ ) );
+				return XST_OK;
+			}
+
+			return XST_FAIL;
+		}
+
+		i32	CHLSLShaderSystem::SetConstantValue(u32 uConstant, const Mtx3& value)
+		{
+			return UpdateConstant( uConstant, value, m_vAllConstantValues, m_vUserConstantValues );
+		}
+
+		i32	CHLSLShaderSystem::SetConstantValue(u32 uConstant, const Mtx4& value)
+		{
+			return UpdateConstant( uConstant, value, m_vAllConstantValues, m_vUserConstantValues );
+		}
+
+		i32	CHLSLShaderSystem::SetConstantValue(u32 uConstant, const f32& value)
+		{
+			return UpdateConstant( uConstant, value, m_vAllConstantValues, m_vUserConstantValues );
+		}
+
+		i32	CHLSLShaderSystem::SetConstantValue(u32 uConstant, const Vec2& value)
+		{
+			return UpdateConstant( uConstant, value, m_vAllConstantValues, m_vUserConstantValues );
+		}
+
+		i32	CHLSLShaderSystem::SetConstantValue(u32 uConstant, const Vec3& value)
+		{
+			return UpdateConstant( uConstant, value, m_vAllConstantValues, m_vUserConstantValues );
+		}
+
+		i32	CHLSLShaderSystem::SetConstantValue(u32 uConstant, const Vec4& value)
+		{
+			return UpdateConstant( uConstant, value, m_vAllConstantValues, m_vUserConstantValues );
+		}
+
+		i32	CHLSLShaderSystem::SetConstantValue(u32 uConstant, const i32& value)
+		{
+			return UpdateConstant( uConstant, value, m_vAllConstantValues, m_vUserConstantValues );
+		}
+
+		i32	CHLSLShaderSystem::SetConstantValue(u32 uConstant, const bool& value)
+		{
+			return UpdateConstant( uConstant, value, m_vAllConstantValues, m_vUserConstantValues );
+		}
+
 		void CHLSLShaderSystem::UpdateFrameInputs()
 		{
 			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_PROJ,				&g_VSOncePerFrame.mtxProj );
 			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_VIEW,				&g_VSOncePerFrame.mtxView );
 			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_WORLD,			&g_VSOncePerFrame.mtxWorld );
 			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_VIEW_PROJ,		&g_VSOncePerFrame.mtxViewProj );
-			m_pRS->GetMatrix( MatrixTypes::TRANSPOSED_VIEW_PROJ,		&g_VSOncePerFrame.mtxViewProj );
 			g_PSOncePerFrame.vecSceneAmbient = Vec4( 0.3f, 0.3f, 0.3f, 1.0f );
-
 			g_VSOncePerFrame.vecScreenSize.x = (f32)m_pRS->GetOptions().uiResolutionWidth;
 			g_VSOncePerFrame.vecScreenSize.y = (f32)m_pRS->GetOptions().uiResolutionHeight;
 			
-			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ CB_VS_ONCE_PER_FRAME ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
-			xst_memcpy( g_MappedSubresource.pData, sizeof( SVSOncePerFrame ), &g_VSOncePerFrame, sizeof( SVSOncePerFrame ) );
-			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ CB_VS_ONCE_PER_FRAME ], 0 );
-			
-			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ CB_PS_ONCE_PER_FRAME ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
-			xst_memcpy( g_MappedSubresource.pData, sizeof( SPSOncePerFrame ), &g_PSOncePerFrame, sizeof( SPSOncePerFrame ) );
-			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ CB_PS_ONCE_PER_FRAME ], 0 );
+			FloatVec& vTmpVS = m_vConstantValues[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ];
+			FloatVec& vTmpPS = m_vConstantValues[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ];
+			cul32 uVSSize = vTmpVS.size() * sizeof( f32 );
+			cul32 uPSSize = vTmpPS.size() * sizeof( f32 );
 
-			m_pRS->m_pDeviceContext->VSSetConstantBuffers( CB_VS_ONCE_PER_FRAME, 1, &m_apD3DConstantBuffers[ CB_VS_ONCE_PER_FRAME ] );
-			m_pRS->m_pDeviceContext->PSSetConstantBuffers( CB_PS_ONCE_PER_FRAME, 1, &m_apD3DConstantBuffers[ CB_PS_ONCE_PER_FRAME ] );
+			// VERTEX
+			UpdateConstant( ConstantOffsets::PerFrameVS::MTX_VIEW, g_VSOncePerFrame.mtxView, vTmpVS );
+			UpdateConstant( ConstantOffsets::PerFrameVS::MTX_PROJECTION, g_VSOncePerFrame.mtxProj, vTmpVS );
+			UpdateConstant( ConstantOffsets::PerFrameVS::MTX_VIEW_PROJ, g_VSOncePerFrame.mtxViewProj, vTmpVS );
+			UpdateConstant( ConstantOffsets::PerFrameVS::SCREEN_SIZE, g_VSOncePerFrame.vecScreenSize, vTmpVS );
+
+			// PIXEL
+			UpdateConstant( ConstantOffsets::PerFramePS::LIGHT_POSITION, Vec3(1,0,0), vTmpPS );
+			UpdateConstant( ConstantOffsets::PerFramePS::SCREEN_SIZE, g_VSOncePerFrame.vecScreenSize, vTmpPS );
+			UpdateConstant( ConstantOffsets::PerFramePS::SCENE_AMBIENT_COLOR, m_vAllConstantValues[ ShaderConstants::SCENE_AMBIENT_COLOR ].float4, 4, vTmpPS );
+			
+			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
+			xst_memcpy( g_MappedSubresource.pData, uVSSize, &vTmpVS[0], uVSSize );
+			//xst_memcpy( g_MappedSubresource.pData, sizeof( SVSOncePerFrame ), &g_VSOncePerFrame, sizeof( SVSOncePerFrame ) );
+			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ], 0 );
+			
+			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
+			xst_memcpy( g_MappedSubresource.pData, uPSSize, &vTmpPS[0], uPSSize );
+			//xst_memcpy( g_MappedSubresource.pData, sizeof( SPSOncePerFrame ), &g_VSOncePerFrame, sizeof( SPSOncePerFrame ) );
+			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ], 0 );
+
+			m_pRS->m_pDeviceContext->VSSetConstantBuffers( ConstantBuffers::CB_VS_ONCE_PER_FRAME, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ] );
+			m_pRS->m_pDeviceContext->PSSetConstantBuffers( ConstantBuffers::CB_PS_ONCE_PER_FRAME, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ] );
 		}
 
 		static DirectX::XMMATRIX InverseTranspose( DirectX::CXMMATRIX M )
@@ -323,6 +507,11 @@ namespace XSE
 		//MULTIPLE PER FRAME
 		void CHLSLShaderSystem::UpdateObjectInputs()
 		{
+			FloatVec& vTmpVS = m_vConstantValues[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ];
+			FloatVec& vTmpPS = m_vConstantValues[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ];
+			cul32 uVSSize = vTmpVS.size() * sizeof( f32 );
+			cul32 uPSSize = vTmpPS.size() * sizeof( f32 );
+
 			//Get object input data
 			DirectX::XMMATRIX mtxView, mtxProj;
 			m_pRS->GetMatrix( MatrixTypes::WORLD,	&g_VSOncePerObj.mtxWorld );
@@ -331,16 +520,25 @@ namespace XSE
 			g_VSOncePerObj.mtxWorldInvT = InverseTranspose( g_VSOncePerObj.mtxWorld );
 			g_VSOncePerObj.mtxWorldViewProj = XMMatrixTranspose( XMMatrixMultiply( XMMatrixMultiply( g_VSOncePerObj.mtxWorld, mtxView ), mtxProj ) );
 
-			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ CB_VS_ONCE_PER_OBJECT ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
-			xst_memcpy( g_MappedSubresource.pData, sizeof( SVSOncePerObject ), &g_VSOncePerObj, sizeof( SVSOncePerObject ) );
-			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ CB_VS_ONCE_PER_OBJECT ], 0 );
+			// VERTEX
+			UpdateConstant( ConstantOffsets::PerObjVS::MTX_OBJ_WORLD, g_VSOncePerObj.mtxWorld, vTmpVS );
+			UpdateConstant( ConstantOffsets::PerObjVS::MTX_OBJ_WORLD_VIEW_PROJECTION, g_VSOncePerObj.mtxWorldViewProj, vTmpVS );
+			UpdateConstant( ConstantOffsets::PerObjVS::MTX_OBJ_WORLD_INVERSE_TRANSPOSE, g_VSOncePerObj.mtxWorldInvT, vTmpVS );
 
-			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ CB_PS_ONCE_PER_OBJECT ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
+			// PIXEL
+
+			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
+			//xst_memcpy( g_MappedSubresource.pData, sizeof( SVSOncePerObject ), &g_VSOncePerObj, sizeof( SVSOncePerObject ) );
+			xst_memcpy( g_MappedSubresource.pData, uVSSize, &vTmpVS[0], uVSSize );
+			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ], 0 );
+
+			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
+			//xst_memcpy( g_MappedSubresource.pData, uPSSize, &vTmpPS, uPSSize );
 			xst_memcpy( g_MappedSubresource.pData, sizeof( SPSOncePerObject ), &g_PSOncePerObj, sizeof( SPSOncePerObject ) );
-			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ CB_PS_ONCE_PER_OBJECT ], 0 );
+			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ], 0 );
 
-			m_pRS->m_pDeviceContext->VSSetConstantBuffers( CB_VS_ONCE_PER_OBJECT, 1, &m_apD3DConstantBuffers[ CB_VS_ONCE_PER_OBJECT ] );
-			m_pRS->m_pDeviceContext->PSSetConstantBuffers( CB_PS_ONCE_PER_OBJECT, 1, &m_apD3DConstantBuffers[ CB_PS_ONCE_PER_OBJECT ] );
+			m_pRS->m_pDeviceContext->VSSetConstantBuffers( ConstantBuffers::CB_VS_ONCE_PER_OBJECT, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ] );
+			m_pRS->m_pDeviceContext->PSSetConstantBuffers( ConstantBuffers::CB_PS_ONCE_PER_OBJECT, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ] );
 		}
 
 		IVertexShader*	CHLSLShaderSystem::CreateVertexShader(IInputLayout* pIL, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)

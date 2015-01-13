@@ -159,6 +159,13 @@ namespace XSE
 
 		        void			DestroyTerrain(xst_castring& strName);
 
+		xst_fi	void			SetAmbientColor(const Vec4& vecColor)
+								{ m_vecAmbientColor = vecColor; }
+
+		xst_fi
+		const	Vec4&			GetAmbientColor() const
+								{ return m_vecAmbientColor; }
+
 		        ITerrain*		CreateTerrain(xst_castring& strName, STerrainOptions& Options);
 
 		xst_fi
@@ -189,6 +196,7 @@ namespace XSE
         StaticGeometryMap	    m_mStaticGeometries;
 		DynamicGeometryMap	    m_mDynamicGeometries;
 		TerrainVec			    m_vTerrains;
+		Vec4					m_vecAmbientColor;
 		ITerrainSystem*		    m_pTerrainSystem;
 		IScenePartitionSystem*	m_pScenePartitionSystem;
 		CSceneNode*			    m_pRootNode;

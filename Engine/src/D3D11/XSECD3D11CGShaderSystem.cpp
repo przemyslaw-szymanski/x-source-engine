@@ -30,15 +30,13 @@ namespace XSE
 			xst_astring& CreateVUniforms(xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ])
 			{
 				std::stringstream ss;
-				ss << ",uniform float4x4 " << astrConstants[ ShaderConstants::MTX_WORLD ] << std::endl;
 				ss << ",uniform float4x4 " << astrConstants[ ShaderConstants::MTX_VIEW ] << std::endl;
 				ss << ",uniform float4x4 " << astrConstants[ ShaderConstants::MTX_PROJECTION ] << std::endl;
-				ss << ",uniform float4x4 " << astrConstants[ ShaderConstants::MTX_WORLD_VIEW_PROJECTION ] << std::endl;
 				ss << ",uniform float " << astrConstants[ ShaderConstants::TIME ] << std::endl;
 				ss << ",uniform float3 " << astrConstants[ ShaderConstants::LIGHT_POSITION ] << std::endl;
-				ss << ",uniform float4 " << astrConstants[ ShaderConstants::LIGHT_DIFFUSE ] << std::endl;
+				ss << ",uniform float4 " << astrConstants[ ShaderConstants::LIGHT_COLOR ] << std::endl;
 				ss << ",uniform float4 " << astrConstants[ ShaderConstants::LIGHT_SPECULAR ] << std::endl;
-				ss << ",uniform float4 " << astrConstants[ ShaderConstants::SCENE_AMBIENT ];
+				ss << ",uniform float4 " << astrConstants[ ShaderConstants::SCENE_AMBIENT_COLOR ];
 
 				g_strConstantVUniforms = ss.str();
 				return g_strConstantVUniforms;
@@ -49,9 +47,9 @@ namespace XSE
 				std::stringstream ss;
 				ss << ",uniform float " << astrConstants[ ShaderConstants::TIME ] << std::endl;
 				ss << ",uniform float3 " << astrConstants[ ShaderConstants::LIGHT_POSITION ] << std::endl;
-				ss << ",uniform float4 " << astrConstants[ ShaderConstants::LIGHT_DIFFUSE ] << std::endl;
+				ss << ",uniform float4 " << astrConstants[ ShaderConstants::LIGHT_COLOR ] << std::endl;
 				ss << ",uniform float4 " << astrConstants[ ShaderConstants::LIGHT_SPECULAR ] << std::endl;
-				ss << ",uniform float4 " << astrConstants[ ShaderConstants::SCENE_AMBIENT ];
+				ss << ",uniform float4 " << astrConstants[ ShaderConstants::SCENE_AMBIENT_COLOR ];
 
 				g_strConstantPUniforms = ss.str();
 				return g_strConstantPUniforms;

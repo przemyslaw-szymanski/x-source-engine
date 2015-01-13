@@ -1175,6 +1175,31 @@ namespace XSE
 			*pMtxOut = g_aMatrices[ eMtx ];
 		}
 
+		void CRenderSystem::GetMatrix(const MATRIX_TYPE& eMtx, f32** ppBuffOut) const
+		{
+			xst_assert2( ppBuffOut && *ppBuffOut );
+			const XMMATRIX& mtx = g_aMatrices[ eMtx ];
+			( *ppBuffOut )[0] = mtx.r[0].m128_f32[0];
+			( *ppBuffOut )[1] = mtx.r[0].m128_f32[1];
+			( *ppBuffOut )[2] = mtx.r[0].m128_f32[2];
+			( *ppBuffOut )[3] = mtx.r[0].m128_f32[3];
+
+			( *ppBuffOut )[4] = mtx.r[1].m128_f32[0];
+			( *ppBuffOut )[5] = mtx.r[1].m128_f32[1];
+			( *ppBuffOut )[6] = mtx.r[1].m128_f32[2];
+			( *ppBuffOut )[7] = mtx.r[1].m128_f32[3];
+
+			( *ppBuffOut )[8] = mtx.r[2].m128_f32[0];
+			( *ppBuffOut )[9] = mtx.r[2].m128_f32[1];
+			( *ppBuffOut )[10] = mtx.r[2].m128_f32[2];
+			( *ppBuffOut )[11] = mtx.r[2].m128_f32[3];
+
+			( *ppBuffOut )[12] = mtx.r[3].m128_f32[0];
+			( *ppBuffOut )[13] = mtx.r[3].m128_f32[1];
+			( *ppBuffOut )[14] = mtx.r[3].m128_f32[2];
+			( *ppBuffOut )[15] = mtx.r[3].m128_f32[3];
+		}
+
 		void CRenderSystem::GetMatrix(const MATRIX_TYPE& eMtx, Mtx4* pMtxOut) const
 		{
 			xst_assert2( pMtxOut );
@@ -1259,11 +1284,11 @@ namespace XSE
 			{
 				pSS = xst_new CHLSLShaderSystem();
 			}
-			else 
+			/*else 
 			if( eLanguage == ShaderLanguages::CG )
 			{
 				pSS = xst_new CCGShaderSystem( this );
-			}
+			}*/
 			else
 			{
 				XST_LOG_ERR( "[D3D11]: This render system supports only CG and HLSL shaders" );

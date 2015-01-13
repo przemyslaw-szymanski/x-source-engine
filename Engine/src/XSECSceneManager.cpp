@@ -28,7 +28,8 @@ namespace XSE
 		m_pModelMgr( pModelMgr ),
 		m_pTerrainSystem( xst_null ),
 		m_pScenePartitionSystem( xst_null ),
-		m_fSize( fSize )
+		m_fSize( fSize ),
+		m_vecAmbientColor( 0.3f, 0.3f, 0.3f, 0.0f )
 	{
 		m_pRootNode = xst_new CSceneNode( this, xst_null, "World", XST::CHash::GetCRC( "World" ) );
 		m_pDbg = xst_new CSceneDebug( this );
@@ -82,6 +83,8 @@ namespace XSE
 		{
 			m_pViewCamera->Update( fFrameTime );
 		}
+
+		m_pModelMgr->GetRenderSystem()->GetShaderSystem()->SetConstantValue( ShaderConstants::SCENE_AMBIENT_COLOR, m_vecAmbientColor );
 
 		m_pScenePartitionSystem->StartProcessing();
 		m_pScenePartitionSystem->Update();
