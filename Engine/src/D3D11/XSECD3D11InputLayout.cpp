@@ -447,7 +447,7 @@ namespace XSE
 						m_aInputElements[ i + 0 ] = CreateInputElement( "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetNormalSize();
 						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "NORMAL", "float3" );
-						m_strVSCode += "\nOUT.normal=(mul((IN.normal),[WINVT]));";
+						m_strVSCode += "\nOUT.normal=IN.normal;";
 						strName += "Normal";
 					}
 					break;
@@ -586,6 +586,11 @@ namespace XSE
 			
 			lpcastr lpszText = m_strVSCode.data();
 			ul32 ulTextLen = m_strVSCode.length();
+
+			XST::CDebug::PrintDebugLN("VS--------------------");
+			XST::CDebug::PrintDebugLN(m_strVSCode);
+			XST::CDebug::PrintDebugLN("PS--------------------");
+			XST::CDebug::PrintDebugLN(m_strPSCode);
 		
 			IShaderSystem* pSS = m_pRS->GetShaderSystem();
 			CVertexShader* pVS = (CVertexShader*)pSS->CreateVertexShader( this, xst_null, 0, strName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, xst_null );

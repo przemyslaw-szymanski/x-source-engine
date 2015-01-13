@@ -28,11 +28,11 @@ namespace XSE
 			{
 				enum
 				{
-					MTX_VIEW = 0,
+					TIME = 0,
+					MTX_VIEW = TIME + FLOAT1,
 					MTX_PROJECTION = MTX_VIEW + MTX4,
 					MTX_VIEW_PROJ = MTX_PROJECTION + MTX4,
-					TIME = MTX_VIEW_PROJ + MTX4,
-					LIGHT_POSITION = TIME + FLOAT1,
+					LIGHT_POSITION = MTX_VIEW_PROJ + MTX4,
 					LIGHT_SPECULAR = LIGHT_POSITION + FLOAT3,
 					LIGHT_COLOR = LIGHT_SPECULAR + FLOAT1,
 					SCENE_AMBIENT_COLOR = LIGHT_COLOR + FLOAT4,
@@ -58,9 +58,9 @@ namespace XSE
 				{
 					TIME = 0,
 					LIGHT_POSITION = TIME + FLOAT1,
-					LIGHT_SPECULAR = LIGHT_POSITION + FLOAT3,
-					LIGHT_COLOR = LIGHT_SPECULAR + FLOAT1,
-					SCENE_AMBIENT_COLOR = LIGHT_COLOR + FLOAT4,
+					LIGHT_COLOR = LIGHT_POSITION + FLOAT3,
+					LIGHT_SPECULAR = LIGHT_COLOR + FLOAT4,
+					SCENE_AMBIENT_COLOR = LIGHT_SPECULAR + FLOAT1,
 					SCREEN_SIZE = SCENE_AMBIENT_COLOR + FLOAT4,
 					CAMERA_POSITION = SCREEN_SIZE + FLOAT2,
 					CAMERA_DIRECTION = CAMERA_POSITION + FLOAT3,
@@ -113,6 +113,7 @@ namespace XSE
 				xst_stringstream ss;
 				ss << "cbuffer cbPerFrame : register( b0 )" << xst_endl;
 				ss << "{" << xst_endl;
+				ss << "\tfloat "  << astrConstants[ ShaderConstants::TIME ]					<< ";" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_VIEW ]				<< ";" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_PROJECTION ]		<< ";" << xst_endl;
 				ss << "\tfloat2 " << astrConstants[ ShaderConstants::SCREEN_SIZE ]			<< ";" << xst_endl;
@@ -146,13 +147,23 @@ namespace XSE
 				{
 					return g_strPerFramePSCBuffer;
 				}
+				/*	TIME = 0,
+					LIGHT_POSITION = TIME + FLOAT1,
+					LIGHT_COLOR = LIGHT_POSITION + FLOAT3,
+					LIGHT_SPECULAR = LIGHT_COLOR + FLOAT4,
+					SCENE_AMBIENT_COLOR = LIGHT_SPECULAR + FLOAT1,
+					SCREEN_SIZE = SCENE_AMBIENT_COLOR + FLOAT4,
+					CAMERA_POSITION = SCREEN_SIZE + FLOAT2,
+					CAMERA_DIRECTION = CAMERA_POSITION + FLOAT3,
+					_TOTAL_COUNT = CAMERA_DIRECTION + FLOAT3*/
 				xst_stringstream ss;
 				ss << "cbuffer cbPerFrame : register( b0 )" << xst_endl;
 				ss << "{" << xst_endl;
+				ss << "\tfloat "  << astrConstants[ ShaderConstants::TIME ]					<< ";" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ ShaderConstants::LIGHT_POSITION ]		<< ";" << xst_endl;
-				ss << "\tfloat4 " << astrConstants[ ShaderConstants::LIGHT_COLOR ]		<< ";" << xst_endl;
-				ss << "\tfloat4 " << astrConstants[ ShaderConstants::LIGHT_SPECULAR ]		<< ";" << xst_endl;
-				ss << "\tfloat4 " << astrConstants[ ShaderConstants::SCENE_AMBIENT_COLOR ]		<< ";" << xst_endl;
+				ss << "\tfloat4 " << astrConstants[ ShaderConstants::LIGHT_COLOR ]			<< ";" << xst_endl;
+				ss << "\tfloat "  << astrConstants[ ShaderConstants::LIGHT_SPECULAR ]		<< ";" << xst_endl;
+				ss << "\tfloat4 " << astrConstants[ ShaderConstants::SCENE_AMBIENT_COLOR ]	<< ";" << xst_endl;
 				ss << "\tfloat2 " << astrConstants[ ShaderConstants::SCREEN_SIZE ]			<< ";" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_POSITION ]		<< ";" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_DIRECTION ]		<< ";" << xst_endl;
@@ -373,7 +384,7 @@ namespace XSE
 		{
 			// If it is a standard constant defined by the engine
 			cul32 uSize = sizeof( _T_ ) / 4;
-			if( uConstantOffset + uSize < vValues.size() )
+			if( uConstantOffset + uSize <= vValues.size() )
 			{
 				// Calc offset
 				ul32 uOffset = uConstantOffset;
@@ -388,7 +399,7 @@ namespace XSE
 		xst_fi i32 UpdateConstant(u32 uConstantOffset, const f32* pArray, u32 uCount, CHLSLShaderSystem::FloatVec& vValues)
 		{
 			// If it is a standard constant defined by the engine
-			if( uConstantOffset + uCount < vValues.size() )
+			if( uConstantOffset + uCount <= vValues.size() )
 			{
 				// Calc offset
 				ul32 uOffset = uConstantOffset;
@@ -478,9 +489,23 @@ namespace XSE
 			UpdateConstant( ConstantOffsets::PerFrameVS::SCREEN_SIZE, g_VSOncePerFrame.vecScreenSize, vTmpVS );
 
 			// PIXEL
-			UpdateConstant( ConstantOffsets::PerFramePS::LIGHT_POSITION, Vec3(1,0,0), vTmpPS );
-			UpdateConstant( ConstantOffsets::PerFramePS::SCREEN_SIZE, g_VSOncePerFrame.vecScreenSize, vTmpPS );
+			/*TIME = 0,
+					LIGHT_POSITION = TIME + FLOAT1,
+					LIGHT_COLOR = LIGHT_POSITION + FLOAT3,
+					LIGHT_SPECULAR = LIGHT_COLOR + FLOAT4,
+					SCENE_AMBIENT_COLOR = LIGHT_SPECULAR + FLOAT1,
+					SCREEN_SIZE = SCENE_AMBIENT_COLOR + FLOAT4,
+					CAMERA_POSITION = SCREEN_SIZE + FLOAT2,
+					CAMERA_DIRECTION = CAMERA_POSITION + FLOAT3,
+					_TOTAL_COUNT = CAMERA_DIRECTION + FLOAT3**/
+			UpdateConstant( ConstantOffsets::PerFramePS::TIME, 1.0f, vTmpPS );
+			UpdateConstant( ConstantOffsets::PerFramePS::LIGHT_POSITION, Vec3(1,1,1), vTmpPS );
+			UpdateConstant( ConstantOffsets::PerFramePS::LIGHT_COLOR, Vec4(1,1,1,1), vTmpPS );
+			UpdateConstant( ConstantOffsets::PerFramePS::LIGHT_SPECULAR, 32.0f, vTmpPS );
 			UpdateConstant( ConstantOffsets::PerFramePS::SCENE_AMBIENT_COLOR, m_vAllConstantValues[ ShaderConstants::SCENE_AMBIENT_COLOR ].float4, 4, vTmpPS );
+			UpdateConstant( ConstantOffsets::PerFramePS::SCREEN_SIZE, g_VSOncePerFrame.vecScreenSize, vTmpPS );
+			UpdateConstant( ConstantOffsets::PerFramePS::CAMERA_POSITION, Vec3(1,1,1), vTmpPS );
+			UpdateConstant( ConstantOffsets::PerFramePS::CAMERA_DIRECTION, Vec3(1,1,1), vTmpPS );
 			
 			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
 			xst_memcpy( g_MappedSubresource.pData, uVSSize, &vTmpVS[0], uVSSize );
@@ -492,8 +517,8 @@ namespace XSE
 			//xst_memcpy( g_MappedSubresource.pData, sizeof( SPSOncePerFrame ), &g_VSOncePerFrame, sizeof( SPSOncePerFrame ) );
 			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ], 0 );
 
-			m_pRS->m_pDeviceContext->VSSetConstantBuffers( ConstantBuffers::CB_VS_ONCE_PER_FRAME, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ] );
-			m_pRS->m_pDeviceContext->PSSetConstantBuffers( ConstantBuffers::CB_PS_ONCE_PER_FRAME, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ] );
+			m_pRS->m_pDeviceContext->VSSetConstantBuffers( 0, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ] );
+			m_pRS->m_pDeviceContext->PSSetConstantBuffers( 0, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ] );
 		}
 
 		static DirectX::XMMATRIX InverseTranspose( DirectX::CXMMATRIX M )
@@ -537,8 +562,8 @@ namespace XSE
 			xst_memcpy( g_MappedSubresource.pData, sizeof( SPSOncePerObject ), &g_PSOncePerObj, sizeof( SPSOncePerObject ) );
 			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ], 0 );
 
-			m_pRS->m_pDeviceContext->VSSetConstantBuffers( ConstantBuffers::CB_VS_ONCE_PER_OBJECT, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ] );
-			m_pRS->m_pDeviceContext->PSSetConstantBuffers( ConstantBuffers::CB_PS_ONCE_PER_OBJECT, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ] );
+			m_pRS->m_pDeviceContext->VSSetConstantBuffers( 1, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ] );
+			m_pRS->m_pDeviceContext->PSSetConstantBuffers( 1, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ] );
 		}
 
 		IVertexShader*	CHLSLShaderSystem::CreateVertexShader(IInputLayout* pIL, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
