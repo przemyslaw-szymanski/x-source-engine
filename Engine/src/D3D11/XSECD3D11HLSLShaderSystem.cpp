@@ -95,16 +95,21 @@ namespace XSE
 				if( uMod != 0 )
 					uOffset += 16 - uMod;
 				vData.resize( uOffset );
+				uSizeInBytes = vData.size() * sizeof( f32 );
 				return m_ss.str();
 			}
 
 				xst_vector<u32>	vOffsets;
 				xst_vector<SCB>	vShaderCB;
 				xst_vector<f32> vData;
+				ul32 uSizeInBytes;
 			
 			protected:
 				xst_stringstream m_ss;
 		};
+
+		CCBBuilder g_aCBBuilders[ ConstantBuffers::_ENUM_COUNT ];
+		
 
 		// Offsets counted in floats
 		struct ConstantOffsets
@@ -463,6 +468,14 @@ namespace XSE
 			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_FRAME_PS_CBUFFER ] = HLSL::CreatePerFramePSCBuffer( this->CONSTANT_NAMES );
 			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_OBJECT_PS_CBUFFER ] = HLSL::CreatePerObjectPSCBuffer( this->CONSTANT_NAMES );
 
+			{
+				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ];
+				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD ), ShaderConstants::MTX_OBJ_WORLD );
+				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION ), ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION );
+				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE ), ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE );
+				this->m_astrShaderCodes[ ShaderCodes::PER_OBJECT_VS_CBUFFER ] = Tmp.Build( "cbPerObject", 1 );
+			}
+
 			return XST_OK;
 		}
 
@@ -650,9 +663,10 @@ namespace XSE
 			g_VSOncePerObj.mtxWorldViewProj = XMMatrixTranspose( XMMatrixMultiply( XMMatrixMultiply( g_VSOncePerObj.mtxWorld, mtxView ), mtxProj ) );
 
 			// VERTEX
-			UpdateConstant( ConstantOffsets::PerObjVS::MTX_OBJ_WORLD, g_VSOncePerObj.mtxWorld, vTmpVS );
+			/*UpdateConstant( ConstantOffsets::PerObjVS::MTX_OBJ_WORLD, g_VSOncePerObj.mtxWorld, vTmpVS );
 			UpdateConstant( ConstantOffsets::PerObjVS::MTX_OBJ_WORLD_VIEW_PROJECTION, g_VSOncePerObj.mtxWorldViewProj, vTmpVS );
-			UpdateConstant( ConstantOffsets::PerObjVS::MTX_OBJ_WORLD_INVERSE_TRANSPOSE, g_VSOncePerObj.mtxWorldInvT, vTmpVS );
+			UpdateConstant( ConstantOffsets::PerObjVS::MTX_OBJ_WORLD_INVERSE_TRANSPOSE, g_VSOncePerObj.mtxWorldInvT, vTmpVS );*/
+			g_aCBBuilders[ConstantBuffers::CB_VS_ONCE_PER_OBJECT].SetConstant( ShaderConstants::MTX_OBJ_WORLD, )
 
 			// PIXEL
 
