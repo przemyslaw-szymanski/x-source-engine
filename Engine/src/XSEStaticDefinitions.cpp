@@ -35,7 +35,7 @@ namespace XSE
 		"mtxObjWorldInvT", // world inverse transpose
 		"fTime",
 		"f3LightPos",
-		"f4LightSpecular",
+		"fLightSpecular",
 		"f4LightColor",
 		"f4SceneAmbientColor",
 		"f2ScreenSize",
