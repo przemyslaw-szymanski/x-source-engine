@@ -170,8 +170,11 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	}
 
 	XSE::ModelPtr pSphere = XSE::CModelManager::GetSingleton().LoadResource("untitled.obj", XSE::ALL_GROUPS);
-	pSphere->SetPosition(m_pDbgCam->GetPosition());
-	m_pSceneMgr->GetRootNode()->CreateChildNode()->AddObject( pSphere, false );
+	if( pSphere.IsValid() )
+	{
+		pSphere->SetPosition( m_pDbgCam->GetPosition() );
+		m_pSceneMgr->GetRootNode()->CreateChildNode()->AddObject( pSphere, false );
+	}
 	return XSE::RESULT::OK;
 }
 

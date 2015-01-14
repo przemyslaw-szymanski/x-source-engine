@@ -328,7 +328,6 @@ namespace XSE
 		pRes = CreateResource( strResName, strGroupName );
 		if( LoadResource( pRes, strFileName, strGroupName, bFullLoad ) )
 		{
-			DestroyResource( pRes );
 			pRes = XSE_NULLRES;
 		}
 		return pRes;
@@ -368,6 +367,7 @@ namespace XSE
 		{
 			if( XST_FAILED( PrepareResource( pRes ) ) )
 			{
+				DestroyResource( pRes );
 				return XST_FAIL;
 			}
 		}

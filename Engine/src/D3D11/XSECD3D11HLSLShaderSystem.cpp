@@ -48,8 +48,9 @@ namespace XSE
 			void SetConstant(u32 uConst, const _T_& v)
 			{
 				cu32 uSize = sizeof(_T_) / 4;
-				xst_assert2( uConst + sizeof(_T_)/4 <= vData.size() );
-				xst_memcpy( &vData[uConst], sizeof(_T_), &v, sizeof(_T_) );
+				cu32 uOffset = vOffsets[ uConst ];
+				xst_assert2( uOffset + sizeof(_T_)/4 <= vData.size() );
+				xst_memcpy( &vData[uOffset], sizeof(_T_), &v, sizeof(_T_) );
 			}
 
 			template<class _T_>
@@ -476,6 +477,14 @@ namespace XSE
 				this->m_astrShaderCodes[ ShaderCodes::PER_OBJECT_VS_CBUFFER ] = Tmp.Build( "cbPerObject", 1 );
 			}
 
+			{
+				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ];
+				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD ), ShaderConstants::MTX_OBJ_WORLD );
+				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION ), ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION );
+				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE ), ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE );
+				this->m_astrShaderCodes[ ShaderCodes::PER_OBJECT_VS_CBUFFER ] = Tmp.Build( "cbPerObject", 1 );
+			}
+
 			return XST_OK;
 		}
 
@@ -666,13 +675,15 @@ namespace XSE
 			/*UpdateConstant( ConstantOffsets::PerObjVS::MTX_OBJ_WORLD, g_VSOncePerObj.mtxWorld, vTmpVS );
 			UpdateConstant( ConstantOffsets::PerObjVS::MTX_OBJ_WORLD_VIEW_PROJECTION, g_VSOncePerObj.mtxWorldViewProj, vTmpVS );
 			UpdateConstant( ConstantOffsets::PerObjVS::MTX_OBJ_WORLD_INVERSE_TRANSPOSE, g_VSOncePerObj.mtxWorldInvT, vTmpVS );*/
-			g_aCBBuilders[ConstantBuffers::CB_VS_ONCE_PER_OBJECT].SetConstant( ShaderConstants::MTX_OBJ_WORLD, )
-
+			g_aCBBuilders[ConstantBuffers::CB_VS_ONCE_PER_OBJECT].SetConstant( ShaderConstants::MTX_OBJ_WORLD, g_VSOncePerObj.mtxWorld );
+			g_aCBBuilders[ConstantBuffers::CB_VS_ONCE_PER_OBJECT].SetConstant( ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION, g_VSOncePerObj.mtxWorldViewProj );
+			g_aCBBuilders[ConstantBuffers::CB_VS_ONCE_PER_OBJECT].SetConstant( ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE, g_VSOncePerObj.mtxWorldInvT );
+			auto& cb = g_aCBBuilders[ConstantBuffers::CB_VS_ONCE_PER_OBJECT];
 			// PIXEL
 
 			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
 			//xst_memcpy( g_MappedSubresource.pData, sizeof( SVSOncePerObject ), &g_VSOncePerObj, sizeof( SVSOncePerObject ) );
-			xst_memcpy( g_MappedSubresource.pData, uVSSize, &vTmpVS[0], uVSSize );
+			xst_memcpy( g_MappedSubresource.pData, uVSSize, &cb.vData[0], uVSSize );
 			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ], 0 );
 
 			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
