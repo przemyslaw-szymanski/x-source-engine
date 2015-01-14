@@ -29,7 +29,7 @@ namespace XSE
 		m_pTerrainSystem( xst_null ),
 		m_pScenePartitionSystem( xst_null ),
 		m_fSize( fSize ),
-		m_vecAmbientColor( 0.3f, 0.3f, 0.3f, 0.0f )
+		m_vecAmbientColor( 0.3f, 0.3f, 0.3f, 1.0f )
 	{
 		m_pRootNode = xst_new CSceneNode( this, xst_null, "World", XST::CHash::GetCRC( "World" ) );
 		m_pDbg = xst_new CSceneDebug( this );
