@@ -36,11 +36,26 @@ namespace XSE
 				TYPE	eType; // type and size in floats
 				u32		uConstant; // constant enum type/name
 				xst_astring strName; // name in constant buffer
+				SCB* aCBs;
+				u32 uCBCount;
+				/*void operator=( const SCB& other )
+				{
+					eType = other.eType;
+					uConstant = other.uConstant;
+					strName = other.strName;
+
+				}*/
 			};
 
 			void Add(TYPE eType, xst_castring& strName, u32 uConstant)
 			{
-				SCB CB = { eType, uConstant, strName };
+				SCB CB = { eType, uConstant, strName, xst_null, 0 };
+				vShaderCB.push_back( CB );
+			}
+
+			void Add(TYPE eType, xst_castring& strName, u32 uConstant, SCB* aCBs, u32 uCBCount)
+			{
+				SCB CB = { eType, uConstant, strName, aCBs, uCBCount };
 				vShaderCB.push_back( CB );
 			}
 
@@ -59,39 +74,68 @@ namespace XSE
 
 			}
 
+			u32 _AddName( TYPE eType, xst_castring& strName )
+			{
+				switch( eType )
+				{
+					case FLOAT1:
+						m_ss << "\tfloat1 " << strName << ";" << xst_endl;
+						return 3;
+					break;
+					case FLOAT2:
+						m_ss << "\tfloat2 " << strName << ";" << xst_endl;
+						return 2;
+					break;
+					case FLOAT3:
+						m_ss << "\tfloat3 " << strName << ";" << xst_endl;
+						return 1;
+					break;
+					case FLOAT4:
+						m_ss << "\tfloat4 " << strName << ";" << xst_endl;
+						return 0;
+					break;
+					case MATRIX3:
+						m_ss << "\matrix " << strName << ";" << xst_endl;
+						return 0;
+					break;
+					case MATRIX4:
+						m_ss << "\tmatrix " << strName << ";" << xst_endl;
+						return 0;
+					break;
+				}
+				return 0;
+			}
+
+			// TODO: Use packoffset to save memory for smaller than float4 variables
 			xst_astring Build(xst_castring& strCBName, int iRegister)
 			{
 				vOffsets.resize( ShaderConstants::_ENUM_COUNT + 10, 0 );
+				std::sort( vShaderCB.begin(), vShaderCB.end(), [ &] ( const SCB& l, const SCB& r ){ return l.eType > r.eType; } );
 				m_ss.clear();
 				m_ss << "cbuffer " << strCBName << " : register(b" << iRegister << ")" << xst_endl << "{" << xst_endl;
 				u32 uOffset = 0;
 				for( auto& CB : vShaderCB )
 				{
-					switch( CB.eType )
+					u32 uPadding = 0;
+					if( CB.aCBs && CB.uCBCount )
 					{
-						case FLOAT1:
-							m_ss << "\tfloat " << CB.strName << ";" << xst_endl;
-						break;
-						case FLOAT2:
-							m_ss << "\tfloat2 " << CB.strName << ";" << xst_endl;
-						break;
-						case FLOAT3:
-							m_ss << "\tfloat3 " << CB.strName << ";" << xst_endl;
-						break;
-						case FLOAT4:
-							m_ss << "\tfloat4 " << CB.strName << ";" << xst_endl;
-						break;
-						case MATRIX3:
-							m_ss << "\matrix " << CB.strName << ";" << xst_endl;
-						break;
-						case MATRIX4:
-							m_ss << "\tmatrix " << CB.strName << ";" << xst_endl;
-						break;
+						m_ss << "struct " << CB.strName << "{" << xst_endl;
+						for( u32 i = 0; i < CB.uCBCount; ++i )
+						{
+							uPadding = _AddName( CB.aCBs[i].eType, CB.aCBs[i].strName );
+							vOffsets[ CB.aCBs[i].uConstant ] = uOffset;
+							uOffset += (u32)CB.aCBs[i].eType + uPadding;	
+						}
+						m_ss << "}" << xst_endl;
 					}
-					vOffsets[ CB.uConstant ] = uOffset;
-					uOffset += (u32)CB.eType;
+					else
+					{
+						uPadding = _AddName(CB.eType, CB.strName);
+						vOffsets[ CB.uConstant ] = uOffset;
+						uOffset += (u32)CB.eType + uPadding;
+					}
 				}
-				m_ss << "}";
+				m_ss << "}" << xst_endl;
 				u32 uMod = uOffset % 16;
 				if( uMod != 0 )
 					uOffset += 16 - uMod;
@@ -489,7 +533,11 @@ namespace XSE
 			{
 				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ];
 				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT1, ShaderConstants::TIME, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT4, ShaderConstants::SCENE_AMBIENT_COLOR, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT4, ShaderConstants::LIGHT_COLOR, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT1, ShaderConstants::LIGHT_SPECULAR, this->CONSTANT_NAMES );
 				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT2, ShaderConstants::SCREEN_SIZE, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT3, ShaderConstants::LIGHT_POSITION, this->CONSTANT_NAMES );
 				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT3, ShaderConstants::CAMERA_POSITION, this->CONSTANT_NAMES );
 				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT3, ShaderConstants::CAMERA_DIRECTION, this->CONSTANT_NAMES );
 				this->m_astrShaderCodes[ ShaderCodes::PER_FRAME_PS_CBUFFER ] = Tmp.Build( "cbPerFrame", 0 );
@@ -625,35 +673,23 @@ namespace XSE
 			UpdateConstant( ConstantOffsets::PerFrameVS::SCREEN_SIZE, g_VSOncePerFrame.vecScreenSize, vTmpVS );
 
 			// PIXEL
-			/*TIME = 0,
-					LIGHT_POSITION = TIME + FLOAT1,
-					LIGHT_COLOR = LIGHT_POSITION + FLOAT3,
-					LIGHT_SPECULAR = LIGHT_COLOR + FLOAT4,
-					SCENE_AMBIENT_COLOR = LIGHT_SPECULAR + FLOAT1,
-					SCREEN_SIZE = SCENE_AMBIENT_COLOR + FLOAT4,
-					CAMERA_POSITION = SCREEN_SIZE + FLOAT2,
-					CAMERA_DIRECTION = CAMERA_POSITION + FLOAT3,
-					_TOTAL_COUNT = CAMERA_DIRECTION + FLOAT3*
-			cbuffer cbPerFrame : register( b0 )
-			{
-				float fTime;
-				float3 f3LightPos;
-				float4 f4LightColor;
-				float f4LightSpecular;
-				float4 f4SceneAmbientColor;
-				float2 f2ScreenSize;
-				float3 f3CameraPos;
-				float3 f3CameraDir;
-			}		
-			*/
-			UpdateConstant( ConstantOffsets::PerFramePS::TIME, 1.0f, vTmpPS );
-			UpdateConstant( ConstantOffsets::PerFramePS::LIGHT_POSITION, Vec3(1,1,1), vTmpPS );
-			UpdateConstant( ConstantOffsets::PerFramePS::LIGHT_COLOR, Vec4(1,0.2,1,1), vTmpPS );
-			UpdateConstant( ConstantOffsets::PerFramePS::LIGHT_SPECULAR, 32.0f, vTmpPS );
-			UpdateConstant( ConstantOffsets::PerFramePS::SCENE_AMBIENT_COLOR, Vec4(0, 0, 1, 1) /*m_vAllConstantValues[ ShaderConstants::SCENE_AMBIENT_COLOR ].float4, 4*/, vTmpPS );
-			UpdateConstant( ConstantOffsets::PerFramePS::SCREEN_SIZE, /*g_VSOncePerFrame.vecScreenSize*/Vec2(1,1), vTmpPS );
-			UpdateConstant( ConstantOffsets::PerFramePS::CAMERA_POSITION, Vec3(1,0,0), vTmpPS );
-			UpdateConstant( ConstantOffsets::PerFramePS::CAMERA_DIRECTION, Vec3(0,1,0), vTmpPS );
+			auto& PSCB = g_aCBBuilders[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ];
+			PSCB.SetConstant( ShaderConstants::TIME, 0.3f );
+			/*PSCB.SetConstant( ShaderConstants::LIGHT_SPECULAR, 1.0f );
+			PSCB.SetConstant( ShaderConstants::SCREEN_SIZE, Vec2(1,1) );
+			PSCB.SetConstant( ShaderConstants::LIGHT_POSITION, Vec3(1,1,1) );
+			PSCB.SetConstant( ShaderConstants::CAMERA_POSITION, Vec3(1,1,1) );
+			PSCB.SetConstant( ShaderConstants::CAMERA_DIRECTION, Vec3(1,1,0) );*/
+			PSCB.SetConstant( ShaderConstants::SCENE_AMBIENT_COLOR, Vec4(1,0,0,0) );
+			PSCB.SetConstant( ShaderConstants::LIGHT_COLOR, Vec4(0,1,0,0.1f) );
+			//UpdateConstant( ConstantOffsets::PerFramePS::TIME, 1.0f, vTmpPS );
+			//UpdateConstant( ConstantOffsets::PerFramePS::LIGHT_POSITION, Vec3(1,1,1), vTmpPS );
+			//UpdateConstant( ConstantOffsets::PerFramePS::LIGHT_COLOR, Vec4(1,0.2,1,1), vTmpPS );
+			//UpdateConstant( ConstantOffsets::PerFramePS::LIGHT_SPECULAR, 32.0f, vTmpPS );
+			//UpdateConstant( ConstantOffsets::PerFramePS::SCENE_AMBIENT_COLOR, Vec4(0, 0, 1, 1) /*m_vAllConstantValues[ ShaderConstants::SCENE_AMBIENT_COLOR ].float4, 4*/, vTmpPS );
+			//UpdateConstant( ConstantOffsets::PerFramePS::SCREEN_SIZE, /*g_VSOncePerFrame.vecScreenSize*/Vec2(1,1), vTmpPS );
+			//UpdateConstant( ConstantOffsets::PerFramePS::CAMERA_POSITION, Vec3(1,0,0), vTmpPS );
+			//UpdateConstant( ConstantOffsets::PerFramePS::CAMERA_DIRECTION, Vec3(0,1,0), vTmpPS );
 			
 			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
 			xst_memcpy( g_MappedSubresource.pData, uVSSize, &vTmpVS[0], uVSSize );
@@ -661,7 +697,8 @@ namespace XSE
 			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ], 0 );
 			
 			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
-			xst_memcpy( g_MappedSubresource.pData, uPSSize, &vTmpPS[0], uPSSize );
+			//xst_memcpy( g_MappedSubresource.pData, uPSSize, &vTmpPS[0], uPSSize );
+			xst_memcpy( g_MappedSubresource.pData, PSCB.uSizeInBytes, &PSCB.vData[0], PSCB.uSizeInBytes );
 			//xst_memcpy( g_MappedSubresource.pData, sizeof( SPSOncePerFrame ), &g_VSOncePerFrame, sizeof( SPSOncePerFrame ) );
 			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ], 0 );
 
@@ -694,9 +731,6 @@ namespace XSE
 			g_VSOncePerObj.mtxWorldViewProj = XMMatrixTranspose( XMMatrixMultiply( XMMatrixMultiply( g_VSOncePerObj.mtxWorld, mtxView ), mtxProj ) );
 
 			// VERTEX
-			/*UpdateConstant( ConstantOffsets::PerObjVS::MTX_OBJ_WORLD, g_VSOncePerObj.mtxWorld, vTmpVS );
-			UpdateConstant( ConstantOffsets::PerObjVS::MTX_OBJ_WORLD_VIEW_PROJECTION, g_VSOncePerObj.mtxWorldViewProj, vTmpVS );
-			UpdateConstant( ConstantOffsets::PerObjVS::MTX_OBJ_WORLD_INVERSE_TRANSPOSE, g_VSOncePerObj.mtxWorldInvT, vTmpVS );*/
 			g_aCBBuilders[ConstantBuffers::CB_VS_ONCE_PER_OBJECT].SetConstant( ShaderConstants::MTX_OBJ_WORLD, g_VSOncePerObj.mtxWorld );
 			g_aCBBuilders[ConstantBuffers::CB_VS_ONCE_PER_OBJECT].SetConstant( ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION, g_VSOncePerObj.mtxWorldViewProj );
 			g_aCBBuilders[ConstantBuffers::CB_VS_ONCE_PER_OBJECT].SetConstant( ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE, g_VSOncePerObj.mtxWorldInvT );

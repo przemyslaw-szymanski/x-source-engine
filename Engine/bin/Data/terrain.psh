@@ -14,5 +14,8 @@ float4 ps(VS_OUT IN) : SV_TARGET
 	float3 f3L = normalize( f3LightP - f3VertexPos );
 	float fDL = max( dot( f3N, f3L ), 0.0 );
 	float3 f3V = normalize( f3CamPos - f3VertexPos );
-	return saturate(float4(f4SceneAmbientColor.g, 0,0,0)) * fDL;
+	float4 c = f4SceneAmbientColor;
+	float t = fTime;
+	//c.xyzw = t;
+	return c * fDL;
 }
