@@ -193,22 +193,35 @@ namespace XSE
 
 		i32 CRenderSystem::_LoadLibraries()
 		{
-			#if defined (XSE_RENDERER_DEBUG)
+			/*#if defined (XSE_RENDERER_DEBUG)
 				m_ahDlls[ D3DX11 ] = XST::Platform::LoadLibrary( "D3DX11d_43.dll" );
 			#else
 				m_ahDlls[ D3DX11 ] = XST::Platform::LoadLibrary( "D3DX11d_43.dll" );
-			#endif
+			#endif*/
+			lpcastr strD3dx11LibName;
+			if( this->m_Options.bDebugMode )
+				strD3dx11LibName = "D3DX11d_43.dll";
+			else
+				strD3dx11LibName = "D3DX11_43.dll";
 
-			m_ahDlls[ D3D11 ] = XST::Platform::LoadLibrary( "d3d11.dll" );
-			m_ahDlls[ DXGI ] = XST::Platform::LoadLibrary( "dxgi.dll" );
+			m_ahDlls[ D3DX11 ]	= XST::Platform::LoadLibrary( strD3dx11LibName );
+			m_ahDlls[ D3D11 ]	= XST::Platform::LoadLibrary( "d3d11.dll" );
+			m_ahDlls[ DXGI ]	= XST::Platform::LoadLibrary( "dxgi.dll" );
 
-			for(u32 i = 0; i < LIB_COUNT; ++i)
+			if( !m_ahDlls[ D3DX11 ] )
 			{
-				if( !m_ahDlls[ i ] )
-				{
-					XST_LOG_ERR( "Unable to load one or more Direct3D11 dlls" );
-					return RESULT::FAILED;
-				}
+				XST_LOG_ERR( "Unable to load " << strD3dx11LibName );
+				return XST_FAIL;
+			}
+			if( !m_ahDlls[ D3D11 ] )
+			{
+				XST_LOG_ERR( "Unable to load d3d11.dll" );
+				return XST_FAIL;
+			}
+			if( !m_ahDlls[ DXGI ] )
+			{
+				XST_LOG_ERR( "Unable to load dxgi.dll" );
+				return XST_FAIL;
 			}
 
 			XSE_LOAD_FUNC( D3D11CreateDeviceAndSwapChain, pfnD3D11CreateDeviceAndSwapChain, m_ahDlls[ D3D11 ], XST_TOSTRING( D3D11CreateDeviceAndSwapChain ) );

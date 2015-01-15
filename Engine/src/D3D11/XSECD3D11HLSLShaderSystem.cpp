@@ -80,11 +80,11 @@ namespace XSE
 				{
 					case FLOAT1:
 						m_ss << "\tfloat1 " << strName << ";" << xst_endl;
-						return 3;
+						return 0;
 					break;
 					case FLOAT2:
 						m_ss << "\tfloat2 " << strName << ";" << xst_endl;
-						return 2;
+						return 0;
 					break;
 					case FLOAT3:
 						m_ss << "\tfloat3 " << strName << ";" << xst_endl;
@@ -463,6 +463,50 @@ namespace XSE
 
 			m_vAllConstantValues.resize( ShaderConstants::_ENUM_COUNT );
 
+			//Shader codes
+			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_FRAME_VS_CBUFFER ] = HLSL::CreatePerFrameVSCBuffer( this->CONSTANT_NAMES );
+			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_OBJECT_VS_CBUFFER ] = HLSL::CreatePerObjectVSCBuffer( this->CONSTANT_NAMES );
+			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_FRAME_PS_CBUFFER ] = HLSL::CreatePerFramePSCBuffer( this->CONSTANT_NAMES );
+			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_OBJECT_PS_CBUFFER ] = HLSL::CreatePerObjectPSCBuffer( this->CONSTANT_NAMES );
+			// VS PER FRAME
+			{
+				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ];
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT1, ShaderConstants::TIME, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT2, ShaderConstants::SCREEN_SIZE, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT3, ShaderConstants::CAMERA_POSITION, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT3, ShaderConstants::CAMERA_DIRECTION, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::MATRIX4, ShaderConstants::MTX_VIEW, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::MATRIX4, ShaderConstants::MTX_PROJECTION, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::MATRIX4, ShaderConstants::MTX_VIEW_PROJ, this->CONSTANT_NAMES );
+				this->m_astrShaderCodes[ ShaderCodes::PER_FRAME_VS_CBUFFER ] = Tmp.Build( "cbPerFrame", 0 );
+			}
+			// PS PER FRAME
+			{
+				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ];
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT1, ShaderConstants::TIME, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT4, ShaderConstants::SCENE_AMBIENT_COLOR, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT4, ShaderConstants::LIGHT_COLOR, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT1, ShaderConstants::LIGHT_SPECULAR, this->CONSTANT_NAMES );
+				//HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT2, ShaderConstants::SCREEN_SIZE, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT3, ShaderConstants::LIGHT_POSITION, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT3, ShaderConstants::CAMERA_POSITION, this->CONSTANT_NAMES );
+				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT3, ShaderConstants::CAMERA_DIRECTION, this->CONSTANT_NAMES );
+				this->m_astrShaderCodes[ ShaderCodes::PER_FRAME_PS_CBUFFER ] = Tmp.Build( "cbPerFrame", 0 );
+			}
+			// VS PER OBJECT
+			{
+				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ];
+				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD ), ShaderConstants::MTX_OBJ_WORLD );
+				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION ), ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION );
+				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE ), ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE );
+				this->m_astrShaderCodes[ ShaderCodes::PER_OBJECT_VS_CBUFFER ] = Tmp.Build( "cbPerObject", 1 );
+			}
+			// PS PER OBJECT
+			{
+				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ];
+				this->m_astrShaderCodes[ ShaderCodes::PER_OBJECT_PS_CBUFFER ] = Tmp.Build( "cbPerObject", 1 );
+			}
+
 			HRESULT hr;
 			//Create constant buffers
 			D3D11_BUFFER_DESC BufferDesc;
@@ -483,7 +527,7 @@ namespace XSE
 
 			BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 			BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			BufferDesc.ByteWidth = sizeof( SPSOncePerFrame );
+			BufferDesc.ByteWidth = g_aCBBuilders[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ].uSizeInBytes; //sizeof( SPSOncePerFrame );
 			hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ] );
 			if( FAILED( hr ) )
 			{
@@ -512,49 +556,6 @@ namespace XSE
 				return XST_FAIL;
 			}
 
-			//Shader codes
-			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_FRAME_VS_CBUFFER ] = HLSL::CreatePerFrameVSCBuffer( this->CONSTANT_NAMES );
-			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_OBJECT_VS_CBUFFER ] = HLSL::CreatePerObjectVSCBuffer( this->CONSTANT_NAMES );
-			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_FRAME_PS_CBUFFER ] = HLSL::CreatePerFramePSCBuffer( this->CONSTANT_NAMES );
-			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_OBJECT_PS_CBUFFER ] = HLSL::CreatePerObjectPSCBuffer( this->CONSTANT_NAMES );
-			// VS PER FRAME
-			{
-				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ];
-				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT1, ShaderConstants::TIME, this->CONSTANT_NAMES );
-				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT2, ShaderConstants::SCREEN_SIZE, this->CONSTANT_NAMES );
-				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT3, ShaderConstants::CAMERA_POSITION, this->CONSTANT_NAMES );
-				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT3, ShaderConstants::CAMERA_DIRECTION, this->CONSTANT_NAMES );
-				HLSL::AddConstant( &Tmp, CCBBuilder::MATRIX4, ShaderConstants::MTX_VIEW, this->CONSTANT_NAMES );
-				HLSL::AddConstant( &Tmp, CCBBuilder::MATRIX4, ShaderConstants::MTX_PROJECTION, this->CONSTANT_NAMES );
-				HLSL::AddConstant( &Tmp, CCBBuilder::MATRIX4, ShaderConstants::MTX_VIEW_PROJ, this->CONSTANT_NAMES );
-				this->m_astrShaderCodes[ ShaderCodes::PER_FRAME_VS_CBUFFER ] = Tmp.Build( "cbPerFrame", 0 );
-			}
-			// PS PER FRAME
-			{
-				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ];
-				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT1, ShaderConstants::TIME, this->CONSTANT_NAMES );
-				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT4, ShaderConstants::SCENE_AMBIENT_COLOR, this->CONSTANT_NAMES );
-				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT4, ShaderConstants::LIGHT_COLOR, this->CONSTANT_NAMES );
-				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT1, ShaderConstants::LIGHT_SPECULAR, this->CONSTANT_NAMES );
-				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT2, ShaderConstants::SCREEN_SIZE, this->CONSTANT_NAMES );
-				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT3, ShaderConstants::LIGHT_POSITION, this->CONSTANT_NAMES );
-				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT3, ShaderConstants::CAMERA_POSITION, this->CONSTANT_NAMES );
-				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT3, ShaderConstants::CAMERA_DIRECTION, this->CONSTANT_NAMES );
-				this->m_astrShaderCodes[ ShaderCodes::PER_FRAME_PS_CBUFFER ] = Tmp.Build( "cbPerFrame", 0 );
-			}
-			// VS PER OBJECT
-			{
-				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ];
-				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD ), ShaderConstants::MTX_OBJ_WORLD );
-				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION ), ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION );
-				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE ), ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE );
-				this->m_astrShaderCodes[ ShaderCodes::PER_OBJECT_VS_CBUFFER ] = Tmp.Build( "cbPerObject", 1 );
-			}
-			// PS PER OBJECT
-			{
-				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ];
-				this->m_astrShaderCodes[ ShaderCodes::PER_OBJECT_PS_CBUFFER ] = Tmp.Build( "cbPerObject", 1 );
-			}
 			return XST_OK;
 		}
 
@@ -674,14 +675,14 @@ namespace XSE
 
 			// PIXEL
 			auto& PSCB = g_aCBBuilders[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ];
-			PSCB.SetConstant( ShaderConstants::TIME, 0.3f );
-			/*PSCB.SetConstant( ShaderConstants::LIGHT_SPECULAR, 1.0f );
-			PSCB.SetConstant( ShaderConstants::SCREEN_SIZE, Vec2(1,1) );
-			PSCB.SetConstant( ShaderConstants::LIGHT_POSITION, Vec3(1,1,1) );
-			PSCB.SetConstant( ShaderConstants::CAMERA_POSITION, Vec3(1,1,1) );
-			PSCB.SetConstant( ShaderConstants::CAMERA_DIRECTION, Vec3(1,1,0) );*/
-			PSCB.SetConstant( ShaderConstants::SCENE_AMBIENT_COLOR, Vec4(1,0,0,0) );
-			PSCB.SetConstant( ShaderConstants::LIGHT_COLOR, Vec4(0,1,0,0.1f) );
+			PSCB.SetConstant( ShaderConstants::TIME, 1.1f );
+			PSCB.SetConstant( ShaderConstants::LIGHT_SPECULAR, 0.5f );
+			//PSCB.SetConstant( ShaderConstants::SCREEN_SIZE, Vec2(0,1) );
+			PSCB.SetConstant( ShaderConstants::LIGHT_POSITION, Vec3(0.4) );
+			PSCB.SetConstant( ShaderConstants::CAMERA_POSITION, Vec3(5) );
+			PSCB.SetConstant( ShaderConstants::CAMERA_DIRECTION, Vec3(6) );
+			PSCB.SetConstant( ShaderConstants::SCENE_AMBIENT_COLOR, Vec4(0.3f) );
+			PSCB.SetConstant( ShaderConstants::LIGHT_COLOR, Vec4(8) );
 			//UpdateConstant( ConstantOffsets::PerFramePS::TIME, 1.0f, vTmpPS );
 			//UpdateConstant( ConstantOffsets::PerFramePS::LIGHT_POSITION, Vec3(1,1,1), vTmpPS );
 			//UpdateConstant( ConstantOffsets::PerFramePS::LIGHT_COLOR, Vec4(1,0.2,1,1), vTmpPS );
