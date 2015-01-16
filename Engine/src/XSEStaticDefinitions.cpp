@@ -40,10 +40,15 @@ namespace XSE
 		"f4SceneAmbientColor",
 		"f2ScreenSize",
 		"f3CameraPos",
-		"f3CameraDir"
+		"f3CameraDir",
+		"f4MaterialDiffuseColor",
+		"f4MaterialAmbientColor",
+		"f4MaterialSpecularColor",
+		"fMaterialAlpha",
+		"fMaterialShininess"
 	};
-
-	/*struct ShaderConstants
+	/*
+	struct ShaderConstants
 	{
 		enum CONSTANT
 		{
@@ -63,10 +68,15 @@ namespace XSE
 			SCREEN_SIZE,
 			CAMERA_POSITION,
 			CAMERA_DIRECTION,
+			MATERIAL_DIFFUSE_COLOR,
+			MATERIAL_AMBIENT_COLOR,
+			MATERIAL_SPECULAR_COLOR,
+			MATERIAL_ALPHA,
+			MATERIAL_SHININESS,
 			_ENUM_COUNT
 		};
-	};*/
-
+	};
+	*/
 }//xse
 
 #endif

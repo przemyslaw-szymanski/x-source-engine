@@ -27,6 +27,7 @@ namespace XSE
 					PER_OBJECT_VS_CBUFFER,
 					PER_FRAME_PS_CBUFFER,
 					PER_OBJECT_PS_CBUFFER,
+					PER_MATERIAL_PS_CBUFFER,
 					_ENUM_COUNT
 				};
 			};
@@ -88,6 +89,9 @@ namespace XSE
 
 			//Updates shader inputs once per frame only
 			virtual	void						UpdateFrameInputs() = 0;
+
+			// Updates shader inputs once per material
+			virtual void						UpdateMaterialInputs() = 0;
 
 			virtual SHADER_LANGUAGE				GetType() const
 												{ return m_eLanguage; }

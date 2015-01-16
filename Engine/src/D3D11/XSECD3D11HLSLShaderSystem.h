@@ -112,13 +112,15 @@ namespace XSE
 
 						void			UpdateFrameInputs() xst_implement;
 
+						void			UpdateMaterialInputs() xst_implement;
+
 						void			SetSceneAmbient(const XST::CColor& Color);
 
 						i32				PrepareResource(Resources::IResource* pRes);
 
 			protected:
 
-						i32				_AddConstantBuffers(IShader** ppShader, xst_castring& strPerFrameCB, xst_castring& strPerObjCB);
+						//i32				_AddConstantBuffers(IShader** ppShader, xst_castring* astrCBs, u32 uCBCount);
 
 			protected:
 

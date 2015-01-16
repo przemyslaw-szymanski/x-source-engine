@@ -497,6 +497,8 @@ namespace XSE
 			//Do transformations
 			pRS->SetMatrix( MatrixTypes::WORLD, mtxTransform );
 			//Update shaders input
+			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_DIFFUSE_COLOR, Vec4( 1, 0.5, 0.3, 1 ) );
+			pRS->GetShaderSystem()->UpdateMaterialInputs();
 			pRS->UpdateObjectInputs();
 				
 			//Draw object

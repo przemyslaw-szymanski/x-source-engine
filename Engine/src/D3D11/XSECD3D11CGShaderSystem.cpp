@@ -250,6 +250,11 @@ namespace XSE
 		{
 		}
 
+		void CCGShaderSystem::UpdateMaterialInputs()
+		{
+
+		}
+
 		IPixelShader*	CCGShaderSystem::CreatePixelShader(XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
 		{
 			CCGPixelShader* pShader = xst_new CCGPixelShader( m_pRenderSystem, this, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
