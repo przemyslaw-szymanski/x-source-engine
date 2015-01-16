@@ -17,41 +17,6 @@ namespace XSE
 
 			public:
 
-				struct SVSOncePerFrame
-				{
-					DirectX::XMMATRIX	mtxWorld;
-					DirectX::XMMATRIX	mtxView;
-					DirectX::XMMATRIX	mtxProj;
-					DirectX::XMMATRIX	mtxViewProj;
-					Vec4				vecLightColor;
-					Vec3				vecCamPos;
-					Vec3				vecCamDir;
-					Vec3				vecLightPos;
-					Vec2				vecScreenSize;
-				};
-
-				struct SPSOncePerFrame
-				{
-					Vec4		vecLightColor;
-					Vec4		vecSceneAmbient;
-					Vec3		vecLightPos;
-					Vec3		vecCamPos;
-					Vec3		vecCamDir;
-					Vec2		vecScreenSize;
-				};
-
-				struct SVSOncePerObject
-				{
-					DirectX::XMMATRIX	mtxWorld;
-					DirectX::XMMATRIX	mtxWorldViewProj;
-					DirectX::XMMATRIX	mtxWorldInvT; // world inverse transpose
-				};
-
-				struct SPSOncePerObject
-				{
-					DirectX::XMMATRIX	mtxTemp;
-				};
-
 				XST_ALIGN(16) union UConstantValue
 				{
 					f32		float4x4[16];

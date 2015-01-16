@@ -24,11 +24,11 @@ float4 ps(VS_OUT IN) : SV_TARGET
 	//c.xyz = f3CameraDir;
 	//c.xyzw = f4LightColor;
 	//c.xyzw = f4SceneAmbientColor;
-	c.rgba = f4MaterialDiffuseColor;
-	c.rgba = f4MaterialAmbientColor;
-	c.rgba = fMaterialShininess;
+	//c.rgba = f4MaterialDiffuseColor;
+	//c.rgba = f4MaterialAmbientColor;
+	//c.rgba = fMaterialShininess;
 	//c.rgba = f4MaterialSpecularColor;
 	//c.rgba = fMaterialAlpha;
-	//c.rgba = f4SceneAmbientColor;
+	c.rgba = f4SceneAmbientColor;
 	return c * fDL;
 }

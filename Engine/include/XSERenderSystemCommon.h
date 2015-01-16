@@ -116,7 +116,8 @@ namespace XSE
 			CB_PS_USER1,
 			CB_PS_USER2,
 			CB_PS_USER3,
-			_ENUM_COUNT
+			_ENUM_COUNT,
+			_SYS_COUNT = CB_VS_USER0
 		};
 	};
 	typedef ConstantBuffers::CONSTANT_BUFFER CONSTANT_BUFFER;
