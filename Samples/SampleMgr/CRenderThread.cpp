@@ -76,6 +76,7 @@ void CRenderThread::run()
 			m_pSample->Update();
 			g_pWnd->BeginRenderFrame();
 			ProcessMessages();
+			m_pEngine->GetSceneManager()->Render();
 			g_pWnd->EndRenderFrame();
 			Unlock();
 			Sleep( 10 );

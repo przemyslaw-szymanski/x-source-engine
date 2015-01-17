@@ -464,13 +464,12 @@ namespace XSE
 
 			m_Timer.StartQPerf();
 
+			m_pEngine->Update( m_fFrameTime );
+
 			if( XST_FAILED( m_pRenderSystem->BeginRender() ) )
 			{
 				return XST_FAIL;
 			}
-
-			xst_assert( m_pEngine->GetSceneManager(), "" );
-			m_pEngine->Update( m_fFrameTime );
 
 			return XST_OK;
 		}
@@ -500,20 +499,13 @@ namespace XSE
 
 		i32 CRenderWindow::RenderFrame()
 		{
-			if( BeginRenderFrame() != RESULT::OK )
-			{
-				return RESULT::FAILED;
-			}
+			XST_RET_FAIL( Update() );
+			XST_RET_FAIL( BeginRenderFrame() );
 
-			if( Update() != RESULT::OK )
-			{
-				return RESULT::FAILED;
-			}
+			xst_assert2( m_pEngine->GetSceneManager() );
+			m_pEngine->GetSceneManager()->Render();
 
-			if( EndRenderFrame() != RESULT::OK )
-			{
-				return RESULT::FAILED;
-			}
+			XST_RET_FAIL( EndRenderFrame() );
 
 			return RESULT::OK;
 		}

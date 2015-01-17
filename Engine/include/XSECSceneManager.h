@@ -56,6 +56,7 @@ namespace XSE
 		        i32				Init();
 
 		        void			Update(cf32& fFrameTime);
+				void			Render();
 
 		        CSceneNode*		CreateNode(xst_castring& strName, bool bAutoDestroy = true);
 

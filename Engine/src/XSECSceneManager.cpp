@@ -89,7 +89,10 @@ namespace XSE
 		m_pScenePartitionSystem->StartProcessing();
 		m_pScenePartitionSystem->Update();
 		m_pTerrainSystem->Update();
+	}
 
+	void CSceneManager::Render()
+	{
 		m_RenderQueue.Render( this );
 	}
 
