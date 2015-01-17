@@ -566,14 +566,14 @@ namespace XSE
 			u32 uDataSizes[ ConstantBuffers::_SYS_COUNT ] = 
 			{
 				/*CB_VS_ONCE_PER_FRAME,
-				CB_VS_ONCE_PER_OBJECT,
-				CB_PS_ONCE_PER_FRAME,
-				CB_PS_ONCE_PER_OBJECT,
-				CB_PS_ONCE_PER_MATERIAL*/
-				sizeof( SVSOncePerObject ),
+			CB_VS_ONCE_PER_OBJECT,
+			CB_PS_ONCE_PER_FRAME,
+			CB_PS_ONCE_PER_OBJECT,
+			CB_PS_ONCE_PER_MATERIAL,*/
 				sizeof( SVSOncePerFrame ),
-				sizeof( SPSOncePerObject ),
+				sizeof( SVSOncePerObject ),
 				sizeof( SPSOncePerFrame ),
+				sizeof( SPSOncePerObject ),
 				sizeof( PSOncePerMaterial )
 			};
 
