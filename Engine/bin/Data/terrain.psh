@@ -19,8 +19,8 @@ float4 ps(VS_OUT IN) : SV_TARGET
 	c.xyzw = fLightSpecular;
 	c.xyzw = fTime;
 	c.xyz = f3LightPos;
-	c.xyz = f3CameraPos;
-	c.xyzw = float4( 0, s.x,s.y,0 );
+	//c.xyz = f3CameraPos;
+	c.xyzw = float4( s.x,s.y,0,0 );
 	//c.xyz = f3CameraDir;
 	//c.xyzw = f4LightColor;
 	//c.xyzw = f4SceneAmbientColor;
@@ -29,6 +29,6 @@ float4 ps(VS_OUT IN) : SV_TARGET
 	//c.rgba = fMaterialShininess;
 	//c.rgba = f4MaterialSpecularColor;
 	//c.rgba = fMaterialAlpha;
-	c.rgba = f4SceneAmbientColor;
+	//c.rgba = f4SceneAmbientColor;
 	return c * fDL;
 }

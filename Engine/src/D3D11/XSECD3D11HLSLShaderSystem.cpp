@@ -233,11 +233,12 @@ namespace XSE
 			Vec4		vecLightColor;
 			Vec4		vecSceneAmbient;
 			Vec3		vecLightPos;
-			Vec3		vecCamPos;
-			Vec3		vecCamDir;
-			Vec2		vecScreenSize;
 			f32			fTime;
+			Vec3		vecCamPos;
 			f32			fLightSpecular;
+			Vec3		vecCamDir;
+			f32			padding0;
+			Vec2		vecScreenSize;
 		};
 
 		XST_ALIGN( 16 ) struct PSOncePerMaterial
@@ -344,25 +345,27 @@ namespace XSE
 				{
 					return g_strPerFramePSCBuffer;
 				}
-				/*Vec4		vecLightColor;
+				/*
+				Vec4		vecLightColor;
 			Vec4		vecSceneAmbient;
 			Vec3		vecLightPos;
+			f32			fTime;
 			Vec3		vecCamPos;
+			f32			fLightSpecular;
 			Vec3		vecCamDir;
 			Vec2		vecScreenSize;
-			f32			fTime;
-			f32			fLightSpecular;*/
+				*/
 				xst_stringstream ss;
 				ss << "cbuffer cbPerFrame : register( b0 )" << xst_endl;
 				ss << "{" << xst_endl;
 				ss << "\tfloat4 " << astrConstants[ ShaderConstants::LIGHT_COLOR ]			<< ";" << xst_endl;
 				ss << "\tfloat4 " << astrConstants[ ShaderConstants::SCENE_AMBIENT_COLOR ]	<< ";" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ ShaderConstants::LIGHT_POSITION ]		<< ";" << xst_endl;
+				ss << "\tfloat "  << astrConstants[ ShaderConstants::TIME ]					<< ";" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_POSITION ]		<< ";" << xst_endl;
+				ss << "\tfloat "  << astrConstants[ ShaderConstants::LIGHT_SPECULAR ]		<< ";" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_DIRECTION ]		<< ";" << xst_endl;
 				ss << "\tfloat2 " << astrConstants[ ShaderConstants::SCREEN_SIZE ]			<< ";" << xst_endl;
-				ss << "\tfloat "  << astrConstants[ ShaderConstants::TIME ]					<< ";" << xst_endl;
-				ss << "\tfloat "  << astrConstants[ ShaderConstants::LIGHT_SPECULAR ]		<< ";" << xst_endl;
 				ss << "}" << xst_endl;
 				g_strPerFramePSCBuffer = ss.str();
 				return g_strPerFramePSCBuffer;
@@ -770,14 +773,22 @@ namespace XSE
 
 			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
 			g_pOncePerFramePS = (SPSOncePerFrame*)g_MappedSubresource.pData;
-			g_pOncePerFramePS->vecLightColor.Set( m_vAllConstantValues[ ShaderConstants::LIGHT_COLOR ].float4 );
+			/*g_pOncePerFramePS->vecLightColor.Set( m_vAllConstantValues[ ShaderConstants::LIGHT_COLOR ].float4 );
 			g_pOncePerFramePS->vecSceneAmbient.Set( m_vAllConstantValues[ ShaderConstants::SCENE_AMBIENT_COLOR ].float4 );
 			g_pOncePerFramePS->vecLightPos.Set( m_vAllConstantValues[ ShaderConstants::LIGHT_POSITION ].float3 );
 			g_pOncePerFramePS->vecCamPos.Set( m_vAllConstantValues[ ShaderConstants::CAMERA_POSITION ].float3 );
 			g_pOncePerFramePS->vecCamDir.Set( m_vAllConstantValues[ ShaderConstants::CAMERA_DIRECTION ].float3 );
 			g_pOncePerFramePS->vecScreenSize.Set( m_vAllConstantValues[ ShaderConstants::SCREEN_SIZE ].float2 );
 			g_pOncePerFramePS->fLightSpecular = ( m_vAllConstantValues[ ShaderConstants::LIGHT_SPECULAR ].float1[0] );
-			g_pOncePerFramePS->fTime = ( m_vAllConstantValues[ ShaderConstants::TIME ].float1[0] );
+			g_pOncePerFramePS->fTime = ( m_vAllConstantValues[ ShaderConstants::TIME ].float1[0] );*/
+			g_pOncePerFramePS->vecLightColor.Set( Vec4(0,0.5,1,0) );
+			g_pOncePerFramePS->vecSceneAmbient.Set( Vec4(1,0.5,0,0) );
+			g_pOncePerFramePS->vecLightPos.Set( Vec3(0,0,1) );
+			g_pOncePerFramePS->vecCamPos.Set( Vec3(0,1,0) );
+			g_pOncePerFramePS->vecCamDir.Set( Vec3(1,0,1) );
+			g_pOncePerFramePS->vecScreenSize.Set( Vec2(0,1) );
+			g_pOncePerFramePS->fLightSpecular = ( 0.2f );
+			g_pOncePerFramePS->fTime = ( 0.5f );
 			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ], 0 );
 			m_pRS->m_pDeviceContext->PSSetConstantBuffers( 0, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ] );
 		}
