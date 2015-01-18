@@ -223,9 +223,10 @@ namespace XSE
 			DirectX::XMMATRIX	mtxProj;
 			DirectX::XMMATRIX	mtxViewProj;
 			Vec3				vecCamPos;
-			Vec3				vecCamDir;
-			Vec2				vecScreenSize;
 			f32					fTime;
+			Vec3				vecCamDir;
+			f32					padding0;
+			Vec2				vecScreenSize;
 		};
 
 		XST_ALIGN(16) struct SPSOncePerFrame
@@ -289,10 +290,12 @@ namespace XSE
 			static xst_astring g_strPerFrameVSCBuffer = "";
 			static xst_astring g_strPerObjectVSCBuffer = "";
 			static xst_astring g_strPerFramePSCBuffer = "";
+			static xst_astring g_strPerMaterialPSCBufer = "";
 			static xst_astring g_strPerObjectPSCBuffer = "";
 			static xst_astring g_strConstantVUniforms = "";
 			static xst_astring g_strConstantPUniforms = "";
 			static xst_astring g_strShader = "";
+			static xst_astring g_astrCBufferCodes[ ConstantBuffers::_ENUM_COUNT ] = { "" };
 
 			//XSE::D3D11::CRenderSystem::SMatrixBuffer g_ConstantMatrices;
 
@@ -301,45 +304,57 @@ namespace XSE
 				pOut->Add( eType, astrConstants[ uConstant ], uConstant );
 			}
 
-			xst_astring& CreatePerFrameVSCBuffer(xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ])
+			xst_astring& CreatePerFrameVSCBuffer(xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ], u32 uRegister)
 			{
 				if( g_strPerFrameVSCBuffer.length() > 0 )
 				{
 					return g_strPerFrameVSCBuffer;
 				}
+				/*
+				DirectX::XMMATRIX	mtxView;
+			DirectX::XMMATRIX	mtxProj;
+			DirectX::XMMATRIX	mtxViewProj;
+			Vec3				vecCamPos;
+			f32					fTime;
+			Vec3				vecCamDir;
+			f32					padding0;
+			Vec2				vecScreenSize;
+				*/
 				xst_stringstream ss;
-				ss << "cbuffer cbPerFrame : register( b0 )" << xst_endl;
+				ss << "cbuffer cbPerFrame : register( b" << uRegister << ")" << xst_endl;
 				ss << "{" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_VIEW ]				<< ";" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_PROJECTION ]		<< ";" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_VIEW_PROJ ]		<< ";" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_POSITION ]		<< ";" << xst_endl;
+				ss << "\tfloat "  << astrConstants[ ShaderConstants::TIME ]					<< ";" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_DIRECTION ]		<< ";" << xst_endl;
 				ss << "\tfloat2 " << astrConstants[ ShaderConstants::SCREEN_SIZE ]			<< ";" << xst_endl;
-				ss << "\tfloat "  << astrConstants[ ShaderConstants::TIME ]					<< ";" << xst_endl;
 				ss << "}" << xst_endl;
+				g_astrCBufferCodes[ ConstantBuffers::VS_ONCE_PER_FRAME ] = ss.str();
 				g_strPerFrameVSCBuffer = ss.str();
 				return g_strPerFrameVSCBuffer;
 			}
 
-			xst_astring& CreatePerObjectVSCBuffer(xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ])
+			xst_astring& CreatePerObjectVSCBuffer(xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ], u32 uRegister)
 			{
 				if( g_strPerObjectVSCBuffer.length() > 0 )
 				{
 					return g_strPerObjectVSCBuffer;
 				}
 				xst_stringstream ss;
-				ss << "cbuffer cbPerObject : register( b1 )" << xst_endl;
+				ss << "cbuffer cbPerObject : register( b" << uRegister << ")" << xst_endl;
 				ss << "{" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_OBJ_WORLD ]					<< ";" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION ]	<< ";" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE ]	<< ";" << xst_endl;
 				ss << "}" << xst_endl;
 				g_strPerFrameVSCBuffer = ss.str();
+				g_astrCBufferCodes[ ConstantBuffers::VS_ONCE_PER_DRAWCALL ] = ss.str();
 				return g_strPerFrameVSCBuffer;
 			}
 
-			xst_astring& CreatePerFramePSCBuffer(xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ])
+			xst_astring& CreatePerFramePSCBuffer(xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ], u32 uRegister)
 			{
 				if( g_strPerFramePSCBuffer.length() > 0 )
 				{
@@ -356,7 +371,7 @@ namespace XSE
 			Vec2		vecScreenSize;
 				*/
 				xst_stringstream ss;
-				ss << "cbuffer cbPerFrame : register( b0 )" << xst_endl;
+				ss << "cbuffer cbPerFrame : register( b" << uRegister << ")" << xst_endl;
 				ss << "{" << xst_endl;
 				ss << "\tfloat4 " << astrConstants[ ShaderConstants::LIGHT_COLOR ]			<< ";" << xst_endl;
 				ss << "\tfloat4 " << astrConstants[ ShaderConstants::SCENE_AMBIENT_COLOR ]	<< ";" << xst_endl;
@@ -368,10 +383,11 @@ namespace XSE
 				ss << "\tfloat2 " << astrConstants[ ShaderConstants::SCREEN_SIZE ]			<< ";" << xst_endl;
 				ss << "}" << xst_endl;
 				g_strPerFramePSCBuffer = ss.str();
+				g_astrCBufferCodes[ ConstantBuffers::PS_ONCE_PER_FRAME ] = ss.str();
 				return g_strPerFramePSCBuffer;
 			}
 
-			xst_astring& CreatePerObjectPSCBuffer(xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ])
+			xst_astring& CreatePerObjectPSCBuffer(xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ], u32 uRegister)
 			{
 				if( g_strPerObjectPSCBuffer.length() > 0 )
 				{
@@ -383,7 +399,35 @@ namespace XSE
 				ss << "\tfloat4 " << "tmp"	<< ";" << xst_endl;
 				ss << "}" << xst_endl;*/
 				g_strPerFramePSCBuffer = ss.str();
+				g_astrCBufferCodes[ ConstantBuffers::PS_ONCE_PER_DRAWCALL ] = ss.str();
 				return g_strPerFramePSCBuffer;
+			}
+
+			xst_astring& CreatePerMaterialPSCBuffer(xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ], u32 uRegister)
+			{
+				if( g_strPerMaterialPSCBufer.length() > 0 )
+				{
+					return g_strPerMaterialPSCBufer;
+				}
+				/*
+				Vec4	vecAmbientColor;
+			Vec4	vecDiffuseColor;
+			Vec4	vecSpecularColor;
+			f32		fShininess;
+			f32		fAlpha;
+				*/
+				xst_stringstream ss;
+				ss << "cbuffer cbPerObject : register( b" << uRegister << ")" << xst_endl;
+				ss << "{" << xst_endl;
+				ss << "\tfloat4 " << astrConstants[ ShaderConstants::MATERIAL_AMBIENT_COLOR ]	<< ";" << xst_endl;
+				ss << "\tfloat4 " << astrConstants[ ShaderConstants::MATERIAL_DIFFUSE_COLOR ]	<< ";" << xst_endl;
+				ss << "\tfloat4 " << astrConstants[ ShaderConstants::MATERIAL_SPECULAR_COLOR ]	<< ";" << xst_endl;
+				ss << "\tfloat4 " << astrConstants[ ShaderConstants::MATERIAL_SHININESS ]		<< ";" << xst_endl;
+				ss << "\tfloat4 " << astrConstants[ ShaderConstants::MATERIAL_ALPHA ]			<< ";" << xst_endl;
+				ss << "}" << xst_endl;
+				g_astrCBufferCodes[ ConstantBuffers::PS_ONCE_PER_MATERIAL ] = ss.str();
+				g_strPerMaterialPSCBufer = ss.str();
+				return g_strPerMaterialPSCBufer;
 			}
 
 			xst_astring& CreateVUniforms(xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ])
@@ -511,7 +555,7 @@ namespace XSE
 			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_OBJECT_PS_CBUFFER ] = HLSL::CreatePerObjectPSCBuffer( this->CONSTANT_NAMES );
 			// VS PER FRAME
 			/*{
-				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ];
+				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::VS_ONCE_PER_FRAME ];
 				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT1, ShaderConstants::TIME, this->CONSTANT_NAMES );
 				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT2, ShaderConstants::SCREEN_SIZE, this->CONSTANT_NAMES );
 				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT3, ShaderConstants::CAMERA_POSITION, this->CONSTANT_NAMES );
@@ -523,7 +567,7 @@ namespace XSE
 			}
 			// PS PER FRAME
 			{
-				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ];
+				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::PS_ONCE_PER_FRAME ];
 				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT1, ShaderConstants::TIME, this->CONSTANT_NAMES );
 				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT4, ShaderConstants::SCENE_AMBIENT_COLOR, this->CONSTANT_NAMES );
 				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT4, ShaderConstants::LIGHT_COLOR, this->CONSTANT_NAMES );
@@ -536,7 +580,7 @@ namespace XSE
 			}
 			// PS PER MATERIAL
 			{
-				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_PS_ONCE_PER_MATERIAL ];
+				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::PS_ONCE_PER_MATERIAL ];
 				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT4, ShaderConstants::MATERIAL_DIFFUSE_COLOR, this->CONSTANT_NAMES );
 				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT4, ShaderConstants::MATERIAL_AMBIENT_COLOR, this->CONSTANT_NAMES );
 				HLSL::AddConstant( &Tmp, CCBBuilder::FLOAT1, ShaderConstants::MATERIAL_ALPHA, this->CONSTANT_NAMES );
@@ -546,7 +590,7 @@ namespace XSE
 			}
 			// VS PER OBJECT
 			{
-				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ];
+				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::VS_ONCE_PER_DRAWCALL ];
 				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD ), ShaderConstants::MTX_OBJ_WORLD );
 				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION ), ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION );
 				Tmp.Add( CCBBuilder::MATRIX4, this->GetConstantName( ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE ), ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE );
@@ -554,7 +598,7 @@ namespace XSE
 			}
 			// PS PER OBJECT
 			{
-				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ];
+				CCBBuilder& Tmp = g_aCBBuilders[ ConstantBuffers::PS_ONCE_PER_DRAWCALL ];
 				this->m_astrShaderCodes[ ShaderCodes::PER_OBJECT_PS_CBUFFER ] = Tmp.Build( "cbPerObject", uPSCurrReg++ );
 			}*/
 
@@ -568,11 +612,11 @@ namespace XSE
 
 			u32 uDataSizes[ ConstantBuffers::_SYS_COUNT ] = 
 			{
-				/*CB_VS_ONCE_PER_FRAME,
-			CB_VS_ONCE_PER_OBJECT,
-			CB_PS_ONCE_PER_FRAME,
-			CB_PS_ONCE_PER_OBJECT,
-			CB_PS_ONCE_PER_MATERIAL,*/
+				/*VS_ONCE_PER_FRAME,
+			VS_ONCE_PER_DRAWCALL,
+			PS_ONCE_PER_FRAME,
+			PS_ONCE_PER_DRAWCALL,
+			PS_ONCE_PER_MATERIAL,*/
 				sizeof( SVSOncePerFrame ),
 				sizeof( SVSOncePerObject ),
 				sizeof( SPSOncePerFrame ),
@@ -593,7 +637,7 @@ namespace XSE
 			
 			//Per frame
 			//BufferDesc.ByteWidth = sizeof( SVSOncePerFrame );
-			//hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ] );
+			//hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::VS_ONCE_PER_FRAME ] );
 			//if( FAILED( hr ) )
 			//{
 			//	XST_LOG_ERR( "[D3D11]: Could not create per frame constant buffer: " << m_pRS->_ErrorToString( hr ) );
@@ -602,8 +646,8 @@ namespace XSE
 
 			//BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 			//BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			//BufferDesc.ByteWidth = g_aCBBuilders[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ].uSizeInBytes; //sizeof( SPSOncePerFrame );
-			//hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ] );
+			//BufferDesc.ByteWidth = g_aCBBuilders[ ConstantBuffers::PS_ONCE_PER_FRAME ].uSizeInBytes; //sizeof( SPSOncePerFrame );
+			//hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::PS_ONCE_PER_FRAME ] );
 			//if( FAILED( hr ) )
 			//{
 			//	XST_LOG_ERR( "[D3D11]: Could not create per object constant buffer: " << m_pRS->_ErrorToString( hr ) );
@@ -612,8 +656,8 @@ namespace XSE
 
 			//BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 			//BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-			//BufferDesc.ByteWidth = g_aCBBuilders[ConstantBuffers::CB_PS_ONCE_PER_MATERIAL].uSizeInBytes;
-			//hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_MATERIAL ] );
+			//BufferDesc.ByteWidth = g_aCBBuilders[ConstantBuffers::PS_ONCE_PER_MATERIAL].uSizeInBytes;
+			//hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::PS_ONCE_PER_MATERIAL ] );
 			//if( FAILED( hr ) )
 			//{
 			//	XST_LOG_ERR( "[D3D11]: Could not create per object constant buffer: " << m_pRS->_ErrorToString( hr ) );
@@ -624,7 +668,7 @@ namespace XSE
 			//BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 			//BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			//BufferDesc.ByteWidth = sizeof( SVSOncePerObject );
-			//hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ] );
+			//hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::VS_ONCE_PER_DRAWCALL ] );
 			//if( FAILED( hr ) )
 			//{
 			//	XST_LOG_ERR( "[D3D11]: Could not create per object constant buffer: " << m_pRS->_ErrorToString( hr ) );
@@ -634,7 +678,7 @@ namespace XSE
 			//BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 			//BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 			//BufferDesc.ByteWidth = sizeof( SPSOncePerObject );
-			//hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ] );
+			//hr = m_pRS->m_pDevice->CreateBuffer( &BufferDesc, xst_null, &m_apD3DConstantBuffers[ ConstantBuffers::PS_ONCE_PER_DRAWCALL ] );
 			//if( FAILED( hr ) )
 			//{
 			//	XST_LOG_ERR( "[D3D11]: Could not create per object constant buffer: " << m_pRS->_ErrorToString( hr ) );
@@ -759,7 +803,7 @@ namespace XSE
 		// TODO: separate updates for vertex and fragment shaders
 		void CHLSLShaderSystem::UpdateFrameInputs()
 		{	
-			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
+			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::VS_ONCE_PER_FRAME ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
 			g_pOncePerFrameVS = (SVSOncePerFrame*)g_MappedSubresource.pData;
 			m_pRS->GetMatrix( MatrixTypes::PROJECTION,	&g_pOncePerFrameVS->mtxProj );
 			m_pRS->GetMatrix( MatrixTypes::VIEW,		&g_pOncePerFrameVS->mtxView );
@@ -768,44 +812,36 @@ namespace XSE
 			g_pOncePerFrameVS->vecCamDir.Set( m_vAllConstantValues[ ShaderConstants::CAMERA_DIRECTION ].float3 );
 			g_pOncePerFrameVS->vecScreenSize.Set( m_vAllConstantValues[ ShaderConstants::SCREEN_SIZE ].float2 );
 			g_pOncePerFrameVS->fTime = m_vAllConstantValues[ ShaderConstants::TIME ].float1[0];
-			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ], 0 );
-			m_pRS->m_pDeviceContext->VSSetConstantBuffers( 0, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_FRAME ] );
+			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::VS_ONCE_PER_FRAME ], 0 );
+			m_pRS->m_pDeviceContext->VSSetConstantBuffers( 0, 1, &m_apD3DConstantBuffers[ ConstantBuffers::VS_ONCE_PER_FRAME ] );
 
-			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
+			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::PS_ONCE_PER_FRAME ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
 			g_pOncePerFramePS = (SPSOncePerFrame*)g_MappedSubresource.pData;
-			/*g_pOncePerFramePS->vecLightColor.Set( m_vAllConstantValues[ ShaderConstants::LIGHT_COLOR ].float4 );
+			g_pOncePerFramePS->vecLightColor.Set( m_vAllConstantValues[ ShaderConstants::LIGHT_COLOR ].float4 );
 			g_pOncePerFramePS->vecSceneAmbient.Set( m_vAllConstantValues[ ShaderConstants::SCENE_AMBIENT_COLOR ].float4 );
 			g_pOncePerFramePS->vecLightPos.Set( m_vAllConstantValues[ ShaderConstants::LIGHT_POSITION ].float3 );
 			g_pOncePerFramePS->vecCamPos.Set( m_vAllConstantValues[ ShaderConstants::CAMERA_POSITION ].float3 );
 			g_pOncePerFramePS->vecCamDir.Set( m_vAllConstantValues[ ShaderConstants::CAMERA_DIRECTION ].float3 );
 			g_pOncePerFramePS->vecScreenSize.Set( m_vAllConstantValues[ ShaderConstants::SCREEN_SIZE ].float2 );
 			g_pOncePerFramePS->fLightSpecular = ( m_vAllConstantValues[ ShaderConstants::LIGHT_SPECULAR ].float1[0] );
-			g_pOncePerFramePS->fTime = ( m_vAllConstantValues[ ShaderConstants::TIME ].float1[0] );*/
-			g_pOncePerFramePS->vecLightColor.Set( Vec4(0,0.5,1,0) );
-			g_pOncePerFramePS->vecSceneAmbient.Set( Vec4(1,0.5,0,0) );
-			g_pOncePerFramePS->vecLightPos.Set( Vec3(0,0,1) );
-			g_pOncePerFramePS->vecCamPos.Set( Vec3(0,1,0) );
-			g_pOncePerFramePS->vecCamDir.Set( Vec3(1,0,1) );
-			g_pOncePerFramePS->vecScreenSize.Set( Vec2(0,1) );
-			g_pOncePerFramePS->fLightSpecular = ( 0.2f );
-			g_pOncePerFramePS->fTime = ( 0.5f );
-			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ], 0 );
-			m_pRS->m_pDeviceContext->PSSetConstantBuffers( 0, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_FRAME ] );
+			g_pOncePerFramePS->fTime = ( m_vAllConstantValues[ ShaderConstants::TIME ].float1[0] );
+			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::PS_ONCE_PER_FRAME ], 0 );
+			m_pRS->m_pDeviceContext->PSSetConstantBuffers( 0, 1, &m_apD3DConstantBuffers[ ConstantBuffers::PS_ONCE_PER_FRAME ] );
 		}
 
 		void CHLSLShaderSystem::UpdateMaterialInputs()
 		{
-			//auto& CB = g_aCBBuilders[ ConstantBuffers::CB_PS_ONCE_PER_MATERIAL ];
+			//auto& CB = g_aCBBuilders[ ConstantBuffers::PS_ONCE_PER_MATERIAL ];
 			/*CB.SetConstant( ShaderConstants::MATERIAL_ALPHA, 0.5f );
 			CB.SetConstant( ShaderConstants::MATERIAL_AMBIENT_COLOR, Vec4(0.2f) );
 			CB.SetConstant( ShaderConstants::MATERIAL_DIFFUSE_COLOR, Vec4(0.7f) );
 			CB.SetConstant( ShaderConstants::MATERIAL_SHININESS, 0.1f );
 			CB.SetConstant( ShaderConstants::MATERIAL_SPECULAR_COLOR, Vec4(0.3f) );*/
 
-			/*m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_MATERIAL ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
+			/*m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::PS_ONCE_PER_MATERIAL ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
 			xst_memcpy( g_MappedSubresource.pData, CB.uSizeInBytes, &CB.vData[0], CB.uSizeInBytes );
-			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_MATERIAL ], 0 );
-			m_pRS->m_pDeviceContext->PSSetConstantBuffers( CB.uRegister, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_MATERIAL ] );*/
+			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::PS_ONCE_PER_MATERIAL ], 0 );
+			m_pRS->m_pDeviceContext->PSSetConstantBuffers( CB.uRegister, 1, &m_apD3DConstantBuffers[ ConstantBuffers::PS_ONCE_PER_MATERIAL ] );*/
 		}
 
 		static DirectX::XMMATRIX InverseTranspose( DirectX::CXMMATRIX M )
@@ -821,25 +857,25 @@ namespace XSE
 		void CHLSLShaderSystem::UpdateObjectInputs()
 		{
 			// VERTEX
-			/*g_aCBBuilders[ConstantBuffers::CB_VS_ONCE_PER_OBJECT].SetConstant( ShaderConstants::MTX_OBJ_WORLD, g_VSOncePerObj.mtxWorld );
-			g_aCBBuilders[ConstantBuffers::CB_VS_ONCE_PER_OBJECT].SetConstant( ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION, g_VSOncePerObj.mtxWorldViewProj );
-			g_aCBBuilders[ConstantBuffers::CB_VS_ONCE_PER_OBJECT].SetConstant( ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE, g_VSOncePerObj.mtxWorldInvT );*/
+			/*g_aCBBuilders[ConstantBuffers::VS_ONCE_PER_DRAWCALL].SetConstant( ShaderConstants::MTX_OBJ_WORLD, g_VSOncePerObj.mtxWorld );
+			g_aCBBuilders[ConstantBuffers::VS_ONCE_PER_DRAWCALL].SetConstant( ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION, g_VSOncePerObj.mtxWorldViewProj );
+			g_aCBBuilders[ConstantBuffers::VS_ONCE_PER_DRAWCALL].SetConstant( ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE, g_VSOncePerObj.mtxWorldInvT );*/
 		
 			// PIXEL
 
-			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
+			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::VS_ONCE_PER_DRAWCALL ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
 			g_pOncePerObjVS = (SVSOncePerObject*)g_MappedSubresource.pData;
 			//Get object input data
 			m_pRS->GetMatrix( MatrixTypes::WORLD,		&g_pOncePerObjVS->mtxWorld );
 			g_pOncePerObjVS->mtxWorldInvT = InverseTranspose( g_pOncePerObjVS->mtxWorld );
 			g_pOncePerObjVS->mtxWorldViewProj = XMMatrixTranspose( XMMatrixMultiply( XMMatrixMultiply( g_pOncePerObjVS->mtxWorld, g_pOncePerFrameVS->mtxView ), g_pOncePerFrameVS->mtxProj ) );
-			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ], 0 );
-			m_pRS->m_pDeviceContext->VSSetConstantBuffers( 1, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_VS_ONCE_PER_OBJECT ] );
+			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::VS_ONCE_PER_DRAWCALL ], 0 );
+			m_pRS->m_pDeviceContext->VSSetConstantBuffers( 1, 1, &m_apD3DConstantBuffers[ ConstantBuffers::VS_ONCE_PER_DRAWCALL ] );
 
-			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
+			m_pRS->m_pDeviceContext->Map( m_apD3DConstantBuffers[ ConstantBuffers::PS_ONCE_PER_DRAWCALL ], 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
 			xst_memcpy( g_MappedSubresource.pData, sizeof(SPSOncePerObject), &g_PSOncePerObj, sizeof(SPSOncePerObject) );
-			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ], 0 );
-			m_pRS->m_pDeviceContext->PSSetConstantBuffers( 1, 1, &m_apD3DConstantBuffers[ ConstantBuffers::CB_PS_ONCE_PER_OBJECT ] );
+			m_pRS->m_pDeviceContext->Unmap( m_apD3DConstantBuffers[ ConstantBuffers::PS_ONCE_PER_DRAWCALL ], 0 );
+			m_pRS->m_pDeviceContext->PSSetConstantBuffers( 1, 1, &m_apD3DConstantBuffers[ ConstantBuffers::PS_ONCE_PER_DRAWCALL ] );
 		}
 
 		IVertexShader*	CHLSLShaderSystem::CreateVertexShader(IInputLayout* pIL, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)

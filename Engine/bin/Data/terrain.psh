@@ -17,10 +17,10 @@ float4 ps(VS_OUT IN) : SV_TARGET
 	float4 c = f4SceneAmbientColor;
 	float2 s = f2ScreenSize;
 	c.xyzw = fLightSpecular;
-	c.xyzw = fTime;
-	c.xyz = f3LightPos;
+	//c.xyzw = fTime;
+	//c.xyz = f3LightPos;
 	//c.xyz = f3CameraPos;
-	c.xyzw = float4( s.x,s.y,0,0 );
+	//c.xyzw = float4( s.x,s.y,0,0 );
 	//c.xyz = f3CameraDir;
 	//c.xyzw = f4LightColor;
 	//c.xyzw = f4SceneAmbientColor;
