@@ -163,6 +163,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	pVS->SetInputLayout( this->m_pEngine->GetRenderSystem()->GetInputLayout( XSE::ILEs::POSITION | XSE::ILEs::NORMAL ) );
 	XSE::PixelShaderPtr pPS = XSE::CShaderManager::GetSingletonPtr()->LoadPixelShader("terrain.psh", "terr.ps", "ps", XSE::ShaderProfiles::PS_BEST);
 	pMat->CreateTechnique("tech", pVS, pPS);
+	
 	xst_assert2(pVS.IsValid() && pPS.IsValid());
 	XSE::ITerrain* pTerrain = this->m_pSceneMgr->CreateTerrain( "Terrain", Options );
     xst_assert( pTerrain != xst_null, "(CTerrain::Init) Terrain sample creation failed. Engine error!!!" );
@@ -175,6 +176,11 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 		pSphere->SetPosition( m_pDbgCam->GetPosition() );
 		m_pSceneMgr->GetRootNode()->CreateChildNode()->AddObject( pSphere, false );
 	}
+
+	XSE::CLight* pLight = m_pSceneMgr->CreateLight("terrain");
+	pLight->SetColor( XSE::Vec4( 0.3, 0.6, 0.9, 1.0f ) );
+	pLight->SetPosition( 200, 1000, 300 );
+	m_pSceneMgr->SetLight( pLight );
 	return XSE::RESULT::OK;
 }
 

@@ -24,9 +24,9 @@ namespace XSE
 				enum CODE
 				{
 					PER_FRAME_VS_CBUFFER,
-					PER_OBJECT_VS_CBUFFER,
+					PER_DRAWCALL_VS_CBUFFER,
 					PER_FRAME_PS_CBUFFER,
-					PER_OBJECT_PS_CBUFFER,
+					PER_DRAWCALL_PS_CBUFFER,
 					PER_MATERIAL_PS_CBUFFER,
 					_ENUM_COUNT
 				};
@@ -85,7 +85,7 @@ namespace XSE
 			virtual void						SetSceneAmbient(const XST::CColor& Color) = 0;
 
 			//Updates shader inputs once per draw call
-			virtual void						UpdateObjectInputs() = 0;
+			virtual void						UpdateDrawCallInputs() = 0;
 
 			//Updates shader inputs once per frame only
 			virtual	void						UpdateFrameInputs() = 0;

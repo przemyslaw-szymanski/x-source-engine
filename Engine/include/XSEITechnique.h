@@ -45,6 +45,17 @@ namespace XSE
 			virtual ID						GetTechniqueID() const
 											{ return (ID)&m_lTechniqueID; }
 
+			virtual	void					SetAmbientColor(const Vec4& vecCol);
+			virtual	void					SetDiffuseColor(const Vec4& vecCol);
+			virtual	void					SetSpecularColor(const Vec4& vecCol);
+			virtual	void					SetShininess(f32 fValue);
+			virtual	void					SetAttributes(const SMaterialAttributes& Attribs);
+			virtual xst_fi
+			const SMaterialAttributes&		GetAttributes() const
+											{ return m_Attribs; }
+
+			virtual i32						Compare(const ITechnique* pOther) const;
+
 		protected:
 
 			virtual	IPass*					_CreatePass(xst_castring& strName) = 0;
@@ -52,10 +63,11 @@ namespace XSE
 
 		protected:
 
-			xst_castring	m_strTechniqueName;
-			PassVector		m_vPasses;
-			l32				m_lTechniqueID;
-			ul32			m_ulTechniqueNameHash;
+			SMaterialAttributes	m_Attribs;
+			xst_castring		m_strTechniqueName;
+			PassVector			m_vPasses;
+			l32					m_lTechniqueID;
+			ul32				m_ulTechniqueNameHash;
 	};
 }//xse
 

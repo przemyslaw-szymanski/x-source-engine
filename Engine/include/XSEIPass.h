@@ -37,7 +37,29 @@ namespace XSE
 			virtual	ID							GetPassID() const
 												{ return (ID)&m_lPassId; }
 
+
+			virtual	xst_fi	void				SetAmbientColor(const Vec4& vecCol)
+												{ m_Attribs.vecAmbientColor = vecCol; }
+			virtual	xst_fi	void				SetDiffuseColor(const Vec4& vecCol)
+												{ m_Attribs.vecDiffuseColor = vecCol; }
+			virtual	xst_fi	void				SetSpecularColor(const Vec4& vecCol)
+												{ m_Attribs.vecSpecularColor = vecCol; }
+			virtual	xst_fi	void				SetShininess(f32 fValue)
+												{ m_Attribs.fShininess = fValue; }
+			virtual	xst_fi	void				SetAttributes(const SMaterialAttributes& Attribs)
+												{ m_Attribs = Attribs; }
+
+			virtual xst_fi	
+			const	SMaterialAttributes&		GetAttributes() const
+												{ return m_Attribs; }
+
+			virtual i32							Compare(const IPass* pOther) const;
+
+			static bool							AttribEquals(const SMaterialAttributes& Left, const SMaterialAttributes& Right);
+
 		protected:
+
+			SMaterialAttributes	m_Attribs;
 
 			xst_castring	m_strPassName;
 			l32				m_lPassId;

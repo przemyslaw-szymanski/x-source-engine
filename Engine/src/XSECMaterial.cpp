@@ -1,4 +1,4 @@
-#include "../include/XSECMaterial.h"
+#include "XSECMaterial.h"
 #include "XSECShaderManager.h"
 #include "XSECTechnique.h"
 #include "XSECPass.h"
@@ -30,6 +30,40 @@ namespace XSE
 
 			m_vTechniques.clear();
 		}
+
+		void CMaterial::SetAttributes(const SMaterialAttributes& Attribs)
+		{
+			m_Attribs = Attribs;
+			for( auto* pTech : m_vTechniques )
+			{
+				pTech->SetAttributes( m_Attribs );
+			}
+		}
+
+		void CMaterial::SetAmbientColor(const Vec4& vecCol)
+		{
+			m_Attribs.vecAmbientColor = vecCol;
+			for( auto* pTech : m_vTechniques )
+			{
+				pTech->SetAmbientColor( vecCol );
+			}
+		}
+
+		void CMaterial::SetDiffuseColor(const Vec4& vecCol)
+		{
+
+		}
+
+		void CMaterial::SetSpecularColor(const Vec4& vecCol)
+		{
+
+		}
+
+		void CMaterial::SetShininess(f32 fValue)
+		{
+
+		}
+						
 
 		ITechnique*	CMaterial::CreateTechnique(xst_castring& strName, bool bSetAsCurrent)
 		{
@@ -189,61 +223,24 @@ namespace XSE
 
 		i32 CMaterial::Compare(const CMaterial* pMat) const
 		{
-			if( m_vTechniques.size() < pMat->m_vTechniques.size() )
-			{
-				return -1;
-			}
-			else if( m_vTechniques.size() > pMat->m_vTechniques.size() )
-			{
+			bool bAttribEquals = IPass::AttribEquals( m_Attribs, pMat->m_Attribs );
+			if( !bAttribEquals )
 				return 1;
-			}
-			else //if size of techniques are equal
-			{
-				for(u32 t = m_vTechniques.size(); t --> 0;)
-				{
-					if( m_vTechniques[ t ]->GetPassCount() < pMat->m_vTechniques[ t ]->GetPassCount() )
-					{
-						return -1;
-					}
-					else if( m_vTechniques[ t ]->GetPassCount() > pMat->m_vTechniques[ t ]->GetPassCount() )
-					{
-						return 1;
-					}
-					else //if pass counts are equal
-					{
-						for(u32 p = m_vTechniques[ t ]->GetPassCount(); p --> 0;)
-						{
-							IPass* pPass1 = m_vTechniques[ t ]->GetPass( p );
-							IPass* pPass2 = pMat->m_vTechniques[ t ]->GetPass( p );
 
-							if( pPass1->GetVertexShader().GetPtr() > pPass2->GetVertexShader().GetPtr() )
-							{
-								return 1;
-							}
-							else if( pPass1->GetVertexShader().GetPtr() < pPass2->GetVertexShader().GetPtr() )
-							{
-								return -1;
-							}
-							else
-							{
-								if( pPass1->GetPixelShader().GetPtr() > pPass2->GetPixelShader().GetPtr() )
-								{
-									return 1;
-								}
-								else if( pPass1->GetPixelShader().GetPtr() < pPass2->GetPixelShader().GetPtr() )
-								{
-									return -1;
-								}
-								else
-								{
-									return 0;
-								}
-							}
-						}
-					}
+			i32 iTechDiff = m_vTechniques.size() - pMat->m_vTechniques.size();
+			if( iTechDiff == 0 )
+			{
+				for( u32 i = 0; i < m_vTechniques.size(); ++i )
+				{
+					i32 iResult = m_vTechniques[ i ]->Compare( pMat->m_vTechniques[ i ] );
+					if( iResult != 0 )
+						return iResult;
 				}
 			}
-
+			else
+			{
+				return iTechDiff;
+			}
 			return 0;
 		}
 

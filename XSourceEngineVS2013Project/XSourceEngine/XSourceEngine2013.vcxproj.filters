@@ -909,6 +909,9 @@
     <ClInclude Include="..\..\Engine\src\ModelLoaders\XSECOBJLoader.h">
       <Filter>src\ModelLoaders</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECLight.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine\dllmain.cpp">
@@ -1534,6 +1537,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine\src\ModelLoaders\XSECOBJLoader.cpp">
       <Filter>src\ModelLoaders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECLight.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

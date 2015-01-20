@@ -16,11 +16,15 @@
 #include "XSECMeshManager.h"
 #include "XSECMaterialManager.h"
 #include "XSEIViewport.h"
+#include "XSECLight.h"
 
 namespace XSE
 {
 	xst_castring CSceneManager::DEFAULT_CAMERA( "Default" );
 	xst_astring CSceneManager::DEFAULT_SHADER_COLOR( "" );
+
+	//static CLight g_DefaultLight = CLight( ResourceTypes::LIGHT, CHash::GetCRC( "xse_default_light" ), "xse_default_light" );
+	CLight* g_pDefaultLight = xst_null;
 
 	CSceneManager::CSceneManager(xst_castring& strName, CModelManager* pModelMgr, f32 fSize) : 
 		m_strName( strName ), 
@@ -34,11 +38,15 @@ namespace XSE
 		m_pRootNode = xst_new CSceneNode( this, xst_null, "World", XST::CHash::GetCRC( "World" ) );
 		m_pDbg = xst_new CSceneDebug( this );
 		m_RenderQueue._SetRenderSystem( GetRenderSystem() );
+		g_pDefaultLight = xst_new CLight( CHash::GetCRC( "xse_default_light" ), "xse_default_light" );
+		xst_assert2( g_pDefaultLight );
+		m_pCurrLight = g_pDefaultLight;
 		//m_pScenePartitionSystem = xst_new COctreeScenePartitionSystem( this );
 	}
 
 	CSceneManager::~CSceneManager()
 	{
+		xst_delete( g_pDefaultLight );
 		xst_delete( m_pDbg );
 		xst_delete( m_pScenePartitionSystem );
 
@@ -48,6 +56,7 @@ namespace XSE
 			xst_delete( m_pTerrainSystem );
 		}
 
+		DestroyLights();
 		DestroyCameras();
 		DestroyStaticGeometries();
 		DestroyDynamicGeometries();
@@ -84,7 +93,17 @@ namespace XSE
 			m_pViewCamera->Update( fFrameTime );
 		}
 
+		for( LightPtr pL : m_vLights )
+		{
+			pL->Update( fFrameTime );
+		}
+
 		m_pModelMgr->GetRenderSystem()->GetShaderSystem()->SetConstantValue( ShaderConstants::SCENE_AMBIENT_COLOR, m_vecAmbientColor );
+		m_pModelMgr->GetRenderSystem()->GetShaderSystem()->SetConstantValue( ShaderConstants::LIGHT_COLOR, m_pCurrLight->GetColor() );
+		m_pModelMgr->GetRenderSystem()->GetShaderSystem()->SetConstantValue( ShaderConstants::LIGHT_SPECULAR_POWER, m_pCurrLight->GetSpecularPower() );
+		m_pModelMgr->GetRenderSystem()->GetShaderSystem()->SetConstantValue( ShaderConstants::LIGHT_SPECULAR_COLOR, m_pCurrLight->GetSpecularColor() );
+		m_pModelMgr->GetRenderSystem()->GetShaderSystem()->SetConstantValue( ShaderConstants::LIGHT_POWER, m_pCurrLight->GetPower() );
+		m_pModelMgr->GetRenderSystem()->GetShaderSystem()->SetConstantValue( ShaderConstants::LIGHT_POSITION, m_pCurrLight->GetPosition() );
 
 		m_pScenePartitionSystem->StartProcessing();
 		m_pScenePartitionSystem->Update();
@@ -402,6 +421,119 @@ namespace XSE
 		return pModel;
 	}
 
+	CSceneManager::LightPtr FindLight(const CSceneManager::LightVec& vLights, u32 uHandle, CSceneManager::LightPtr* ppLightOut, u32* puLightPos)
+	{
+		for( u32 i = vLights.size(); i-- > 0; )
+		{
+			if( vLights[ i ]->GetObjectHandle() == uHandle )
+			{
+				*ppLightOut = vLights[ i ];
+				*puLightPos = i;
+				return *ppLightOut;
+			}
+		}
+		return xst_null;
+	}
+
+	CSceneManager::LightPtr RemoveLight(CSceneManager::LightVec& vLights, u32 uPos)
+	{
+		auto* pLight = vLights[uPos];
+		std::swap(vLights[uPos], vLights[vLights.size()-1]);
+		vLights.pop_back();
+		return pLight;
+	}
+
+	CSceneManager::LightPtr FindLight(const CSceneManager::LightVec& vLights, xst_castring& strName, CSceneManager::LightPtr* ppLightOut, u32* puLightPos)
+	{
+		ul32 uHandle = XST::CHash::GetCRC( strName );
+		return FindLight( vLights, uHandle, ppLightOut, puLightPos );
+	}
+
+	CSceneManager::LightPtr	CSceneManager::CreateLight(xst_castring& strName)
+	{
+		LightPtr pL;
+		u32 uPos;
+		ul32 uHandle = CHash::GetCRC( strName );
+		if( FindLight( m_vLights, uHandle, &pL, &uPos ) )
+			return pL;
+		pL = xst_new CLight( uHandle, strName.c_str(), m_pRootNode );
+		if( !pL )
+			return xst_null;
+		m_vLights.push_back( pL );
+		if( XST_FAILED( m_pRootNode->AddObject( pL ) ) )
+		{
+			DestroyLight( &pL );
+			return xst_null;
+		}
+		return pL;
+	}
+				
+	i32	CSceneManager::DestroyLight(LightPtr* ppLight)
+	{
+		xst_assert2( ppLight && *ppLight );
+		LightPtr pLight = *ppLight;
+		LightPtr pL;
+		u32 uPos;
+		if( !FindLight( m_vLights, pLight->GetObjectHandle(), &pL, &uPos ) )
+			return XST_FAIL;
+		RemoveLight( m_vLights, uPos );
+		if( m_pCurrLight == pLight )
+			m_pCurrLight = g_pDefaultLight;
+		xst_delete( *ppLight );
+		*ppLight = xst_null;
+	}
+				
+	i32	CSceneManager::DestroyLight(xst_castring& strName)
+	{
+		LightPtr pL;
+		u32 uPos;
+		if( !FindLight( m_vLights, strName, &pL, &uPos ) )
+			return XST_FAIL;
+		RemoveLight( m_vLights, uPos );
+		if( m_pCurrLight == pL )
+			m_pCurrLight = g_pDefaultLight;
+		xst_delete( pL );
+		return XST_OK;
+	}
+				
+	void CSceneManager::DestroyLights()
+	{
+		for( u32 i = m_vLights.size(); i-- > 0; )
+		{
+			xst_delete( m_vLights[ i ] );
+		}
+		m_vLights.clear();
+		m_pCurrLight = g_pDefaultLight;
+	}
+				
+	CSceneManager::LightPtr	CSceneManager::GetLight(xst_castring& strName) const
+	{
+		LightPtr pLight;
+		u32 uPos;
+		return FindLight( m_vLights, strName, &pLight, &uPos );
+	}
+
+	i32 CSceneManager::SetLight(xst_castring& strName)
+	{
+		u32 uHandle = CHash::GetCRC( strName );
+		return SetLight( uHandle );
+	}
+				
+	i32	CSceneManager::SetLight(ul32 uHandle)
+	{
+		u32 uPos;
+		LightPtr pL;
+		if( !FindLight( m_vLights, uHandle, &pL, &uPos ) )
+			return XST_FAIL;
+		return SetLight( pL );
+	}
+	
+	i32	CSceneManager::SetLight(LightPtr pLight)
+	{
+		xst_assert2( pLight );
+		m_pCurrLight = pLight;
+		return XST_OK;
+	}
 
 	ModelPtr CSceneManager::CreateModel(xst_castring& strName, xst_castring& strMeshName, xst_castring& strMeshGroup, BASIC_SHAPE eShape, IInputLayout* pIL, xst_unknown pShapeOptions)
 	{

@@ -81,6 +81,71 @@ namespace XSE
 		return xst_null;
 	}
 
+	i32 ITechnique::Compare(const ITechnique* pOther) const
+	{
+		bool bAttrEq = IPass::AttribEquals( m_Attribs, pOther->m_Attribs );
+		if( !bAttrEq )
+			return 1;
+		i32 iPassDiff = m_vPasses.size() - pOther->m_vPasses.size();
+		if( iPassDiff == 0 )
+		{
+			for( u32 i = m_vPasses.size(); i-- > 0; )
+			{
+				i32 iResult = m_vPasses[i]->Compare( pOther->m_vPasses[i] );
+				if( iResult != 0 )
+					return iResult;
+			}
+		}
+		else
+		{
+			return iPassDiff;
+		}
+		return 0;
+	}
 
+	void ITechnique::SetAmbientColor(const Vec4& vecCol)
+	{
+		m_Attribs.vecAmbientColor = vecCol;
+		for( auto* pPass : m_vPasses )
+		{
+			pPass->SetAmbientColor( vecCol );
+		}
+	}
+		
+	void ITechnique::SetDiffuseColor(const Vec4& vecCol)
+	{
+		m_Attribs.vecAmbientColor = vecCol;
+		for( auto* pPass : m_vPasses )
+		{
+			pPass->SetDiffuseColor( vecCol );
+		}
+	}
+		
+	void ITechnique::SetSpecularColor(const Vec4& vecCol)
+	{
+		m_Attribs.vecAmbientColor = vecCol;
+		for( auto* pPass : m_vPasses )
+		{
+			pPass->SetSpecularColor( vecCol );
+		}
+	}
+		
+	void ITechnique::SetShininess(f32 fValue)
+	{
+		m_Attribs.vecAmbientColor = fValue;
+		for( auto* pPass : m_vPasses )
+		{
+			pPass->SetShininess( fValue );
+		}
+	}
+
+	void ITechnique::SetAttributes(const SMaterialAttributes& Attribs)
+	{
+		m_Attribs = Attribs;
+		for( auto* pPass : m_vPasses )
+		{
+			pPass->SetAttributes( Attribs );
+		}
+	}
 
 }//xse

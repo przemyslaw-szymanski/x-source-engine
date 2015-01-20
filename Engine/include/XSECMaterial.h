@@ -74,14 +74,18 @@ namespace XSE
 										
 						PixelShaderPtr		GetPixelShader();
 						
-				xst_fi	TexturePtr			GetDiffuseTexture()
-											{ return m_pDiffuseTex; }
+						void				SetAmbientColor(const Vec4& vecCol);
+						void				SetDiffuseColor(const Vec4& vecCol);
+						void				SetSpecularColor(const Vec4& vecCol);
+						void				SetShininess(f32 fValue);
+						void				SetAttributes(const SMaterialAttributes& Attribs);
+				xst_fi
+				const SMaterialAttributes&	GetAttributes() const
+											{ return m_Attribs; }
 
 			protected:
 
-				XST::Math::CVector3		m_vecAmbient;
-				XST::Math::CVector3		m_vecDiffuse;
-				XST::Math::CVector3		m_vecSpecular;
+				SMaterialAttributes		m_Attribs;
 
 				XSE::TexturePtr			m_pDiffuseTex;
 				XSE::TexturePtr			m_pSpecularTex;

@@ -116,6 +116,7 @@ namespace XSE
 	class ITerrain;
 	class IKeyboard;
 	class IMouse;
+	class CLight;
 	
 	struct SWindowEvent;
 	struct SKeyboardEvent;
@@ -192,6 +193,18 @@ namespace XSE
 	};
 	typedef ResourceTypes::TYPE		RESOURCE_TYPE;
 
+	struct SMaterialAttributes
+	{
+		Vec4	vecAmbientColor		= Vec4::UNIT;
+		Vec4	vecDiffuseColor		= Vec4::UNIT;
+		Vec4	vecEmissiveColor	= Vec4::UNIT;
+		Vec4	vecSpecularColor	= Vec4::UNIT;
+		Vec4	vecFogColor			= Vec4::UNIT;
+		f32		fShininess			= 1.0f;
+		f32		fFogStart			= 1.0f;
+		f32		fFogEnd				= 1.0f;
+	};
+
 	struct ImageTypes
 	{
 		enum TYPE
@@ -266,6 +279,7 @@ namespace XSE
 			MODEL,
 			BILLBOARD,
 			CAMERA,
+			LIGHT,
 			SCENE_NODE,
 			STATIC_GEOMETRY_GROUP,
 			STATIC_GEOMETRY,

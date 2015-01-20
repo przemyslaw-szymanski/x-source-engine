@@ -39,6 +39,7 @@
 #include "XSEIMouseListener.h"
 #include "XSEIKeyboard.h"
 #include "XSEIMouse.h"
+#include "XSECLight.h"
 //GUI
 #include "GUI/XSECGUIManager.h"
 #include "GUI/XSECComponent.h"

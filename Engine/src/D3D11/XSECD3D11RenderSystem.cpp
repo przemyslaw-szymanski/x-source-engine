@@ -1229,10 +1229,10 @@ namespace XSE
 			return &g_aMatrices[ eMtx ];
 		}
 
-		void CRenderSystem::UpdateObjectInputs()
+		void CRenderSystem::UpdateDrawCallInputs()
 		{
 			//Update constant buffer
-			m_pCurrentShaderSystem->UpdateObjectInputs();
+			m_pCurrentShaderSystem->UpdateDrawCallInputs();
 		}
 
 		IIndexBuffer* CRenderSystem::CreateIndexBuffer()

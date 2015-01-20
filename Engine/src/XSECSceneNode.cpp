@@ -242,6 +242,12 @@ namespace XSE
 				}
 				break;
 
+				case OT::LIGHT:
+				{
+
+				}
+				break;
+
 				case OT::SCENE_NODE:
 				{
 					return this->AddChildNode( (CSceneNode*)pObject );

@@ -72,7 +72,7 @@ namespace XSE
 				pObj->GetWorldTransformMatrix( &mtxTmp );
 				pRenderSystem->SetMatrix( MatrixTypes::WORLD, mtxTmp );
 				//Update shaders input
-				pRenderSystem->UpdateObjectInputs();
+				pRenderSystem->UpdateDrawCallInputs();
 				//Draw object
 				if( pObj->GetDisableReason() == ObjectDisableReasons::NOT_DISABLED )
 				{

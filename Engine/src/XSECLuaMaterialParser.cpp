@@ -16,9 +16,9 @@ namespace XSE
 		//pMat->m_strResourceName = pTable->GetTableName();
 		XST_SET_DBG_NAME( pMat, pTable->GetTableName().c_str() );
 		
-		_SetColor( &pMat->m_vecAmbient, pTable->GetChildTable( "ambient" ) );
+		/*_SetColor( &pMat->m_vecAmbient, pTable->GetChildTable( "ambient" ) );
 		_SetColor( &pMat->m_vecDiffuse, pTable->GetChildTable( "diffuse" ) );
-		_SetColor( &pMat->m_vecSpecular, pTable->GetChildTable( "specular" ) );
+		_SetColor( &pMat->m_vecSpecular, pTable->GetChildTable( "specular" ) );*/
 
 		//Get textures
 		XST::CLuaTable* pTmpTable = pTable->GetChildTable( "textures" );

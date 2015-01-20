@@ -43,6 +43,8 @@ namespace XSE
 		typedef xst_map< xst_astring, DynamicGeometryPtr >	DynamicGeometryMap;
 		typedef xst_vector< ITerrain* >			TerrainVec;
         typedef xst_vector< SObjectInfo >       ObjectInfoVec;
+		typedef CLight*							LightPtr;
+		typedef xst_vector< LightPtr >			LightVec;
 
 	protected:
 
@@ -61,6 +63,15 @@ namespace XSE
 		        CSceneNode*		CreateNode(xst_castring& strName, bool bAutoDestroy = true);
 
 		        CCamera*		CreateCamera(xst_castring& strName, CAMERA_TYPE eType = CameraTypes::FREE);
+				i32				DestroyCamera(CCamera* pCamera);
+		        i32				RemoveCamera(CCamera* pCamera);
+		        void			RemoveCameras();
+		        void			DestroyCameras();
+				i32				SetLight(xst_castring& strName);
+				i32				SetLight(ul32 uHandle);
+				i32				SetLight(LightPtr pLight);
+				LightPtr		GetCurrentLight() const
+								{ return m_pCurrLight; }
 
 		        ModelPtr		CreateModel(xst_castring& strName);
 		        ModelPtr		CreateModel(xst_castring& strName, xst_castring& strNodeName);
@@ -76,13 +87,11 @@ namespace XSE
 		        ModelPtr		CreateModel(xst_castring& strName, CSceneNode* pNode, xst_castring& strMeshName, xst_castring& strMeshGroup, BASIC_SHAPE eShape, IInputLayout* pIL, xst_unknown pShapeOptions);
 		        ModelPtr		CreateModel(xst_castring& strName, xst_castring& strNodeName, MeshPtr& pMesh);
 
-		        i32				DestroyCamera(CCamera* pCamera);
-
-		        i32				RemoveCamera(CCamera* pCamera);
-
-		        void			RemoveCameras();
-
-		        void			DestroyCameras();
+				LightPtr		CreateLight(xst_castring& strName);
+				i32				DestroyLight(LightPtr* ppLight);
+				i32				DestroyLight(xst_castring& strName);
+				void			DestroyLights();
+				LightPtr		GetLight(xst_castring& strName) const;
 
 		        void			SetViewFrustumCullType(const VIEW_FRUSTUM_CULL_TEST_TYPE& eType);
 
@@ -197,6 +206,7 @@ namespace XSE
         StaticGeometryMap	    m_mStaticGeometries;
 		DynamicGeometryMap	    m_mDynamicGeometries;
 		TerrainVec			    m_vTerrains;
+		LightVec				m_vLights;
 		Vec4					m_vecAmbientColor;
 		ITerrainSystem*		    m_pTerrainSystem;
 		IScenePartitionSystem*	m_pScenePartitionSystem;
@@ -205,6 +215,7 @@ namespace XSE
 		CCamera*			    m_pComputeCamera; //this camera is using in e.g octrees
 		CRenderQueue		    m_RenderQueue;
 		CModelManager*		    m_pModelMgr;
+		LightPtr				m_pCurrLight; // current selected light
 		f32					    m_fSize;
 		CSceneDebug*		    m_pDbg;
 	};

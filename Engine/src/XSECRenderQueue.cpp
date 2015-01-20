@@ -71,7 +71,7 @@ namespace XSE
 		//		const Vec3& vecPos = pObj->GetPosition();
 		//		m_pRS->SetTranslation( vecPos );
 		//		//Update shaders input
-		//		m_pRS->UpdateObjectInputs();
+		//		m_pRS->UpdateDrawCallInputs();
 		//		//Draw object
 		//		pObj->Render( m_pRS );
 		//	}

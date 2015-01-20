@@ -143,7 +143,7 @@ namespace XSE
 
 						void				SetLookAt(const Vec3& vecPosition, const Vec3& vecPoint, const Vec3& vecUp = Vec3::Y);
 
-						void				UpdateObjectInputs();
+						void				UpdateDrawCallInputs();
 
 						void				Enable2DRendering();
 						void				Enable3DRendering();

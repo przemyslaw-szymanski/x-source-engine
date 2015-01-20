@@ -42,7 +42,7 @@ namespace XSE
 
 						xst_astring		CreateShaderCode(u32 uiVSInput, u32 uiPSInput);
 
-						void			UpdateObjectInputs() xst_implement;
+						void			UpdateDrawCallInputs() xst_implement;
 
 						void			UpdateFrameInputs() xst_implement;
 

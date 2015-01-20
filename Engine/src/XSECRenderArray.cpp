@@ -217,13 +217,13 @@ namespace XSE
 		const IInputLayout* pIL = pVS->GetInputLayout();
 		xst_assert( pIL, "" );
 
-		ObjVec* pVec = GetObjVec( pVS.GetPtr(), pPS.GetPtr(), pMat->GetDiffuseTexture().GetPtr() );
+		/*ObjVec* pVec = GetObjVec( pVS.GetPtr(), pPS.GetPtr(), pMat->GetDiffuseTexture().GetPtr() );
 		xst_assert( pVec, "" );
 		ObjVec::iterator Itr = std::remove( pVec->begin(), pVec->end(), pObj );
 		if( Itr == pVec->end() )
 		{
 			return XST_FAIL;
-		}
+		}*/
 
 		return XST_OK;
 	}

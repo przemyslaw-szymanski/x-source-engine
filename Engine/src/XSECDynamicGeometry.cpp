@@ -30,7 +30,7 @@ namespace XSE
 		//CDynamicGeometryGroup::SubGroupIterator Itr = pGroup->GetSubGroupIterator();
 		//Set index buffers
 		//m_pRS->SetIndexBuffer( pGroup->GetIndexBuffer().GetPtr() );
-		pRS->UpdateObjectInputs();
+		pRS->UpdateDrawCallInputs();
 		pRS->SetTopology( TopologyTypes::TRIANGLE_LIST );
 
 		//while( Itr.HasMoreElements() )

@@ -32,6 +32,7 @@
     <ClInclude Include="..\..\Engine\include\XSECGeometryBatchGroup.h" />
     <ClInclude Include="..\..\Engine\include\XSECImageManager.h" />
     <ClInclude Include="..\..\Engine\include\XSECIndexData.h" />
+    <ClInclude Include="..\..\Engine\include\XSECLight.h" />
     <ClInclude Include="..\..\Engine\include\XSECLuaScript.h" />
     <ClInclude Include="..\..\Engine\include\XSECLuaScriptManager.h" />
     <ClInclude Include="..\..\Engine\include\XSECMaterial.h" />
@@ -338,6 +339,7 @@
     <ClCompile Include="..\..\Engine\src\XSECGeometryBatchGroup.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECImageManager.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECIndexData.cpp" />
+    <ClCompile Include="..\..\Engine\src\XSECLight.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECLuaMaterialParser.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECLuaMaterialReader.h.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECLuaScript.cpp" />

@@ -73,7 +73,7 @@ namespace XSE
 						i32				SetConstantValue(u32 uConstant, const i32& value) xst_implement;
 						i32				SetConstantValue(u32 uConstant, const bool& value) xst_implement;
 
-						void			UpdateObjectInputs() xst_implement;
+						void			UpdateDrawCallInputs() xst_implement;
 
 						void			UpdateFrameInputs() xst_implement;
 

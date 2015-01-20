@@ -289,7 +289,7 @@ fclose( pFile );
 		pRS->SetPixelShader( this->m_pMaterial->GetPixelShader().GetPtr() );
 		pRS->SetTranslation( 0, 0, 0 );
 		pRS->SetTopology( TopologyTypes::TRIANGLE_STRIP );
-		pRS->UpdateObjectInputs();
+		pRS->UpdateDrawCallInputs();
 		for(u32 i = 0; i < this->m_vIndexBuffers.size(); ++i)
 		{
 			pRS->SetVertexBuffer( this->m_pVBuffer );
@@ -305,7 +305,7 @@ fclose( pFile );
 
 		pRS->SetTranslation( 0, 0, 0 );
 
-		pRS->UpdateObjectInputs();
+		pRS->UpdateDrawCallInputs();
 
 		bool bTest = false;
 		ul32 ulSize = (bTest)? 1 : m_aRenderBuffer.size(); //m_vTiles.size();

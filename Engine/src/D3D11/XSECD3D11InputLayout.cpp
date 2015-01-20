@@ -393,7 +393,7 @@ namespace XSE
 			m_strVSCode.clear();
 			m_strVSCode.reserve( 1024 );
 			m_strVSCode += m_pRS->GetShaderSystem()->GetShaderCode( IShaderSystem::ShaderCodes::PER_FRAME_VS_CBUFFER ) + "\n";
-			m_strVSCode += m_pRS->GetShaderSystem()->GetShaderCode( IShaderSystem::ShaderCodes::PER_OBJECT_VS_CBUFFER ) + "\n";
+			m_strVSCode += m_pRS->GetShaderSystem()->GetShaderCode( IShaderSystem::ShaderCodes::PER_DRAWCALL_VS_CBUFFER ) + "\n";
 			
 			g_strVS_IN += "\nstruct VS_IN {\n";
 			g_strVS_OUT += "\nstruct VS_OUT {\n";
@@ -403,7 +403,7 @@ namespace XSE
 			m_strPSCode.clear();
 			m_strPSCode.reserve( 1024 );
 			m_strPSCode += m_pRS->GetShaderSystem()->GetShaderCode( IShaderSystem::ShaderCodes::PER_FRAME_PS_CBUFFER ) + "\n";
-			m_strPSCode += m_pRS->GetShaderSystem()->GetShaderCode( IShaderSystem::ShaderCodes::PER_OBJECT_PS_CBUFFER ) + "\n";
+			m_strPSCode += m_pRS->GetShaderSystem()->GetShaderCode( IShaderSystem::ShaderCodes::PER_DRAWCALL_PS_CBUFFER ) + "\n";
 			m_strPSCode += "\n[VS_OUT]\nfloat4 PS(VS_OUT IN) : COLOR {\nfloat4 C = float4(1,0.02,0.5,0);";
 
 			xst_astring strName = "";

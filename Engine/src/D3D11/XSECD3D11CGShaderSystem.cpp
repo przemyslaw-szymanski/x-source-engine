@@ -35,7 +35,7 @@ namespace XSE
 				ss << ",uniform float " << astrConstants[ ShaderConstants::TIME ] << std::endl;
 				ss << ",uniform float3 " << astrConstants[ ShaderConstants::LIGHT_POSITION ] << std::endl;
 				ss << ",uniform float4 " << astrConstants[ ShaderConstants::LIGHT_COLOR ] << std::endl;
-				ss << ",uniform float4 " << astrConstants[ ShaderConstants::LIGHT_SPECULAR ] << std::endl;
+				ss << ",uniform float4 " << astrConstants[ ShaderConstants::LIGHT_SPECULAR_POWER ] << std::endl;
 				ss << ",uniform float4 " << astrConstants[ ShaderConstants::SCENE_AMBIENT_COLOR ];
 
 				g_strConstantVUniforms = ss.str();
@@ -48,7 +48,7 @@ namespace XSE
 				ss << ",uniform float " << astrConstants[ ShaderConstants::TIME ] << std::endl;
 				ss << ",uniform float3 " << astrConstants[ ShaderConstants::LIGHT_POSITION ] << std::endl;
 				ss << ",uniform float4 " << astrConstants[ ShaderConstants::LIGHT_COLOR ] << std::endl;
-				ss << ",uniform float4 " << astrConstants[ ShaderConstants::LIGHT_SPECULAR ] << std::endl;
+				ss << ",uniform float4 " << astrConstants[ ShaderConstants::LIGHT_SPECULAR_POWER ] << std::endl;
 				ss << ",uniform float4 " << astrConstants[ ShaderConstants::SCENE_AMBIENT_COLOR ];
 
 				g_strConstantPUniforms = ss.str();
@@ -193,7 +193,7 @@ namespace XSE
 			ssVS<< "struct VS_INPUT{" << xst_endl
 				<< "	float4 pos : POSITION;" << xst_endl
 				<< GetShaderCode( ShaderCodes::PER_FRAME_VS_CBUFFER ) << xst_endl
-				<< GetShaderCode( ShaderCodes::PER_OBJECT_VS_CBUFFER ) << xst_endl;
+				<< GetShaderCode( ShaderCodes::PER_DRAWCALL_VS_CBUFFER ) << xst_endl;
 
 			if( uiVSInput & ILEs::COLOR )
 			{
@@ -242,7 +242,7 @@ namespace XSE
 			return pShader;
 		}
 
-		void CCGShaderSystem::UpdateObjectInputs()
+		void CCGShaderSystem::UpdateDrawCallInputs()
 		{
 		}
 

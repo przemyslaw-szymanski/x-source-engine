@@ -49,19 +49,26 @@ namespace XSE
 		//pMat->m_strResourceName = Reader.ReadString();
 		XST_SET_DBG_NAME( pMat, Reader.ReadString().c_str() );
 		//Ambient color
-		pMat->m_vecAmbient.x = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
-		pMat->m_vecAmbient.y = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
-		pMat->m_vecAmbient.z = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		Vec4 vecVal;
+		vecVal.x = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		vecVal.y = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		vecVal.z = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		vecVal.w = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		pMat->SetAmbientColor( vecVal );
 		//pMat->m_vecAmbient.w = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
 		//Diffuse color
-		pMat->m_vecDiffuse.x = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
-		pMat->m_vecDiffuse.y = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
-		pMat->m_vecDiffuse.z = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		vecVal.x = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		vecVal.y = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		vecVal.z = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		vecVal.w = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		pMat->SetDiffuseColor( vecVal );
 		//pMat->m_vecDiffuse.w = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
 		//Specular
-		pMat->m_vecSpecular.x = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
-		pMat->m_vecSpecular.y = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
-		pMat->m_vecSpecular.z = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		vecVal.x = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		vecVal.y = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		vecVal.z = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		vecVal.w = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
+		pMat->SetDiffuseColor( vecVal );
 		//pMat->m_vecSpecular.w = Reader.ReadFloat32(); XSE_BR_CHECK_ERR( Reader );
 
 		//Texture count

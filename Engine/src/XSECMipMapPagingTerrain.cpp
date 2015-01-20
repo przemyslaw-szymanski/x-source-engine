@@ -498,8 +498,12 @@ namespace XSE
 			pRS->SetMatrix( MatrixTypes::WORLD, mtxTransform );
 			//Update shaders input
 			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_DIFFUSE_COLOR, Vec4( 1, 0.5, 0.3, 1 ) );
+			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_AMBIENT_COLOR, Vec4( 0.5f, 0.5f, 0.5f, 1 ) );
+			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_SPECULAR_COLOR, Vec4( 1, 1.0, 0.3, 1 ) );
+			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_ALPHA, 1.0f );
+			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_SHININESS, 32.0f );
 			pRS->GetShaderSystem()->UpdateMaterialInputs();
-			pRS->UpdateObjectInputs();
+			pRS->UpdateDrawCallInputs();
 				
 			//Draw object
 			/*for( u32 t = 0; t < m_vTiles.size(); ++t )

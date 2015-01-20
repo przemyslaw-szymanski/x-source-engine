@@ -313,7 +313,7 @@ namespace XSE
 		{
 			//Update position
 			pRS->SetTranslation( (*GrItr)->GetPosition() );
-			pRS->UpdateObjectInputs();
+			pRS->UpdateDrawCallInputs();
 
 			xst_stl_foreach( SubGrItr, (*GrItr)->m_vSubGroups )
 			{

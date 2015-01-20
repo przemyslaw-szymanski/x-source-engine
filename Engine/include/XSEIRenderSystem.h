@@ -141,7 +141,7 @@ namespace XSE
 
 			//Updates any per-object inputs like world matrix for translate/rotate
 			//Updates shader states
-			virtual	void				UpdateObjectInputs() = 0;
+			virtual	void				UpdateDrawCallInputs() = 0;
 
 			virtual i32					ApplyShaderConstantNames() = 0;
 

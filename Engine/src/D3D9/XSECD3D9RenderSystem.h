@@ -91,7 +91,7 @@ namespace XSE
 						i32					SetPixelShaderWithCheck(const Resources::IPixelShader* pPS) { return 0; }
 						i32					SetVertexShaderWithCheck(const Resources::IVertexShader* pVS ) { return 0; }
 						i32					SetIndexBufferWithCheck(const IIndexBuffer* pBuff) { return 0; }
-						void				UpdateObjectInputs() {}
+						void				UpdateDrawCallInputs() {}
 						IShaderSystem*		GetShaderSystem() const { return 0; }
 						void				Enable2DRendering() {};
 						void				Enable3DRendering() {};
