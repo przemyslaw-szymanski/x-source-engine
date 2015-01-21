@@ -1103,6 +1103,7 @@ namespace XSE
 	void CMipMapPagingTerrain::_SetSceneNode(CSceneNode* pNode)
 	{
 		XSTSimpleProfiler();
+		this->m_pSceneNode = pNode;
 		/*IRenderableObject::_SetSceneNode( pNode );
 		pNode->ReserveObjects( m_vTiles.size() + 16 );
 		for(u32 i = 0; i < m_vTiles.size(); ++i)

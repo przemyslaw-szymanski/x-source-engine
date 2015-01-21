@@ -160,6 +160,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 		XSTSimpleProfiler2( "CreateTerrain");
 		XSE::MaterialWeakPtr pMat = XSE::CMaterialManager::GetSingletonPtr()->CreateMaterial( "terrain" );
 	XSE::VertexShaderPtr pVS = XSE::CShaderManager::GetSingletonPtr()->LoadVertexShader("terrain.vsh", "terr.vs", "vs", XSE::ShaderProfiles::VS_BEST);
+	xst_assert2(pVS.IsValid());
 	pVS->SetInputLayout( this->m_pEngine->GetRenderSystem()->GetInputLayout( XSE::ILEs::POSITION | XSE::ILEs::NORMAL ) );
 	XSE::PixelShaderPtr pPS = XSE::CShaderManager::GetSingletonPtr()->LoadPixelShader("terrain.psh", "terr.ps", "ps", XSE::ShaderProfiles::PS_BEST);
 	pMat->CreateTechnique("tech", pVS, pPS);
@@ -173,13 +174,15 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	XSE::ModelPtr pSphere = XSE::CModelManager::GetSingleton().LoadResource("untitled.obj", XSE::ALL_GROUPS);
 	if( pSphere.IsValid() )
 	{
-		pSphere->SetPosition( m_pDbgCam->GetPosition() );
+		//pSphere->SetPosition( m_pDbgCam->GetPosition() + XSE::Vec3(0,500,0) );
 		m_pSceneMgr->GetRootNode()->CreateChildNode()->AddObject( pSphere, false );
+		pSphere->GetSceneNode()->SetPosition( m_pDbgCam->GetPosition() + XSE::Vec3(0,500,0) );
 	}
 
 	XSE::CLight* pLight = m_pSceneMgr->CreateLight("terrain");
 	pLight->SetColor( XSE::Vec4( 0.3, 0.6, 0.9, 1.0f ) );
-	pLight->SetPosition( 200, 1000, 300 );
+	//pLight->SetPosition( pSphere->GetPosition() );
+	pSphere->GetSceneNode()->AddObject( pLight );
 	m_pSceneMgr->SetLight( pLight );
 	return XSE::RESULT::OK;
 }

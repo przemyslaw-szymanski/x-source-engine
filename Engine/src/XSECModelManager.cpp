@@ -21,6 +21,7 @@ namespace XSE
 
 	CModelManager::~CModelManager()
 	{
+		
 	}
 
 	i32 CModelManager::Init()

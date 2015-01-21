@@ -91,7 +91,12 @@ namespace XSE
 		{
 			pNode->m_bAutoDestroy = bAutoDestroy;
 			//m_mChildNodes.insert( NodeMap::value_type( pNode->GetHandle(), pNode ) );
-			m_lChildNodes.push_back( pNode );
+			//m_lChildNodes.push_back( pNode );
+			if( XST_FAILED( AddChildNode( pNode ) ) )
+			{
+				xst_delete( pNode );
+				return xst_null;
+			}
 		}
 
 		return pNode;
@@ -242,14 +247,9 @@ namespace XSE
 				break;
 
 				case OT::CAMERA:
-				{
-
-				}
-				break;
-
 				case OT::LIGHT:
 				{
-
+					
 				}
 				break;
 
@@ -266,6 +266,7 @@ namespace XSE
 				}
 				break;
 			}
+			pObject->_SetParent( this );
 			m_vObjects.push_back( pObject );
 			return XST_OK;
 		}

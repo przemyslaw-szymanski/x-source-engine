@@ -11,17 +11,11 @@ namespace XSE
 	static CEmptyObjectListener g_EmptyListener;
 
 	CObject::CObject() :
-		XST::IObject()
-		, m_pObjListener( &g_EmptyListener )
+		m_pObjListener( &g_EmptyListener )
 	{}
 
 	CObject::CObject(ul32 ulType, lpcastr strDbgName, CObject* pParent) : 
-#if defined( XST_OBJ_DEBUG )
-		XST::IObject( XST::xst_obj_dbg_name( strDbgName ) )
-#else
-        XST::IObject()
-#endif
-		, m_pObjListener( &g_EmptyListener )
+		m_pObjListener( &g_EmptyListener )
 		, m_ulObjType( ulType )
 		, m_pParent( pParent )
 	{
@@ -29,7 +23,10 @@ namespace XSE
 	}
 
 	CObject::CObject(ul32 ulType, ul32 ulHandle, lpcastr strDbgName, CObject* pParent) : 
-		CObject( ulType, strDbgName, pParent )
+		m_pObjListener( &g_EmptyListener )
+		, m_ulObjType( ulType )
+		, m_pParent( pParent )
+		, m_ulObjHandle( ulHandle )
 	{
 	}
 

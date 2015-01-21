@@ -41,7 +41,12 @@ namespace XSE
 		_OnBeforeResourcesDestroyed();
 		m_mGroups.clear();
 		_OnDestroy();
-		//_DestroyMemoryManager( &m_pMemoryMgr );
+		for( auto& Pair : m_mLoaders )
+		{
+			if( !Pair.second->IsManualDestroy() )
+				xst_delete( Pair.second );
+		}
+		m_mLoaders.clear();
 		m_bDestroyed = true;
 	}
 

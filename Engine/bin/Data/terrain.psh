@@ -3,33 +3,18 @@ struct VS_OUT
 {
 	float4 f4VertexPos : SV_POSITION;
 	float3 f3Normal : NORMAL;
+	float3 f3Pos : TEXCOORD0;
 };
 
 float4 ps(VS_OUT IN) : SV_TARGET
 {
-	const float3 f3LightP = f3LightPos; //{ 100, 1000, 100 };
-	const float3 f3CamPos = { -389,450,230 };
-	const float3 f3VertexPos = IN.f4VertexPos;
+	const float3 f3LightPos = { 32, 600, 24 };
+	const float3 f3VertexPos = IN.f3Pos;
 	float3 f3N = normalize( IN.f3Normal );
-	float3 f3L = normalize( f3LightP - f3VertexPos );
+	float3 f3L = normalize( f3LightPos - f3VertexPos );
 	float fDL = max( dot( f3N, f3L ), 0.0 );
-	float3 f3V = normalize( f3CamPos - f3VertexPos );
-	float4 c = f4SceneAmbientColor;
-	float2 s = f2ScreenSize;
-	//c.xyzw = f4LightColor;
-	//c.xyzw = fTime;
-	//c.xyz = f3LightPos;
-	//c.xyz = f3CameraPos;
-	//c.xyzw = float4( s.x,s.y,0,0 );
-	//c.xyz = f3CameraDir;
-	//c.xyzw = f4LightColor;
-	//c.xyzw = f4SceneAmbientColor;
-	//c.rgba = f4MaterialDiffuseColor;
-	//c.rgba = f4MaterialAmbientColor;
-	//c.rgba = fMaterialShininess;
-	//c.rgba = f4MaterialSpecularColor;
-	//c.rgba = fMaterialAlpha;
-	//c.rgba = f4SceneAmbientColor;
+	float4 c;
 	c.rgba = f4MaterialAmbientColor;
+	
 	return c * fDL;
 }

@@ -92,7 +92,8 @@ namespace XSE
 			virtual const Vec3&			MoveObject(cf32& fDistance, const Vec3& vecDirection);
 			virtual const Vec3&			MoveObject(const Vec3& vecMove);
 
-			virtual	xst_fi ul32			GetObjectHandle() const = 0;
+			virtual	xst_fi ul32			GetObjectHandle() const
+										{ return m_ulObjHandle; }
 
 			/*virtual 
 			xst_fi xst_castring&		GetObjectName() const
@@ -191,7 +192,8 @@ namespace XSE
 			Vec3				m_vecScale = Vec3::UNIT;
 			IObjectListener*	m_pObjListener = xst_null;
 			CObject*			m_pParent = xst_null;
-			ul32				m_ulObjType;
+			ul32				m_ulObjType = 0;
+			ul32				m_ulObjHandle = 0;
 			u32					m_uiObjDisableReason = ODR::NOT_DISABLED;
 			f32					m_fObjDistToCamera = -1.0f; // object distance to camera
 			bool				m_bObjDirty = false;
