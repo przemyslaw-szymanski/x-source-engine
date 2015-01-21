@@ -215,6 +215,7 @@ namespace XSE
 		CCamera*			    m_pComputeCamera; //this camera is using in e.g octrees
 		CRenderQueue		    m_RenderQueue;
 		CModelManager*		    m_pModelMgr;
+		LightPtr				m_pDefaultLight;
 		LightPtr				m_pCurrLight; // current selected light
 		f32					    m_fSize;
 		CSceneDebug*		    m_pDbg;

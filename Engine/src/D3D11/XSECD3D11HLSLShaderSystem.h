@@ -27,6 +27,15 @@ namespace XSE
 					i32		int1[1];
 				};
 
+				struct SConstantBuffer
+				{
+					XST::xst_aname	strName;
+					ID3D11Buffer*	pBuffer = xst_null;
+					xst_unknown		pData = xst_null;
+					u32				uDataSize = 0;
+					u32				uRegister = 0;
+				};
+
 				typedef xst_vector< UConstantValue >	ConstantValueVec;
 				typedef xst_vector< f32 >				FloatVec;
 
@@ -92,6 +101,7 @@ namespace XSE
 				CRenderSystem*		m_pRS;
 				XST::xst_astr16		m_astrProfiles[ ShaderProfiles::_ENUM_COUNT ];
 				ID3D11Buffer*		m_apD3DConstantBuffers[ ConstantBuffers::_ENUM_COUNT ];
+				SConstantBuffer		m_aConstantBuffers[ ConstantBuffers::_ENUM_COUNT ];
 				FloatVec			m_vConstantValues[ ConstantBuffers::_ENUM_COUNT ];
 				ConstantValueVec	m_vAllConstantValues;
 				ConstantValueVec	m_vUserConstantValues;

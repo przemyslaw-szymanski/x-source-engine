@@ -23,9 +23,6 @@ namespace XSE
 	xst_castring CSceneManager::DEFAULT_CAMERA( "Default" );
 	xst_astring CSceneManager::DEFAULT_SHADER_COLOR( "" );
 
-	//static CLight g_DefaultLight = CLight( ResourceTypes::LIGHT, CHash::GetCRC( "xse_default_light" ), "xse_default_light" );
-	CLight* g_pDefaultLight = xst_null;
-
 	CSceneManager::CSceneManager(xst_castring& strName, CModelManager* pModelMgr, f32 fSize) : 
 		m_strName( strName ), 
 		m_pViewCamera( xst_null ),
@@ -38,7 +35,7 @@ namespace XSE
 		m_pRootNode = xst_new CSceneNode( this, xst_null, "World", XST::CHash::GetCRC( "World" ) );
 		m_pDbg = xst_new CSceneDebug( this );
 		m_RenderQueue._SetRenderSystem( GetRenderSystem() );
-		g_pDefaultLight = xst_new CLight( CHash::GetCRC( "xse_default_light" ), "xse_default_light" );
+		m_pDefaultLight = xst_new CLight( CHash::GetCRC( "xse_default_light" ), "xse_default_light" );
 		xst_assert2( g_pDefaultLight );
 		m_pCurrLight = g_pDefaultLight;
 		//m_pScenePartitionSystem = xst_new COctreeScenePartitionSystem( this );
@@ -46,7 +43,8 @@ namespace XSE
 
 	CSceneManager::~CSceneManager()
 	{
-		xst_delete( g_pDefaultLight );
+		//xst_release( g_pDefaultLight );
+		
 		xst_delete( m_pDbg );
 		xst_delete( m_pScenePartitionSystem );
 
@@ -57,6 +55,7 @@ namespace XSE
 		}
 
 		DestroyLights();
+		xst_delete( g_pDefaultLight );
 		DestroyCameras();
 		DestroyStaticGeometries();
 		DestroyDynamicGeometries();

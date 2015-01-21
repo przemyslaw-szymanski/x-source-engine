@@ -25,10 +25,11 @@ namespace XSE
 		, m_ulObjType( ulType )
 		, m_pParent( pParent )
 	{
-		XST_SET_DBG_NAME( this, strDbgName );
+		//XST_SET_DBG_NAME( this, strDbgName );
 	}
 
-	CObject::CObject(ul32 ulType, ul32 ulHandle, lpcastr strDbgName, CObject* pParent) : CObject( ulType, strDbgName, pParent )
+	CObject::CObject(ul32 ulType, ul32 ulHandle, lpcastr strDbgName, CObject* pParent) : 
+		CObject( ulType, strDbgName, pParent )
 	{
 	}
 

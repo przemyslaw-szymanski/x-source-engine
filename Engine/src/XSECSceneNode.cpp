@@ -8,8 +8,13 @@
 
 namespace XSE
 {
-	CSceneNode::CSceneNode(CSceneManager* pCreator, CSceneNode* pParent, xst_castring& strName, ul32 ulHandle) : CObject( OT::SCENE_NODE, strName.c_str() ), 
-	m_pSceneMgr( pCreator ), m_pParentNode( pParent ), m_bAutoDestroy( true ), m_strName( strName ), m_ulObjHandle( ulHandle )
+	CSceneNode::CSceneNode(CSceneManager* pCreator, CSceneNode* pParent, xst_castring& strName, ul32 ulHandle) : 
+		CObject( OT::SCENE_NODE, strName.c_str() ), 
+		m_pSceneMgr( pCreator ), 
+		m_pParentNode( pParent ), 
+		m_bAutoDestroy( true ), 
+		m_strName( strName ), 
+		m_ulObjHandle( ulHandle )
 	{
 	}
 
