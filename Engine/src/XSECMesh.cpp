@@ -172,7 +172,7 @@ namespace XSE
 			m_RenderMethod = &CMesh::_RenderIndexed;
 		}
 
-		void CMesh::SetMaterial(XSE::MaterialPtr pMat, cu32& uiLODId)
+		void CMesh::SetMaterial(XSE::MaterialWeakPtr pMat, cu32& uiLODId)
 		{
 			xst_assert( pMat != xst_null, "(CMesh::SetMaterial) Trying to set a null material" );
 			//TODO Override GetMaterial method for mesh. Should returns current lod material

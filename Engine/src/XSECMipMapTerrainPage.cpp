@@ -7,7 +7,7 @@
 
 namespace XSE
 {
-#define XSE_TERRAIN_NORMAL_DEBUG 0
+#define XSE_TERRAIN_NORMAL_DEBUG 1
 
 	CMipMapTerrainPage::CMipMapTerrainPage(CMipMapPagingTerrain* pTerrain) : 
 		m_pTerrain( pTerrain )
@@ -210,7 +210,8 @@ namespace XSE
 		xst_vector<Vec3> vNormals;
 		CalcVertexPositions( &vPositions );
 		if( !m_Info.pIB )
-			XSE::CalcVertexNormals( vPositions, m_Info.VertexCount, &vNormals );
+			//XSE::CalcVertexNormals( vPositions, m_Info.VertexCount, &vNormals );
+			CalcVertexNormals( vPositions, &vNormals );
 		else
 			vNormals.resize(vPositions.size(), Vec3::ZERO);
 #if (XSE_TERRAIN_NORMAL_DEBUG)

@@ -116,7 +116,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	this->m_pViewCam->SetAngleY( 0.580f );
 	this->m_pViewCam->SetPosition( 32, 100, 24 );
 	//this->m_pViewCam->SetPosition( 0, 0, 0 );
-	this->m_pViewCam->SetSpeed( 200, 1.1f, 1.1f );
+	this->m_pViewCam->SetSpeed( 2000, 1.1f, 1.1f );
 	this->m_pViewCam->SetFar( 1000 );
 
 	// DEBUG CAMERA
@@ -156,9 +156,10 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	Options.bBinormal = Options.bNormal = Options.bTangent = Options.bTexCoord = false;
 	Options.bNormal = true;
 
+	XSE::MaterialWeakPtr pMat;
 	{
 		XSTSimpleProfiler2( "CreateTerrain");
-		XSE::MaterialWeakPtr pMat = XSE::CMaterialManager::GetSingletonPtr()->CreateMaterial( "terrain" );
+		pMat = XSE::CMaterialManager::GetSingletonPtr()->CreateMaterial( "terrain" );
 	XSE::VertexShaderPtr pVS = XSE::CShaderManager::GetSingletonPtr()->LoadVertexShader("terrain.vsh", "terr.vs", "vs", XSE::ShaderProfiles::VS_BEST);
 	xst_assert2(pVS.IsValid());
 	pVS->SetInputLayout( this->m_pEngine->GetRenderSystem()->GetInputLayout( XSE::ILEs::POSITION | XSE::ILEs::NORMAL ) );
@@ -172,17 +173,19 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	}
 
 	XSE::ModelPtr pSphere = XSE::CModelManager::GetSingleton().LoadResource("untitled.obj", XSE::ALL_GROUPS);
+	XSE::Vec3 vecPos =m_pDbgCam->GetPosition() + XSE::Vec3(0,500,0);
 	if( pSphere.IsValid() )
 	{
+		pSphere->SetMaterial( pMat );
 		//pSphere->SetPosition( m_pDbgCam->GetPosition() + XSE::Vec3(0,500,0) );
 		m_pSceneMgr->GetRootNode()->CreateChildNode()->AddObject( pSphere, false );
-		pSphere->GetSceneNode()->SetPosition( m_pDbgCam->GetPosition() + XSE::Vec3(0,500,0) );
+		pSphere->GetSceneNode()->SetPosition( m_pDbgCam->GetPosition() );
 	}
 
 	XSE::CLight* pLight = m_pSceneMgr->CreateLight("terrain");
 	pLight->SetColor( XSE::Vec4( 0.3, 0.6, 0.9, 1.0f ) );
-	//pLight->SetPosition( pSphere->GetPosition() );
-	pSphere->GetSceneNode()->AddObject( pLight );
+	pLight->SetPosition( vecPos );
+	//pSphere->GetSceneNode()->AddObject( pLight );
 	m_pSceneMgr->SetLight( pLight );
 	return XSE::RESULT::OK;
 }

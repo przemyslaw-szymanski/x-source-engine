@@ -137,7 +137,7 @@ namespace XSE
 
 						void				DestroyBuffers();
 
-						void				SetMaterial(MaterialPtr pMat, cu32& uiLODId = 0);
+						void				SetMaterial(MaterialWeakPtr pMat, cu32& uiLODId = 0);
 
 						MaterialWeakPtr		GetMaterial() xst_implement;
 				const	MaterialWeakPtr		GetMaterial() const xst_implement;

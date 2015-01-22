@@ -17,6 +17,7 @@ namespace XSE
 {
 	#define CALC_XY(_x, _y, _width) ( (_x) + (_y) * (_width) )
 #define ADD_TILE_TO_PARTITION_SYSTEM 1
+#define USE_DIAMOND_TRIANGLE_RENDERING 0
 
 	Vec3* g_avecNormals = xst_null;
 	bool g_bCCW = true;
@@ -737,92 +738,6 @@ namespace XSE
 		return XST_OK;
 	}
 
-	/*i32 CMipMapPagingTerrain::CalcVertexNormalData()
-	{
-		if( !m_Options.bNormal )
-			return XST_OK;
-
-		XSTSimpleProfiler();
-		// Get index data for default lod 0
-		const IIndexBuffer* pIB = GetIndexBuffer( 0, MipMapTerrainStitchTypes::NONE ).pIndexBuffer.GetPtr();
-		xst_assert( pIB, "(CMipMapPagingTerrain::CalcVertexNormalData) Index buffer not created" );
-		const CIndexData& IData = pIB->GetIndexData();
-		cu32 uTriCount = IData.GetTriangleCount();
-		
-		// One normal per each vertex
-		m_vTerrNormals.clear();
-		ul32 ulCount = m_Options.PageVertexCount.x * m_Options.PageVertexCount.y;
-		m_vTerrNormals.resize( ulCount, Vec3::ZERO );
-
-		u32 auTriangle[3];
-		Vec3 avecTriangleVertices[3];
-		CColor aColors[3];
-		int auRs[4];
-		Vec3 avecTriLeft[3];
-		Vec3 avecTriRight[3];
-		Vec3 vecU, vecV;
-		Vec3 avecNormals[2];
-
-		for( auto& pPage : m_vPages )
-		{
-			const IImage* pImg = pPage->GetImage();
-			// For each vertex/texel
-			for( u32 y = 0; y < pImg->GetHeight() - 1; y += 1 )
-			{
-				for( u32 x = 0; x < pImg->GetWidth() - 1; x += 1 )
-				{
-					auRs[ 0 ] = pImg->GetChannelColor( x, y, IImage::CHANNEL::RED ); // top left
-					auRs[ 1 ] = pImg->GetChannelColor( x, y+1, IImage::CHANNEL::RED ); // bottom left
-					auRs[ 2 ] = pImg->GetChannelColor( x+1, y, IImage::CHANNEL::RED ); // top right
-					auRs[ 3 ] = pImg->GetChannelColor( x+1, y+1, IImage::CHANNEL::RED ); // bottom right
-					// Create quad
-					// Left triangle |\.
-					avecTriLeft[ 0 ].Set( x, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[0] ), y ); // top left
-					avecTriLeft[ 1 ].Set( x, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[1] ), y + 1 ); // bottom left
-					avecTriLeft[ 2 ].Set( x + 1, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[3] ), y + 1 ); // botton right
-
-					vecU = avecTriLeft[ 1 ];
-					vecV = avecTriLeft[ 2 ];
-					vecU.Sub( avecTriLeft[ 0 ] );
-					vecV.Sub( avecTriLeft[ 0 ] );
-					avecNormals[ 0 ].x = ( vecU.y * vecV.z - vecU.z * vecV.y );
-					avecNormals[ 0 ].y = ( vecU.z * vecV.x - vecU.x * vecV.z );
-					avecNormals[ 0 ].z = ( vecU.x * vecV.y - vecU.y * vecV.x );
-					m_vTerrNormals[XST_ARRAY_2D_TO_1D(x, y, m_Options.PageVertexCount.x)] += avecNormals[0];
-					m_vTerrNormals[XST_ARRAY_2D_TO_1D(x, y+1, m_Options.PageVertexCount.x)] += avecNormals[0];
-					m_vTerrNormals[XST_ARRAY_2D_TO_1D(x+1, y+1, m_Options.PageVertexCount.x)] += avecNormals[0];
-
-					// Right triangle \|
-					avecTriRight[ 0 ].Set( x, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[0] ), y ); // top left
-					avecTriRight[ 1 ].Set( x + 1, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[3] ), y + 1 ); // bottom right
-					avecTriRight[ 2 ].Set( x + 1, CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, auRs[2] ), y ); // top right
-
-					vecU = avecTriRight[ 1 ];
-					vecV = avecTriRight[ 2 ];
-					vecU.Sub( avecTriRight[ 0 ] );
-					vecV.Sub( avecTriRight[ 0 ] );
-					avecNormals[ 1 ].x = ( vecU.y * vecV.z - vecU.z * vecV.y );
-					avecNormals[ 1 ].y = ( vecU.z * vecV.x - vecU.x * vecV.z );
-					avecNormals[ 1 ].z = ( vecU.x * vecV.y - vecU.y * vecV.x );
-					m_vTerrNormals[XST_ARRAY_2D_TO_1D(x, y, m_Options.PageVertexCount.x)] += avecNormals[1];
-					m_vTerrNormals[XST_ARRAY_2D_TO_1D(x+1, y+1, m_Options.PageVertexCount.x)] += avecNormals[1];
-					m_vTerrNormals[XST_ARRAY_2D_TO_1D(x+1, y, m_Options.PageVertexCount.x)] += avecNormals[1];
-
-					//CDebug::PrintDebugLN( ToStr( avecNormals[0].a, 3 ).Array( avecNormals[1].a, 3 ) );
-				}
-			}
-
-			for( u32 i = 0; i < m_vTerrNormals.size(); ++i )
-			{	
-				m_vTerrNormals[ i ].Normalize();
-				//CDebug::PrintDebugLN( ToStr( vecNormal.a, 3 ) );
-			}
-			
-		}
-
-		return XST_OK;
-	}*/
-
 	i32	CMipMapPagingTerrain::CalcIndexBufferData(u32 uiLOD)
 	{
 		cu32 uiIBID = GetIndexBuffersID( uiLOD );
@@ -1007,48 +922,6 @@ namespace XSE
 
 	i32 CMipMapPagingTerrain::CreateTilesLODs()
 	{
-		{
-			//XSTSimpleProfiler(); //~32sec in debug for 31x31 tiles
-
-		/*const int iMaxLODCount = m_Options.uiLODCount * MipMapTerrainStitchTypes::_MAX_COUNT;
-		SMeshLOD LOD;
-		int iCurrLOD = 0;
-		CMipMapTerrainTile* pCurrTile;
-		CMesh* pCurrMesh;
-
-		for(u32 t = 0; t < m_vTiles.size(); ++t)
-		{
-			pCurrTile = m_vTiles[t];
-			pCurrMesh = pCurrTile->m_pMesh.GetPtr();
-            pCurrMesh->SetLODCount( iMaxLODCount );
-			const SMeshLOD* pFirstLOD = pCurrMesh->GetLOD( 0 );
-			//pCurrMesh->SetLODCount( iMaxLODCount );
-			iCurrLOD = 0;
-
-			for(u32 i = 0; i < m_Options.uiLODCount; ++i)
-			{
-				for(u32 j = 0; j < MipMapTerrainStitchTypes::_MAX_COUNT; ++j)
-				{
-					SMipMapIndexBuffer IBuffer = GetIndexBuffer( i, j );
-					if( j == 0 && i == 0 ) //first, default lod
-					{
-						pCurrMesh->SetIndexBuffer( IBuffer.pIndexBuffer );
-					}
-					else
-					{
-						// LOD levels are created in a batch it is need to fill them properly now
-						SMeshLOD* pLOD = pCurrMesh->GetLOD( iCurrLOD );
-						pLOD->pIndexBuffer = IBuffer.pIndexBuffer;
-						pLOD->pVertexBuffer = pFirstLOD->pVertexBuffer; // Empty lods was created during mesh creation now it is time to set vertex buffer for each lod
-					}
-
-					iCurrLOD++;
-				}
-			}
-
-			m_vTiles[ t ]->SetLOD( 0, 0, MipMapTerrainStitchTypes::NONE );
-		}*/
-		}
 		return XST_OK;
 	}
 
@@ -1118,7 +991,7 @@ namespace XSE
 		}*/
 	}
 
-
+#if USE_DIAMOND_TRIANGLE_RENDERING
 	void CMipMapPagingTerrain::_CalcQuadCW(CIndexData* pData, cu32& uiX, cu32& uiY, u32* puiCurrTri, cu32& uiLODStep, bool bBackslashTriangle)
 	{
 		u32 uiCurrTri = *puiCurrTri;
@@ -1449,54 +1322,432 @@ namespace XSE
 		}
 	}
 
-	void CMipMapPagingTerrain::_CalcIBStitchDownCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	void CMipMapPagingTerrain::_CalcIBStitchNoneCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		pIB->_SetDbgName("terr_ib_st_d");
-		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW );
+		u32 ulQuad = 0;
+		cu32 uiHeight = m_Options.TileVertexCount.y;
+		cu32 uiWidth = m_Options.TileVertexCount.x;
+		cu32 uiLODStep = CalcLODStep( uiLOD );
+		u32 uiCurrHeight = 0;
+		u32 uiCurrTri = 0;
+
+		CIndexData& IData = pIB->GetIndexData();
+
+		for(u32 z = 0; z < uiHeight - uiLODStep; z += uiLODStep)
+		{
+			//CalcStripStitchUpLeft( IData4, z, uiWidth, &uiCurrTri, uiLodStep, ulQuad % 2 == 0 );
+			bool bBackslash = ulQuad % 2 == 0;
+			for(u32 x = 0; x < uiWidth - uiLODStep; x += uiLODStep)
+			{
+				_CalcQuadCW( &IData, x, z, &uiCurrTri, uiLODStep, bBackslash );
+				bBackslash = !bBackslash;
+			}
+			ulQuad++;
+		}
+
+		//XST::CDebug::PrintDebugLN( XST::StringUtil::ToString( uiLOD ) );
+		//DebugPrintIndexData( IData );
 	}
 
-	void CMipMapPagingTerrain::_CalcIBStitchDownLeftCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	void CMipMapPagingTerrain::_CalcBaseIBStitchRightCW(CIndexData* pData, const SCalcIBStitchInfo& Info)
 	{
-		pIB->_SetDbgName("terr_ib_st_dl");
-		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
+		if( Info.uiCurrX == Info.uiLastX  )
+		{
+			u32 uiPos;
+			u32 uiId;
+			//For even strip
+			//if( Info.uiCurrY % 2 == 0 )
+			if( Info.uiCurrItrY % 2 == 0 )
+			{
+				//Left down vertex is at index -5
+				/* /| */
+				uiPos = Info.uiCurrID - 1;
+				uiId = CALC_XY( Info.uiCurrX + Info.uiLODStep, Info.uiCurrY + Info.uiNextLODStep, Info.uiVertCountX );
+			}
+			else
+			{
+				//Left up vertex is at index -2
+				/* \| */
+				uiPos = Info.uiCurrID - 2;
+				uiId = CALC_XY( Info.uiCurrX + Info.uiLODStep, Info.uiCurrY + Info.uiLODStep, Info.uiVertCountX );
+				
+			}
+			pData->SetIndex( uiPos, uiId );
+		}
 	}
 
-	void CMipMapPagingTerrain::_CalcIBStitchLeftCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	void CMipMapPagingTerrain::_CalcBaseIBStitchLeftCW(CIndexData* pData, const SCalcIBStitchInfo& Info)
 	{
-		pIB->_SetDbgName("terr_ib_st_l");
-		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
+		if( Info.uiCurrX == 0 )
+		{
+			u32 uiPos, uiId;
+			//For even strip
+			//if( Info.uiCurrY % 2 == 0 )
+			if( Info.uiCurrItrY % 2 == 0 )
+			{
+				/* |\ */
+				//Left down vertex is at index -5
+				uiPos = Info.uiCurrID - 6;
+				uiId = CALC_XY( Info.uiCurrX, Info.uiCurrY + Info.uiNextLODStep, Info.uiVertCountX );
+			}
+			else
+			{
+				/* |/ */
+				//Left up vertex is at index -5
+				uiPos = Info.uiCurrID - 5;	
+				uiId = CALC_XY( Info.uiCurrX + Info.uiLODStep, Info.uiCurrY, Info.uiVertCountX );
+			}
+			pData->SetIndex( uiPos, uiId );
+		}
 	}
 
-	void CMipMapPagingTerrain::_CalcIBStitchRightCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	void CMipMapPagingTerrain::_CalcBaseIBStitchUpCW(CIndexData* pData, const SCalcIBStitchInfo& Info)
 	{
-		pIB->_SetDbgName("terr_ib_st_r");
-		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
+		if( Info.uiCurrY == 0 ) //if this is the first row
+		{
+			u32 uiPos, uiId;
+			//For even quads change right up vertex of the second triangle
+			if( Info.uiCurrItrX % 2 == 0 )
+			{
+				/* \| change to \/ */
+				//Right up vertex of the second triangle is at position -2
+				uiPos = Info.uiCurrID - 2;
+				uiId = CALC_XY( Info.uiCurrX + Info.uiNextLODStep, Info.uiCurrY, Info.uiVertCountX );
+			}
+			else //for odd quads degenerate first triangle
+			{
+				/* |/ change to / */
+				//Left up vertex of the first triangle is at position -5
+				uiPos = Info.uiCurrID - 5;
+				uiId = CALC_XY( Info.uiCurrX + Info.uiLODStep, Info.uiCurrY, Info.uiVertCountX );
+			}
+			pData->SetIndex( uiPos, uiId );
+		}
 	}
 
-	void CMipMapPagingTerrain::_CalcIBStitchRightDownCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	void CMipMapPagingTerrain::_CalcBaseIBStitchDownCW(CIndexData* pData, const SCalcIBStitchInfo& Info)
 	{
-		pIB->_SetDbgName("terr_ib_st_rd");
-		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
+		if( Info.uiCurrY == Info.uiLastY ) //if this is the last row
+		{
+			// Index position in the buffer
+			// Vertex id in the vertex buffer
+			u32 uiPos, uiId;
+			//For even quads change right up vertex of the second triangle
+			//if( Info.uiCurrX % 2 == 0 )
+			if( Info.uiCurrItrX % 2 == 0 )
+			{
+				/* /| to /\ */
+				//Right down vertex of the second triangle is at position -2
+				uiPos = Info.uiCurrID - 1;
+				uiId = CALC_XY( Info.uiCurrX + Info.uiNextLODStep, Info.uiCurrY + Info.uiLODStep, Info.uiVertCountX );
+			}
+			else //for odd quads degenerate first triangle
+			{
+				/* |\ change to \ */
+				//Left up vertex of the first triangle is at position -5
+				uiPos = Info.uiCurrID - 6;
+				uiId = CALC_XY( Info.uiCurrX, Info.uiCurrY, Info.uiVertCountX );
+			}
+			pData->SetIndex( uiPos, uiId );
+		}
+	}
+#else // NOT DIAMOND RENDERING ===============================================================================================================
+	void CMipMapPagingTerrain::_CalcQuadCW(	CIndexData* pData, cu32& uiX, cu32& uiY, u32* puiCurrTri, cu32& uiLODStep,
+											bool bBackslashTriangle)
+	{
+		u32 uiCurrTri = *puiCurrTri;
+		cu32 uiWidth = m_Options.TileVertexCount.x;
+
+		cu32 uiIds[ 4 ] = 
+		{
+			CALC_XY( uiX, uiY, uiWidth ), //LEFT_UP
+			CALC_XY( uiX + uiLODStep, uiY, uiWidth ), //RIGHT_UP
+			CALC_XY( uiX + uiLODStep, uiY + uiLODStep, uiWidth ), //RIGHT_DOWN
+			CALC_XY( uiX, uiY + uiLODStep, uiWidth ) //LEFT_DOWN
+		};
+
+		/*uiIds[ LEFT_UP ]	= CALC_XY( uiX, uiY, uiWidth );
+		uiIds[ LEFT_DOWN ]	= CALC_XY( uiX, uiY + uiLODStep, uiWidth );
+		uiIds[ RIGHT_UP ]	= CALC_XY( uiX + uiLODStep, uiY, uiWidth );
+		uiIds[ RIGHT_DOWN ] = CALC_XY( uiX + uiLODStep, uiY + uiLODStep, uiWidth );*/
+
+		{
+			//Set the backslash triangle 
+			/* |\ */
+			//CW
+			pData->SetTriangle( uiCurrTri++, uiIds[ LEFT_DOWN ], uiIds[ LEFT_UP ], uiIds[ RIGHT_DOWN ] );
+			//CCW
+			//pData->SetTriangle( uiCurrTri++, uiIds[ LEFT_UP ], uiIds[ LEFT_DOWN ], uiIds[ RIGHT_DOWN ] );
+			//The second part 
+			/* \| */
+			//CW
+			pData->SetTriangle( uiCurrTri++, uiIds[ LEFT_UP ], uiIds[ RIGHT_UP ], uiIds[ RIGHT_DOWN ] );
+			//CCW
+			//pData->SetTriangle( uiCurrTri++, uiIds[ RIGHT_UP ], uiIds[ LEFT_UP ], uiIds[ RIGHT_DOWN ] );
+		}
+
+		*puiCurrTri = uiCurrTri;
 	}
 
-	void CMipMapPagingTerrain::_CalcIBStitchUpCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	void CMipMapPagingTerrain::_CalcQuadCCW(CIndexData* pData, cu32& uiX, cu32& uiY, u32* puiCurrTri, cu32& uiLODStep, bool bBackslashTriangle)
 	{
-		pIB->_SetDbgName("terr_ib_st_u");
-		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW );
+		u32 uiCurrTri = *puiCurrTri;
+		cu32 uiWidth = m_Options.TileVertexCount.x;
+
+		cu32 uiIds[ 4 ] = 
+		{
+			CALC_XY( uiX, uiY, uiWidth ), //LEFT_UP
+			CALC_XY( uiX + uiLODStep, uiY, uiWidth ), //RIGHT_UP
+			CALC_XY( uiX + uiLODStep, uiY + uiLODStep, uiWidth ), //RIGHT_DOWN
+			CALC_XY( uiX, uiY + uiLODStep, uiWidth ) //LEFT_DOWN
+		};
+
+		/*uiIds[ LEFT_UP ]	= CALC_XY( uiX, uiY, uiWidth );
+		uiIds[ LEFT_DOWN ]	= CALC_XY( uiX, uiY + uiLODStep, uiWidth );
+		uiIds[ RIGHT_UP ]	= CALC_XY( uiX + uiLODStep, uiY, uiWidth );
+		uiIds[ RIGHT_DOWN ] = CALC_XY( uiX + uiLODStep, uiY + uiLODStep, uiWidth );*/
+
+		{
+			//Set the backslash triangle 
+			/* |\ */
+			//CW
+			//pData->SetTriangle( uiCurrTri++, uiIds[ LEFT_DOWN ], uiIds[ LEFT_UP ], uiIds[ RIGHT_DOWN ] );
+			//CCW
+			pData->SetTriangle( uiCurrTri++, uiIds[ LEFT_UP ], uiIds[ LEFT_DOWN ], uiIds[ RIGHT_DOWN ] );
+			//The second part 
+			/* \| */
+			//CW
+			//pData->SetTriangle( uiCurrTri++, uiIds[ LEFT_UP ], uiIds[ RIGHT_UP ], uiIds[ RIGHT_DOWN ] );
+			//CCW
+			pData->SetTriangle( uiCurrTri++, uiIds[ RIGHT_UP ], uiIds[ LEFT_UP ], uiIds[ RIGHT_DOWN ] );
+		}
+
+		*puiCurrTri = uiCurrTri;
 	}
 
-	void CMipMapPagingTerrain::_CalcIBStitchUpLeftCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	void CMipMapPagingTerrain::_CalcBaseIBStitch(u32 uiLOD, const CPoint& VertexCount, IndexBufferPtr& pIB, pfnCalcIBStitch Func1,  pfnCalcIBStitch Func2)
 	{
-		pIB->_SetDbgName("terr_ib_st_ul");
-		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
+		//XSTSimpleProfiler();
+		u32 ulQuad = 0;
+		cu32 uiLODStep = CalcLODStep( uiLOD );
+		bool bIsLastLOD = (uiLOD == m_Options.uiMaxLODCount - 1);
+		// If this lod is the las lod there is no next lod step
+		cu32 uiNextLODStep = ( bIsLastLOD ) ? uiLODStep : CalcLODStep( uiLOD + 1 );
+		/*cu32 uiHeight = m_Options.TileVertexCount.y - uiLODStep;
+		cu32 uiWidth = m_Options.TileVertexCount.x - uiLODStep;
+		cu32 uiLastX = uiWidth - uiLODStep;
+		cu32 uiLastY = uiHeight - uiLODStep;*/
+		cu32 uiHeight = VertexCount.y - 1;
+		cu32 uiWidth = VertexCount.x - 1;
+		cu32 uiLastX = uiWidth - uiLODStep;
+		cu32 uiLastY = uiHeight - uiLODStep;
+		u32 uiCurrId = 0;
+		u32 uiCurrTri = 0;
+		u32 uiPos = 0;
+		u32 uiId = 0;
+		bool bBackslash;
+
+		CIndexData& IData = pIB->GetIndexData();
+
+		SCalcIBStitchInfo Info;
+		Info.uiHeight = uiHeight;
+		Info.uiWidth = uiWidth;
+		Info.uiLastX = uiLastX;
+		Info.uiLastY = uiLastY;
+		Info.uiLODStep = uiLODStep;
+		Info.uiNextLODStep = uiNextLODStep;
+		Info.uiVertCountX = m_Options.TileVertexCount.x;
+		Info.uiVertCountY = m_Options.TileVertexCount.y;
+		Info.uiCurrItrX = Info.uiCurrItrY = 0;
+
+		if( bIsLastLOD )
+		{
+			Func1 = &CMipMapPagingTerrain::_CalcBaseIBStitchEmpty;
+			Func2 = &CMipMapPagingTerrain::_CalcBaseIBStitchEmpty;
+		}
+
+		for(u32 z = 0; z < uiHeight; z += uiLODStep)
+		{
+			Info.uiCurrY = z;
+			Info.uiCurrItrX = 0;
+			bBackslash = ulQuad % 2 == 0;
+
+			for(u32 x = 0; x < uiWidth; x += uiLODStep)
+			{
+				if( g_bCCW )
+					_CalcQuadCCW( &IData, x, z, &uiCurrTri, uiLODStep, bBackslash );
+				else
+					_CalcQuadCW( &IData, x, z, &uiCurrTri, uiLODStep, bBackslash );
+				bBackslash = !bBackslash;
+				Info.uiCurrID = uiCurrTri * 3;
+				Info.uiCurrX = x;
+				XST_CALL_MEMBER_FN_PTR( this, Func1 )( &IData, Info );
+				XST_CALL_MEMBER_FN_PTR( this, Func2 )( &IData, Info );
+				Info.uiCurrItrX++;
+			}
+			ulQuad++;
+			Info.uiCurrItrY++;
+		}
 	}
 
-	void CMipMapPagingTerrain::_CalcIBStitchUpRightCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	void CMipMapPagingTerrain::_CalcIBStitchNoneCCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
-		pIB->_SetDbgName("terr_ib_st_ur");
-		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
+		u32 ulQuad = 0;
+		cu32 uiHeight = m_Options.TileVertexCount.y;
+		cu32 uiWidth = m_Options.TileVertexCount.x;
+		cu32 uiLODStep = CalcLODStep( uiLOD );
+		u32 uiCurrHeight = 0;
+		u32 uiCurrTri = 0;
+
+		CIndexData& IData = pIB->GetIndexData();
+
+		for(u32 z = 0; z < uiHeight - uiLODStep; z += uiLODStep)
+		{
+			//CalcStripStitchUpLeft( IData4, z, uiWidth, &uiCurrTri, uiLodStep, ulQuad % 2 == 0 );
+			for(u32 x = 0; x < uiWidth - uiLODStep; x += uiLODStep)
+			{
+				_CalcQuadCCW( &IData, x, z, &uiCurrTri, uiLODStep, false );
+			}
+			ulQuad++;
+		}
+
+		//XST::CDebug::PrintDebugLN( XST::StringUtil::ToString( uiLOD ) );
+		//DebugPrintIndexData( IData );
 	}
 
+	void CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW(CIndexData* pData, const SCalcIBStitchInfo& Info)
+	{
+		if( Info.uiCurrX == Info.uiLastX  )
+		{
+			u32 uiPos;
+			u32 uiId;
+			//For even strip
+			//if( Info.uiCurrY % 2 == 0 )
+			if( Info.uiCurrItrY % 2 == 0 )
+			{
+
+					// Quad calculations: 
+					// Left triangle: uiIds[ LEFT_UP ], uiIds[ LEFT_DOWN ], uiIds[ RIGHT_UP ]
+					// Right triangle: uiIds[ RIGHT_DOWN ], uiIds[ RIGHT_UP ], uiIds[ LEFT_DOWN ]
+					// Right down vertex is at position -3
+					uiPos = Info.uiCurrID - 3;
+
+				uiId = CALC_XY( Info.uiCurrX + Info.uiLODStep, Info.uiCurrY + Info.uiNextLODStep, Info.uiVertCountX );
+			}
+			else
+			{
+					// Quad calculations: 
+					// Left triangle: uiIds[ LEFT_UP ], uiIds[ LEFT_DOWN ], uiIds[ RIGHT_DOWN ]
+					// Right triangle: uiIds[ RIGHT_UP ], uiIds[ LEFT_UP ], uiIds[ RIGHT_DOWN ]
+					// Right up vertex is at position -3
+					uiPos = Info.uiCurrID - 3;
+				uiId = CALC_XY( Info.uiCurrX + Info.uiLODStep, Info.uiCurrY + Info.uiLODStep, Info.uiVertCountX );
+				
+			}
+			pData->SetIndex( uiPos, uiId );
+		}
+	}
+
+	void CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW(CIndexData* pData, const SCalcIBStitchInfo& Info)
+	{
+		if( Info.uiCurrX == 0 )
+		{
+			u32 uiPos, uiId;
+			//For even strip
+			//if( Info.uiCurrY % 2 == 0 )
+			if( Info.uiCurrItrY % 2 == 0 )
+			{
+				/* |\ */
+					// Quad calculations: 
+					// Left triangle: leftUp, leftDown, rightDown
+					// Right triangle: rightUp, leftUp, rightDown
+					// Left down vertex for left triangle is at index -4
+					uiPos = Info.uiCurrID - 4 - 1; // sub -1 because we are on a next working index
+
+				uiId = CALC_XY( Info.uiCurrX, Info.uiCurrY + Info.uiNextLODStep, Info.uiVertCountX );
+			}
+			else
+			{
+				/* |/ */
+
+					// Quad calculations: 
+					// Left triangle: leftUp, leftDown, rightUp
+					// Right triangle: rightDown, rightUp, leftDown
+					// Left up vertex for left triangle is at index -5
+					uiPos = Info.uiCurrID - 5 - 1;
+
+				uiId = CALC_XY( Info.uiCurrX + Info.uiLODStep, Info.uiCurrY, Info.uiVertCountX );
+			}
+			pData->SetIndex( uiPos, uiId );
+		}
+	}
+
+	void CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW(CIndexData* pData, const SCalcIBStitchInfo& Info)
+	{
+		if( Info.uiCurrY == 0 ) //if this is the first row
+		{
+			u32 uiPos, uiId;
+			//For even quads change right up vertex of the second triangle
+			if( Info.uiCurrItrX % 2 == 0 )
+			{
+				/* \| change to \/ */
+					// Quad calculations: 
+					// Left triangle: leftUp, leftDown, rightDown
+					// Right triangle: rightUp, leftUp, rightDown
+					// Right up vertex for left triangle is at index -3
+					uiPos = Info.uiCurrID - 3;
+
+				uiId = CALC_XY( Info.uiCurrX + Info.uiNextLODStep, Info.uiCurrY, Info.uiVertCountX );
+			}
+			else //for odd quads degenerate first triangle
+			{
+				/* |/ change to / */
+					// Quad calculations: 
+					// Left triangle: leftUp, leftDown, rightUp
+					// Right triangle: rightDown, rightUp, leftDown
+					// Left up vertex for left triangle is at index -6
+					uiPos = Info.uiCurrID - 6;
+
+				uiId = CALC_XY( Info.uiCurrX + Info.uiLODStep, Info.uiCurrY, Info.uiVertCountX );
+			}
+			pData->SetIndex( uiPos, uiId );
+		}
+	}
+
+	void CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW(CIndexData* pData, const SCalcIBStitchInfo& Info)
+	{
+		if( Info.uiCurrY == Info.uiLastY ) //if this is the last row
+		{
+			// Index position in the buffer
+			// Vertex id in the vertex buffer
+			u32 uiPos, uiId;
+			//For even quads change right up vertex of the second triangle
+			//if( Info.uiCurrX % 2 == 0 )
+			if( Info.uiCurrItrX % 2 == 0 )
+			{
+				/* /| to /\ */
+					// Quad calculations: 
+					// Left triangle: leftUp, leftDown, rightUp
+					// Right triangle: rightDown, rightUp, leftDown
+					// Right down vertex for left triangle is at index -3
+					uiPos = Info.uiCurrID - 3;
+
+				uiId = CALC_XY( Info.uiCurrX + Info.uiNextLODStep, Info.uiCurrY + Info.uiLODStep, Info.uiVertCountX );
+			}
+			else //for odd quads degenerate first triangle
+			{
+				/* |\ change to \ */
+					// Quad calculations: 
+					// Left triangle: leftUp, leftDown, rightDown
+					// Right triangle: rightUp, leftUp, rightDown
+					// Left down vertex for left triangle is at index -5
+					uiPos = Info.uiCurrID - 5;
+
+				uiId = CALC_XY( Info.uiCurrX, Info.uiCurrY, Info.uiVertCountX );
+			}
+			pData->SetIndex( uiPos, uiId );
+		}
+	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchNoneCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
@@ -1627,6 +1878,55 @@ namespace XSE
 			pData->SetIndex( uiPos, uiId );
 		}
 	}
+#endif // USE_DIAMOND_TRIANGLE_RENDERING
+
+	void CMipMapPagingTerrain::_CalcIBStitchDownCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	{
+		pIB->_SetDbgName("terr_ib_st_d");
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW );
+	}
+
+	void CMipMapPagingTerrain::_CalcIBStitchDownLeftCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	{
+		pIB->_SetDbgName("terr_ib_st_dl");
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
+	}
+
+	void CMipMapPagingTerrain::_CalcIBStitchLeftCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	{
+		pIB->_SetDbgName("terr_ib_st_l");
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
+	}
+
+	void CMipMapPagingTerrain::_CalcIBStitchRightCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	{
+		pIB->_SetDbgName("terr_ib_st_r");
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
+	}
+
+	void CMipMapPagingTerrain::_CalcIBStitchRightDownCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	{
+		pIB->_SetDbgName("terr_ib_st_rd");
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchDownCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
+	}
+
+	void CMipMapPagingTerrain::_CalcIBStitchUpCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	{
+		pIB->_SetDbgName("terr_ib_st_u");
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW );
+	}
+
+	void CMipMapPagingTerrain::_CalcIBStitchUpLeftCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	{
+		pIB->_SetDbgName("terr_ib_st_ul");
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchLeftCCW );
+	}
+
+	void CMipMapPagingTerrain::_CalcIBStitchUpRightCCW(u32 uiLOD, IndexBufferPtr& pIB)
+	{
+		pIB->_SetDbgName("terr_ib_st_ur");
+		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCCW );
+	}
 
 	void CMipMapPagingTerrain::_CalcIBStitchDownCW(u32 uiLOD, IndexBufferPtr& pIB)
 	{
@@ -1667,5 +1967,4 @@ namespace XSE
 	{
 		_CalcBaseIBStitch( uiLOD, m_Options.TileVertexCount, pIB, &CMipMapPagingTerrain::_CalcBaseIBStitchUpCW, &CMipMapPagingTerrain::_CalcBaseIBStitchRightCW );
 	}
-
 }//xse

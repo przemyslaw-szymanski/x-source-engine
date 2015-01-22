@@ -43,7 +43,7 @@ namespace XSE
 			}
 		}
 
-		void CModel::SetMaterial(MaterialPtr pMat, cu32& uiId)
+		void CModel::SetMaterial(MaterialWeakPtr pMat, cu32& uiId)
 		{
 			this->m_pMaterial = pMat;
 			if( m_vMeshes.size() > 0 && m_vMeshes[ uiId ] != xst_null )

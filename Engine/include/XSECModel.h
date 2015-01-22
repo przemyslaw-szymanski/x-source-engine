@@ -42,7 +42,7 @@ namespace XSE
 
 						void			SetMesh(MeshPtr pMesh, cu32& uiId = 0);
 
-						void			SetMaterial(MaterialPtr pMat, cu32& uiId = 0);
+						void			SetMaterial(MaterialWeakPtr pMat, cu32& uiId = 0);
 
 				/*xst_fi	xst_castring&	GetObjectName() const
 										{ return this->_GetDbgName(); }*/
