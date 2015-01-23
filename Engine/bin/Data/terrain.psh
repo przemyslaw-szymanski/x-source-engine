@@ -8,13 +8,12 @@ struct VS_OUT
 
 float4 ps(VS_OUT IN) : SV_TARGET
 {
-	const float3 f3LightPos = { 32, 600, 24 };
 	const float3 f3VertexPos = IN.f3Pos;
 	float3 f3N = normalize( IN.f3Normal );
 	float3 f3L = normalize( f3LightPos - f3VertexPos );
 	float fDL = max( dot( f3N, f3L ), 0.0 );
 	float4 c;
 	c.rgba = f4MaterialAmbientColor;
-	
-	return c * fDL;
+	c.rgba = fDL;
+	return c;
 }

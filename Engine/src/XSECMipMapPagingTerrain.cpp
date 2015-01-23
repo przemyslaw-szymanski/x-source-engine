@@ -527,7 +527,7 @@ namespace XSE
 				auto* Tile = g_vVisibleTiles[ t ];
 				// TODO: probably cache miss here. Use array of pVB,ulStartVertex structures
 				const auto& TileInfo = Tile->m_Info;
-				pIB = GetIndexBuffer( Tile->m_uiLOD, Tile->m_eStitchType /*XSE::MipMapTerrainStitchTypes::DOWN*/ ).pIndexBuffer.GetPtr();
+				pIB = GetIndexBuffer( /*Tile->m_uiLOD*/0, Tile->m_eStitchType /*XSE::MipMapTerrainStitchTypes::DOWN*/ ).pIndexBuffer.GetPtr();
 				//lpcastr n = pIB->_GetDbgName();
 				pRS->SetVertexBufferWithCheck( TileInfo.pVB );
 				pRS->SetIndexBufferWithCheck( pIB );

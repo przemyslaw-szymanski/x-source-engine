@@ -501,10 +501,6 @@ namespace XSE
 		for( u32 i = pvNormalsOut->size(); i-- > 0; )
 		{
 			pvNormalsOut->at( i ).Normalize();
-			//Vec3& v = ( *pvNormalsOut )[i];
-			//v.Normalize();
-			//Vec3 vecNormal = pvNormalsOut->at( i );
-			//XST::CDebug::PrintDebugLN( XST::ToStr() << vecNormal.x << " " << vecNormal.y << " " << vecNormal.z );
 		}
 
 		return XST_OK;
