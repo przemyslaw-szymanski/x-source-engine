@@ -194,9 +194,9 @@ namespace XSE
 		Vec3 vecTilePos = m_Info.vecPagePosition;
 		Vec3 vecTilePosEnd = vecTilePos;
 		TileInfo.ulStartVertex = 0;
-		const Vec2 vecTileSize( m_Info.vecPageSize.x / m_Info.TileCount.x, m_Info.vecPageSize.y / m_Info.TileCount.y );
-		const Vec2 vecTileHalfSize( vecTileSize * 0.5f );
-		Vec2 vecStep( vecTileSize.x / (m_Info.TileVertexCount.x-1), vecTileSize.y / (m_Info.TileVertexCount.y-1) );
+		const Vec2 vecTILEize( m_Info.vecPageSize.x / m_Info.TileCount.x, m_Info.vecPageSize.y / m_Info.TileCount.y );
+		const Vec2 vecTileHalfSize( vecTILEize * 0.5f );
+		Vec2 vecStep( vecTILEize.x / (m_Info.TileVertexCount.x-1), vecTILEize.y / (m_Info.TileVertexCount.y-1) );
 		const IInputLayout* pIL = m_Info.pInputLayout;
 		u32 uCurrTileId = 0;
 		Vec4 vecCol(1,1,1,1);
@@ -219,11 +219,12 @@ namespace XSE
 		vNormPos.reserve( ulVertexCount *2 );
 		xst_vector<u16> vNormIds;
 		MeshPtr pNormMesh = CMeshManager::GetSingletonPtr()->CreateMesh("tmp_normal_mesh");
+		pNormMesh->SetInputLayout( ILE::POSITION | ILE::COLOR );
 		m_pTerrain->m_pSceneMgr->GetRootNode()->AddObject(pNormMesh);
 		VertexBufferPtr pVB = pNormMesh->CreateVertexBuffer();
 		IndexBufferPtr pIB = pNormMesh->CreateIndexBuffer();
 
-		pVB->SetInputLayout(m_Info.pInputLayout);
+		//pVB->SetInputLayout(/*m_Info.pInputLayout*/ILE::POSITION | ILE::COLOR);
 		pVB->SetTopologyType(TopologyTypes::LINE_LIST);
 		pVB->SetUsage(BufferUsages::STATIC);
 		pVB->SetVertexCount( ulVertexCount * 2 );
@@ -236,6 +237,8 @@ namespace XSE
 		ul32 ulCurrNormId = 0;
 		CVertexData& VNData = pVB->GetVertexData();
 		CIndexData& INData = pIB->GetIndexData();
+		const Vec4 vecCol1 = { 1,0,0,1 };
+		const Vec4 vecCol2 = { 0,1,0,1 };
 #endif
 		
 		for( u32 uTileY = 0; uTileY < m_Info.TileCount.y; ++uTileY )
@@ -261,8 +264,10 @@ namespace XSE
 						vecTileMin.Min( vecPos );
 						vecTileMax.Max( vecPos );
 #if (XSE_TERRAIN_NORMAL_DEBUG)
-						VNData.SetPosition( ulCurrNormVid++, vecPos );
-						VNData.SetPosition( ulCurrNormVid++, vecPos + vecNormal * 1 );
+						VNData.SetPosition( ulCurrNormVid, vecPos );
+						VNData.SetColor( ulCurrNormVid++, vecCol1 );
+						VNData.SetPosition( ulCurrNormVid, vecPos + vecNormal * 2 );
+						VNData.SetColor( ulCurrNormVid++, vecCol2 );
 						INData.SetIndex( ulCurrNormId++, ulCurrNormVid - 2 );
 						INData.SetIndex( ulCurrNormId++, ulCurrNormVid - 1 );
 #endif
@@ -305,8 +310,8 @@ namespace XSE
 				TileInfo.pVB = m_Info.pVB;
 				pTile->Init( TileInfo );
 				pTile->SetPosition( vecTilePos + Vec3(vecTileHalfSize.x, 0, vecTileHalfSize.y) ); // calculate center: right_top_corner + half_size
-				vecTileMax.x = vecTileMin.x + vecTileSize.x;
-				vecTileMax.z = vecTileMin.z + vecTileSize.y;
+				vecTileMax.x = vecTileMin.x + vecTILEize.x;
+				vecTileMax.z = vecTileMin.z + vecTILEize.y;
 				CBoundingVolume Vol;
 				Vol.BuildFromMinMax( vecTileMin, vecTileMax );
 				//sprintf( t, "[(%.2f,%.2f, %.2f)-(%.2f,%.2f, %.2f)]", vecTileMin.x, vecTileMin.y, vecTileMin.z, vecTileMax.x, vecTileMax.y, vecTileMax.z ); XST::CDebug::PrintDebugLN( t );
@@ -381,7 +386,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32 CMipMapTerrainPage::SetTileData(CMipMapTerrainTile *const *const *paTiles, u32 uiStartTile, u32 uiEndTile)
+	i32 CMipMapTerrainPage::SetTileData(CMipMapTerrainTile *const *const *paTILE, u32 uiStartTile, u32 uiEndTile)
 	{
 		return XST_OK;
 	}
@@ -402,9 +407,9 @@ namespace XSE
 		Vec3 vecTilePos = m_Info.vecPagePosition;
 		Vec3 vecTilePosEnd = vecTilePos;
 		TileInfo.ulStartVertex = 0;
-		const Vec2 vecTileSize( m_Info.vecPageSize.x / m_Info.TileCount.x, m_Info.vecPageSize.y / m_Info.TileCount.y );
-		const Vec2 vecTileHalfSize( vecTileSize * 0.5f );
-		Vec2 vecStep( vecTileSize.x / (m_Info.TileVertexCount.x-1), vecTileSize.y / (m_Info.TileVertexCount.y-1) );
+		const Vec2 vecTILEize( m_Info.vecPageSize.x / m_Info.TileCount.x, m_Info.vecPageSize.y / m_Info.TileCount.y );
+		const Vec2 vecTileHalfSize( vecTILEize * 0.5f );
+		Vec2 vecStep( vecTILEize.x / (m_Info.TileVertexCount.x-1), vecTILEize.y / (m_Info.TileVertexCount.y-1) );
 		const IInputLayout* pIL = m_Info.pInputLayout;
 		u32 uCurrTileId = 0;
 		Vec4 vecCol(1,1,1,1);
@@ -445,19 +450,20 @@ namespace XSE
 		Vec3 avecTriLeft[3];
 		Vec3 avecTriRight[3];
 		Vec3 avecNormals[2];
-		ul32 uIDs[4];
+		ul32 uIDs[5];
 		ul32 uTmpIds[6];
 		Vec3 vecU, vecV;
 
 		enum CORNER
 		{
+			MID,
 			TOP_LEFT,
 			TOP_RIGHT,
 			BOTTOM_LEFT,
-			BOTTOM_RIGHT
+			BOTTOM_RIGHT,
 		};
 
-		for( u32 y = 0; y < m_Info.VertexCount.y-1; ++y )
+		/*for( u32 y = 0; y < m_Info.VertexCount.y-1; ++y )
 		{
 			for( u32 x = 0; x < m_Info.VertexCount.x-1; ++x )
 			{
@@ -484,8 +490,7 @@ namespace XSE
 					avecTriRight[ 1 ] = vPositions[ uTmpIds[4] ]; // bottom right
 					avecTriRight[ 2 ] = vPositions[ uTmpIds[5] ]; // top right
 				}
-
-				CalcTriangleNormal(&avecNormals[0], avecTriLeft[0], avecTriLeft[1], avecTriLeft[2]);
+				CalcTriangleNormal(&avecNormals[0], avecTriLeft[0], avecTriLeft[2], avecTriLeft[1]);
 				pvNormalsOut->at( uTmpIds[0] ) += avecNormals[0];
 				pvNormalsOut->at( uTmpIds[1] ) += avecNormals[0];
 				pvNormalsOut->at( uTmpIds[2] ) += avecNormals[0];			
@@ -494,6 +499,93 @@ namespace XSE
 				pvNormalsOut->at( uTmpIds[3] ) += avecNormals[1];
 				pvNormalsOut->at( uTmpIds[4] ) += avecNormals[1];
 				pvNormalsOut->at( uTmpIds[5] ) += avecNormals[1];
+			}
+		}*/
+
+		u32 w = m_Info.VertexCount.x;
+		u32 h = m_Info.VertexCount.y;
+		u32 uCurrFaceX = 0;
+		u32 uCurrFaceY = 0;
+		u32 fw = (w-1) * 2;
+		u32 fh = (h-1);
+		struct SFace
+		{
+			SFace()
+			{ uIds[0] = uIds[1] = uIds[2] = 0; }
+			Vec3 vecNormal;
+			u32 uIds[3];
+		};
+		xst_vector<SFace> vFaceNormals( fw * fh );
+		for( u32 y = 0; y < h-1; ++y )
+		{
+			uCurrFaceX = 0;
+			for( u32 x = 0; x < h-1; ++x )
+			{
+				uIDs[ CORNER::TOP_LEFT ] = XST_ARRAY_2D_TO_1D( x, y, w );
+				uIDs[ CORNER::TOP_RIGHT ] = XST_ARRAY_2D_TO_1D( x+1, y, w );
+				uIDs[ CORNER::BOTTOM_RIGHT ] = XST_ARRAY_2D_TO_1D( x + 1, y + 1, w );
+				uIDs[ CORNER::BOTTOM_LEFT ] = XST_ARRAY_2D_TO_1D( x, y + 1, w );
+
+				// Create quad
+				{
+					uTmpIds[0] = uIDs[ CORNER::TOP_LEFT ];
+					uTmpIds[1] = uIDs[ CORNER::BOTTOM_LEFT ];
+					uTmpIds[2] = uIDs[ CORNER::BOTTOM_RIGHT ];
+					uTmpIds[3] = uIDs[ CORNER::TOP_LEFT ];
+					uTmpIds[4] = uIDs[ CORNER::BOTTOM_RIGHT ];
+					uTmpIds[5] = uIDs[ CORNER::TOP_RIGHT ];
+
+					// Left triangle |\.
+					avecTriLeft[ 0 ] = vPositions[ uTmpIds[0] ]; // top left
+					avecTriLeft[ 1 ] = vPositions[ uTmpIds[1] ];  // bottom left
+					avecTriLeft[ 2 ] = vPositions[ uTmpIds[2] ]; // botton right
+					// Right triangle \|
+					avecTriRight[ 0 ] = vPositions[ uTmpIds[3] ]; // top left
+					avecTriRight[ 1 ] = vPositions[ uTmpIds[4] ]; // bottom right
+					avecTriRight[ 2 ] = vPositions[ uTmpIds[5] ]; // top right
+				}
+				CalcTriangleNormal(&avecNormals[0], avecTriLeft[1], avecTriLeft[2], avecTriLeft[0]);
+				u32 uId = XST_ARRAY_2D_TO_1D(uCurrFaceX++,y,fw);
+				vFaceNormals[uId].vecNormal = Vec3::Normalize(avecNormals[0]);
+				vFaceNormals[uId].uIds[0] = uTmpIds[0];
+				vFaceNormals[uId].uIds[1] = uTmpIds[1];
+				vFaceNormals[uId].uIds[2] = uTmpIds[2];
+
+				CalcTriangleNormal(&avecNormals[1], avecTriRight[2], avecTriRight[0], avecTriRight[1]);
+				uId = XST_ARRAY_2D_TO_1D(uCurrFaceX++,y,fw);
+				vFaceNormals[uId].vecNormal = Vec3::Normalize(avecNormals[1]);
+				vFaceNormals[uId].uIds[0] = uTmpIds[3];
+				vFaceNormals[uId].uIds[1] = uTmpIds[4];
+				vFaceNormals[uId].uIds[2] = uTmpIds[5];
+			}
+		}
+
+		u32 uCurrVertexNormal = 0;
+		auto& vNormals = *pvNormalsOut;
+		for( u32 y = 0; y < fh; ++y )
+		{
+			u32 uMid = 0, uUp = 0, uLeft = 0, uRight = 0, uDown = 0;
+			for( u32 x = 0; x < fw; ++x )
+			{
+				// For current face x,y get 4 neighbours
+				uMid = XST_ARRAY_2D_TO_1D(x,y,fw);
+				uUp = (y > 0)? XST_ARRAY_2D_TO_1D(x,y-1,fw) : 0;
+				uDown = (y < fh-1)? XST_ARRAY_2D_TO_1D(x,y+1,fw) : fh-1;
+				uLeft = (x > 0)? XST_ARRAY_2D_TO_1D(x-1,y,fw) : 0;
+				uRight = (x < fw-1)? XST_ARRAY_2D_TO_1D(x+1,y,fw) : fw-1;
+
+				Vec3 vecAvgNormal = vFaceNormals[uMid].vecNormal + 
+					vFaceNormals[uDown].vecNormal +
+					vFaceNormals[uUp].vecNormal +
+					vFaceNormals[uLeft].vecNormal +
+					vFaceNormals[uRight].vecNormal;
+				vecAvgNormal /= 5.0f;
+				vecAvgNormal.Normalize();
+				u32 uIds[] = {vFaceNormals[uMid].uIds[0], vFaceNormals[uMid].uIds[1], vFaceNormals[uMid].uIds[2]};
+				vNormals[uIds[0]] += vecAvgNormal;
+				vNormals[uIds[1]] += vecAvgNormal;
+				vNormals[uIds[2]] += vecAvgNormal;
+
 			}
 		}
 

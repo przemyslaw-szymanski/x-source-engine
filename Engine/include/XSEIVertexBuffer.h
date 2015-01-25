@@ -28,6 +28,7 @@ namespace XSE
 			//virtual Vertex*			AddVertex() = 0;
 			virtual i32					SetVertexCount(ul32 ulCount) = 0;
 			virtual void				SetInputLayout(const IInputLayout* pIL) = 0;
+			virtual void				SetInputLayout(ul32 uElements) = 0;
 			virtual const IInputLayout*	GetInputLayout() const = 0;
 			virtual ul32				GetVertexCount() const = 0;
 			virtual void				Update() = 0;

@@ -19,8 +19,8 @@ namespace XSE
 		Options.vecPos = Vec3::ZERO;
 		Options.vecSize = 1.0f;
 
-		IInputLayout* pIL = pMgr->GetRenderSystem()->GetInputLayout( ILEs::POSITION | ILEs::COLOR );
-		//m_pAABBMesh = pMgr->GetMeshManager()->CreateMesh( "xse_dbg_aabb", ILEs::POSITION | ILEs::COLOR, BasicShapes::LINE_BOX, &Options, "Debug" );
+		IInputLayout* pIL = pMgr->GetRenderSystem()->GetInputLayout( ILE::POSITION | ILE::COLOR );
+		//m_pAABBMesh = pMgr->GetMeshManager()->CreateMesh( "xse_dbg_aabb", ILE::POSITION | ILE::COLOR, BasicShapes::LINE_BOX, &Options, "Debug" );
 		m_pAABBMesh = pMgr->GetMeshManager()->CreateMesh( "xse_dbg_aabb", pIL, BasicShapes::LINE_BOX, &Options, "Debug" );
 		MaterialPtr pMat = pMgr->GetMaterialManager()->GetMaterial( CMaterialManager::DEFAULT_MAT_COLOR, DEFAULT_GROUP );
 		m_pAABBMesh->SetMaterial( pMat );

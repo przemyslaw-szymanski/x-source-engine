@@ -161,7 +161,7 @@ namespace XSE
 	i32 CMeshManager::Init()
 	{
 		xst_assert( m_pRenderSystem ,"(CMeshManager::Init()" );
-		m_pDefaultIL = m_pRenderSystem->GetInputLayout( ILEs::POSITION );
+		m_pDefaultIL = m_pRenderSystem->GetInputLayout( ILE::POSITION );
 
 		TCFreeListAllocator< CMesh >::Create( CEngine::GetSingletonPtr()->GetSettings().MemSettings.ulMeshCount );
 

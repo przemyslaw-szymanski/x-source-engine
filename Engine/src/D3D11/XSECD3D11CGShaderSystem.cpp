@@ -195,7 +195,7 @@ namespace XSE
 				<< GetShaderCode( ShaderCodes::PER_FRAME_VS_CBUFFER ) << xst_endl
 				<< GetShaderCode( ShaderCodes::PER_DRAWCALL_VS_CBUFFER ) << xst_endl;
 
-			if( uiVSInput & ILEs::COLOR )
+			if( uiVSInput & ILE::COLOR )
 			{
 				ssVS << "	float4 color : COLOR0;" << xst_endl;
 			}
@@ -204,7 +204,7 @@ namespace XSE
 				<< "struct PS_INPUT{" << xst_endl
 				<< "	float4 pos : SV_POSITION" << xst_endl;
 
-			if( uiPSInput & ILEs::COLOR )
+			if( uiPSInput & ILE::COLOR )
 			{
 				ssVS << "	float4 color : COLOR0;" << xst_endl;
 			}

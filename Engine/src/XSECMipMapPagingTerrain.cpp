@@ -23,7 +23,7 @@ namespace XSE
 	bool g_bCCW = true;
 	typedef xst_vector< CMipMapTerrainTile* > TileVec;
 	xst_vector< TileVec > g_vTileGrid;
-	TileVec g_vVisibleTiles;
+	TileVec g_vVisibleTILE;
 
 	CPoint CalcImpostorVertexCount( const CPoint& PageVertexCount, u32 uLODCount )
 	{
@@ -180,25 +180,25 @@ namespace XSE
 		u32 uMaxLOD = m_Options.uiLODCount;
         CCamera* pCam = m_pSceneMgr->GetComputeCamera();
 
-		g_vVisibleTiles.clear();
+		g_vVisibleTILE.clear();
 		for( u32 i = 0; i < m_vTileVisibility.size(); ++i )
 		{
 			if( m_vTileVisibility[ i ] )
-				g_vVisibleTiles.push_back( &m_vTiles[ i ] );
+				g_vVisibleTILE.push_back( &m_vTiles[ i ] );
 		}
 
 		// Sort from nearest from the camera
 #if ADD_TILE_TO_PARTITION_SYSTEM
-		std::sort( g_vVisibleTiles.begin(), g_vVisibleTiles.end(), [] (const CMipMapTerrainTile* l, const CMipMapTerrainTile* r){ return l->GetDistanceToCamera() < r->GetDistanceToCamera();  } );
+		std::sort( g_vVisibleTILE.begin(), g_vVisibleTILE.end(), [] (const CMipMapTerrainTile* l, const CMipMapTerrainTile* r){ return l->GetDistanceToCamera() < r->GetDistanceToCamera();  } );
 #endif
 		for( u32 i = 0; i < m_vPages.size(); ++i )
 		{
 			m_vPages[ i ].Update( pCam );
 		}
 
-		for( u32 t = 0; t < g_vVisibleTiles.size(); ++t )
+		for( u32 t = 0; t < g_vVisibleTILE.size(); ++t )
 		{
-			auto& Tile = g_vVisibleTiles[ t ];
+			auto& Tile = g_vVisibleTILE[ t ];
 			f32 fDist = Tile->GetDistanceToCamera();
 			Tile->m_uiLOD = uMaxLOD-1;
 			for( u32 i = uMaxLOD; i-->0; )
@@ -385,7 +385,7 @@ namespace XSE
 				Info.uPageId = m_vPages.size() - 1;
 				Info.ImgPixelStartPosition = CPoint( x, y );
 				Info.GridPosition = CPoint( x, y );
-				//Info.apTiles = &m_vTiles[ CalcFirstTileIdForPage( uCurrPageId, uTileCount ) ];
+				//Info.apTILE = &m_vTiles[ CalcFirstTileIdForPage( uCurrPageId, uTileCount ) ];
 				u32 uTileId = CalcFirstTileIdForPage( uCurrPageId, uTileCount );
 				xst_assert2( uTileId < m_vTiles.size() );
 				Info.aTiles = &m_vTiles[ uTileId ];
@@ -522,9 +522,9 @@ namespace XSE
 					pRS->DrawIndexed( pIB->GetIndexCount(), 0, TileInfo.ulStartVertex );
 				}
 			}*/
-			for( u32 t = 0; t < g_vVisibleTiles.size(); ++t )
+			for( u32 t = 0; t < g_vVisibleTILE.size(); ++t )
 			{
-				auto* Tile = g_vVisibleTiles[ t ];
+				auto* Tile = g_vVisibleTILE[ t ];
 				// TODO: probably cache miss here. Use array of pVB,ulStartVertex structures
 				const auto& TileInfo = Tile->m_Info;
 				pIB = GetIndexBuffer( /*Tile->m_uiLOD*/0, Tile->m_eStitchType /*XSE::MipMapTerrainStitchTypes::DOWN*/ ).pIndexBuffer.GetPtr();
@@ -630,7 +630,7 @@ namespace XSE
 			o.colColor = CColor::GREEN;
 			char name[128];
 			xst_sprintf( name, sizeof( name ), "tile%d_aabb", i );
-			MeshPtr pM = CMeshManager::GetSingletonPtr( )->CreateMesh( name, ILEs::POSITION | ILEs::COLOR, BasicShapes::LINE_BOX, &o, "terrain" );
+			MeshPtr pM = CMeshManager::GetSingletonPtr( )->CreateMesh( name, ILE::POSITION | ILE::COLOR, BasicShapes::LINE_BOX, &o, "terrain" );
 			m_pSceneMgr->GetRootNode( )->AddObject( pM );*/
 		}
 

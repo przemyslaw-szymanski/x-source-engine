@@ -65,7 +65,7 @@ namespace XSE
 
 	i32 CSceneManager::Init()
 	{
-		DEFAULT_SHADER_COLOR = m_pModelMgr->GetRenderSystem()->GetShaderSystem()->CreateShaderCode( ILEs::COLOR, ILEs::COLOR );
+		DEFAULT_SHADER_COLOR = m_pModelMgr->GetRenderSystem()->GetShaderSystem()->CreateShaderCode( ILE::COLOR, ILE::COLOR );
 
 		if( this->GetSize() > 0 )
 		{

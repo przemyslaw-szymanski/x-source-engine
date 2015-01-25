@@ -133,10 +133,15 @@ namespace XSE
 
 			return m_pRS->_CreateVertexBuffer( this );
 		}
+		
+		void CVertexBuffer::SetInputLayout(ul32 uElements)
+		{
+			m_pInputLayout = (CInputLayout*)m_pRS->GetInputLayout( uElements );
+		}
 
 		void CVertexBuffer::SetInputLayout(const IInputLayout* pInputLayout)
 		{
-			m_pInputLayout = pInputLayout;
+			m_pInputLayout = (CInputLayout*)pInputLayout;
 		}
 
 

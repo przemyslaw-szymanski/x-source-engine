@@ -26,7 +26,7 @@ namespace XSE
 	i32 CShaderManager::Init()
 	{
 		//Create default shaders
-		IInputLayout* pIL = m_pRenderSystem->GetInputLayout( ILEs::POSITION );
+		IInputLayout* pIL = m_pRenderSystem->GetInputLayout( ILE::POSITION );
 		xst_assert2( pIL != xst_null );
 		xst_assert2( pIL->GetVertexShader() != xst_null );
 		
@@ -158,7 +158,7 @@ namespace XSE
 			case ShaderTypes::VERTEX:
 			{
 				//Set default input layout
-				IInputLayout* pIL = m_pRenderSystem->GetInputLayout( ILEs::POSITION );
+				IInputLayout* pIL = m_pRenderSystem->GetInputLayout( ILE::POSITION );
 				pShader = (IShader*)m_pRenderSystem->CreateVertexShader( pIL, this, ulHandle, strName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, m_pAllocator );
 			}
 			break;

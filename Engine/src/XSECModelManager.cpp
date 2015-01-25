@@ -286,7 +286,7 @@ namespace XSE
 
 	Resources::IResource*	CModelManager::_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup)
 	{
-		CModel* pModel = xst_new CModel( m_pRenderSystem, m_pRenderSystem->GetInputLayout( ILEs::POSITION ), this, ulHandle, strName, 100, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
+		CModel* pModel = xst_new CModel( m_pRenderSystem, m_pRenderSystem->GetInputLayout( ILE::POSITION ), this, ulHandle, strName, 100, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
 		//Set default material
 		pModel->SetMaterial( m_pMeshMgr->GetMaterialManager()->GetDefaultMaterial() );
 		return pModel;

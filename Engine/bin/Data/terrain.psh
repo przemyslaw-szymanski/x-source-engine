@@ -14,6 +14,6 @@ float4 ps(VS_OUT IN) : SV_TARGET
 	float fDL = max( dot( f3N, f3L ), 0.0 );
 	float4 c;
 	c.rgba = f4MaterialAmbientColor;
-	c.rgba = fDL;
+	c.rgb = fDL;
 	return c;
 }

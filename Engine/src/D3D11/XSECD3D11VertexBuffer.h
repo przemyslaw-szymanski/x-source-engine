@@ -49,12 +49,13 @@ namespace XSE
 						void			Update(cu32& uiStartVertex, cu32& uiVertexCount);
 
 						void			SetInputLayout(const IInputLayout* pInputLayout);
+						void			SetInputLayout(ul32 uElements);
 
 						ul32			GetVertexCount() const
 										{ return m_VertexData.GetVertexCount(); }
 
 				const	IInputLayout*	GetInputLayout() const
-										{ return m_pInputLayout; }
+										{ return (IInputLayout*)m_pInputLayout; }
 
 			protected:
 
@@ -67,7 +68,8 @@ namespace XSE
 				BUFFER_USAGE				m_eUsage;
 				D3D11_USAGE					m_eD3DBufferUsage;
 				//XST::TCData< Vertex >		m_aVertices;
-				const IInputLayout*			m_pInputLayout;
+				//const IInputLayout*			m_pInputLayout;
+				CInputLayout*				m_pInputLayout;
 				ul32						m_ulVertexCount;
 				bool						m_bLocked;
 		};

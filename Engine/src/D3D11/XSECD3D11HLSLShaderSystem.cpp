@@ -279,11 +279,11 @@ namespace XSE
 
 		D3D11_MAPPED_SUBRESOURCE				g_MappedSubresource;
 
-		void SetProfiles(XST::xst_astr8* astrProfiles, ul32 ulSize, lpcastr lpszValue)
+		void SetProfILE(XST::xst_astr8* astrProfILE, ul32 ulSize, lpcastr lpszValue)
 		{
 			for(ul32 i = ulSize; i --> 0;)
 			{
-				astrProfiles[ i ] = lpszValue;
+				astrProfILE[ i ] = lpszValue;
 			}
 		}
 
@@ -492,7 +492,7 @@ namespace XSE
 				return g_strShader;
 			}
 
-			void SetProfiles(D3D_FEATURE_LEVEL eLevel, xst_astr16 astrProfiles[ ShaderProfiles::_ENUM_COUNT ]);
+			void SetProfILE(D3D_FEATURE_LEVEL eLevel, xst_astr16 astrProfILE[ ShaderProfiles::_ENUM_COUNT ]);
 
 		}//HLSL
 
@@ -533,7 +533,7 @@ namespace XSE
 			for( i32 i = ConstantBuffers::_ENUM_COUNT; i --> 0; )
 				m_apD3DConstantBuffers[ i ] = xst_null;
 
-			HLSL::SetProfiles( m_pRS->m_eFeatureLevel, m_astrProfiles );
+			HLSL::SetProfILE( m_pRS->m_eFeatureLevel, m_astrProfiles );
 
 			HLSL::g_strShader.reserve( 2048 );
 			HLSL::g_strConstantVUniforms.reserve( 512 );
@@ -1030,7 +1030,7 @@ namespace XSE
 			ssVS<< "struct VS_INPUT{" << xst_endl
 				<< "	float4 pos : POSITION;" << xst_endl;
 
-			if( uiVSInput & ILEs::COLOR )
+			if( uiVSInput & ILE::COLOR )
 			{
 				ssVS << "	float4 color : COLOR0;" << xst_endl;
 			}
@@ -1039,7 +1039,7 @@ namespace XSE
 				<< "struct PS_INPUT{" << xst_endl
 				<< "	float4 pos : SV_POSITION;" << xst_endl;
 
-			if( uiPSInput & ILEs::COLOR )
+			if( uiPSInput & ILE::COLOR )
 			{
 				ssVS << "	float4 color : COLOR0;" << xst_endl;
 			}
@@ -1082,173 +1082,173 @@ namespace XSE
 
 		namespace HLSL
 		{
-			void SetProfiles(D3D_FEATURE_LEVEL eLevel, xst_astr16 astrProfiles[ ShaderProfiles::_ENUM_COUNT ])
+			void SetProfILE(D3D_FEATURE_LEVEL eLevel, xst_astr16 astrProfILE[ ShaderProfiles::_ENUM_COUNT ])
 			{
-				//SetProfiles( astrProfiles, ShaderProfiles::_ENUM_COUNT, "" );
-				//memset( astrProfiles, 0, sizeof( xst_astr16 ) * ShaderProfiles::_ENUM_COUNT );
-				xst_zero( astrProfiles, sizeof( xst_astr16 ) * ShaderProfiles::_ENUM_COUNT );
+				//SetProfILE( astrProfILE, ShaderProfiles::_ENUM_COUNT, "" );
+				//memset( astrProfILE, 0, sizeof( xst_astr16 ) * ShaderProfiles::_ENUM_COUNT );
+				xst_zero( astrProfILE, sizeof( xst_astr16 ) * ShaderProfiles::_ENUM_COUNT );
 				//Do not support earlier version than DirectX9
 				//SM 1.0
-				astrProfiles[ ShaderProfiles::VS_1_1 ] = "vs_4_0_level_9_1";
+				astrProfILE[ ShaderProfiles::VS_1_1 ] = "vs_4_0_level_9_1";
 			
 				if( eLevel == D3D_FEATURE_LEVEL_9_1 || eLevel == D3D_FEATURE_LEVEL_9_2 )
 				{
 					//SM 2.0
-					astrProfiles[ ShaderProfiles::VS_2_0 ] = "vs_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::PS_2_0 ] = "ps_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::VS_2_X ] = astrProfiles[ ShaderProfiles::VS_2_0 ];
-					astrProfiles[ ShaderProfiles::PS_2_X ] = astrProfiles[ ShaderProfiles::PS_2_0 ];
-					astrProfiles[ ShaderProfiles::VS_3_0 ] = astrProfiles[ ShaderProfiles::VS_2_0 ];
-					astrProfiles[ ShaderProfiles::PS_3_0 ] = astrProfiles[ ShaderProfiles::PS_2_0 ];
-					astrProfiles[ ShaderProfiles::VS_4_0 ] = astrProfiles[ ShaderProfiles::VS_2_0 ];
-					astrProfiles[ ShaderProfiles::PS_4_0 ] = astrProfiles[ ShaderProfiles::PS_2_0 ];
-					astrProfiles[ ShaderProfiles::GS_4_0 ] = "";
-					astrProfiles[ ShaderProfiles::GS_4_1 ] = "";
-					astrProfiles[ ShaderProfiles::VS_4_1 ] = astrProfiles[ ShaderProfiles::VS_2_0 ];
-					astrProfiles[ ShaderProfiles::PS_4_1 ] = astrProfiles[ ShaderProfiles::PS_2_0 ];
+					astrProfILE[ ShaderProfiles::VS_2_0 ] = "vs_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::PS_2_0 ] = "ps_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::VS_2_X ] = astrProfILE[ ShaderProfiles::VS_2_0 ];
+					astrProfILE[ ShaderProfiles::PS_2_X ] = astrProfILE[ ShaderProfiles::PS_2_0 ];
+					astrProfILE[ ShaderProfiles::VS_3_0 ] = astrProfILE[ ShaderProfiles::VS_2_0 ];
+					astrProfILE[ ShaderProfiles::PS_3_0 ] = astrProfILE[ ShaderProfiles::PS_2_0 ];
+					astrProfILE[ ShaderProfiles::VS_4_0 ] = astrProfILE[ ShaderProfiles::VS_2_0 ];
+					astrProfILE[ ShaderProfiles::PS_4_0 ] = astrProfILE[ ShaderProfiles::PS_2_0 ];
+					astrProfILE[ ShaderProfiles::GS_4_0 ] = "";
+					astrProfILE[ ShaderProfiles::GS_4_1 ] = "";
+					astrProfILE[ ShaderProfiles::VS_4_1 ] = astrProfILE[ ShaderProfiles::VS_2_0 ];
+					astrProfILE[ ShaderProfiles::PS_4_1 ] = astrProfILE[ ShaderProfiles::PS_2_0 ];
 					//SM 5.0
-					astrProfiles[ ShaderProfiles::VS_5_0 ] = astrProfiles[ ShaderProfiles::VS_2_0 ];
-					astrProfiles[ ShaderProfiles::PS_5_0 ] = astrProfiles[ ShaderProfiles::PS_2_0 ];
-					astrProfiles[ ShaderProfiles::CS_5_0 ] = "";
-					astrProfiles[ ShaderProfiles::GS_5_0 ] = "";
-					astrProfiles[ ShaderProfiles::DS_5_0 ] = "";
-					astrProfiles[ ShaderProfiles::HS_5_0 ] = "";
+					astrProfILE[ ShaderProfiles::VS_5_0 ] = astrProfILE[ ShaderProfiles::VS_2_0 ];
+					astrProfILE[ ShaderProfiles::PS_5_0 ] = astrProfILE[ ShaderProfiles::PS_2_0 ];
+					astrProfILE[ ShaderProfiles::CS_5_0 ] = "";
+					astrProfILE[ ShaderProfiles::GS_5_0 ] = "";
+					astrProfILE[ ShaderProfiles::DS_5_0 ] = "";
+					astrProfILE[ ShaderProfiles::HS_5_0 ] = "";
 
 					//Best
-					astrProfiles[ ShaderProfiles::VS_BEST ] = astrProfiles[ ShaderProfiles::VS_2_0 ];
-					astrProfiles[ ShaderProfiles::PS_BEST ] = astrProfiles[ ShaderProfiles::PS_2_0 ];
-					astrProfiles[ ShaderProfiles::GS_BEST ] = astrProfiles[ ShaderProfiles::GS_UNKNOWN ];
-					astrProfiles[ ShaderProfiles::HS_BEST ] = astrProfiles[ ShaderProfiles::HS_UNKNOWN ];
-					astrProfiles[ ShaderProfiles::DS_BEST ] = astrProfiles[ ShaderProfiles::DS_UNKNOWN ];
-					astrProfiles[ ShaderProfiles::CS_BEST ] = astrProfiles[ ShaderProfiles::CS_UNKNOWN ];
+					astrProfILE[ ShaderProfiles::VS_BEST ] = astrProfILE[ ShaderProfiles::VS_2_0 ];
+					astrProfILE[ ShaderProfiles::PS_BEST ] = astrProfILE[ ShaderProfiles::PS_2_0 ];
+					astrProfILE[ ShaderProfiles::GS_BEST ] = astrProfILE[ ShaderProfiles::GS_UNKNOWN ];
+					astrProfILE[ ShaderProfiles::HS_BEST ] = astrProfILE[ ShaderProfiles::HS_UNKNOWN ];
+					astrProfILE[ ShaderProfiles::DS_BEST ] = astrProfILE[ ShaderProfiles::DS_UNKNOWN ];
+					astrProfILE[ ShaderProfiles::CS_BEST ] = astrProfILE[ ShaderProfiles::CS_UNKNOWN ];
 				}
 				else
 				if( eLevel == D3D_FEATURE_LEVEL_9_3 )
 				{
 					//SM 3.0
-					astrProfiles[ ShaderProfiles::VS_2_0 ] = "vs_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::PS_2_0 ] = "ps_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::VS_2_X ] = "vs_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::PS_2_X ] = "ps_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::VS_3_0 ] = "vs_4_0_level_9_3";
-					astrProfiles[ ShaderProfiles::PS_3_0 ] = "ps_4_0_level_9_3";
-					astrProfiles[ ShaderProfiles::VS_4_0 ] = astrProfiles[ ShaderProfiles::VS_3_0 ];
-					astrProfiles[ ShaderProfiles::PS_4_0 ] = astrProfiles[ ShaderProfiles::PS_3_0 ];
-					astrProfiles[ ShaderProfiles::GS_4_0 ] = "";
-					astrProfiles[ ShaderProfiles::GS_4_1 ] = "";
-					astrProfiles[ ShaderProfiles::VS_4_1 ] = astrProfiles[ ShaderProfiles::VS_3_0 ];
-					astrProfiles[ ShaderProfiles::PS_4_1 ] = astrProfiles[ ShaderProfiles::PS_3_0 ];
+					astrProfILE[ ShaderProfiles::VS_2_0 ] = "vs_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::PS_2_0 ] = "ps_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::VS_2_X ] = "vs_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::PS_2_X ] = "ps_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::VS_3_0 ] = "vs_4_0_level_9_3";
+					astrProfILE[ ShaderProfiles::PS_3_0 ] = "ps_4_0_level_9_3";
+					astrProfILE[ ShaderProfiles::VS_4_0 ] = astrProfILE[ ShaderProfiles::VS_3_0 ];
+					astrProfILE[ ShaderProfiles::PS_4_0 ] = astrProfILE[ ShaderProfiles::PS_3_0 ];
+					astrProfILE[ ShaderProfiles::GS_4_0 ] = "";
+					astrProfILE[ ShaderProfiles::GS_4_1 ] = "";
+					astrProfILE[ ShaderProfiles::VS_4_1 ] = astrProfILE[ ShaderProfiles::VS_3_0 ];
+					astrProfILE[ ShaderProfiles::PS_4_1 ] = astrProfILE[ ShaderProfiles::PS_3_0 ];
 					//SM 5.0
-					astrProfiles[ ShaderProfiles::VS_5_0 ] = astrProfiles[ ShaderProfiles::VS_3_0 ];
-					astrProfiles[ ShaderProfiles::PS_5_0 ] = astrProfiles[ ShaderProfiles::PS_3_0 ];
-					astrProfiles[ ShaderProfiles::CS_5_0 ] = "";
-					astrProfiles[ ShaderProfiles::GS_5_0 ] = "";
-					astrProfiles[ ShaderProfiles::DS_5_0 ] = "";
-					astrProfiles[ ShaderProfiles::HS_5_0 ] = "";
+					astrProfILE[ ShaderProfiles::VS_5_0 ] = astrProfILE[ ShaderProfiles::VS_3_0 ];
+					astrProfILE[ ShaderProfiles::PS_5_0 ] = astrProfILE[ ShaderProfiles::PS_3_0 ];
+					astrProfILE[ ShaderProfiles::CS_5_0 ] = "";
+					astrProfILE[ ShaderProfiles::GS_5_0 ] = "";
+					astrProfILE[ ShaderProfiles::DS_5_0 ] = "";
+					astrProfILE[ ShaderProfiles::HS_5_0 ] = "";
 
 					//Best
-					astrProfiles[ ShaderProfiles::VS_BEST ] = astrProfiles[ ShaderProfiles::VS_3_0 ];
-					astrProfiles[ ShaderProfiles::PS_BEST ] = astrProfiles[ ShaderProfiles::PS_3_0 ];
-					astrProfiles[ ShaderProfiles::GS_BEST ] = astrProfiles[ ShaderProfiles::GS_UNKNOWN ];
-					astrProfiles[ ShaderProfiles::HS_BEST ] = astrProfiles[ ShaderProfiles::HS_UNKNOWN ];
-					astrProfiles[ ShaderProfiles::DS_BEST ] = astrProfiles[ ShaderProfiles::DS_UNKNOWN ];
-					astrProfiles[ ShaderProfiles::CS_BEST ] = astrProfiles[ ShaderProfiles::CS_UNKNOWN ];
+					astrProfILE[ ShaderProfiles::VS_BEST ] = astrProfILE[ ShaderProfiles::VS_3_0 ];
+					astrProfILE[ ShaderProfiles::PS_BEST ] = astrProfILE[ ShaderProfiles::PS_3_0 ];
+					astrProfILE[ ShaderProfiles::GS_BEST ] = astrProfILE[ ShaderProfiles::GS_UNKNOWN ];
+					astrProfILE[ ShaderProfiles::HS_BEST ] = astrProfILE[ ShaderProfiles::HS_UNKNOWN ];
+					astrProfILE[ ShaderProfiles::DS_BEST ] = astrProfILE[ ShaderProfiles::DS_UNKNOWN ];
+					astrProfILE[ ShaderProfiles::CS_BEST ] = astrProfILE[ ShaderProfiles::CS_UNKNOWN ];
 				}
 				else
 				if( eLevel == D3D_FEATURE_LEVEL_10_0 )
 				{
 					//SM 4.0
-					astrProfiles[ ShaderProfiles::VS_2_0 ] = "vs_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::PS_2_0 ] = "ps_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::VS_2_X ] = "vs_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::PS_2_X ] = "ps_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::VS_3_0 ] = "vs_4_0_level_9_3";
-					astrProfiles[ ShaderProfiles::PS_3_0 ] = "ps_4_0_level_9_3";
-					astrProfiles[ ShaderProfiles::VS_4_0 ] = "vs_4_0";
-					astrProfiles[ ShaderProfiles::PS_4_0 ] = "ps_4_0";
-					astrProfiles[ ShaderProfiles::GS_4_0 ] = "gs_4_0";
-					astrProfiles[ ShaderProfiles::GS_4_1 ] = astrProfiles[ ShaderProfiles::GS_4_0 ];
-					astrProfiles[ ShaderProfiles::VS_4_1 ] = astrProfiles[ ShaderProfiles::VS_4_0 ];
-					astrProfiles[ ShaderProfiles::PS_4_1 ] = astrProfiles[ ShaderProfiles::PS_4_0 ];
+					astrProfILE[ ShaderProfiles::VS_2_0 ] = "vs_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::PS_2_0 ] = "ps_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::VS_2_X ] = "vs_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::PS_2_X ] = "ps_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::VS_3_0 ] = "vs_4_0_level_9_3";
+					astrProfILE[ ShaderProfiles::PS_3_0 ] = "ps_4_0_level_9_3";
+					astrProfILE[ ShaderProfiles::VS_4_0 ] = "vs_4_0";
+					astrProfILE[ ShaderProfiles::PS_4_0 ] = "ps_4_0";
+					astrProfILE[ ShaderProfiles::GS_4_0 ] = "gs_4_0";
+					astrProfILE[ ShaderProfiles::GS_4_1 ] = astrProfILE[ ShaderProfiles::GS_4_0 ];
+					astrProfILE[ ShaderProfiles::VS_4_1 ] = astrProfILE[ ShaderProfiles::VS_4_0 ];
+					astrProfILE[ ShaderProfiles::PS_4_1 ] = astrProfILE[ ShaderProfiles::PS_4_0 ];
 					//SM 5.0
-					astrProfiles[ ShaderProfiles::VS_5_0 ] = astrProfiles[ ShaderProfiles::VS_4_0 ];
-					astrProfiles[ ShaderProfiles::PS_5_0 ] = astrProfiles[ ShaderProfiles::PS_4_0 ];
-					astrProfiles[ ShaderProfiles::CS_5_0 ] = "";
-					astrProfiles[ ShaderProfiles::GS_5_0 ] = astrProfiles[ ShaderProfiles::GS_4_0 ];
-					astrProfiles[ ShaderProfiles::DS_5_0 ] = "";
-					astrProfiles[ ShaderProfiles::HS_5_0 ] = "";
+					astrProfILE[ ShaderProfiles::VS_5_0 ] = astrProfILE[ ShaderProfiles::VS_4_0 ];
+					astrProfILE[ ShaderProfiles::PS_5_0 ] = astrProfILE[ ShaderProfiles::PS_4_0 ];
+					astrProfILE[ ShaderProfiles::CS_5_0 ] = "";
+					astrProfILE[ ShaderProfiles::GS_5_0 ] = astrProfILE[ ShaderProfiles::GS_4_0 ];
+					astrProfILE[ ShaderProfiles::DS_5_0 ] = "";
+					astrProfILE[ ShaderProfiles::HS_5_0 ] = "";
 
 					//Best
-					astrProfiles[ ShaderProfiles::VS_BEST ] = astrProfiles[ ShaderProfiles::VS_4_0 ];
-					astrProfiles[ ShaderProfiles::PS_BEST ] = astrProfiles[ ShaderProfiles::PS_4_0 ];
-					astrProfiles[ ShaderProfiles::GS_BEST ] = astrProfiles[ ShaderProfiles::GS_4_0 ];
-					astrProfiles[ ShaderProfiles::HS_BEST ] = astrProfiles[ ShaderProfiles::HS_UNKNOWN ];
-					astrProfiles[ ShaderProfiles::DS_BEST ] = astrProfiles[ ShaderProfiles::DS_UNKNOWN ];
-					astrProfiles[ ShaderProfiles::CS_BEST ] = astrProfiles[ ShaderProfiles::CS_UNKNOWN ];
+					astrProfILE[ ShaderProfiles::VS_BEST ] = astrProfILE[ ShaderProfiles::VS_4_0 ];
+					astrProfILE[ ShaderProfiles::PS_BEST ] = astrProfILE[ ShaderProfiles::PS_4_0 ];
+					astrProfILE[ ShaderProfiles::GS_BEST ] = astrProfILE[ ShaderProfiles::GS_4_0 ];
+					astrProfILE[ ShaderProfiles::HS_BEST ] = astrProfILE[ ShaderProfiles::HS_UNKNOWN ];
+					astrProfILE[ ShaderProfiles::DS_BEST ] = astrProfILE[ ShaderProfiles::DS_UNKNOWN ];
+					astrProfILE[ ShaderProfiles::CS_BEST ] = astrProfILE[ ShaderProfiles::CS_UNKNOWN ];
 					
 				}
 				else
 				if( eLevel == D3D_FEATURE_LEVEL_10_1 )
 				{
 					//SM 4.0 extended
-					astrProfiles[ ShaderProfiles::VS_2_0 ] = "vs_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::PS_2_0 ] = "ps_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::VS_2_X ] = "vs_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::PS_2_X ] = "ps_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::VS_3_0 ] = "vs_4_0_level_9_3";
-					astrProfiles[ ShaderProfiles::PS_3_0 ] = "ps_4_0_level_9_3";
-					astrProfiles[ ShaderProfiles::VS_4_0 ] = "vs_4_0";
-					astrProfiles[ ShaderProfiles::PS_4_0 ] = "ps_4_0";
-					astrProfiles[ ShaderProfiles::GS_4_0 ] = "gs_4_0";
-					astrProfiles[ ShaderProfiles::GS_4_1 ] = "gs_4_1";
-					astrProfiles[ ShaderProfiles::VS_4_1 ] = "vs_4_1";
-					astrProfiles[ ShaderProfiles::PS_4_1 ] = "ps_4_1";
+					astrProfILE[ ShaderProfiles::VS_2_0 ] = "vs_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::PS_2_0 ] = "ps_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::VS_2_X ] = "vs_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::PS_2_X ] = "ps_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::VS_3_0 ] = "vs_4_0_level_9_3";
+					astrProfILE[ ShaderProfiles::PS_3_0 ] = "ps_4_0_level_9_3";
+					astrProfILE[ ShaderProfiles::VS_4_0 ] = "vs_4_0";
+					astrProfILE[ ShaderProfiles::PS_4_0 ] = "ps_4_0";
+					astrProfILE[ ShaderProfiles::GS_4_0 ] = "gs_4_0";
+					astrProfILE[ ShaderProfiles::GS_4_1 ] = "gs_4_1";
+					astrProfILE[ ShaderProfiles::VS_4_1 ] = "vs_4_1";
+					astrProfILE[ ShaderProfiles::PS_4_1 ] = "ps_4_1";
 					//SM 5.0
-					astrProfiles[ ShaderProfiles::VS_5_0 ] = astrProfiles[ ShaderProfiles::VS_4_1 ];
-					astrProfiles[ ShaderProfiles::PS_5_0 ] = astrProfiles[ ShaderProfiles::PS_4_1 ];
-					astrProfiles[ ShaderProfiles::CS_5_0 ] = "";
-					astrProfiles[ ShaderProfiles::GS_5_0 ] = astrProfiles[ ShaderProfiles::GS_4_1 ];
-					astrProfiles[ ShaderProfiles::DS_5_0 ] = "";
-					astrProfiles[ ShaderProfiles::HS_5_0 ] = "";
+					astrProfILE[ ShaderProfiles::VS_5_0 ] = astrProfILE[ ShaderProfiles::VS_4_1 ];
+					astrProfILE[ ShaderProfiles::PS_5_0 ] = astrProfILE[ ShaderProfiles::PS_4_1 ];
+					astrProfILE[ ShaderProfiles::CS_5_0 ] = "";
+					astrProfILE[ ShaderProfiles::GS_5_0 ] = astrProfILE[ ShaderProfiles::GS_4_1 ];
+					astrProfILE[ ShaderProfiles::DS_5_0 ] = "";
+					astrProfILE[ ShaderProfiles::HS_5_0 ] = "";
 
 					//Best
-					astrProfiles[ ShaderProfiles::VS_BEST ] = astrProfiles[ ShaderProfiles::VS_4_1 ];
-					astrProfiles[ ShaderProfiles::PS_BEST ] = astrProfiles[ ShaderProfiles::PS_4_1 ];
-					astrProfiles[ ShaderProfiles::GS_BEST ] = astrProfiles[ ShaderProfiles::GS_4_1 ];
-					astrProfiles[ ShaderProfiles::HS_BEST ] = astrProfiles[ ShaderProfiles::HS_UNKNOWN ];
-					astrProfiles[ ShaderProfiles::DS_BEST ] = astrProfiles[ ShaderProfiles::DS_UNKNOWN ];
-					astrProfiles[ ShaderProfiles::CS_BEST ] = astrProfiles[ ShaderProfiles::CS_UNKNOWN ];
+					astrProfILE[ ShaderProfiles::VS_BEST ] = astrProfILE[ ShaderProfiles::VS_4_1 ];
+					astrProfILE[ ShaderProfiles::PS_BEST ] = astrProfILE[ ShaderProfiles::PS_4_1 ];
+					astrProfILE[ ShaderProfiles::GS_BEST ] = astrProfILE[ ShaderProfiles::GS_4_1 ];
+					astrProfILE[ ShaderProfiles::HS_BEST ] = astrProfILE[ ShaderProfiles::HS_UNKNOWN ];
+					astrProfILE[ ShaderProfiles::DS_BEST ] = astrProfILE[ ShaderProfiles::DS_UNKNOWN ];
+					astrProfILE[ ShaderProfiles::CS_BEST ] = astrProfILE[ ShaderProfiles::CS_UNKNOWN ];
 				}
 				else
 				if( eLevel == D3D_FEATURE_LEVEL_11_0 )
 				{
-					astrProfiles[ ShaderProfiles::VS_2_0 ] = "vs_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::PS_2_0 ] = "ps_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::VS_2_X ] = "vs_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::PS_2_X ] = "ps_4_0_level_9_1";
-					astrProfiles[ ShaderProfiles::VS_3_0 ] = "vs_4_0_level_9_3";
-					astrProfiles[ ShaderProfiles::PS_3_0 ] = "ps_4_0_level_9_3";
-					astrProfiles[ ShaderProfiles::VS_4_0 ] = "vs_4_0";
-					astrProfiles[ ShaderProfiles::PS_4_0 ] = "ps_4_0";
-					astrProfiles[ ShaderProfiles::GS_4_0 ] = "gs_4_0";
-					astrProfiles[ ShaderProfiles::GS_4_1 ] = "gs_4_1";
-					astrProfiles[ ShaderProfiles::VS_4_1 ] = "vs_4_1";
-					astrProfiles[ ShaderProfiles::PS_4_1 ] = "ps_4_1";
+					astrProfILE[ ShaderProfiles::VS_2_0 ] = "vs_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::PS_2_0 ] = "ps_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::VS_2_X ] = "vs_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::PS_2_X ] = "ps_4_0_level_9_1";
+					astrProfILE[ ShaderProfiles::VS_3_0 ] = "vs_4_0_level_9_3";
+					astrProfILE[ ShaderProfiles::PS_3_0 ] = "ps_4_0_level_9_3";
+					astrProfILE[ ShaderProfiles::VS_4_0 ] = "vs_4_0";
+					astrProfILE[ ShaderProfiles::PS_4_0 ] = "ps_4_0";
+					astrProfILE[ ShaderProfiles::GS_4_0 ] = "gs_4_0";
+					astrProfILE[ ShaderProfiles::GS_4_1 ] = "gs_4_1";
+					astrProfILE[ ShaderProfiles::VS_4_1 ] = "vs_4_1";
+					astrProfILE[ ShaderProfiles::PS_4_1 ] = "ps_4_1";
 					//SM 5.0
-					astrProfiles[ ShaderProfiles::VS_5_0 ] = "vs_5_0";
-					astrProfiles[ ShaderProfiles::PS_5_0 ] = "ps_5_0";
-					astrProfiles[ ShaderProfiles::CS_5_0 ] = "cs_5_0";
-					astrProfiles[ ShaderProfiles::GS_5_0 ] = "gs_5_0";
-					astrProfiles[ ShaderProfiles::DS_5_0 ] = "ds_5_0";
-					astrProfiles[ ShaderProfiles::HS_5_0 ] = "hs_5_0";
+					astrProfILE[ ShaderProfiles::VS_5_0 ] = "vs_5_0";
+					astrProfILE[ ShaderProfiles::PS_5_0 ] = "ps_5_0";
+					astrProfILE[ ShaderProfiles::CS_5_0 ] = "cs_5_0";
+					astrProfILE[ ShaderProfiles::GS_5_0 ] = "gs_5_0";
+					astrProfILE[ ShaderProfiles::DS_5_0 ] = "ds_5_0";
+					astrProfILE[ ShaderProfiles::HS_5_0 ] = "hs_5_0";
 
 					//Best
-					astrProfiles[ ShaderProfiles::VS_BEST ] = astrProfiles[ ShaderProfiles::VS_5_0 ];
-					astrProfiles[ ShaderProfiles::PS_BEST ] = astrProfiles[ ShaderProfiles::PS_5_0 ];
-					astrProfiles[ ShaderProfiles::GS_BEST ] = astrProfiles[ ShaderProfiles::GS_5_0 ];
-					astrProfiles[ ShaderProfiles::HS_BEST ] = astrProfiles[ ShaderProfiles::HS_5_0 ];
-					astrProfiles[ ShaderProfiles::DS_BEST ] = astrProfiles[ ShaderProfiles::DS_5_0 ];
-					astrProfiles[ ShaderProfiles::CS_BEST ] = astrProfiles[ ShaderProfiles::CS_5_0 ];
+					astrProfILE[ ShaderProfiles::VS_BEST ] = astrProfILE[ ShaderProfiles::VS_5_0 ];
+					astrProfILE[ ShaderProfiles::PS_BEST ] = astrProfILE[ ShaderProfiles::PS_5_0 ];
+					astrProfILE[ ShaderProfiles::GS_BEST ] = astrProfILE[ ShaderProfiles::GS_5_0 ];
+					astrProfILE[ ShaderProfiles::HS_BEST ] = astrProfILE[ ShaderProfiles::HS_5_0 ];
+					astrProfILE[ ShaderProfiles::DS_BEST ] = astrProfILE[ ShaderProfiles::DS_5_0 ];
+					astrProfILE[ ShaderProfiles::CS_BEST ] = astrProfILE[ ShaderProfiles::CS_5_0 ];
 				}
 			}
 

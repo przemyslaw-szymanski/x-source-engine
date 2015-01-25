@@ -33,7 +33,7 @@ namespace XSE
 	{
 		public:
 
-													IInputLayout() { xst_zero( m_aAvailableElements, sizeof( bool ) * ILEs::_ENUM_COUNT ); }
+													IInputLayout() { xst_zero( m_aAvailableElements, sizeof( bool ) * ILE::_ENUM_COUNT ); }
 			virtual									~IInputLayout() {}
 
 			virtual	i32								Create(cul32& ulElements) = 0;
@@ -41,7 +41,7 @@ namespace XSE
 			virtual ul32							GetHandle() const = 0;
 
 			virtual	xst_fi const bool*				GetAvailableElements() const { return m_aAvailableElements; }
-			virtual xst_fi u32						GetAvailableElementCount() const { return ILEs::_ENUM_COUNT; }
+			virtual xst_fi u32						GetAvailableElementCount() const { return ILE::_ENUM_COUNT; }
 			virtual xst_fi bool						IsElementAvailable(cul32& ulElId) const { return m_aAvailableElements[ ulElId ]; }
 			
 			virtual const	SInputLayoutElement*	GetElements() const = 0;

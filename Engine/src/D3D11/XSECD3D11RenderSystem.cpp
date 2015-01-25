@@ -1678,7 +1678,7 @@ namespace XSE
 					//Available shader models
 					pCaps->abShaderModels[ ShaderModels::SM_2_0 ] = true;
 
-					//Shader profiles
+					//Shader profILE
 					pCaps->abShaderProfiles[ ShaderProfiles::VS_2_0 ] = true;
 					pCaps->abShaderProfiles[ ShaderProfiles::PS_2_0 ] = true;
 				}
@@ -1704,7 +1704,7 @@ namespace XSE
 					//Available shader models
 					pCaps->abShaderModels[ ShaderModels::SM_2_0 ] = true;
 
-					//Shader profiles
+					//Shader profILE
 					pCaps->abShaderProfiles[ ShaderProfiles::VS_2_0 ] = true;
 					pCaps->abShaderProfiles[ ShaderProfiles::PS_2_0 ] = true;
 				}
@@ -1730,7 +1730,7 @@ namespace XSE
 					//Available shader models
 					pCaps->abShaderModels[ ShaderModels::SM_2_0 ] = true;
 
-					//Shader profiles
+					//Shader profILE
 					pCaps->abShaderProfiles[ ShaderProfiles::VS_2_0 ] = true;
 					pCaps->abShaderProfiles[ ShaderProfiles::PS_2_0 ] = true;
 					pCaps->abShaderProfiles[ ShaderProfiles::VS_2_X ] = true;
@@ -1759,7 +1759,7 @@ namespace XSE
 					pCaps->abShaderModels[ ShaderModels::SM_2_0 ] = true;
 					pCaps->abShaderModels[ ShaderModels::SM_4_0 ] = true;
 
-					//Shader profiles
+					//Shader profILE
 					pCaps->abShaderProfiles[ ShaderProfiles::VS_2_0 ] = true;
 					pCaps->abShaderProfiles[ ShaderProfiles::PS_2_0 ] = true;
 					pCaps->abShaderProfiles[ ShaderProfiles::VS_2_X ] = true;
@@ -1789,7 +1789,7 @@ namespace XSE
 
 					pCaps->abShaderModels[ ShaderModels::SM_2_0 ] = true;
 					pCaps->abShaderModels[ ShaderModels::SM_4_0 ] = true;
-					//Shader profiles
+					//Shader profILE
 					pCaps->abShaderProfiles[ ShaderProfiles::VS_2_0 ] = true;
 					pCaps->abShaderProfiles[ ShaderProfiles::PS_2_0 ] = true;
 					pCaps->abShaderProfiles[ ShaderProfiles::VS_2_X ] = true;
@@ -1823,7 +1823,7 @@ namespace XSE
 					pCaps->abShaderModels[ ShaderModels::SM_2_0 ] = true;
 					pCaps->abShaderModels[ ShaderModels::SM_4_0 ] = true;
 					pCaps->abShaderModels[ ShaderModels::SM_5_0 ] = true;
-					//Shader profiles
+					//Shader profILE
 					pCaps->abShaderProfiles[ ShaderProfiles::VS_2_0 ] = true;
 					pCaps->abShaderProfiles[ ShaderProfiles::PS_2_0 ] = true;
 					pCaps->abShaderProfiles[ ShaderProfiles::VS_2_X ] = true;

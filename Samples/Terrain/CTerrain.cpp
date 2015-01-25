@@ -162,7 +162,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 		pMat = XSE::CMaterialManager::GetSingletonPtr()->CreateMaterial( "terrain" );
 	XSE::VertexShaderPtr pVS = XSE::CShaderManager::GetSingletonPtr()->LoadVertexShader("terrain.vsh", "terr.vs", "vs", XSE::ShaderProfiles::VS_BEST);
 	xst_assert2(pVS.IsValid());
-	pVS->SetInputLayout( this->m_pEngine->GetRenderSystem()->GetInputLayout( XSE::ILEs::POSITION | XSE::ILEs::NORMAL ) );
+	pVS->SetInputLayout( this->m_pEngine->GetRenderSystem()->GetInputLayout( XSE::ILE::POSITION | XSE::ILE::NORMAL ) );
 	XSE::PixelShaderPtr pPS = XSE::CShaderManager::GetSingletonPtr()->LoadPixelShader("terrain.psh", "terr.ps", "ps", XSE::ShaderProfiles::PS_BEST);
 	pMat->CreateTechnique("tech", pVS, pPS);
 	

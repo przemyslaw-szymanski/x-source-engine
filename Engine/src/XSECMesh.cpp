@@ -3,6 +3,7 @@
 #include "XSEIIndexBuffer.h"
 #include "XSEIRenderSystem.h"
 #include "XSECEngine.h"
+#include "XSECMaterialManager.h"
 
 namespace XSE
 {
@@ -176,7 +177,7 @@ namespace XSE
 		{
 			xst_assert( pMat != xst_null, "(CMesh::SetMaterial) Trying to set a null material" );
 			//TODO Override GetMaterial method for mesh. Should returns current lod material
-			m_pMaterial = pMat;
+			this->m_pMaterial = pMat;
 			if( uiLODId < m_vLODs.size() )
 			{
 				m_vLODs[ uiLODId ].pMaterial = pMat;
@@ -188,15 +189,17 @@ namespace XSE
 			this->m_pSceneNode = pNode;
 		}
 
-		void CMesh::SetInputLayout(cul32& ulIL)
+		void CMesh::SetInputLayout(cul32& ulIL, bool bSetMaterialFromInputLayout)
 		{
-			SetInputLayout( this->m_pRS->GetInputLayout( ulIL ) );
+			SetInputLayout( this->m_pRS->GetInputLayout( ulIL ), bSetMaterialFromInputLayout );
 		}
 
-		void CMesh::SetInputLayout(const IInputLayout* pIL)
+		void CMesh::SetInputLayout(const IInputLayout* pIL, bool bSetMaterialFromInputLayout)
 		{
 			xst_assert( pIL != xst_null, "(CMesh::SetInputLayout)" );
 			this->m_pInputLayout = pIL;
+			if( bSetMaterialFromInputLayout )
+				SetMaterial( CMaterialManager::GetSingletonPtr()->GetDefaultMaterial( pIL ), 0 );
 			for(u32 i = 0; i < m_vLODs.size(); ++i)
 			{
 				if( m_vLODs[ i ].pVertexBuffer.IsValid() )

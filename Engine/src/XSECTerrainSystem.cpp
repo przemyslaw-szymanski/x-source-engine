@@ -66,14 +66,14 @@ namespace XSE
 		}
 		
 		//Create input layout
-		u32 uiEls = XSE::ILEs::POSITION;
-		//uiEls |= XSE::ILEs::TEXCOORD0;
+		u32 uiEls = XSE::ILE::POSITION;
+		//uiEls |= XSE::ILE::TEXCOORD0;
 
-		if( Options.bNormal )	uiEls |= XSE::ILEs::NORMAL;
-		if( Options.bBinormal )	uiEls |= XSE::ILEs::BINORMAL;
-		if( Options.bTangent )	uiEls |= XSE::ILEs::TANGENT;
-		if( Options.bColor )	uiEls |= XSE::ILEs::COLOR;
-		if( Options.bTexCoord )	uiEls |= XSE::ILEs::TEXCOORD0;
+		if( Options.bNormal )	uiEls |= XSE::ILE::NORMAL;
+		if( Options.bBinormal )	uiEls |= XSE::ILE::BINORMAL;
+		if( Options.bTangent )	uiEls |= XSE::ILE::TANGENT;
+		if( Options.bColor )	uiEls |= XSE::ILE::COLOR;
+		if( Options.bTexCoord )	uiEls |= XSE::ILE::TEXCOORD0;
 
 		IInputLayout* pIL = m_pRenderSystem->GetInputLayout( uiEls );
 		
@@ -180,7 +180,7 @@ namespace XSE
 		if( m_pDbgGeom )
 		{
 			pGeomGr = m_pDbgGeom->CreateGroup();
-			IInputLayout* pBoxIL = m_pRenderSystem->GetInputLayout( ILEs::POSITION );
+			IInputLayout* pBoxIL = m_pRenderSystem->GetInputLayout( ILE::POSITION );
 			SBoxOptions BoxOptions;
 			BoxOptions.Size = 15;//Vec3( pTile->m_Sphere.GetRadius() );
 			pBox = XSE::CMeshManager::GetSingleton().CreateMesh( "DbgBox", pBoxIL, BasicShapes::BOX, &BoxOptions ); 
@@ -240,7 +240,7 @@ namespace XSE
 			pTile->m_Sphere.SetCenterPoint( Vec3( pTile->m_Sphere.GetCenterPoint().x, fAvgHeight, pTile->m_Sphere.GetCenterPoint().z ) );
 
 			//Dbg tmp
-			//IInputLayout* pBoxIL = m_pRenderSystem->GetInputLayout( ILEs::POSITION );
+			//IInputLayout* pBoxIL = m_pRenderSystem->GetInputLayout( ILE::POSITION );
 			//SBoxOptions Options;
 			//Options.Size = 15;//Vec3( pTile->m_Sphere.GetRadius() );
 			//ModelPtr pBox = XSE::CModelManager::GetSingleton().CreateModel( XST::StringUtil::ToString( i ) + "Box", BasicShapes::BOX, pBoxIL, &Options ); 
@@ -275,7 +275,7 @@ namespace XSE
 				if( bVisualizeNormals )
 				{
 					pTile->m_pVBNormals = m_pRenderSystem->CreateVertexBuffer();
-					IInputLayout* pNormalIL = m_pRenderSystem->GetInputLayout( ILEs::POSITION );
+					IInputLayout* pNormalIL = m_pRenderSystem->GetInputLayout( ILE::POSITION );
 					pTile->m_pVBNormals->SetInputLayout( pNormalIL );
 					pTile->m_pVBNormals->SetTopologyType( TopologyTypes::LINE_LIST );
 					pTile->m_pVBNormals->SetUsage( BufferUsages::STATIC );

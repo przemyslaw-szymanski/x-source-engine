@@ -148,8 +148,8 @@ namespace XSE
 				//xst_fi	xst_castring&		GetObjectName() const
 				//							{ return this->_GetDbgName(); /*this->m_strResourceName;*/ }
 
-						void				SetInputLayout(cul32& ulInputLayout);
-						void				SetInputLayout(const IInputLayout* pIL);
+						void				SetInputLayout(cul32& ulInputLayoutbool, bool bSetMaterialFromInputLayout = true);
+						void				SetInputLayout(const IInputLayout* pIL, bool bSetMaterialFromInputLayout = true);
 
 			protected:
 

@@ -233,7 +233,7 @@ namespace XSE
 	typedef InputLayoutElements::ELEMENT	INPUT_LAYOUT_ELEMENT;
 	typedef InputLayoutElements				VertexAttributes;
 	typedef VertexAttributes::ELEMENT		VERTEX_ATTRIBUTE;
-	typedef InputLayoutElements				ILEs;
+	typedef InputLayoutElements				ILE;
 
 	struct InputLayoutElementIds
 	{

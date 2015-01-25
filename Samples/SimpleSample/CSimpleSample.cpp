@@ -11,7 +11,7 @@ i32 CSimpleSample::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	pSceneMgr->GetCurrentCamera()->SetLookAt( XSE::Vec3( 0, 0, 0 ) );
 	XSE::SBoxOptions Options;
 	Options.vecSize = XST::Vec2( 10, 10 );
-	XSE::MeshPtr pMesh = pSceneMgr->GetMeshManager()->CreateMesh( "boxMesh", XSE::ILEs::POSITION | XSE::ILEs::COLOR, XSE::BasicShapes::BOX, &Options );
+	XSE::MeshPtr pMesh = pSceneMgr->GetMeshManager()->CreateMesh( "boxMesh", XSE::ILE::POSITION | XSE::ILE::COLOR, XSE::BasicShapes::BOX, &Options );
 	XSE::ModelPtr pModel = pSceneMgr->CreateModel( "boxModel", "boxNode" );
 	pModel->AddMesh( pMesh );
 	return XST_OK;

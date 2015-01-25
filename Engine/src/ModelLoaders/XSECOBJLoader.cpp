@@ -146,12 +146,12 @@ namespace XSE
 
 		Resources::CModel* pModel = *ppOut;
 		CMeshManager* pMeshMgr = CMeshManager::GetSingletonPtr();
-		u32 uIL = ILEs::POSITION;
+		u32 uIL = ILE::POSITION;
 		
 		if( !vNormals.empty() )
-			uIL |= ILEs::NORMAL;
+			uIL |= ILE::NORMAL;
 		if( !vUVs.empty() )
-			uIL |= ILEs::TEXCOORD0;
+			uIL |= ILE::TEXCOORD0;
 
 		xst_astring strName = pModel->GetResourceName();
 		strName += "/mesh";

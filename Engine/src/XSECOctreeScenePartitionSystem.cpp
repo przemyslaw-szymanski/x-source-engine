@@ -57,7 +57,7 @@ namespace XSE
 	{
 		SetViewFrustumCullTestType( ViewFrustumCullTypes::SPHERE );
 		m_pOctListener = xst_new COctreeListener( this );
-		m_pInputLayout = m_pSceneMgr->GetRenderSystem()->GetInputLayout( ILEs::POSITION | ILEs::COLOR );
+		m_pInputLayout = m_pSceneMgr->GetRenderSystem()->GetInputLayout( ILE::POSITION | ILE::COLOR );
 		m_strSceneNodeName = m_pSceneMgr->GetName() + "/xse_octree_model";
 		m_pOctModel = m_pSceneMgr->GetModelManager()->CreateModel( m_strSceneNodeName, m_pSceneMgr->GetName() );
 		m_pOctModel->SetMaterial( m_pSceneMgr->GetModelManager()->GetMeshManager()->GetMaterialManager()->GetMaterial( CMaterialManager::DEFAULT_MAT_COLOR, DEFAULT_GROUP ) );
