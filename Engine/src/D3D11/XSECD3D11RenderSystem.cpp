@@ -96,6 +96,43 @@ namespace XSE
 			D3D_FEATURE_LEVEL_11_0 //5.0
 		};
 
+		xst_fi u16 GetRendererResourceHandleId(IRenderSystem::HandleRef Handle)
+		{
+			u16 uVal = ( Handle.uHandle & 0xFFFF0000 ) >> 16;
+			return uVal;
+		}
+
+		xst_fi u16 GetRendererResourceHandleRefCount(IRenderSystem::HandleRef Handle)
+		{
+			u16 uVal = ( Handle.uHandle & 0x0000FFFF ) >> 0;
+			return uVal;
+		}
+
+		xst_fi void SetRendererResourceHandleId(IRenderSystem::Handle* pHandleOut, u16 uId)
+		{
+			// Clear bits
+			pHandleOut->uHandle &= ~0xFFFF0000;
+			pHandleOut->uHandle |= ( uId & 0xFFFF ) << 16;
+		}
+
+		xst_fi void SetRendererResourceHandleRefCount(IRenderSystem::Handle* pHandleOut, u16 uCount)
+		{
+			pHandleOut->uHandle &= ~0x0000FFFF;
+			pHandleOut->uHandle |= ( uCount & 0xFFFF ) << 0;
+		}
+
+		struct STexture
+		{
+			ID3D11Texture1D* pTex1D = xst_null;
+			ID3D11Texture2D* pTex2D = xst_null;
+			ID3D11Texture3D* pTex3D = xst_null;
+			ID3D11ShaderResourceView* pShaderView = xst_null;
+		};
+
+		xst_vector< IRenderSystem::Handle > g_vTexHandles;
+		xst_vector< STexture > g_vTextures;
+		xst_stack< u32 > g_sFreeTexHandles;
+
 		CRenderSystem::CRenderSystem(xst_castring& strName) : XSE::IRenderSystem( strName )
 		{
 			m_pViewport = xst_null;
@@ -142,7 +179,9 @@ namespace XSE
 
 			this->SetFeatureLevel( ShaderModels::SM_2_0, ShaderModels::SM_5_0 );
 
-
+			g_vTexHandles.reserve( 3000 );
+			g_sFreeTexHandles.reserve( 1000 );
+			g_vTextures.reserve( 3000 );
 
 			xst_zero( &m_Current, sizeof( SCurrent ) );
 			xst_zero( &g_Diagnostics, sizeof( SRSDiagnostics ) );
@@ -1023,6 +1062,64 @@ namespace XSE
 			IPixelShader* pPS = pSS->CreateDefaultPixelShader( pOptions, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
 			this->_SetShaderSystem( pPS, pSS );
 			return pPS;
+		}
+
+		IRenderSystem::HandleRef CRenderSystem::CreateTexture(const STextureDesc& Desc)
+		{
+			STexture Tex;
+			Handle hTex = { 0 };
+			u32 uId = 0;
+
+			switch( Desc.eType )
+			{
+				case TextureTypes::TEX_2D:
+				{
+					D3D11_TEXTURE2D_DESC desc;
+					xst_zero(&desc, sizeof(desc));
+					desc.Width = Desc.uWidth;
+					desc.Height = Desc.uHeight;
+					desc.MipLevels = Desc.uMipCount;
+					desc.SampleDesc.Count = 1;
+					desc.SampleDesc.Quality = 0;
+					desc.Usage = D3D11_USAGE_DEFAULT;
+					desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+					desc.CPUAccessFlags = 0;
+					desc.MiscFlags = 0;
+					desc.Format = 
+				}
+				break;
+				case TextureTypes::TEX_1D:
+				{
+
+				}
+				break;
+				case TextureTypes::TEX_3D:
+				{
+
+				}
+				break;
+			}
+			
+			if( g_sFreeTexHandles.empty() )
+			{
+				uId = g_vTextures.size();
+				g_vTextures.push_back( Tex );
+			}
+			else
+			{
+				uId = g_sFreeTexHandles.top_pop();
+				g_vTextures[ uId ] = Tex;
+			}
+
+			SetRendererResourceHandleId( &hTex, uId );
+			SetRendererResourceHandleRefCount( &hTex, 1 );
+
+			return hTex;
+		}
+			
+		i32	CRenderSystem::DestroyTexture(IRenderSystem::HandleRef TexHandle)
+		{
+
 		}
 
 		ul32 CRenderSystem::GetShaderMaxSize()

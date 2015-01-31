@@ -81,6 +81,11 @@ namespace XST
 				m_vStack.clear();
 			}
 
+			xst_fi void reserve(cu32 uCount)
+			{
+				m_vStack.reserve( uCount );
+			}
+
 		private:
 
 			//_T_*		m_atStack;
