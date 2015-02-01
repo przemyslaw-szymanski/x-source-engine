@@ -80,7 +80,8 @@ namespace XSE
 		pfnCreateDXGIFactory1				CreateDXGIFactory1 = xst_null;
 
 		#define XSE_D3D11_DEFAULT_FORMAT	DXGI_FORMAT_R8G8B8A8_UNORM
-
+		#define XSE_MAX_RS_RESOURCE_THREADS 4
+		#define XSE_MAX_MIPLEVELS			20
 
 		XMMATRIX g_aMatrices[ MatrixTypes::_ENUM_COUNT ];
 		XMMATRIX g_aTmpMatrices[ MatrixTypes::_ENUM_COUNT ];
@@ -95,6 +96,8 @@ namespace XSE
 			D3D_FEATURE_LEVEL_10_0, //4.0
 			D3D_FEATURE_LEVEL_11_0 //5.0
 		};
+
+		static D3D11_SUBRESOURCE_DATA g_aaTexSubResourcesData[ XSE_MAX_RS_RESOURCE_THREADS ][ XSE_MAX_MIPLEVELS ] = { 0 };
 
 		xst_fi u16 GetRendererResourceHandleId(IRenderSystem::HandleRef Handle)
 		{
@@ -162,6 +165,10 @@ namespace XSE
 			m_aFormats[ RSFormats::R8G8B8A8U ]					= DXGI_FORMAT_R8G8B8A8_UNORM;
 			m_aFormats[ RSFormats::R8U ]						= DXGI_FORMAT_R8_UNORM;
 			m_aFormats[ RSFormats::UNKNOWN ]					= DXGI_FORMAT_UNKNOWN;
+			m_aFormats[ RSFormats::B5G6R5U ]					= DXGI_FORMAT_B5G6R5_UNORM;
+			m_aFormats[ RSFormats::G5G5R5A1U ]					= DXGI_FORMAT_B5G5R5A1_UNORM;
+			m_aFormats[ RSFormats::B8G8R8A8 ]					= DXGI_FORMAT_B8G8R8A8_UNORM;
+			m_aFormats[ RSFormats::R8G8B8U ]					= DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 
 			m_aeTopologies[ TopologyTypes::LINE_LIST ]			= D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
 			m_aeTopologies[ TopologyTypes::LINE_STRIP ]			= D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
@@ -1064,11 +1071,48 @@ namespace XSE
 			return pPS;
 		}
 
+		DXGI_FORMAT CRenderSystem::_ConvertToD3D11Format( RS_FORMAT eFormat )
+		{
+			return m_aFormats[ eFormat ];
+		}
+
 		IRenderSystem::HandleRef CRenderSystem::CreateTexture(const STextureDesc& Desc)
 		{
 			STexture Tex;
 			Handle hTex = { 0 };
 			u32 uId = 0;
+
+			D3D11_SUBRESOURCE_DATA InitData;
+			xst_zero(&InitData, sizeof(InitData));
+			InitData.pSysMem = Desc.pData;
+			InitData.SysMemPitch = Desc.uPixelSize * Desc.uWidth;
+			InitData.SysMemSlicePitch = InitData.SysMemPitch * Desc.uHeight;
+
+			HRESULT hr = 0;
+			// If mipmap count < 0 then let DX generate mipmaps
+			// else if mipmap count == 0 do not generate any mipmaps
+			// else if mipmap couht > 0 use already generated mipmaps
+			// TODO: already generated mipmaps not supported
+			u32 uMipLevels;
+			if( Desc.bGenerateMipMaps )
+				uMipLevels = 0;
+			else
+				uMipLevels = ( Desc.uMipCount >= 1 ) ? Desc.uMipCount : 1;
+
+			D3D11_SUBRESOURCE_DATA* pInitData = xst_null;
+			// Prepare descriptions for already generated mipmaps
+			if( uMipLevels > 1 )
+			{
+				
+			}
+			else
+			{
+				pInitData = &g_aaTexSubResourcesData[ 0 ][ 0 ];
+				xst_zero( pInitData, sizeof( D3D11_SUBRESOURCE_DATA ) );
+				pInitData->pSysMem = Desc.pData;
+				pInitData->SysMemPitch = Desc.uPixelSize * Desc.uWidth;
+				pInitData->SysMemSlicePitch = pInitData->SysMemPitch * Desc.uHeight;
+			}
 
 			switch( Desc.eType )
 			{
@@ -1078,14 +1122,17 @@ namespace XSE
 					xst_zero(&desc, sizeof(desc));
 					desc.Width = Desc.uWidth;
 					desc.Height = Desc.uHeight;
-					desc.MipLevels = Desc.uMipCount;
+					desc.MipLevels =  uMipLevels;
+					desc.ArraySize = 1;
 					desc.SampleDesc.Count = 1;
 					desc.SampleDesc.Quality = 0;
 					desc.Usage = D3D11_USAGE_DEFAULT;
 					desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 					desc.CPUAccessFlags = 0;
 					desc.MiscFlags = 0;
-					desc.Format = 
+					desc.Format = _ConvertToD3D11Format( Desc.eFormat );
+					ID3D11Texture2D* pTex = xst_null;
+					hr = m_pDevice->CreateTexture2D( &desc, &InitData, &pTex );
 				}
 				break;
 				case TextureTypes::TEX_1D:
@@ -1098,6 +1145,16 @@ namespace XSE
 
 				}
 				break;
+			}
+
+			if( SUCCEEDED( hr ) )
+			{
+
+			}
+			else
+			{
+				XST_LOG_ERR( "Unable to create D3D11 texture 2D" );
+				return hTex;
 			}
 			
 			if( g_sFreeTexHandles.empty() )
@@ -1119,7 +1176,7 @@ namespace XSE
 			
 		i32	CRenderSystem::DestroyTexture(IRenderSystem::HandleRef TexHandle)
 		{
-
+			return XST_FAIL;
 		}
 
 		ul32 CRenderSystem::GetShaderMaxSize()

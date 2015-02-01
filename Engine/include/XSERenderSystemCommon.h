@@ -290,9 +290,13 @@ namespace XSE
 			R16G16U,
 			R16U,
 			R8U,
+			R8G8B8U,
 			R8G8B8A8U,
 			R32G32B32F,
 			R32G32B32A32F,
+			B5G6R5U,
+			G5G5R5A1U,
+			B8G8R8A8,
 			_ENUM_COUNT,
 			RGBA32F		= R32G32B32A32F,
 			RGB32F		= R32G32B32F,
@@ -302,6 +306,32 @@ namespace XSE
 		};
 	};
 	typedef RSFormats::FORMAT	RS_FORMAT;
+
+	struct RSFormatSizes
+	{
+		enum SIZE
+		{
+			UNKNOWN			= 0,
+			R32F			= 32 * 1,
+			R32G32F			= 32 * 2,
+			R16F			= 16 * 1,
+			R16G16F			= 16 * 2,
+			R16G16B16A16U	= 16 * 4,
+			R16G16B16A16F	= 16 * 4,
+			R16G16U			= 16 * 2,
+			R16U			= 16 * 1,
+			R8U				= 8 * 1,
+			R8G8B8A8U		= 8 * 4,
+			R32G32B32F		= 32 * 3,
+			R32G32B32A32F	= 32 * 4,
+			_ENUM_COUNT		= 14,
+			RGBA32F		= R32G32B32A32F,
+			RGB32F		= R32G32B32F,
+			RGBA8U		= R8G8B8A8U,
+			RGBA16F		= R16G16B16A16F,
+			RGBA16U		= R16G16B16A16U
+		};
+	};
 
 	struct RSFeatures
 	{

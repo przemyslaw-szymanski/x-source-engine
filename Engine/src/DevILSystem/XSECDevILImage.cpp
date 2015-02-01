@@ -6,6 +6,22 @@ namespace XSE
 {
 	namespace DevIL
 	{
+		static const RS_FORMAT g_aRSFormats[ ImageFormats::_ENUM_COUNT ] = 
+		{
+			/*UNKNOWN = 0,
+			RGB,
+			RGBA,
+			BGR,
+			BGRA,
+			LUMINANCE,*/
+			RSFormats::UNKNOWN,
+			RSFormats::R8G8B8U,
+			RSFormats::R8G8B8A8U,
+			RSFormats::B5G6R5U,
+			RSFormats::B8G8R8A8,
+			RSFormats::R8U
+		};
+
 		CImage::CImage(CImageSystem* pIS, XSE_IRESOURCE_DECL_PARAMS) : 
 			IImage( XSE_IRESOURCE_PARAMS ),
 			m_pImageSystem( pIS ), 
@@ -121,6 +137,11 @@ namespace XSE
 				m_uiBytesPerPixel = m_pImageSystem->m_aiFormatSizes[ eFormat ];
 				m_uiBPP = m_uiBytesPerPixel * 8;
 			}
+		}
+
+		RS_FORMAT CImage::GetRenderSystemFormat() const
+		{
+			return g_aRSFormats[ m_eFormat ];
 		}
 
 		void CImage::_SetColorR(u8* pPtr, const XST::CColor& Color)

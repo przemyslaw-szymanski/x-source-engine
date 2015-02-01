@@ -35,9 +35,11 @@ namespace XSE
 
 	struct STextureDesc
 	{
-		u32				uWidth = 0;
-		u32				uHeight = 0;
-		u32				uMipCount = 0;
+		u16				uWidth = 0;
+		u16				uHeight = 0;
+		u8				uMipCount = 0;
+		bool			bGenerateMipMaps = true;
+		u16				uPixelSize = 0; // in bytes - bits per pixel / 4
 		RS_FORMAT		eFormat = RSFormats::UNKNOWN;
 		TEXTURE_TYPE	eType = TextureTypes::UNKNOWN;
 		ul32			uDataSize = 0;

@@ -442,6 +442,17 @@ namespace XSE
 			CPoint VC = CalcImpostorVertexCount( m_Options.PageVertexCount, m_Options.uiLODCount );
 			pImpImg->Scale( VC.x, VC.y );
 			m_vpImages.push_back( pImpImg );
+
+			STextureDesc Desc;
+			Desc.eFormat = pImg->GetRenderSystemFormat();
+			Desc.bGenerateMipMaps = true;
+			Desc.eType = TextureTypes::TEX_2D;
+			Desc.pData = pImg->GetData();
+			Desc.uDataSize = pImg->GetDataSize();
+			Desc.uPixelSize = pImg->GetBitsPerPixel() / 4;
+			Desc.uWidth = pImg->GetWidth();
+			Desc.uHeight = pImg->GetHeight();
+			m_pSceneMgr->GetRenderSystem()->CreateTexture(Desc);
 		}
 		return XST_OK;
 	}

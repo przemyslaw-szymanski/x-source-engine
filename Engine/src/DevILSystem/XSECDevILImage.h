@@ -74,6 +74,8 @@ namespace XSE
 						IMAGE_FORMAT		GetFormat() const
 											{ return m_eFormat; }
 
+						RS_FORMAT			GetRenderSystemFormat() const xst_implement;
+
 						void				SetFormat(IMAGE_FORMAT eFormat);
 
 						bool				IsManual() const

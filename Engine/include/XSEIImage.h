@@ -2,6 +2,7 @@
 #define XSE_IIMAGE_H
 
 #include "XSEIResource.h"
+#include "XSERenderSystemCommon.h"
 
 namespace XSE
 {
@@ -48,6 +49,7 @@ namespace XSE
 				virtual cu8*				GetData() const = 0;
 				virtual ul32				GetDataSize() const = 0;
 				virtual IMAGE_FORMAT		GetFormat() const = 0;
+				virtual RS_FORMAT			GetRenderSystemFormat() const = 0;
 				virtual void				SetFormat(IMAGE_FORMAT eFormat) = 0;
 				virtual bool				IsManual() const = 0;
 				virtual void				SetDataType(IMAGE_DATA_TYPE eType) = 0;

@@ -266,6 +266,8 @@ namespace XSE
 
 						i32			_GetCaps(SRSCapapiblities* pCaps);
 
+						DXGI_FORMAT	_ConvertToD3D11Format(RS_FORMAT eFormat);
+
 			protected:
 
 				xst_unknown				m_ahDlls[ LIB_COUNT ];
