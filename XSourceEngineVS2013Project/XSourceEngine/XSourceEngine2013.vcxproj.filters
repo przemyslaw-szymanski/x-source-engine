@@ -912,6 +912,9 @@
     <ClInclude Include="..\..\Engine\include\XSECLight.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11Texture.h">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine\dllmain.cpp">
@@ -1539,6 +1542,12 @@
       <Filter>src\ModelLoaders</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Engine\src\XSECLight.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11Texture.cpp">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECTextureManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

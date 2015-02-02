@@ -249,6 +249,7 @@
     <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11RenderSystem.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11RenderSystemPlugin.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11Technique.h" />
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11Texture.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11VertexBuffer.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11VertexShader.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11Viewport.h" />
@@ -306,6 +307,7 @@
     <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11RenderSystem.cpp" />
     <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11RenderSystemPlugin.cpp" />
     <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11Technique.cpp" />
+    <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11Texture.cpp" />
     <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11VertexBuffer.cpp" />
     <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11VertexShader.cpp" />
     <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11Viewport.cpp" />
@@ -376,6 +378,7 @@
     <ClCompile Include="..\..\Engine\src\XSECTerrain.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECTerrainSystem.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECTexture.cpp" />
+    <ClCompile Include="..\..\Engine\src\XSECTextureManager.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECVertexData.cpp" />
     <ClCompile Include="..\..\Engine\src\XSEDefaultShaders.cpp" />
     <ClCompile Include="..\..\Engine\src\XSEIPass.cpp" />
