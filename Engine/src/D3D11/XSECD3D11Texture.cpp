@@ -3,6 +3,7 @@
 
 namespace XSE
 {
+	// Deprecated
 	namespace D3D11
 	{
 		CTexture::CTexture(CRenderSystem* pRS, XSE_IRESOURCE_DECL_PARAMS) :
@@ -15,7 +16,7 @@ namespace XSE
 		CTexture::~CTexture()
 		{
 			xst_assert2( m_pRS );
-			m_pRS->_DestroyTexture();
+			//m_pRS->_DestroyTexture();
 			m_pRS = xst_null;
 		}
 	} // D3D11

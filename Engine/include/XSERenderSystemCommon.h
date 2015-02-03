@@ -333,6 +333,43 @@ namespace XSE
 		};
 	};
 
+	struct SRendererResourceHandle
+	{
+		friend class IRenderSystem;
+		private:
+			u64 uHandle = 0;
+	};
+	typedef SRendererResourceHandle RSHandle;
+	typedef const RSHandle& RSHandleRef;
+	typedef RSHandle* RSHandlePtr;
+
+	struct TextureTypes
+	{
+		enum TYPE
+		{
+			UNKNOWN,
+			TEX_1D,
+			TEX_2D,
+			TEX_3D,
+			TEX_CUBE,
+			_ENUM_COUNT
+		};
+	};
+	typedef TextureTypes::TYPE TEXTURE_TYPE;
+
+	struct STextureDesc
+	{
+		u16				uWidth = 0;
+		u16				uHeight = 0;
+		u8				uMipCount = 0;
+		bool			bGenerateMipMaps = true;
+		u16				uPixelSize = 0; // in bytes - bits per pixel / 4
+		RS_FORMAT		eFormat = RSFormats::UNKNOWN;
+		TEXTURE_TYPE	eType = TextureTypes::UNKNOWN;
+		ul32			uDataSize = 0;
+		cu8*			pData = xst_null;
+	};
+
 	struct RSFeatures
 	{
 		SHADER_MODEL	eShaderModel;

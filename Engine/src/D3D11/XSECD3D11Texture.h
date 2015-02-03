@@ -10,7 +10,7 @@ namespace XSE
 	namespace D3D11
 	{
 		class CRenderSystem;
-
+		// Deprecated
 		class CTexture : public Resources::ITexture
 		{
 			public:
@@ -19,7 +19,7 @@ namespace XSE
 
 				virtual xst_fi
 				IRenderSystem*		GetRenderSystem() const xst_implement
-									{ return m_pRS; }
+									{ return (IRenderSystem*)m_pRS; }
 
 			protected:
 

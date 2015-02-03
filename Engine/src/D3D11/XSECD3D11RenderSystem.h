@@ -97,8 +97,8 @@ namespace XSE
 			
 						Resources::IPixelShader*	CreateDefaultPixelShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator);
 
-						HandleRef		CreateTexture(const STextureDesc& Desc) xst_implement;
-						i32				DestroyTexture(HandleRef TexHandle) xst_implement;
+						RSHandleRef		CreateTexture(const STextureDesc& Desc) xst_implement;
+						i32				DestroyTexture(RSHandlePtr pTexHandle) xst_implement;
 
 						IVertexBuffer*	CreateVertexBuffer();
 

@@ -21,6 +21,7 @@ namespace XSE
 
 	namespace Resources
 	{
+		// Deprecated
 		class ITexture : public Resources::IResource
 		{
 			public:
@@ -35,14 +36,9 @@ namespace XSE
 				ImageWeakPtr		GetImage() const
 									{ return m_pImg; }
 
-				virtual xst_fi
-				TEXTURE_TYPE		GetTextureType() const
-									{ return m_eTexType; }
-
 			protected:
 
 				ImagePtr		m_pImg;
-				TEXTURE_TYPE	m_eTexType = TextureTypes::UNKNOWN;
 		};
 
 	}//resources

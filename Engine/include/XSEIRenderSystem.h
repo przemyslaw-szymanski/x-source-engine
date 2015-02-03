@@ -14,38 +14,6 @@ namespace XSE
 	typedef void(*XSE_PFN_DESTROYRENDERSYSTEM)(IRenderSystem**);
 	typedef const char*(*XSE_PFN_GETRENDERSYSTEMNAME)();
 
-	struct SRendererResourceHandle
-	{
-		ul32 uHandle;
-	};
-
-	struct TextureTypes
-	{
-		enum TYPE
-		{
-			UNKNOWN,
-			TEX_1D,
-			TEX_2D,
-			TEX_3D,
-			TEX_CUBE,
-			_ENUM_COUNT
-		};
-	};
-	typedef TextureTypes::TYPE TEXTURE_TYPE;
-
-	struct STextureDesc
-	{
-		u16				uWidth = 0;
-		u16				uHeight = 0;
-		u8				uMipCount = 0;
-		bool			bGenerateMipMaps = true;
-		u16				uPixelSize = 0; // in bytes - bits per pixel / 4
-		RS_FORMAT		eFormat = RSFormats::UNKNOWN;
-		TEXTURE_TYPE	eType = TextureTypes::UNKNOWN;
-		ul32			uDataSize = 0;
-		cu8*			pData = xst_null;
-	};
-
 	class IRenderSystem
 	{
 		friend class CShaderManager;
@@ -57,9 +25,6 @@ namespace XSE
 			typedef ShaderSystemMap::iterator			_ShaderSystemIterator;
 
 		public:
-
-			typedef SRendererResourceHandle				Handle;
-			typedef const Handle&						HandleRef;
 
 			struct UpdateOptionsResults
 			{
@@ -98,8 +63,8 @@ namespace XSE
 			virtual	Resources::IPixelShader*		CreatePixelShader(XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator) = 0;
 			//virtual Resources::IVertexShader*		CreateDefaultVertexShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator) = 0;
 			virtual	Resources::IPixelShader*		CreateDefaultPixelShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator) = 0;
-			virtual HandleRef			CreateTexture(const STextureDesc& Desc) = 0;
-			virtual i32					DestroyTexture(HandleRef TexHandle) = 0;
+			virtual RSHandleRef			CreateTexture(const STextureDesc& Desc) = 0;
+			virtual i32					DestroyTexture(RSHandlePtr pTexHandle) = 0;
 			virtual IVertexBuffer*		CreateVertexBuffer() = 0;
 			virtual i32					CreateVertexBuffers(XSE::IVertexBuffer* *const paArray, cu32& uVBCount) = 0;
 			virtual void				DestroyVertexBuffers(XSE::IVertexBuffer* *const paArray, cu32& uVBCount) = 0;
