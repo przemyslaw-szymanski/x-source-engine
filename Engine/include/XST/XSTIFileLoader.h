@@ -46,6 +46,9 @@ namespace XST
 				xst_fi	Data&			GetData()
 										{ return m_Data; }
 
+				xst_fi	const Data&		GetData() const
+										{ return m_Data; }
+
 				xst_fi	u32				GetSize() const
 										{ return IsLoaded() ? m_Data.GetSize() : m_ulSize; }
 

@@ -14,7 +14,8 @@
 //#include <DirectXCollision.h>
 
 #if defined (XST_WINDOWS)
-
+#include <DXGItype.h>
+//#include "DirectXTex.h"
 //Typedef for function pointer
 #define XSE_D3D11_TD(_name, _params) \
 	typedef HRESULT (WINAPI * XST_ADD( pfn, _name ) ) _params; \
@@ -70,6 +71,7 @@ namespace XSE
 		typedef HRESULT (WINAPI * pfnCreateDXGIFactory)(REFIID riid, void **ppFactory);
 		typedef HRESULT (WINAPI * pfnCreateDXGIFactory1)(REFIID riid, void **ppFactory);
 		typedef HRESULT (WINAPI * pfnD3D11CreateDevice)(__in_opt IDXGIAdapter* pAdapter,D3D_DRIVER_TYPE DriverType,HMODULE Software,UINT Flags,__in_ecount_opt( FeatureLevels ) CONST D3D_FEATURE_LEVEL* pFeatureLevels,UINT FeatureLevels,UINT SDKVersion,__out_opt ID3D11Device** ppDevice,__out_opt D3D_FEATURE_LEVEL* pFeatureLevel,__out_opt ID3D11DeviceContext** ppImmediateContext );
+		typedef HRESULT (WINAPI * pfnD3DX11CreateTextureFromMemory)(ID3D11Device* pDevice, LPCVOID pSrcData, SIZE_T SrcDataSize, D3DX11_IMAGE_LOAD_INFO* pLoadInfo, ID3DX11ThreadPump* pPump, ID3D11Resource** ppTexture, HRESULT* pHResult);
 
 		pfnD3D11CreateDeviceAndSwapChain	D3D11CreateDeviceAndSwapChain = xst_null;
 		pfnD3DX11CompileFromFileA			D3DX11CompileFromFileA = xst_null;
@@ -78,6 +80,7 @@ namespace XSE
 		pfnCreateDXGIFactory				CreateDXGIFactory = xst_null;
 		pfnD3D11CreateDevice				D3D11CreateDevice = xst_null;
 		pfnCreateDXGIFactory1				CreateDXGIFactory1 = xst_null;
+		pfnD3DX11CreateTextureFromMemory	D3DX11CreateTextureFromMemory = xst_null;
 
 		#define XSE_D3D11_DEFAULT_FORMAT	DXGI_FORMAT_R8G8B8A8_UNORM
 		#define XSE_MAX_RS_RESOURCE_THREADS 4
@@ -274,6 +277,7 @@ namespace XSE
 			XSE_LOAD_FUNC( D3DX11CompileFromFileA, pfnD3DX11CompileFromFileA, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CompileFromFileA ) );
 			XSE_LOAD_FUNC( D3DX11CompileFromFileW, pfnD3DX11CompileFromFileW, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CompileFromFileW ) );
 			XSE_LOAD_FUNC( D3DX11CompileFromMemory, pfnD3DX11CompileFromMemory, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CompileFromMemory ) );
+			XSE_LOAD_FUNC( D3DX11CreateTextureFromMemory, pfnD3DX11CreateTextureFromMemory, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CreateTextureFromMemory ) );
 			XSE_LOAD_FUNC3( CreateDXGIFactory,	m_ahDlls[ DXGI ] );
 			XSE_LOAD_FUNC3( CreateDXGIFactory1, m_ahDlls[ DXGI ] );
 			XSE_LOAD_FUNC3( D3D11CreateDevice,	m_ahDlls[ D3D11 ] );
@@ -1075,6 +1079,7 @@ namespace XSE
 		{
 			return m_aFormats[ eFormat ];
 		}
+#pragma comment(lib, "DirectXTexd.lib")
 
 		RSHandleRef CRenderSystem::CreateTexture(const STextureDesc& Desc)
 		{
@@ -1103,6 +1108,19 @@ namespace XSE
 			{
 				
 			}
+			pInitData = &g_aaTexSubResourcesData[0][0];
+			pInitData->pSysMem = Desc.pData;
+			pInitData->SysMemPitch = Desc.uWidth * Desc.uPixelSize;
+			pInitData->SysMemSlicePitch = 0;
+
+			/*D3DX11_IMAGE_LOAD_INFO LoadInfo;
+			xst_zero(&LoadInfo, sizeof(LoadInfo));
+			LoadInfo.Width = Desc.uWidth;
+			LoadInfo.Height = Desc.uHeight;
+			LoadInfo.Format = _ConvertToD3D11Format( Desc.eFormat );
+			
+			ID3D11Resource* pTex = xst_null;
+			hr = D3DX11CreateTextureFromMemory(m_pDevice, Desc.pData, Desc.uDataSize, &LoadInfo, 0, &pTex, 0);*/
 
 			switch( Desc.eType )
 			{
@@ -1112,17 +1130,17 @@ namespace XSE
 					xst_zero(&desc, sizeof(desc));
 					desc.Width = Desc.uWidth;
 					desc.Height = Desc.uHeight;
-					desc.MipLevels =  0;
+					desc.MipLevels = 0;
 					desc.ArraySize = 1;
 					desc.SampleDesc.Count = 1;
 					desc.SampleDesc.Quality = 0;
 					desc.Usage = D3D11_USAGE_DEFAULT;
-					desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+					desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 					desc.CPUAccessFlags = 0;
-					desc.MiscFlags = 0;
+					desc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 					desc.Format = _ConvertToD3D11Format( Desc.eFormat );
 					ID3D11Texture2D* pTex = xst_null;
-					hr = m_pDevice->CreateTexture2D( &desc, pInitData, &pTex );
+					hr = m_pDevice->CreateTexture2D( &desc, 0, &pTex );
 					if( SUCCEEDED( hr ) )
 					{
 						D3D11_BOX Box;
@@ -1130,8 +1148,19 @@ namespace XSE
 						Box.right = Desc.uWidth;
 						Box.bottom = Desc.uHeight;
 						Box.back = 1;
-						m_pDeviceContext->UpdateSubresource( pTex, 0, &Box, Desc.pData, Desc.uPixelSize * Desc.uWidth );
-
+						m_pDeviceContext->UpdateSubresource( pTex, 0, &Box, Desc.pData, 3 * Desc.uWidth, 
+							3 * Desc.uWidth * Desc.uHeight );
+						D3D11_SHADER_RESOURCE_VIEW_DESC SRDesc;
+						xst_zero(&SRDesc, sizeof(SRDesc));
+						SRDesc.Format = desc.Format;
+						SRDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
+						SRDesc.Texture2D.MipLevels = -1;
+						ID3D11ShaderResourceView* pSRV = xst_null;
+						hr = m_pDevice->CreateShaderResourceView( pTex, &SRDesc, &pSRV );
+						if( SUCCEEDED( hr ) )
+						{
+							m_pDeviceContext->GenerateMips( pSRV );
+						}
 					}
 				}
 				break;

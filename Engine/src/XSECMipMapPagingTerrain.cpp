@@ -448,8 +448,11 @@ namespace XSE
 			Desc.bGenerateMipMaps = true;
 			Desc.eType = TextureTypes::TEX_2D;
 			Desc.pData = pImg->GetData();
+			//Desc.pData = pImg->GetResourceFile()->GetData().GetPointer();
 			Desc.uDataSize = pImg->GetDataSize();
-			Desc.uPixelSize = pImg->GetBitsPerPixel() / 4;
+			//Desc.uDataSize = pImg->GetResourceFile()->GetData().GetSize();
+			u32 uBPP = pImg->GetBitsPerPixel();
+			Desc.uPixelSize = uBPP / 3;
 			Desc.uWidth = pImg->GetWidth();
 			Desc.uHeight = pImg->GetHeight();
 			m_pSceneMgr->GetRenderSystem()->CreateTexture(Desc);

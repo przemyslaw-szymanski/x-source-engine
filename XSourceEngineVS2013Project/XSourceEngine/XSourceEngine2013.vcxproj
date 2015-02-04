@@ -560,7 +560,7 @@
       <WarningLevel>EnableAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;XST_DLL_EXPORT;XST_STL;XSE_CG;XST_DEBUG_ALL;XSE_DEBUG_ALL;_DEBUG</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\Engine\include\XST\ThirdParty\lua51;$(CG_INC_PATH);$(DXSDK)\include;..\..\Engine\include\XST;..\..\Engine\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Dependencies\DirectXTex\DirectXTex\;..\..\Engine\include\XST\ThirdParty\lua51;$(CG_INC_PATH);$(DXSDK)\include;..\..\Engine\include\XST;..\..\Engine\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>false</ExceptionHandling>
@@ -576,6 +576,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <Profile>true</Profile>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>F:\Projects\XSourceEngine\Engine\bin</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -586,7 +587,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;XST_DLL_EXPORT;XST_STL;XSE_CG;XST_RELEASE_ALL;XSE_RELEASE_ALL;_NDEBUG</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\Engine\include\XST\ThirdParty\lua51;$(CG_INC_PATH);$(DXSDK)\include;..\..\Engine\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\Dependencies\DirectXTex\DirectXTex\;..\..\Engine\include\XST\ThirdParty\lua51;$(CG_INC_PATH);$(DXSDK)\include;..\..\Engine\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <MinimalRebuild>false</MinimalRebuild>
@@ -604,6 +605,7 @@
       <AdditionalDependencies>psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TargetMachine>MachineX86</TargetMachine>
       <Profile>true</Profile>
+      <AdditionalLibraryDirectories>F:\Projects\XSourceEngine\Engine\bin</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
