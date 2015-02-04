@@ -336,7 +336,7 @@ namespace XSE
 	struct SRendererResourceHandle
 	{
 		friend class IRenderSystem;
-		private:
+		public:
 			u64 uHandle = 0;
 	};
 	typedef SRendererResourceHandle RSHandle;
@@ -359,33 +359,34 @@ namespace XSE
 
 	struct STextureDesc
 	{
-		u16				uWidth = 0;
-		u16				uHeight = 0;
-		u8				uMipCount = 0;
-		bool			bGenerateMipMaps = true;
-		u16				uPixelSize = 0; // in bytes - bits per pixel / 4
-		RS_FORMAT		eFormat = RSFormats::UNKNOWN;
-		TEXTURE_TYPE	eType = TextureTypes::UNKNOWN;
-		ul32			uDataSize = 0;
-		cu8*			pData = xst_null;
+		u16				uWidth;
+		u16				uHeight;
+		u16				uMipCount : 14;
+		u16				bGenerateMipMaps : 1;
+		u16				bMultisampled : 1;
+		u16				uPixelSize; // in bytes - bits per pixel / 4
+		RS_FORMAT		eFormat;
+		TEXTURE_TYPE	eType;
+		ul32			uDataSize;
+		cu8*			pData;
 	};
 
 	struct RSFeatures
 	{
+		ul64			ulMaxPrimitiveCount;
 		SHADER_MODEL	eShaderModel;
-		bool			bTextureArrays;
-		bool			bCubemapArrays;
-		bool			bOcclusionQueries;
-		bool			bInstancing;
-		bool			bNonPowerOfTwoDimTextures;
 		ul32			ulMaxTextureDimmension;
 		ul32			ulMaxCubemapDimmension;
 		ul32			ulMaxVolumeExtent;
 		ul32			ulMaxTextureRepeat;
 		ul32			ulMaxAnisotropy;
-		ul64			ulMaxPrimitiveCount;
 		ul32			ulMaxInputSlots;
 		ul32			ulMaxRenderTargets;
+		bool			bTextureArrays;
+		bool			bCubemapArrays;
+		bool			bOcclusionQueries;
+		bool			bInstancing;
+		bool			bNonPowerOfTwoDimTextures;
 	};
 
 	/*struct BasicShapes

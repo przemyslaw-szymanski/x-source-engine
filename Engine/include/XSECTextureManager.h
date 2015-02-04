@@ -9,6 +9,9 @@ namespace XSE
 	{
 		public:
 
+										CTextureManager();
+				virtual					~CTextureManager();
+
 				i32						PrepareResource(ResourceWeakPtr pRes) xst_implement { return 0; }
 
 		protected:

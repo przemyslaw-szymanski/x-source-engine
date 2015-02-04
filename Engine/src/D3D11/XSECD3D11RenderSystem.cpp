@@ -99,26 +99,26 @@ namespace XSE
 
 		static D3D11_SUBRESOURCE_DATA g_aaTexSubResourcesData[ XSE_MAX_RS_RESOURCE_THREADS ][ XSE_MAX_MIPLEVELS ] = { 0 };
 
-		xst_fi u16 GetRendererResourceHandleId(IRenderSystem::HandleRef Handle)
+		xst_fi u16 GetRendererResourceHandleId(RSHandleRef Handle)
 		{
 			u16 uVal = ( Handle.uHandle & 0xFFFF0000 ) >> 16;
 			return uVal;
 		}
 
-		xst_fi u16 GetRendererResourceHandleRefCount(IRenderSystem::HandleRef Handle)
+		xst_fi u16 GetRendererResourceHandleRefCount(RSHandleRef Handle)
 		{
 			u16 uVal = ( Handle.uHandle & 0x0000FFFF ) >> 0;
 			return uVal;
 		}
 
-		xst_fi void SetRendererResourceHandleId(IRenderSystem::Handle* pHandleOut, u16 uId)
+		xst_fi void SetRendererResourceHandleId(RSHandlePtr pHandleOut, u16 uId)
 		{
 			// Clear bits
 			pHandleOut->uHandle &= ~0xFFFF0000;
 			pHandleOut->uHandle |= ( uId & 0xFFFF ) << 16;
 		}
 
-		xst_fi void SetRendererResourceHandleRefCount(IRenderSystem::Handle* pHandleOut, u16 uCount)
+		xst_fi void SetRendererResourceHandleRefCount(RSHandlePtr pHandleOut, u16 uCount)
 		{
 			pHandleOut->uHandle &= ~0x0000FFFF;
 			pHandleOut->uHandle |= ( uCount & 0xFFFF ) << 0;
@@ -132,7 +132,7 @@ namespace XSE
 			ID3D11ShaderResourceView* pShaderView = xst_null;
 		};
 
-		xst_vector< IRenderSystem::Handle > g_vTexHandles;
+		xst_vector< RSHandle > g_vTexHandles;
 		xst_vector< STexture > g_vTextures;
 		xst_stack< u32 > g_sFreeTexHandles;
 
@@ -1076,17 +1076,11 @@ namespace XSE
 			return m_aFormats[ eFormat ];
 		}
 
-		IRenderSystem::HandleRef CRenderSystem::CreateTexture(const STextureDesc& Desc)
+		RSHandleRef CRenderSystem::CreateTexture(const STextureDesc& Desc)
 		{
 			STexture Tex;
-			Handle hTex = { 0 };
+			RSHandle hTex;
 			u32 uId = 0;
-
-			D3D11_SUBRESOURCE_DATA InitData;
-			xst_zero(&InitData, sizeof(InitData));
-			InitData.pSysMem = Desc.pData;
-			InitData.SysMemPitch = Desc.uPixelSize * Desc.uWidth;
-			InitData.SysMemSlicePitch = InitData.SysMemPitch * Desc.uHeight;
 
 			HRESULT hr = 0;
 			// If mipmap count < 0 then let DX generate mipmaps
@@ -1094,24 +1088,20 @@ namespace XSE
 			// else if mipmap couht > 0 use already generated mipmaps
 			// TODO: already generated mipmaps not supported
 			u32 uMipLevels;
-			if( Desc.bGenerateMipMaps )
-				uMipLevels = 0;
-			else
-				uMipLevels = ( Desc.uMipCount >= 1 ) ? Desc.uMipCount : 1;
-
 			D3D11_SUBRESOURCE_DATA* pInitData = xst_null;
+			if( Desc.bGenerateMipMaps )
+			{
+				uMipLevels = 0;
+			}
+			else if( Desc.bMultisampled )
+				uMipLevels = 1;
+			else
+				uMipLevels = ( Desc.uMipCount >= 2 ) ? Desc.uMipCount : 2;
+
 			// Prepare descriptions for already generated mipmaps
 			if( uMipLevels > 1 )
 			{
 				
-			}
-			else
-			{
-				pInitData = &g_aaTexSubResourcesData[ 0 ][ 0 ];
-				xst_zero( pInitData, sizeof( D3D11_SUBRESOURCE_DATA ) );
-				pInitData->pSysMem = Desc.pData;
-				pInitData->SysMemPitch = Desc.uPixelSize * Desc.uWidth;
-				pInitData->SysMemSlicePitch = pInitData->SysMemPitch * Desc.uHeight;
 			}
 
 			switch( Desc.eType )
@@ -1122,7 +1112,7 @@ namespace XSE
 					xst_zero(&desc, sizeof(desc));
 					desc.Width = Desc.uWidth;
 					desc.Height = Desc.uHeight;
-					desc.MipLevels =  uMipLevels;
+					desc.MipLevels =  0;
 					desc.ArraySize = 1;
 					desc.SampleDesc.Count = 1;
 					desc.SampleDesc.Quality = 0;
@@ -1132,7 +1122,17 @@ namespace XSE
 					desc.MiscFlags = 0;
 					desc.Format = _ConvertToD3D11Format( Desc.eFormat );
 					ID3D11Texture2D* pTex = xst_null;
-					hr = m_pDevice->CreateTexture2D( &desc, &InitData, &pTex );
+					hr = m_pDevice->CreateTexture2D( &desc, pInitData, &pTex );
+					if( SUCCEEDED( hr ) )
+					{
+						D3D11_BOX Box;
+						Box.left = Box.top = Box.front = 0;
+						Box.right = Desc.uWidth;
+						Box.bottom = Desc.uHeight;
+						Box.back = 1;
+						m_pDeviceContext->UpdateSubresource( pTex, 0, &Box, Desc.pData, Desc.uPixelSize * Desc.uWidth );
+
+					}
 				}
 				break;
 				case TextureTypes::TEX_1D:
@@ -1174,7 +1174,7 @@ namespace XSE
 			return hTex;
 		}
 			
-		i32	CRenderSystem::DestroyTexture(IRenderSystem::HandleRef TexHandle)
+		i32	CRenderSystem::DestroyTexture(RSHandlePtr TexHandle)
 		{
 			return XST_FAIL;
 		}
