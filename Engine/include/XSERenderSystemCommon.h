@@ -369,24 +369,26 @@ namespace XSE
 
 	struct SImageMipMapBuffer
 	{
-		cu8*			pBuffer;
-		ul32			ulBufferSize;
-		MipMapDescVec	vMipMaps;
+		cu8*				pBuffer; // Buffer for mipmaps
+		MipMapDescVec		vMipMaps;
+		ul32				ulBufferSize;
 	};
 
 	struct STextureDesc
 	{
-		cu8*			pData;
-		ul32			uDataSize;
-		u16				uWidth;
-		u16				uHeight;
-		u16				uMipCount : 14;
-		u16				bGenerateMipMaps : 1;
-		u16				bMultisampled : 1;
-		u16				uPixelSize; // in bytes - bits per pixel / 4
-		RS_FORMAT		eFormat;
-		TEXTURE_TYPE	eType;
 		SImageMipMapBuffer	MipMapDesc;
+		cu8*				pData;
+		ul32				uDataSize;
+		u16					uWidth;
+		u16					uHeight;
+		u16					uMipCount : 12;
+		u16					bGenerateMipMaps : 1;
+		u16					bMultisampled : 1;
+		u16					bRawData : 1;
+		u16					bCompressed : 1; // Compressed textures can be only S3TC
+		u16					uPixelSize; // in bytes - bits per pixel / 4
+		RS_FORMAT			eFormat;
+		TEXTURE_TYPE		eType;
 	};
 
 	struct RSFeatures

@@ -136,7 +136,7 @@ namespace XSE
     IResourceManager::GroupWeakPtr IResourceManager::GetOrCreateGroup(xst_castring& strName)
     {
         GroupHandle Handle = XSE_HASH( strName );
-        if( m_LastUsedGroupHandle == Handle )
+        if( m_LastUsedGroupHandle == Handle && m_pLastUsedGroup.IsValid() )
             return m_pLastUsedGroup;
 
         m_LastUsedGroupHandle = Handle;
@@ -367,6 +367,7 @@ namespace XSE
 		}
 
 		pRes->_SetResourceFile( pFile );
+		pRes->_SetResourceState( XST::ResourceStates::LOADED );
 
 		if( bFullLoad )
 		{

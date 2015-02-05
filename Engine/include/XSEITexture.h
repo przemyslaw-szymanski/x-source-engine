@@ -43,8 +43,8 @@ namespace XSE
 
 	}//resources
 
-	typedef XST::TCObjectSmartPointer< Resources::ITexture >	TexturePtr;
-	XST_TEMPLATE_CLASS XST::TCObjectSmartPointer< Resources::ITexture >;
+	//typedef XST::TCObjectSmartPointer< Resources::ITexture >	TexturePtr;
+	//XST_TEMPLATE_CLASS XST::TCObjectSmartPointer< Resources::ITexture >;
 
 }//xse
 

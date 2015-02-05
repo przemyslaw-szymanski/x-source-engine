@@ -255,6 +255,7 @@
     <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11Viewport.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11Common.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11DefaultShaders.h" />
+    <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11FunctionPointers.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11InputLayouts.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSEID3D11ShaderBase.h" />
     <ClInclude Include="..\..\Engine\src\D3D9\XSECD3D9RenderSystem.h" />

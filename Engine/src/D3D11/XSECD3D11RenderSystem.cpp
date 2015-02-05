@@ -19,6 +19,10 @@
 #else
 #pragma comment(lib, "DirectXTK.lib")
 #endif // DEBUG
+
+#include "ThirdParty/DirectXTK/DDSTextureLoader.h"
+#include "ThirdParty/DirectXTK/WICTextureLoader.h"
+
 //Typedef for function pointer
 #define XSE_D3D11_TD(_name, _params) \
 	typedef HRESULT (WINAPI * XST_ADD( pfn, _name ) ) _params; \
@@ -59,46 +63,13 @@
 
 namespace XSE
 {
+	using namespace XSE::Resources;
 	namespace D3D11
 	{
+		#include "XSED3D11FunctionPointers.h"
 		using namespace DirectX;
 
 		SRSDiagnostics g_Diagnostics;
-
-		using namespace XSE::Resources;
-
-		typedef HRESULT (WINAPI * pfnD3D11CreateDeviceAndSwapChain)(IDXGIAdapter*,D3D_DRIVER_TYPE,HMODULE,UINT, CONST D3D_FEATURE_LEVEL*,UINT,UINT,CONST DXGI_SWAP_CHAIN_DESC*,IDXGISwapChain**,ID3D11Device**,D3D_FEATURE_LEVEL*,ID3D11DeviceContext** );
-		//typedef HRESULT (WINAPI * pfnD3DX11CompileFromFileA)(LPCSTR pSrcFile,CONST D3D10_SHADER_MACRO* pDefines, LPD3D10INCLUDE pInclude, LPCSTR pFunctionName, LPCSTR pProfile, UINT Flags1, UINT Flags2, ID3DX11ThreadPump* pPump, ID3D10Blob** ppShader, ID3D10Blob** ppErrorMsgs, HRESULT* pHResult);
-		//typedef HRESULT (WINAPI * pfnD3DX11CompileFromFileW)(LPCWSTR pSrcFile, CONST D3D10_SHADER_MACRO* pDefines, LPD3D10INCLUDE pInclude, LPCSTR pFunctionName, LPCSTR pProfile, UINT Flags1, UINT Flags2, ID3DX11ThreadPump* pPump, ID3D10Blob** ppShader, ID3D10Blob** ppErrorMsgs, HRESULT* pHResult);
-		//typedef HRESULT (WINAPI * pfnD3DX11CompileFromMemory)(LPCSTR pSrcData, SIZE_T SrcDataLen, LPCSTR pFileName, CONST D3D10_SHADER_MACRO* pDefines, LPD3D10INCLUDE pInclude, LPCSTR pFunctionName, LPCSTR pProfile, UINT Flags1, UINT Flags2, ID3DX11ThreadPump* pPump, ID3D10Blob** ppShader, ID3D10Blob** ppErrorMsgs, HRESULT* pHResult);
-		typedef HRESULT (WINAPI * pfnCreateDXGIFactory)(REFIID riid, void **ppFactory);
-		typedef HRESULT (WINAPI * pfnCreateDXGIFactory1)(REFIID riid, void **ppFactory);
-		typedef HRESULT (WINAPI * pfnD3D11CreateDevice)(__in_opt IDXGIAdapter* pAdapter,D3D_DRIVER_TYPE DriverType,HMODULE Software,UINT Flags,__in_ecount_opt( FeatureLevels ) CONST D3D_FEATURE_LEVEL* pFeatureLevels,UINT FeatureLevels,UINT SDKVersion,__out_opt ID3D11Device** ppDevice,__out_opt D3D_FEATURE_LEVEL* pFeatureLevel,__out_opt ID3D11DeviceContext** ppImmediateContext );
-		//typedef HRESULT (WINAPI * pfnD3DX11CreateTextureFromMemory)(ID3D11Device* pDevice, LPCVOID pSrcData, SIZE_T SrcDataSize, D3DX11_IMAGE_LOAD_INFO* pLoadInfo, ID3DX11ThreadPump* pPump, ID3D11Resource** ppTexture, HRESULT* pHResult);
-
-		typedef HRESULT (WINAPI * pfnD3DCompile)(_In_reads_bytes_(SrcDataSize) LPCVOID pSrcData,
-           _In_ SIZE_T SrcDataSize,
-           _In_opt_ LPCSTR pSourceName,
-           _In_reads_opt_(_Inexpressible_(pDefines->Name != NULL)) CONST D3D_SHADER_MACRO* pDefines,
-           _In_opt_ ID3DInclude* pInclude,
-           _In_opt_ LPCSTR pEntrypoint,
-           _In_ LPCSTR pTarget,
-           _In_ UINT Flags1,
-           _In_ UINT Flags2,
-           _Out_ ID3DBlob** ppCode,
-           _Out_opt_ ID3DBlob** ppErrorMsgs);
-
-		// DIRECTX TEX
-
-		pfnD3D11CreateDeviceAndSwapChain	D3D11CreateDeviceAndSwapChain = xst_null;
-		//pfnD3DX11CompileFromFileA			D3DX11CompileFromFileA = xst_null;
-		//pfnD3DX11CompileFromFileW			D3DX11CompileFromFileW = xst_null;
-		//pfnD3DX11CompileFromMemory			D3DX11CompileFromMemory = xst_null;
-		pfnCreateDXGIFactory				CreateDXGIFactory = xst_null;
-		pfnD3D11CreateDevice				D3D11CreateDevice = xst_null;
-		pfnCreateDXGIFactory1				CreateDXGIFactory1 = xst_null;
-		//pfnD3DX11CreateTextureFromMemory	D3DX11CreateTextureFromMemory = xst_null;
-		pfnD3DCompile						D3DCompile = xst_null;
 
 		#define XSE_D3D11_DEFAULT_FORMAT	DXGI_FORMAT_R8G8B8A8_UNORM
 		#define XSE_MAX_RS_RESOURCE_THREADS 4
@@ -147,9 +118,7 @@ namespace XSE
 
 		struct STexture
 		{
-			ID3D11Texture1D* pTex1D = xst_null;
-			ID3D11Texture2D* pTex2D = xst_null;
-			ID3D11Texture3D* pTex3D = xst_null;
+			ID3D11Resource*	pTexture = xst_null;
 			ID3D11ShaderResourceView* pShaderView = xst_null;
 		};
 
@@ -274,7 +243,7 @@ namespace XSE
 			m_ahDlls[ D3DX11 ]		= XST::Platform::LoadLibrary( strD3dx11LibName );
 			m_ahDlls[ D3D11 ]		= XST::Platform::LoadLibrary( "d3d11.dll" );
 			m_ahDlls[ DXGI ]		= XST::Platform::LoadLibrary( "dxgi.dll" );
-			m_ahDlls[ D3DCOMPILER ]	= XST::Platform::LoadLibrary( "D3dCompiler_46.dll" );
+			m_ahDlls[ D3DCOMPILER ]	= XST::Platform::LoadLibrary( "D3dCompiler_47.dll" );
 
 			if( !m_ahDlls[ D3DX11 ] )
 			{
@@ -298,10 +267,6 @@ namespace XSE
 			}
 
 			XSE_LOAD_FUNC( D3D11CreateDeviceAndSwapChain, pfnD3D11CreateDeviceAndSwapChain, m_ahDlls[ D3D11 ], XST_TOSTRING( D3D11CreateDeviceAndSwapChain ) );
-			//XSE_LOAD_FUNC( D3DX11CompileFromFileA, pfnD3DX11CompileFromFileA, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CompileFromFileA ) );
-			//XSE_LOAD_FUNC( D3DX11CompileFromFileW, pfnD3DX11CompileFromFileW, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CompileFromFileW ) );
-			//XSE_LOAD_FUNC( D3DX11CompileFromMemory, pfnD3DX11CompileFromMemory, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CompileFromMemory ) );
-			//XSE_LOAD_FUNC( D3DX11CreateTextureFromMemory, pfnD3DX11CreateTextureFromMemory, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CreateTextureFromMemory ) );
 			XSE_LOAD_FUNC( D3DCompile, pfnD3DCompile, m_ahDlls[ D3DCOMPILER ], XST_TOSTRING(D3DCompile) );
 			
 			XSE_LOAD_FUNC3( CreateDXGIFactory,	m_ahDlls[ DXGI ] );
@@ -1118,7 +1083,7 @@ namespace XSE
 			// else if mipmap couht > 0 use already generated mipmaps
 			// TODO: already generated mipmaps not supported
 			u32 uMipLevels;
-			D3D11_SUBRESOURCE_DATA* pInitData = xst_null;
+
 			if( Desc.bGenerateMipMaps )
 			{
 				uMipLevels = 0;
@@ -1133,25 +1098,27 @@ namespace XSE
 			{
 				
 			}
-			pInitData = &g_aaTexSubResourcesData[0][0];
-			pInitData->pSysMem = Desc.pData;
-			pInitData->SysMemPitch = Desc.uWidth * Desc.uPixelSize;
-			pInitData->SysMemSlicePitch = 0;
 
-			/*D3DX11_IMAGE_LOAD_INFO LoadInfo;
-			xst_zero(&LoadInfo, sizeof(LoadInfo));
-			LoadInfo.Width = Desc.uWidth;
-			LoadInfo.Height = Desc.uHeight;
-			LoadInfo.Format = _ConvertToD3D11Format( Desc.eFormat );
-			
 			ID3D11Resource* pTex = xst_null;
-			hr = D3DX11CreateTextureFromMemory(m_pDevice, Desc.pData, Desc.uDataSize, &LoadInfo, 0, &pTex, 0);*/
+			ID3D11ShaderResourceView* pSRV = xst_null;
+
+			if( Desc.bRawData )
+			{
+				if( Desc.bCompressed )
+				{
+					hr = CreateDDSTextureFromMemory( m_pDevice, m_pDeviceContext, Desc.pData, Desc.uDataSize, &pTex, &pSRV );
+				}
+				else
+				{
+					hr = CreateWICTextureFromMemory( m_pDevice, m_pDeviceContext, Desc.pData, Desc.uDataSize, &pTex, &pSRV );
+				}
+			}
 
 			switch( Desc.eType )
 			{
 				case TextureTypes::TEX_2D:
 				{
-					D3D11_TEXTURE2D_DESC desc;
+					/*D3D11_TEXTURE2D_DESC desc;
 					xst_zero(&desc, sizeof(desc));
 					desc.Width = Desc.uWidth;
 					desc.Height = Desc.uHeight;
@@ -1186,7 +1153,7 @@ namespace XSE
 						{
 							m_pDeviceContext->GenerateMips( pSRV );
 						}
-					}
+					}*/
 				}
 				break;
 				case TextureTypes::TEX_1D:
@@ -1203,27 +1170,25 @@ namespace XSE
 
 			if( SUCCEEDED( hr ) )
 			{
+				if( g_sFreeTexHandles.empty() )
+				{
+					uId = g_vTextures.size();
+					g_vTextures.push_back( Tex );
+				}
+				else
+				{
+					uId = g_sFreeTexHandles.top_pop();
+					g_vTextures[ uId ] = Tex;
+				}
 
+				SetRendererResourceHandleId( &hTex, uId );
+				SetRendererResourceHandleRefCount( &hTex, 1 );
 			}
 			else
 			{
 				XST_LOG_ERR( "Unable to create D3D11 texture 2D" );
 				return hTex;
 			}
-			
-			if( g_sFreeTexHandles.empty() )
-			{
-				uId = g_vTextures.size();
-				g_vTextures.push_back( Tex );
-			}
-			else
-			{
-				uId = g_sFreeTexHandles.top_pop();
-				g_vTextures[ uId ] = Tex;
-			}
-
-			SetRendererResourceHandleId( &hTex, uId );
-			SetRendererResourceHandleRefCount( &hTex, 1 );
 
 			return hTex;
 		}

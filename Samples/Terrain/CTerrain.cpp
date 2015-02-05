@@ -187,6 +187,9 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	pLight->SetPosition( vecPos );
 	//pSphere->GetSceneNode()->AddObject( pLight );
 	m_pSceneMgr->SetLight( pLight );
+
+	XSE::TextureWeakPtr pTex = XSE::CTextureManager::GetSingletonPtr()->LoadResource("heightmap04.jpg", "heightmap04", XSE::ALL_GROUPS);
+
 	return XSE::RESULT::OK;
 }
 

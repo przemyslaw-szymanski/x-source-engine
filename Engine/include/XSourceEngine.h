@@ -40,6 +40,7 @@
 #include "XSEIKeyboard.h"
 #include "XSEIMouse.h"
 #include "XSECLight.h"
+//#include "XSECTexture.h"
 //GUI
 #include "GUI/XSECGUIManager.h"
 #include "GUI/XSECComponent.h"

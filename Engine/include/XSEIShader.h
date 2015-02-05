@@ -59,7 +59,7 @@ namespace XSE
 	}//resources
 
 	typedef XST::TCObjectSmartPointer< Resources::IShader >	ShaderPtr;
-    //typedef XST::TCWeakPointer< Resources::IShader> ShaderWeakPtr;
+    typedef XST::TCWeakPointer< Resources::IShader> ShaderWeakPtr;
 
 }//xse
 

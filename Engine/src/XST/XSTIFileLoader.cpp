@@ -32,7 +32,7 @@ namespace XST
 			u32 uPos = m_strName.find_last_of( "." );
 			if( uPos == xst_astring::npos )
 				return XST::StringUtil::EmptyAString;
-			return m_strName.substr( uPos + 1, m_strName.length() - uPos );
+			return XST::StringUtil::ToLower( m_strName.substr( uPos + 1, m_strName.length() - uPos ) );
 		}
 
 		CDirectory::CDirectory(CDirectory* pParentDir, xst_castring& strName, xst_castring& strPath) : m_pParentDir( pParentDir ), m_strName( strName )

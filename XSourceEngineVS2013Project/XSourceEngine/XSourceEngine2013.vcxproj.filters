@@ -915,6 +915,9 @@
     <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11Texture.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11FunctionPointers.h">
+      <Filter>src\Impl\D3D11</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine\dllmain.cpp">

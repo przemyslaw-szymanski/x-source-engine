@@ -93,12 +93,12 @@ namespace XSE
 		XST_CREATE_SINGLETON( m_pImgMgr, XSE::CImageManager );
 		XST_CREATE_SINGLETON( m_pTexMgr, XSE::CTextureManager );
 		XST_CREATE_SINGLETON( m_pRenderSystemFactory, XSE::CRenderSystemFactory );
-		
-		m_pMeshMgr = xst_new XSE::CMeshManager( m_pMatMgr );
-		m_pModelMgr = xst_new XSE::CModelManager( m_pMeshMgr );
 
 		m_pRenderSystemFactory->RegisterRenderSystem( CEngine::DIRECT3D11, &CreateD3D11RenderSystem ); 
 		m_pRenderSystemFactory->RegisterRenderSystem( CEngine::DIRECT3D9, &CreateD3D9RenderSystem );
+		
+		m_pMeshMgr = xst_new XSE::CMeshManager( m_pMatMgr );
+		m_pModelMgr = xst_new XSE::CModelManager( m_pMeshMgr );
 
 		//Set default options
 		DEFAULT_SETTINGS.RSSettings.bFullScreen = false;
@@ -257,6 +257,7 @@ namespace XSE
 		m_pShaderMgr->_SetRenderSystem( m_pRenderSystem );
 		m_pMeshMgr->_SetRenderSystem( m_pRenderSystem );
 		m_pModelMgr->_SetRenderSystem( m_pRenderSystem );
+		m_pTexMgr->_SetRenderSystem( m_pRenderSystem );
 		/*for(SceneIterator Itr = m_mScenes.begin(); Itr != m_mScenes.end(); ++Itr)
 		{
 			Itr->second->_SetRenderSystem( m_pRenderSystem );

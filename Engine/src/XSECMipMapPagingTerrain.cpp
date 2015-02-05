@@ -443,20 +443,20 @@ namespace XSE
 			pImpImg->Scale( VC.x, VC.y );
 			m_vpImages.push_back( pImpImg );
 
-			STextureDesc Desc;
-			Desc.eFormat = pImg->GetRenderSystemFormat();
-			Desc.bGenerateMipMaps = true;
-			Desc.eType = TextureTypes::TEX_2D;
-			Desc.pData = pImg->GetData();
-			//Desc.pData = pImg->GetResourceFile()->GetData().GetPointer();
-			Desc.uDataSize = pImg->GetDataSize();
-			//Desc.uDataSize = pImg->GetResourceFile()->GetData().GetSize();
-			u32 uBPP = pImg->GetBitsPerPixel();
-			Desc.uPixelSize = uBPP / 3;
-			Desc.uWidth = pImg->GetWidth();
-			Desc.uHeight = pImg->GetHeight();
-			CImageManager::GetSingletonPtr()->GenerateMipMaps( pImg, &Desc.MipMapDesc );
-			m_pSceneMgr->GetRenderSystem()->CreateTexture(Desc);
+			//STextureDesc Desc;
+			//Desc.eFormat = pImg->GetRenderSystemFormat();
+			//Desc.bGenerateMipMaps = true;
+			//Desc.eType = TextureTypes::TEX_2D;
+			//Desc.pData = pImg->GetData();
+			////Desc.pData = pImg->GetResourceFile()->GetData().GetPointer();
+			//Desc.uDataSize = pImg->GetDataSize();
+			////Desc.uDataSize = pImg->GetResourceFile()->GetData().GetSize();
+			//u32 uBPP = pImg->GetBitsPerPixel();
+			//Desc.uPixelSize = uBPP / 3;
+			//Desc.uWidth = pImg->GetWidth();
+			//Desc.uHeight = pImg->GetHeight();
+			//CImageManager::GetSingletonPtr()->GenerateMipMaps( pImg, &Desc.MipMapDesc );
+			//m_pSceneMgr->GetRenderSystem()->CreateTexture(Desc);
 		}
 		return XST_OK;
 	}

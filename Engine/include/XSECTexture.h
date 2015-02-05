@@ -17,11 +17,6 @@ namespace XSE
 
 			public:
 
-				typedef XST::TCObjectSmartPointer< CTexture >	TexturePtr;
-				typedef XST::TCWeakPointer< CTexture >			TextureWeakPtr;
-
-			public:
-
 											CTexture(IRenderSystem* pRS, XSE_IRESOURCE_DECL_PARAMS);
 					virtual					~CTexture();
 
@@ -59,8 +54,8 @@ namespace XSE
 		};
 	} // Resources
 
-	typedef Resources::CTexture::TexturePtr		TexturePtr;
-	typedef Resources::CTexture::TextureWeakPtr TextureWeakPtr;
+	typedef XST::TCObjectSmartPointer< Resources::CTexture >	TexturePtr;
+	typedef XST::TCWeakPointer< Resources::CTexture >			TextureWeakPtr;
 
 } // xse
 

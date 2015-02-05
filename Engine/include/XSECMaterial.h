@@ -4,7 +4,7 @@
 #include "XSEIResource.h"
 #include "XSEIVertexShader.h"
 #include "XSEIPixelShader.h"
-#include "XSEITexture.h"
+#include "XSECTexture.h"
 #include "XSEITechnique.h"
 
 namespace XSE
