@@ -357,8 +357,27 @@ namespace XSE
 	};
 	typedef TextureTypes::TYPE TEXTURE_TYPE;
 
+	struct SImageMipMapDesc
+	{
+		cu8*	pData;
+		u32		uDataSize;
+		u16		uWidth;
+		u16		uHeight;
+	};
+
+	typedef xst_vector< SImageMipMapDesc > MipMapDescVec;
+
+	struct SImageMipMapBuffer
+	{
+		cu8*			pBuffer;
+		ul32			ulBufferSize;
+		MipMapDescVec	vMipMaps;
+	};
+
 	struct STextureDesc
 	{
+		cu8*			pData;
+		ul32			uDataSize;
 		u16				uWidth;
 		u16				uHeight;
 		u16				uMipCount : 14;
@@ -367,8 +386,7 @@ namespace XSE
 		u16				uPixelSize; // in bytes - bits per pixel / 4
 		RS_FORMAT		eFormat;
 		TEXTURE_TYPE	eType;
-		ul32			uDataSize;
-		cu8*			pData;
+		SImageMipMapBuffer	MipMapDesc;
 	};
 
 	struct RSFeatures

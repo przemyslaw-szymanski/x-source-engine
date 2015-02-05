@@ -5,7 +5,7 @@
 
 #if defined (XST_WINDOWS)
 #include <d3d9.h>
-#include <d3dx9.h>
+//#include <d3dx9.h>
 
 namespace XSE
 {

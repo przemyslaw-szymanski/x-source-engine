@@ -41,6 +41,14 @@ namespace XSE
 		XSE_DEVIL_FD( ILboolean, iluScale );
 		XSE_DEVIL_TD( void, iluImageParameter )(ILenum, ILenum);
 		XSE_DEVIL_FD( void, iluImageParameter );
+		XSE_DEVIL_TD( ILboolean, ilActiveMipmap )(ILuint Number);
+		XSE_DEVIL_FD( ILboolean, ilActiveMipmap );
+		XSE_DEVIL_TD( ILuint, ilCopyPixels )(ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);
+		XSE_DEVIL_FD( ILuint, ilCopyPixels );
+		XSE_DEVIL_TD( ILboolean, iluBuildMipmaps )(void);
+		XSE_DEVIL_FD( ILboolean, iluBuildMipmaps );
+		XSE_DEVIL_TD( ILconst_string, iluErrorString )(ILenum Error);
+		XSE_DEVIL_FD( ILconst_string, iluErrorString );
 
 		CImageSystem::CImageSystem() :
 			m_pMemMgr( xst_null )
@@ -135,6 +143,10 @@ namespace XSE
 			XSE_LOAD_FUNC3( iluScale, m_hILUDll );
 			XSE_LOAD_FUNC3( iluImageParameter, m_hILUDll );
 			XSE_LOAD_FUNC3( ilCopyImage, m_hDll );
+			XSE_LOAD_FUNC3( ilActiveMipmap, m_hDll );
+			XSE_LOAD_FUNC3( ilCopyPixels, m_hDll );
+			XSE_LOAD_FUNC3( iluBuildMipmaps, m_hILUDll );
+			XSE_LOAD_FUNC3( iluErrorString, m_hILUDll );
 
 			return XST_OK;
 		}
@@ -376,6 +388,65 @@ namespace XSE
 			pImage->m_bManual = true;
 
 			return XST_OK;
+		}
+
+		void CalculateMipMapInfo(u32 uWidth, u32 uHeight, u32 uPixelSize, u32* puMipCount, u32* puBuffSize)
+		{
+			u32 uMipCount = 1;
+			u32 uBuffSize = uWidth * uHeight * uPixelSize;
+			while( uWidth > 1 && uHeight > 1 )
+			{
+				uWidth /= 2;
+				uHeight /= 2;
+				uBuffSize += uWidth * uHeight * uPixelSize;
+				uMipCount++;
+			}
+			*puMipCount = uMipCount;
+			*puBuffSize = uBuffSize;
+		}
+
+		void CImageSystem::GenerateMipMaps(Resources::IImage* pImg, SImageMipMapBuffer* pOut)
+		{
+			xst_assert2( pImg );
+			CImage* pI = (CImage*)pImg;
+			ILuint uImgId = pI->m_uiImgId;
+
+			u32 uMipMapCount = 0;
+			u32 uBuffSize = 0;
+			CalculateMipMapInfo( pI->GetWidth(), pI->GetHeight(), 4, &uMipMapCount, &uBuffSize );
+			u8* pBuff = xst_new u8[ uBuffSize ];
+			u32 uOffset = 0;
+
+			ilBindImage( uImgId );
+			if( iluBuildMipmaps() )
+			{
+				u32 uMipCount = 0;
+				while( ilActiveMipmap( uMipCount ) )
+				{
+					SImageMipMapDesc Desc;
+					Desc.uWidth = ilGetInteger(IL_IMAGE_WIDTH);
+					Desc.uHeight = ilGetInteger(IL_IMAGE_WIDTH);
+					Desc.uDataSize = Desc.uWidth * Desc.uHeight * 4;
+					//u8* pData = xst_new u8[ Desc.uDataSize ]; // 4 means RGBA
+					u8* pData = pBuff + uOffset;
+					i32 iErr = ilCopyPixels( 0, 0, 0, Desc.uWidth, Desc.uHeight, 1, IL_RGBA, IL_UNSIGNED_BYTE, (void*)pData );
+					if( iErr > 0 )
+					{
+						Desc.pData = pData;
+						pOut->vMipMaps.push_back( Desc );
+						uMipCount++;
+						uOffset += Desc.uDataSize;
+					}
+					else
+					{
+						xst_deletea( pData );
+						lpcastr str = iluErrorString( iErr );
+						XST_LOG_ERR( "Unable to create mipmap: " << str );
+					}
+				}
+			}
+
+			ilBindImage( 0 );
 		}
 
 		i32 CImageSystem::SaveImage(xst_castring& strFileName, Resources::IImage* pImg)

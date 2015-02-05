@@ -24,6 +24,8 @@ namespace XSE
 			virtual void					DestroyImage(Resources::IImage* pImg)
 											{ DestroyResource( pImg ); }
 
+			virtual void					GenerateMipMaps(Resources::IImage* pImg, SImageMipMapBuffer* pOut) {}
+
 			virtual i32						PrepareImage(Resources::IImage* pImg) 
 											{ return PrepareResource( pImg ); }
 

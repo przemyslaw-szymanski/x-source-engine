@@ -14,8 +14,11 @@
 //#include <DirectXCollision.h>
 
 #if defined (XST_WINDOWS)
-#include <DXGItype.h>
-//#include "DirectXTex.h"
+#if defined(DEBUG) || defined(_DEBUG)
+#pragma comment(lib, "DirectXTKd.lib")
+#else
+#pragma comment(lib, "DirectXTK.lib")
+#endif // DEBUG
 //Typedef for function pointer
 #define XSE_D3D11_TD(_name, _params) \
 	typedef HRESULT (WINAPI * XST_ADD( pfn, _name ) ) _params; \
@@ -65,22 +68,37 @@ namespace XSE
 		using namespace XSE::Resources;
 
 		typedef HRESULT (WINAPI * pfnD3D11CreateDeviceAndSwapChain)(IDXGIAdapter*,D3D_DRIVER_TYPE,HMODULE,UINT, CONST D3D_FEATURE_LEVEL*,UINT,UINT,CONST DXGI_SWAP_CHAIN_DESC*,IDXGISwapChain**,ID3D11Device**,D3D_FEATURE_LEVEL*,ID3D11DeviceContext** );
-		typedef HRESULT (WINAPI * pfnD3DX11CompileFromFileA)(LPCSTR pSrcFile,CONST D3D10_SHADER_MACRO* pDefines, LPD3D10INCLUDE pInclude, LPCSTR pFunctionName, LPCSTR pProfile, UINT Flags1, UINT Flags2, ID3DX11ThreadPump* pPump, ID3D10Blob** ppShader, ID3D10Blob** ppErrorMsgs, HRESULT* pHResult);
-		typedef HRESULT (WINAPI * pfnD3DX11CompileFromFileW)(LPCWSTR pSrcFile, CONST D3D10_SHADER_MACRO* pDefines, LPD3D10INCLUDE pInclude, LPCSTR pFunctionName, LPCSTR pProfile, UINT Flags1, UINT Flags2, ID3DX11ThreadPump* pPump, ID3D10Blob** ppShader, ID3D10Blob** ppErrorMsgs, HRESULT* pHResult);
-		typedef HRESULT (WINAPI * pfnD3DX11CompileFromMemory)(LPCSTR pSrcData, SIZE_T SrcDataLen, LPCSTR pFileName, CONST D3D10_SHADER_MACRO* pDefines, LPD3D10INCLUDE pInclude, LPCSTR pFunctionName, LPCSTR pProfile, UINT Flags1, UINT Flags2, ID3DX11ThreadPump* pPump, ID3D10Blob** ppShader, ID3D10Blob** ppErrorMsgs, HRESULT* pHResult);
+		//typedef HRESULT (WINAPI * pfnD3DX11CompileFromFileA)(LPCSTR pSrcFile,CONST D3D10_SHADER_MACRO* pDefines, LPD3D10INCLUDE pInclude, LPCSTR pFunctionName, LPCSTR pProfile, UINT Flags1, UINT Flags2, ID3DX11ThreadPump* pPump, ID3D10Blob** ppShader, ID3D10Blob** ppErrorMsgs, HRESULT* pHResult);
+		//typedef HRESULT (WINAPI * pfnD3DX11CompileFromFileW)(LPCWSTR pSrcFile, CONST D3D10_SHADER_MACRO* pDefines, LPD3D10INCLUDE pInclude, LPCSTR pFunctionName, LPCSTR pProfile, UINT Flags1, UINT Flags2, ID3DX11ThreadPump* pPump, ID3D10Blob** ppShader, ID3D10Blob** ppErrorMsgs, HRESULT* pHResult);
+		//typedef HRESULT (WINAPI * pfnD3DX11CompileFromMemory)(LPCSTR pSrcData, SIZE_T SrcDataLen, LPCSTR pFileName, CONST D3D10_SHADER_MACRO* pDefines, LPD3D10INCLUDE pInclude, LPCSTR pFunctionName, LPCSTR pProfile, UINT Flags1, UINT Flags2, ID3DX11ThreadPump* pPump, ID3D10Blob** ppShader, ID3D10Blob** ppErrorMsgs, HRESULT* pHResult);
 		typedef HRESULT (WINAPI * pfnCreateDXGIFactory)(REFIID riid, void **ppFactory);
 		typedef HRESULT (WINAPI * pfnCreateDXGIFactory1)(REFIID riid, void **ppFactory);
 		typedef HRESULT (WINAPI * pfnD3D11CreateDevice)(__in_opt IDXGIAdapter* pAdapter,D3D_DRIVER_TYPE DriverType,HMODULE Software,UINT Flags,__in_ecount_opt( FeatureLevels ) CONST D3D_FEATURE_LEVEL* pFeatureLevels,UINT FeatureLevels,UINT SDKVersion,__out_opt ID3D11Device** ppDevice,__out_opt D3D_FEATURE_LEVEL* pFeatureLevel,__out_opt ID3D11DeviceContext** ppImmediateContext );
-		typedef HRESULT (WINAPI * pfnD3DX11CreateTextureFromMemory)(ID3D11Device* pDevice, LPCVOID pSrcData, SIZE_T SrcDataSize, D3DX11_IMAGE_LOAD_INFO* pLoadInfo, ID3DX11ThreadPump* pPump, ID3D11Resource** ppTexture, HRESULT* pHResult);
+		//typedef HRESULT (WINAPI * pfnD3DX11CreateTextureFromMemory)(ID3D11Device* pDevice, LPCVOID pSrcData, SIZE_T SrcDataSize, D3DX11_IMAGE_LOAD_INFO* pLoadInfo, ID3DX11ThreadPump* pPump, ID3D11Resource** ppTexture, HRESULT* pHResult);
+
+		typedef HRESULT (WINAPI * pfnD3DCompile)(_In_reads_bytes_(SrcDataSize) LPCVOID pSrcData,
+           _In_ SIZE_T SrcDataSize,
+           _In_opt_ LPCSTR pSourceName,
+           _In_reads_opt_(_Inexpressible_(pDefines->Name != NULL)) CONST D3D_SHADER_MACRO* pDefines,
+           _In_opt_ ID3DInclude* pInclude,
+           _In_opt_ LPCSTR pEntrypoint,
+           _In_ LPCSTR pTarget,
+           _In_ UINT Flags1,
+           _In_ UINT Flags2,
+           _Out_ ID3DBlob** ppCode,
+           _Out_opt_ ID3DBlob** ppErrorMsgs);
+
+		// DIRECTX TEX
 
 		pfnD3D11CreateDeviceAndSwapChain	D3D11CreateDeviceAndSwapChain = xst_null;
-		pfnD3DX11CompileFromFileA			D3DX11CompileFromFileA = xst_null;
-		pfnD3DX11CompileFromFileW			D3DX11CompileFromFileW = xst_null;
-		pfnD3DX11CompileFromMemory			D3DX11CompileFromMemory = xst_null;
+		//pfnD3DX11CompileFromFileA			D3DX11CompileFromFileA = xst_null;
+		//pfnD3DX11CompileFromFileW			D3DX11CompileFromFileW = xst_null;
+		//pfnD3DX11CompileFromMemory			D3DX11CompileFromMemory = xst_null;
 		pfnCreateDXGIFactory				CreateDXGIFactory = xst_null;
 		pfnD3D11CreateDevice				D3D11CreateDevice = xst_null;
 		pfnCreateDXGIFactory1				CreateDXGIFactory1 = xst_null;
-		pfnD3DX11CreateTextureFromMemory	D3DX11CreateTextureFromMemory = xst_null;
+		//pfnD3DX11CreateTextureFromMemory	D3DX11CreateTextureFromMemory = xst_null;
+		pfnD3DCompile						D3DCompile = xst_null;
 
 		#define XSE_D3D11_DEFAULT_FORMAT	DXGI_FORMAT_R8G8B8A8_UNORM
 		#define XSE_MAX_RS_RESOURCE_THREADS 4
@@ -253,9 +271,10 @@ namespace XSE
 			else
 				strD3dx11LibName = "D3DX11_43.dll";
 
-			m_ahDlls[ D3DX11 ]	= XST::Platform::LoadLibrary( strD3dx11LibName );
-			m_ahDlls[ D3D11 ]	= XST::Platform::LoadLibrary( "d3d11.dll" );
-			m_ahDlls[ DXGI ]	= XST::Platform::LoadLibrary( "dxgi.dll" );
+			m_ahDlls[ D3DX11 ]		= XST::Platform::LoadLibrary( strD3dx11LibName );
+			m_ahDlls[ D3D11 ]		= XST::Platform::LoadLibrary( "d3d11.dll" );
+			m_ahDlls[ DXGI ]		= XST::Platform::LoadLibrary( "dxgi.dll" );
+			m_ahDlls[ D3DCOMPILER ]	= XST::Platform::LoadLibrary( "D3dCompiler_46.dll" );
 
 			if( !m_ahDlls[ D3DX11 ] )
 			{
@@ -272,12 +291,19 @@ namespace XSE
 				XST_LOG_ERR( "Unable to load dxgi.dll" );
 				return XST_FAIL;
 			}
+			if( !m_ahDlls[ D3DCOMPILER ] )
+			{
+				XST_LOG_ERR( "Unable to load D3dCompiler_46.dll" );
+				return XST_FAIL;
+			}
 
 			XSE_LOAD_FUNC( D3D11CreateDeviceAndSwapChain, pfnD3D11CreateDeviceAndSwapChain, m_ahDlls[ D3D11 ], XST_TOSTRING( D3D11CreateDeviceAndSwapChain ) );
-			XSE_LOAD_FUNC( D3DX11CompileFromFileA, pfnD3DX11CompileFromFileA, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CompileFromFileA ) );
-			XSE_LOAD_FUNC( D3DX11CompileFromFileW, pfnD3DX11CompileFromFileW, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CompileFromFileW ) );
-			XSE_LOAD_FUNC( D3DX11CompileFromMemory, pfnD3DX11CompileFromMemory, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CompileFromMemory ) );
-			XSE_LOAD_FUNC( D3DX11CreateTextureFromMemory, pfnD3DX11CreateTextureFromMemory, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CreateTextureFromMemory ) );
+			//XSE_LOAD_FUNC( D3DX11CompileFromFileA, pfnD3DX11CompileFromFileA, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CompileFromFileA ) );
+			//XSE_LOAD_FUNC( D3DX11CompileFromFileW, pfnD3DX11CompileFromFileW, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CompileFromFileW ) );
+			//XSE_LOAD_FUNC( D3DX11CompileFromMemory, pfnD3DX11CompileFromMemory, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CompileFromMemory ) );
+			//XSE_LOAD_FUNC( D3DX11CreateTextureFromMemory, pfnD3DX11CreateTextureFromMemory, m_ahDlls[ D3DX11 ], XST_TOSTRING( D3DX11CreateTextureFromMemory ) );
+			XSE_LOAD_FUNC( D3DCompile, pfnD3DCompile, m_ahDlls[ D3DCOMPILER ], XST_TOSTRING(D3DCompile) );
+			
 			XSE_LOAD_FUNC3( CreateDXGIFactory,	m_ahDlls[ DXGI ] );
 			XSE_LOAD_FUNC3( CreateDXGIFactory1, m_ahDlls[ DXGI ] );
 			XSE_LOAD_FUNC3( D3D11CreateDevice,	m_ahDlls[ D3D11 ] );
@@ -1079,7 +1105,6 @@ namespace XSE
 		{
 			return m_aFormats[ eFormat ];
 		}
-#pragma comment(lib, "DirectXTexd.lib")
 
 		RSHandleRef CRenderSystem::CreateTexture(const STextureDesc& Desc)
 		{
@@ -1578,33 +1603,13 @@ namespace XSE
 			return _GetShaderFlags( this->m_Options.ulShaderFlags );
 		}
 
-		i32 CRenderSystem::_CompileShaderFromFile(xst_castring& strFileName, IShaderBase* pShader)
-		{
-			ID3DBlob* pErrorBlob, *pBlob = xst_null;
-	
-			HRESULT hr = D3DX11CompileFromFileA(	strFileName.data(), xst_null, xst_null, pShader->_GetEntryPoint(), 
-													pShader->m_strProfile.data(), pShader->m_ulFlags, 0, xst_null, &pShader->m_pBlob, &pErrorBlob, xst_null );
-			if( FAILED( hr ) )
-			{
-				if( pErrorBlob != xst_null )
-				{
-					XST_LOG_ERR( "[D3D11]: Compile shader: " << strFileName << " failed: " << (ch8*)pErrorBlob->GetBufferPointer() );
-					pErrorBlob->Release();
-				}
-				else
-				{
-					XST_LOG_ERR( "[D3D11]: Compile shader: " << strFileName << " failed" );
-				}
-				return XST_FAIL;
-			}
-
-			return XST_OK;
-		}
 
 		i32	CRenderSystem::_CompileShader(IShaderBase* pShader, lpcastr lpszProfile)
 		{
 			return _CompileShaderFromMemory( (cch8*)pShader->_GetShaderData(), pShader->_GetShaderDataSize(), lpszProfile, pShader );
 		}
+
+		
 
 		i32	CRenderSystem::_CompileShaderFromMemory(cch8* pData, ul32 ulDataSize, lpcastr lpszProfile, IShaderBase* pShader)
 		{
@@ -1614,11 +1619,31 @@ namespace XSE
 				return XST_FAIL;
 			}
 
-			return _CompileShaderFromMemory(pData, ulDataSize, pShader->GetShaderName().data(), xst_null, xst_null, pShader->_GetEntryPoint(), 
-											lpszProfile, pShader->m_ulFlags, 0, xst_null, &pShader->m_pBlob, xst_null );
+			/*return _CompileShaderFromMemory(pData, ulDataSize, pShader->GetShaderName().data(), xst_null, xst_null, pShader->_GetEntryPoint(), 
+											lpszProfile, pShader->m_ulFlags, 0, xst_null, &pShader->m_pBlob, xst_null );*/
+			ID3DBlob* pError = xst_null;
+			HRESULT hr = D3DCompile( pData, ulDataSize, pShader->GetShaderName().data(), xst_null, xst_null,
+				pShader->_GetEntryPoint(), lpszProfile, pShader->m_ulFlags, 0, &pShader->m_pBlob, &pError );
+			if( SUCCEEDED( hr ) )
+			{
+				return XST_OK;
+			}
+
+			if( pError )
+			{
+				lpcastr strErr = (lpcastr)pError->GetBufferPointer();
+				XST_LOG_ERR( "[D3D11]: Failed to compile shader from memory: " << strErr );
+				pError->Release();
+			}
+			else
+			{
+				XST_LOG_ERR( "[D3D11]: Failed to compile shader from memory: " << _ErrorToString( hr ) );
+			}
+			XST_LOG_ERR( pData );
+			return XST_FAIL;
 		}
 
-		i32	CRenderSystem::_CompileShaderFromMemory(lpcastr pData, ul32 ulDataSize, lpcastr lpszShaderName, 
+		/*i32	CRenderSystem::_CompileShaderFromMemory(lpcastr pData, ul32 ulDataSize, lpcastr lpszShaderName, 
 													const D3D10_SHADER_MACRO* pMacro, LPD3D10INCLUDE pInclude, 
 													lpcastr lpszEntryPoint, lpcastr lpszProfile, u32 uiFlags1, 
 													u32 uiFlags2, ID3DX11ThreadPump* pPump, ID3D10Blob** pBlob, 
@@ -1644,7 +1669,7 @@ namespace XSE
 			}
 			
 			return XST_OK;
-		}
+		}*/
 
 		i32	CRenderSystem::_CreateVertexShader(CVertexShader* pShader)
 		{
@@ -2037,8 +2062,8 @@ namespace XSE
 			i = D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS;
 			i = D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS;
 			i = D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD;
-			i = D3DERR_INVALIDCALL;
-			i = D3DERR_WASSTILLDRAWING;
+			//i = D3DERR_INVALIDCALL;
+			//i = D3DERR_WASSTILLDRAWING;
 			i = E_FAIL;
 			i = E_INVALIDARG;
 			i = E_OUTOFMEMORY;
@@ -2051,8 +2076,8 @@ namespace XSE
 				case D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS: return XST_TOSTRING( D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS ); break;
 				case D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS: return XST_TOSTRING( D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS ); break;
 				case D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD: return XST_TOSTRING( D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD ); break;
-				case D3DERR_INVALIDCALL: return XST_TOSTRING( D3DERR_INVALIDCALL ); break;
-				case D3DERR_WASSTILLDRAWING: return XST_TOSTRING( D3DERR_WASSTILLDRAWING ); break;
+				//case D3DERR_INVALIDCALL: return XST_TOSTRING( D3DERR_INVALIDCALL ); break;
+				//case D3DERR_WASSTILLDRAWING: return XST_TOSTRING( D3DERR_WASSTILLDRAWING ); break;
 				case E_FAIL: return XST_TOSTRING( E_FAIL ); break;
 				case E_INVALIDARG: return XST_TOSTRING( E_INVALIDARG ); break;
 				case E_OUTOFMEMORY: return XST_TOSTRING( E_OUTOFMEMORY ); break;

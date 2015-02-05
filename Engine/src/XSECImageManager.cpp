@@ -99,6 +99,11 @@ namespace XSE
 		return XST_OK;
 	}
 
+	void CImageManager::GenerateMipMaps(ImageWeakPtr pImg, SImageMipMapBuffer* pOut)
+	{
+		m_pImgSystem->GenerateMipMaps( pImg.GetPtr(), pOut );
+	}
+
 	i32	CImageManager::PrepareResource(ResourceWeakPtr pRes)
 	{
 		if( XST_FAILED( m_pImgSystem->PrepareResource( pRes.GetPtr() ) ) )

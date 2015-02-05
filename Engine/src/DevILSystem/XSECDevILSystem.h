@@ -36,6 +36,8 @@ namespace XSE
 						
 						u32						GetResourceObjectSize() const;
 
+						void					GenerateMipMaps(Resources::IImage* pImg, SImageMipMapBuffer* pOut) xst_implement;
+
 						bool					IsAutoDestroy() const
 												{ return true; }
 						

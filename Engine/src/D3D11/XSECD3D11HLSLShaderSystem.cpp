@@ -897,9 +897,13 @@ namespace XSE
 			xst_assert( m_pRS, "(CHLSLShaderSystem::CompileVertexShader)" );
 			CVertexShader* pShader = (CVertexShader*)pVS;
 			pShader->m_ulFlags = m_pRS->_GetShaderFlags();
-			if( XST_FAILED( m_pRS->_CompileShaderFromMemory(	lpszShader, ulShaderSize, pVS->GetResourceName().data(), 
+			/*if( XST_FAILED( m_pRS->_CompileShaderFromMemory(	lpszShader, ulShaderSize, pVS->GetResourceName().data(), 
 																xst_null, xst_null, lpszEntryPoint, m_astrProfiles[ eProfile ].data(),
 																pShader->m_ulFlags, 0, xst_null, &pShader->m_pBlob, xst_null ) ) )
+			{
+				return XST_FAIL;
+			}*/
+			if( XST_FAILED( m_pRS->_CompileShaderFromMemory( lpszShader, ulShaderSize, m_astrProfiles[ eProfile ].data(), pShader ) ) )
 			{
 				return XST_FAIL;
 			}
@@ -911,9 +915,13 @@ namespace XSE
 			xst_assert( m_pRS, "(CHLSLShaderSystem::CompilePixelShader)" );
 			CPixelShader* pShader = (CPixelShader*)pPS;
 			pShader->m_ulFlags = m_pRS->_GetShaderFlags();
-			if( XST_FAILED( m_pRS->_CompileShaderFromMemory(	lpszShader, ulShaderSize, pPS->GetResourceName().data(), 
+			/*if( XST_FAILED( m_pRS->_CompileShaderFromMemory(	lpszShader, ulShaderSize, pPS->GetResourceName().data(), 
 																xst_null, xst_null, lpszEntryPoint, m_astrProfiles[ eProfile ].data(),
 																pShader->m_ulFlags, 0, xst_null, &pShader->m_pBlob, xst_null ) ) )
+			{
+				return XST_FAIL;
+			}*/
+			if( XST_FAILED( m_pRS->_CompileShaderFromMemory( lpszShader, ulShaderSize, m_astrProfiles[ eProfile ].data(), pShader ) ) )
 			{
 				return XST_FAIL;
 			}

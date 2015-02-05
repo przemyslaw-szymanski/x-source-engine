@@ -18,6 +18,7 @@ namespace XSE
 				D3D11,
 				D3DX11,
 				DXGI,
+				D3DCOMPILER,
 				LIB_COUNT
 			};
 
@@ -239,14 +240,14 @@ namespace XSE
 
 						ul32		_GetShaderFlags();
 						ul32		_GetShaderFlags(cul32& ulFlags);
-						i32			_CompileShaderFromFile(xst_castring& strFileName, IShaderBase* pShader);
 						i32			_CompileShader(IShaderBase* pShader, lpcastr lpszProfile);
 						i32			_CompileShaderFromMemory(cch8* pData, ul32 ulDataSize, lpcastr lpszProfile, IShaderBase* pShader);
-						i32			_CompileShaderFromMemory(lpcastr pData, ul32 ulDataSize, lpcastr lpszShaderName, 
+						/*i32			_CompileShaderFromMemory(lpcastr pData, ul32 ulDataSize, lpcastr lpszShaderName, 
 													const D3D10_SHADER_MACRO* pMacro, LPD3D10INCLUDE pInclude, 
 													lpcastr lpszEntryPoint, lpcastr lpszProfile, u32 uiFlags1, 
 													u32 uiFlags2, ID3DX11ThreadPump* pPump, ID3D10Blob** pBlob, 
-													HRESULT* pHR); 
+													HRESULT* pHR); */
+
 						i32			_CreateVertexShader(CVertexShader* pShader);
 						i32			_CreateVertexShader(ID3DBlob* pVSBlob, ID3D11VertexShader** pShader);
 						i32			_CreatePixelShader(CPixelShader* pShader);

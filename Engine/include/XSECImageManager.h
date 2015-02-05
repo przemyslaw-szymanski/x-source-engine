@@ -28,6 +28,8 @@ namespace XSE
 
 			virtual	void			DestroyResources() xst_implement;
 
+					void			GenerateMipMaps(ImageWeakPtr pImg, SImageMipMapBuffer* pOut);
+
 			/*xst_fi	i32				PrepareImage(ImagePtr pImg)
 									{ return PrepareResource( pImg ); }*/
 

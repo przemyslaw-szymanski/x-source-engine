@@ -455,6 +455,7 @@ namespace XSE
 			Desc.uPixelSize = uBPP / 3;
 			Desc.uWidth = pImg->GetWidth();
 			Desc.uHeight = pImg->GetHeight();
+			CImageManager::GetSingletonPtr()->GenerateMipMaps( pImg, &Desc.MipMapDesc );
 			m_pSceneMgr->GetRenderSystem()->CreateTexture(Desc);
 		}
 		return XST_OK;
