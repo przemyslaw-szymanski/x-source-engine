@@ -212,6 +212,22 @@ namespace XST
 					return RESULT::OK;
 				}
 
+				virtual xst_i	i32 push_back_range(const _T_* pData, u32 uCount)
+				{
+					if( this->m_uiSize + uCount >= this->m_uiCapacity )
+					{
+						if( this->resize( this->m_uiCapacity * 2 ) != RESULT::OK )
+						{
+							return RESULT::FAILED;
+						}
+					}
+
+					_T_* pTmp = this->m_pData + this->m_uiSize;
+					xst_memcpy( pTmp, this->m_uiCapacity, pData, sizeof(_T_) * uCount );
+					this->m_uiSize += uCount;
+					return RESULT::OK;
+				}
+
 				virtual _T_		pop_front()
 				{
 					xst_assert( this->m_uiSize > 0, "(TCConstantArray::pop_front) Array has no elements" );

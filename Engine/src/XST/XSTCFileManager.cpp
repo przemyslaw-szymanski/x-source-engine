@@ -85,6 +85,23 @@ namespace XST
 		return RESULT::OK;
 	}
 
+	xst_castring& CFileLocationManager::GetLocation(xst_castring& strFileName, xst_castring& strGroupName)
+	{
+		xst_vector< CFileLocation >* pvLocs = xst_null;
+		if( strGroupName == ALL_GROUPS )
+		{
+
+		}
+		else
+		{
+			if( XST_FAILED( this->GetResource( strGroupName, &pvLocs ) ) )
+			{
+				return StringUtil::EmptyAString;
+			}
+
+		}
+	}
+
 	CFileManager::CFileManager()
 	{
 		m_pLocMgr = xst_new CFileLocationManager( this );

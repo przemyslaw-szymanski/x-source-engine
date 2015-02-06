@@ -64,6 +64,9 @@ namespace XST
 					i32			AddLocation(xst_castring& strLocation, xst_castring& strGroupName, IFileLoader* pLoader, bool bRecursive);
 
 					i32			AddLocation(const CFileLocation& Loc, xst_castring& strGroupName);
+
+			xst_castring&		GetLocation(xst_castring& strFileName, xst_castring& strGroupName);
+		
 		protected:
 
 			CFileManager*		m_pMgr;

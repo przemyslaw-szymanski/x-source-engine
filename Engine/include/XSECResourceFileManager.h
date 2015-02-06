@@ -6,6 +6,9 @@
 namespace XSE
 {
 	class IResourceManager;
+#define XSE_MAX_FILE_PATH_LEN	512
+#define XSE_MAX_FILE_NAME_LEN	24
+#define XSE_MAX_FILE_EXT_LEN	8
 
 	class XST_API CResourceFileManager : public XST::TCSingleton< CResourceFileManager >
 	{
@@ -23,6 +26,25 @@ namespace XSE
 				}
 			};
 
+			struct SFileInfo
+			{
+				enum
+				{
+					NAME_BUFF_LEN = XSE_MAX_FILE_PATH_LEN + 
+									XSE_MAX_FILE_NAME_LEN +
+									XSE_MAX_FILE_EXT_LEN
+				};
+
+				ch8*			pBuff;
+				u16				uPathLen	: 16;
+				u16				uNameLen	: 8;
+				u16				uExtLen		: 8;
+				ul32			uNameHash;
+				ul32			uPathHash;
+				ul32			uExtHash;
+				ul32			uFileSize;
+			};
+
 		public:
 
 			typedef xst_list< SExt >					ExtList;
@@ -30,8 +52,40 @@ namespace XSE
 			typedef xst_map< i32, ExtArray >			ResTypeMap;
 			typedef XST::TCDynamicArray< SExt >			TypeArray;
 			typedef xst_map< i32, IResourceManager* >	ExtMap;
+			typedef xst_map< u32, SFileInfo >			FileInfoMap;
+			typedef XST::TCDynamicArray< ch8 >			NameArray;
+			
+			class CGroup : public XST::IObject
+			{
+				friend class CResourceFileManager;
+				public:
+
+										CGroup(xst_castring& strName, ul32 uHandle) : 
+											m_strName(strName), m_uHash( uHandle )
+										{ m_aNames.reserve( SFileInfo::NAME_BUFF_LEN * 500 ); }
+
+					i32					AddFileInfo(xst_castring& strFullPath);
+					i32					AddFileInfo(xst_castring& strDirPath, xst_castring& strName, xst_castring& strExt);
+
+					const SFileInfo&	GetFileInfoByName(xst_castring& strFileName) const;
+					const SFileInfo&	GetFileInfoByPath(xst_castring& strFullPath) const;
+
+					lpcastr				GetFileDirPath(const SFileInfo& Info);
+					lpcastr				GetFileName(const SFileInfo& Info);
+					lpcastr				GetFileExt(const SFileInfo& Info);
+
+				protected:
+
+					FileInfoMap	m_mFileInfos;
+					NameArray	m_aNames;
+					xst_astring	m_strName;
+					ul32		m_uHash;
+			};
 
 			static const i32			DEFAULT_ORDER = -1;
+			typedef XST::TCObjectSmartPointer< CGroup > GroupPtr;
+			typedef XST::TCWeakPointer< CGroup >		GroupWeakPtr;
+			typedef xst_map< u32, GroupPtr >			GroupMap;
 
 		public:
 
@@ -45,7 +99,7 @@ namespace XSE
 					i32					SetLoadingOrder(i32 iResourceType, i32 iLoadingOrder = DEFAULT_ORDER);
 
 					i32					AddLocation(xst_castring& strDirectory, xst_castring& strGroupName, xst_castring& strLoaderName, bool bRecursive = false);
-
+					i32					AddLocation2(xst_castring& strDirectory, xst_castring& strGroupName, xst_castring& strLoaderName, bool bRecursive = false);
 					i32					PrepareGroup(xst_castring& strName);
 
 					i32					PrepareAllGroups();
@@ -59,11 +113,13 @@ namespace XSE
 					void				AddListener(XST::IFileListener* pListener);
 
 					i32					RemoveListener(XST::IFileListener* pListener);
-
+					
+					GroupWeakPtr		GetOrCreateGroup(xst_castring& strName);
 		protected:
 
 			XST::CFileManager*	m_pFileMgr;
 			TypeArray			m_aResTypes;
+			GroupMap			m_mGroups;
 	};
 
 }//xse
