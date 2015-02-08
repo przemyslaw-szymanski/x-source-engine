@@ -86,6 +86,7 @@ namespace XSE
 			typedef XST::TCObjectSmartPointer< CGroup > GroupPtr;
 			typedef XST::TCWeakPointer< CGroup >		GroupWeakPtr;
 			typedef xst_map< u32, GroupPtr >			GroupMap;
+			typedef xst_map< u32, XST::IFileLoader* >	FileLoaderMap;
 
 		public:
 
@@ -115,11 +116,17 @@ namespace XSE
 					i32					RemoveListener(XST::IFileListener* pListener);
 					
 					GroupWeakPtr		GetOrCreateGroup(xst_castring& strName);
+
+		protected:
+
+					XST::IFileLoader*	_GetLoader(xst_castring& strName);
+
 		protected:
 
 			XST::CFileManager*	m_pFileMgr;
 			TypeArray			m_aResTypes;
 			GroupMap			m_mGroups;
+			FileLoaderMap		m_mLoaders;
 	};
 
 }//xse

@@ -67,6 +67,7 @@
     <ClInclude Include="..\..\Engine\include\XSECVertex.h" />
     <ClInclude Include="..\..\Engine\include\XSECVertexData.h" />
     <ClInclude Include="..\..\Engine\include\XSEICGShaderSystem.h" />
+    <ClInclude Include="..\..\Engine\include\XSEIFileSystem.h" />
     <ClInclude Include="..\..\Engine\include\XSEIImage.h" />
     <ClInclude Include="..\..\Engine\include\XSEIImageSystem.h" />
     <ClInclude Include="..\..\Engine\include\XSEIIndexBuffer.h" />
@@ -262,6 +263,9 @@
     <ClInclude Include="..\..\Engine\src\D3D9\XSECD3D9Viewport.h" />
     <ClInclude Include="..\..\Engine\src\DevILSystem\XSECDevILImage.h" />
     <ClInclude Include="..\..\Engine\src\DevILSystem\XSECDevILSystem.h" />
+    <ClInclude Include="..\..\Engine\src\FileSystems\XSECFileSystem.h" />
+    <ClInclude Include="..\..\Engine\src\FileSystems\XSECNetworkFileSystem.h" />
+    <ClInclude Include="..\..\Engine\src\FileSystems\XSECVirtualFileSystem.h" />
     <ClInclude Include="..\..\Engine\src\ModelLoaders\XSECOBJLoader.h" />
     <ClInclude Include="..\..\Engine\src\ThirdParty\DevIL\config.h" />
     <ClInclude Include="..\..\Engine\src\ThirdParty\DevIL\devil_cpp_wrapper.hpp" />
@@ -317,6 +321,9 @@
     <ClCompile Include="..\..\Engine\src\D3D9\XSECD3D9Viewport.cpp" />
     <ClCompile Include="..\..\Engine\src\DevILSystem\XSECDevILImage.cpp" />
     <ClCompile Include="..\..\Engine\src\DevILSystem\XSECDevILSystem.cpp" />
+    <ClCompile Include="..\..\Engine\src\FileSystems\XSECFileSystem.cpp" />
+    <ClCompile Include="..\..\Engine\src\FileSystems\XSECNetworkFileSystem.cpp" />
+    <ClCompile Include="..\..\Engine\src\FileSystems\XSECVirtualFileSystem.cpp" />
     <ClCompile Include="..\..\Engine\src\GUI\XSECButton.cpp" />
     <ClCompile Include="..\..\Engine\src\GUI\XSECComponent.cpp" />
     <ClCompile Include="..\..\Engine\src\GUI\XSECGUIManager.cpp" />

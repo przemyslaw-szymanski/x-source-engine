@@ -75,6 +75,9 @@
     <Filter Include="src\ModelLoaders">
       <UniqueIdentifier>{cabfb7a0-ee82-4d44-937b-f0d8005afd7a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\FileSystems">
+      <UniqueIdentifier>{4830439f-4757-421b-b430-67e593b45b3a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Engine\include\XST\mtrand.h">
@@ -918,6 +921,18 @@
     <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11FunctionPointers.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine\src\FileSystems\XSECNetworkFileSystem.h">
+      <Filter>src\FileSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\FileSystems\XSECVirtualFileSystem.h">
+      <Filter>src\FileSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\src\FileSystems\XSECFileSystem.h">
+      <Filter>src\FileSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSEIFileSystem.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine\dllmain.cpp">
@@ -1552,6 +1567,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine\src\XSECTextureManager.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\FileSystems\XSECNetworkFileSystem.cpp">
+      <Filter>src\FileSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\FileSystems\XSECVirtualFileSystem.cpp">
+      <Filter>src\FileSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\FileSystems\XSECFileSystem.cpp">
+      <Filter>src\FileSystems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

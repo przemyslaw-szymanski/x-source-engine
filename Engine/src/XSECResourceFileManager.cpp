@@ -121,10 +121,18 @@ namespace XSE
 		return pGr;
 	}
 
+	XST::IFileLoader* CResourceFileManager::_GetLoader( xst_castring& strName )
+	{
+		u32 uHash = XST::CHash::GetCRC( strName );
+		return m_mLoaders[ uHash ];
+	}
+
 	i32	CResourceFileManager::AddLocation(xst_castring& strDirectory, xst_castring& strGroupName, xst_castring& strLoaderName, bool bRecursive)
 	{
+		XST::IFileLoader* pLoader = _GetLoader( strLoaderName );
+		xst_assert2( pLoader );
 		GroupWeakPtr pGr = GetOrCreateGroup( strGroupName );
-		pGr->AddFileInfo( strDirectory );
+
 		return m_pFileMgr->AddLocation( strDirectory, strGroupName, strLoaderName, bRecursive );
 	}
 
@@ -148,6 +156,15 @@ namespace XSE
 
 	i32	CResourceFileManager::RegisterLoader(xst_castring& strLoaderName, XST::IFileLoader* pLoader)
 	{
+		u32 uHash = XST::CHash::GetCRC( strLoaderName );
+		auto& Itr = m_mLoaders.find( uHash );
+		if( Itr == m_mLoaders.end() )
+			m_mLoaders[ uHash ] = pLoader;
+		else
+		{
+			XST_LOG_ERR( "File loader: '" << strLoaderName << "' already registered." );
+			return XST_FAIL;
+		}
 		return m_pFileMgr->RegisterLoader( strLoaderName, pLoader );
 	}
 

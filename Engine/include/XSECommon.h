@@ -2,6 +2,7 @@
 #define XSE_COMMON_H
 
 #include "XST/XST.h"
+#include "XSECommonDefines.h"
 
 #define XSE_MAJOR_VER	1
 #define XSE_MINOR_VER	0

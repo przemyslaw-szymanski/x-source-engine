@@ -1,0 +1,21 @@
+#ifndef XSE_COMMON_DEFINES_H
+#define XSE_COMMON_DEFINES_H
+
+// MAX
+#ifndef XSE_MAX_FILE_NAME_LENGTH
+#	define XSE_MAX_FILE_NAME_LENGTH		32 // includes .extension
+#endif
+
+#ifndef XSE_MAX_FILE_EXT_LENGTH
+#	define XSE_MAX_FILE_EXT_LENGTH		8 // includes .
+#endif
+
+#ifndef XSE_MAX_DIR_PATH_LENGTH
+#	define XSE_MAX_DIR_PATH_LENGTH		256 - XSE_MAX_FILE_NAME_LENGTH
+#endif
+
+#ifndef XSE_MAX_FILE_PATH_LENGTH
+#	define XSE_MAX_FILE_PATH_LENGTH		256
+#endif
+
+#endif //XSE_COMMON_DEFINES_H
