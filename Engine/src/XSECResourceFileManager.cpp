@@ -1,4 +1,6 @@
 #include "../include/XSECResourceFileManager.h"
+#include "FileSystems/XSECFileSystem.h"
+#include "FileSystems/XSECVirtualFileSystem.h"
 
 namespace XSE
 {
@@ -51,6 +53,25 @@ namespace XSE
 		return XST_FAIL;
 	}
 
+	i32 CResourceFileManager::CGroup::Prepare()
+	{
+		// Get file infos from a file system
+		xst_assert2( m_pFS );
+		IFileSystem::DirInfoVec vDirs;
+		vDirs.reserve( 1000 );
+		IFileSystem::FileInfoVec vFiles;
+		vFiles.reserve( 1000 );
+
+		for( u32 i = 0; i < m_vLocations.size(); ++i )
+		{
+			auto& Loc = m_vLocations[ i ];
+			IFileSystem::SDirInfo DirInfo;
+			m_pFS->GetFileInfos( Loc.strDir, Loc.bRecursive, &vFiles );
+		}
+		m_bPrepared = true;
+		return XST_OK;
+	}
+
 	lpcastr	CResourceFileManager::CGroup::GetFileDirPath(const SFileInfo& Info)
 	{
 		return Info.pBuff;
@@ -68,12 +89,19 @@ namespace XSE
 
 	CResourceFileManager::CResourceFileManager(XST::CFileManager* pFileMgr)
 	{
+		RegisterFileSystem( "FileSystem", xst_new CFileSystem(), true );
 		m_pFileMgr = pFileMgr;//XST::CFileManager::GetSingletonPtr();
 		m_aResTypes.reserve( 20 );
 	}
 
 	CResourceFileManager::~CResourceFileManager()
 	{
+		for( auto& Pair : m_mFileSystems )
+		{
+			if( Pair.second.bAutoDestroy )
+				xst_delete( Pair.second.pSys );
+		}
+		m_mFileSystems.clear();
 	}
 
 	i32	CResourceFileManager::SetManager( i32 iResourceType, IResourceManager* pMgr )
@@ -92,6 +120,28 @@ namespace XSE
 	{
 		g_mResTypeLoadingOrder[ iResourceType ] = iLoadingOrder;
 		return XST_OK;
+	}
+
+	IFileSystem* CResourceFileManager::RegisterFileSystem(xst_castring& strName, IFileSystem* pSys, bool bAutoDestroy)
+	{
+		u32 uHash = XST::CHash::GetCRC( strName );
+		auto& Itr = m_mFileSystems.find( uHash );
+		if( Itr == m_mFileSystems.end() )
+		{
+			SFileSystem FS = { pSys, bAutoDestroy };
+			m_mFileSystems[ uHash ] = FS;
+			return FS.pSys;
+		}
+		return Itr->second.pSys;
+	}
+
+	IFileSystem* CResourceFileManager::GetFileSystem(xst_castring& strName) const
+	{
+		u32 uHash = XST::CHash::GetCRC( strName );
+		auto& Itr = m_mFileSystems.find( uHash );
+		if( Itr != m_mFileSystems.end() )
+			return Itr->second.pSys;
+		return xst_null;
 	}
 
 	i32	CResourceFileManager::AddExtension(xst_castring& strExt, i32 iResourceType, i32 iLoadingOrder, IResourceManager* pMgr)
@@ -129,15 +179,20 @@ namespace XSE
 
 	i32	CResourceFileManager::AddLocation(xst_castring& strDirectory, xst_castring& strGroupName, xst_castring& strLoaderName, bool bRecursive)
 	{
-		XST::IFileLoader* pLoader = _GetLoader( strLoaderName );
-		xst_assert2( pLoader );
+		IFileSystem* pFS = GetFileSystem( strLoaderName );
+		xst_assert2( pFS );
+
 		GroupWeakPtr pGr = GetOrCreateGroup( strGroupName );
+		pGr->SetFileSystem( pFS );
+		pGr->AddLocation( strDirectory, true );
 
 		return m_pFileMgr->AddLocation( strDirectory, strGroupName, strLoaderName, bRecursive );
 	}
 
 	i32	CResourceFileManager::PrepareGroup(xst_castring& strName)
 	{
+		GroupWeakPtr pGr = GetOrCreateGroup( strName );
+		i32 iResult = pGr->Prepare();
 		return m_pFileMgr->PrepareGroup( strName );
 	}
 
@@ -148,6 +203,23 @@ namespace XSE
 			return RESULT::FAILED;
 		}
 
+		// TODO: make prepare async
+		for( auto& Pair : m_mGroups )
+		{
+			Pair.second->Prepare();
+		}
+
+		// Wait for prepares
+		bool bAllPrepared = false;
+		while( !bAllPrepared )
+		{
+			bAllPrepared = true;
+			for( auto& Pair : m_mGroups )
+			{
+				if( !Pair.second->IsPrepared() )
+					bAllPrepared = false;
+			}
+		}
 		//Get all shader groups
 		
 

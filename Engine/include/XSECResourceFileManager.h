@@ -10,6 +10,8 @@ namespace XSE
 #define XSE_MAX_FILE_NAME_LEN	24
 #define XSE_MAX_FILE_EXT_LEN	8
 
+	class IFileSystem;
+
 	class XST_API CResourceFileManager : public XST::TCSingleton< CResourceFileManager >
 	{
 		private:
@@ -45,6 +47,12 @@ namespace XSE
 				ul32			uFileSize;
 			};
 
+			struct SFileSystem
+			{
+				IFileSystem*	pSys;
+				bool			bAutoDestroy;
+			};
+
 		public:
 
 			typedef xst_list< SExt >					ExtList;
@@ -57,11 +65,17 @@ namespace XSE
 			
 			class CGroup : public XST::IObject
 			{
+				struct SLocation
+				{
+					xst_astring strDir;
+					bool		bRecursive;
+				};
+				typedef xst_vector< SLocation > LocVec;
 				friend class CResourceFileManager;
 				public:
 
 										CGroup(xst_castring& strName, ul32 uHandle) : 
-											m_strName(strName), m_uHash( uHandle )
+											m_strName(strName), m_uHash(uHandle)
 										{ m_aNames.reserve( SFileInfo::NAME_BUFF_LEN * 500 ); }
 
 					i32					AddFileInfo(xst_castring& strFullPath);
@@ -74,12 +88,29 @@ namespace XSE
 					lpcastr				GetFileName(const SFileInfo& Info);
 					lpcastr				GetFileExt(const SFileInfo& Info);
 
+					xst_fi void			SetFileSystem(IFileSystem* pFS)
+										{ m_pFS = pFS; }
+
+					xst_fi IFileSystem*	GetFileSystem() const
+										{ return m_pFS; }
+
+					xst_fi	void		AddLocation(xst_castring& strDir, bool bRecursive)
+										{ m_vLocations.push_back( { strDir, bRecursive } ); }
+
+					i32					Prepare();
+
+					xst_fi	bool		IsPrepared() const
+										{ return m_bPrepared; }
+
 				protected:
 
-					FileInfoMap	m_mFileInfos;
-					NameArray	m_aNames;
-					xst_astring	m_strName;
-					ul32		m_uHash;
+					FileInfoMap		m_mFileInfos;
+					IFileSystem*	m_pFS;
+					NameArray		m_aNames;
+					xst_astring		m_strName;
+					LocVec			m_vLocations;
+					ul32			m_uHash;
+					bool			m_bPrepared = false;
 			};
 
 			static const i32			DEFAULT_ORDER = -1;
@@ -87,6 +118,7 @@ namespace XSE
 			typedef XST::TCWeakPointer< CGroup >		GroupWeakPtr;
 			typedef xst_map< u32, GroupPtr >			GroupMap;
 			typedef xst_map< u32, XST::IFileLoader* >	FileLoaderMap;
+			typedef xst_map< u32, SFileSystem >			FilesSystemMap;
 
 		public:
 
@@ -106,6 +138,9 @@ namespace XSE
 					i32					PrepareAllGroups();
 
 					i32					RegisterLoader(xst_castring& strLoaderName, XST::IFileLoader* pLoader);
+
+					IFileSystem*		RegisterFileSystem(xst_castring& strName, IFileSystem* pSys, bool bAutoDestroy);
+					IFileSystem*		GetFileSystem(xst_castring& strName) const;
 
 					XST::FilePtr		LoadFile(xst_castring& strFileName, xst_castring& strGroupName);
 
@@ -127,6 +162,7 @@ namespace XSE
 			TypeArray			m_aResTypes;
 			GroupMap			m_mGroups;
 			FileLoaderMap		m_mLoaders;
+			FilesSystemMap		m_mFileSystems;
 	};
 
 }//xse
