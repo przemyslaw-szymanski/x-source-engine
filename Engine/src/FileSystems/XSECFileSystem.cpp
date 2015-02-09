@@ -121,7 +121,7 @@ namespace XSE
 			if( strPath[i] == '/' || strPath[i] == '\\' )
 				return uPathLen - i;
 		}
-		return -1;
+		return 0;
 	}
 
 	i32 GetFileExtLength(lpcastr strPath, u32 uPathLen)
@@ -131,8 +131,10 @@ namespace XSE
 			if( strPath[i] == '.' )
 				return uPathLen - i;
 		}
-		return -1;
+		return 0;
 	}
+
+	xst_fi void SetFileInfoFromFileData(IFileSystem::SFileInfo* pInfo, )
 
 	void GetFileInfosRecursived(xst_castring& strDir, IFileSystem::FileInfoVec* pOut, u32 uCurrFile)
 	{
@@ -151,9 +153,10 @@ namespace XSE
 			{
 				u32 uLen = strlen( FindFileData.cFileName );
 				CopyWin32Name( Info.strPath, XSE_MAX_FILE_PATH_LENGTH, FindFileData.cFileName, uLen );
-				Info.uNameLength = uLen;
+				Info.uPathLength = GetFilePathLength( FindFileData.cFileName, uLen );
 				Info.uFileSize = FindFileData.nFileSizeHigh;
-
+				Info.uExtLength = GetFileExtLength( FindFileData.cFileName, uLen );
+				Info.uNameLength = uLen - Info.uPathLength;
 			}
 			
 			while( ::FindNextFileA( hFile, &FindFileData ) )

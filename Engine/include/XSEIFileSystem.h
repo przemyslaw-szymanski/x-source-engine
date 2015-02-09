@@ -22,7 +22,6 @@ namespace XSE
 			struct SFileInfo
 			{
 				ch8			strPath[ XSE_MAX_FILE_PATH_LENGTH ];
-				u64			uParentDirHandle;
 				ul32		uFileSize;
 				u16			uPathLength : 16;
 				u16			uNameLength : 8;
