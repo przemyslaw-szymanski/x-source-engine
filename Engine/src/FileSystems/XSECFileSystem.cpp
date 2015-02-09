@@ -136,7 +136,12 @@ namespace XSE
 
 	xst_fi void SetFileInfoFromFileData(IFileSystem::SFileInfo* pInfo, const WIN32_FIND_DATAA& Data)
 	{
-
+		u32 uLen = strlen( Data.cFileName );
+		CopyWin32Name( pInfo->strPath, XSE_MAX_FILE_PATH_LENGTH, Data.cFileName, uLen );
+		pInfo->uPathLength = GetFilePathLength( Data.cFileName, uLen );
+		pInfo->uFileSize = Data.nFileSizeHigh;
+		pInfo->uExtLength = GetFileExtLength( Data.cFileName, uLen );
+		pInfo->uNameLength = uLen - pInfo->uPathLength;
 	}
 
 	void GetFileInfosRecursived(xst_castring& strDir, IFileSystem::FileInfoVec* pOut, u32 uCurrFile)
@@ -154,12 +159,8 @@ namespace XSE
 			}
 			else
 			{
-				u32 uLen = strlen( FindFileData.cFileName );
-				CopyWin32Name( Info.strPath, XSE_MAX_FILE_PATH_LENGTH, FindFileData.cFileName, uLen );
-				Info.uPathLength = GetFilePathLength( FindFileData.cFileName, uLen );
-				Info.uFileSize = FindFileData.nFileSizeHigh;
-				Info.uExtLength = GetFileExtLength( FindFileData.cFileName, uLen );
-				Info.uNameLength = uLen - Info.uPathLength;
+				SetFileInfoFromFileData( &Info, FindFileData );
+				pOut->push_back( Info );
 			}
 			
 			while( ::FindNextFileA( hFile, &FindFileData ) )
@@ -170,11 +171,12 @@ namespace XSE
 				}
 				else
 				{
-					
+					SetFileInfoFromFileData( &Info, FindFileData );
+
 				}
 			}
 		}
-		pOut->push_back( Info );
+		
 		FindClose( hFile );
 	}
 #else
