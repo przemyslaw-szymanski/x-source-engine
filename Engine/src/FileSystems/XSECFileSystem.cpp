@@ -134,7 +134,10 @@ namespace XSE
 		return 0;
 	}
 
-	xst_fi void SetFileInfoFromFileData(IFileSystem::SFileInfo* pInfo, )
+	xst_fi void SetFileInfoFromFileData(IFileSystem::SFileInfo* pInfo, const WIN32_FIND_DATAA& Data)
+	{
+
+	}
 
 	void GetFileInfosRecursived(xst_castring& strDir, IFileSystem::FileInfoVec* pOut, u32 uCurrFile)
 	{

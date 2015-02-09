@@ -42,7 +42,7 @@ namespace XSE
 
 			virtual i32			GetFileInfo(xst_castring& strFilePath, SFileInfo* pOut) { return XST_FAIL; }
 			virtual i32			GetDirInfo(xst_castring& strDirPath, SDirInfo* pOut) { return XST_FAIL; }
-			virtual i32			GetDirInfos(xst_castring& strDirPath, bool bRecursive, DirInfoVec& pvOut) { return XST_FAIL; }
+			virtual i32			GetDirInfos(xst_castring& strDirPath, bool bRecursive, DirInfoVec* pvOut) { return XST_FAIL; }
 			virtual	i32			LoadFile(const SFileInfo& Info, u8** ppData) { return XST_FAIL; }
 			virtual u32			GetFileCount(xst_castring& strDirPath) { return 0; }
 			virtual i32			GetFileInfos(xst_castring& strDirPath, bool bRecursive, FileInfoVec* pvOut) { return XST_FAIL; }
