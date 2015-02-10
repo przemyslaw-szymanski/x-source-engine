@@ -57,10 +57,8 @@ namespace XSE
 	{
 		// Get file infos from a file system
 		xst_assert2( m_pFS );
-		IFileSystem::DirInfoVec vDirs;
-		vDirs.reserve( 1000 );
 		IFileSystem::FileInfoVec vFiles;
-		vFiles.reserve( 1000 );
+		vFiles.reserve( 100 );
 
 		for( u32 i = 0; i < m_vLocations.size(); ++i )
 		{
