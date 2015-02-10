@@ -26,6 +26,7 @@ namespace XSE
 	{
 		xst_astring strPath2 = XST::Path::Combine( strPath, "*" );
 		HANDLE hFile = ::FindFirstFileA( strPath2.data(), pFileData );
+		xst_castring strDir = strPath + "/";
 		
 		if( hFile != INVALID_HANDLE_VALUE )
 		{
@@ -35,9 +36,9 @@ namespace XSE
 			{
 				if( pFileData->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
 				{
-					OnFile( *pFileData, strPath, true, pUserData );
+					OnFile( *pFileData, strDir, true, pUserData );
 					if( bRecursive )
-						ForFeachFile( XST::Path::Combine( strPath, "*" ), pFileData, bRecursive, OnFile );
+						ForFeachFile( XST::Path::Combine( strPath, pFileData->cFileName ), pFileData, bRecursive, OnFile, pUserData );
 				}
 				else
 				{
@@ -48,18 +49,37 @@ namespace XSE
 						{
 							if( pFileData->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
 							{
-								OnFile( *pFileData, strPath, true, pUserData );
+								OnFile( *pFileData, strDir, true, pUserData );
 								if( bRecursive )
-									ForFeachFile( XST::Path::Combine( strPath, "*" ), pFileData, bRecursive, OnFile );
+									ForFeachFile( XST::Path::Combine( strPath, pFileData->cFileName ), pFileData, bRecursive, OnFile, pUserData );
 							}
 							else
 							{
-								OnFile( *pFileData, strPath, false, pUserData );
+								OnFile( *pFileData, strDir, false, pUserData );
 							}
 						}
 					}
 				}
 			}
+
+			while( ::FindNextFileA( hFile, pFileData ) )
+			{
+				bIsDot = pFileData->cFileName[ 0 ] == '.';
+				if( !bIsDot )
+				{
+					if( pFileData->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
+					{
+						OnFile( *pFileData, strDir, true, pUserData );
+						if( bRecursive )
+							ForFeachFile( XST::Path::Combine( strPath, pFileData->cFileName ), pFileData, bRecursive, OnFile, pUserData );
+					}
+					else
+					{
+						OnFile( *pFileData, strDir, false, pUserData );
+					}
+				}
+			}
+
 			FindClose( hFile );
 			return XST_OK;
 		}
@@ -238,14 +258,20 @@ namespace XSE
 		pInfo->uNameLength = uLen - pInfo->uPathLength;
 	}
 
-	bool OnFileInfo(const WIN32_FIND_DATAA& Data, xst_castring& strPath, bool bDir)
+	bool OnFileInfo(const WIN32_FIND_DATAA& Data, xst_castring& strPath, bool bDir, xst_unknown pUserData)
 	{
-		
+		IFileSystem::SFileInfo Info;
+		XSE::SetFileInfoFromFileData( &Info, Data );
+		xst_memcpy( Info.strPath, XSE_MAX_FILE_PATH_LENGTH, strPath.data(), strPath.length() );
+		auto* pVec = (IFileSystem::FileInfoVec*)pUserData;
+		pVec->push_back( Info );
+		return true;
 	}
 
 	void GetFileInfosRecursived(xst_castring& strDir, IFileSystem::FileInfoVec* pOut, u32 uCurrFile)
 	{
-		xst_astring strPath = XST::Path::Combine( strDir, "*" );
+		ForFeachFile( strDir, &g_FindFileData, true, &OnFileInfo, pOut );
+		/*xst_astring strPath = XST::Path::Combine( strDir, "*" );
 		HANDLE hFile = ::FindFirstFileA( strPath.data(), &g_FindFileData );
 		auto& FindFileData = g_FindFileData;
 		IFileSystem::SFileInfo Info = { 0, 0, 0, 0, 0, 0 };
@@ -284,7 +310,7 @@ namespace XSE
 			}
 		}
 		
-		FindClose( hFile );
+		FindClose( hFile );*/
 	}
 
 	i32 GetFileInfos(xst_castring& strDir, IFileSystem::FileInfoVec* pOut)
