@@ -1,5 +1,6 @@
 #include "XSECFileSystem.h"
 #include "XSTPath.h"
+#include "XSTCBinaryReader.h"
 
 namespace XSE
 {
@@ -17,7 +18,7 @@ namespace XSE
 	{
 		u32 uSize = ( uSrcSize >= XSE_MAX_DIR_PATH_LENGTH - 1 ) ? XSE_MAX_DIR_PATH_LENGTH - 2 : uSrcSize;
 		std::copy( pSrc, pSrc + uSize, pDst );
-		pDst[ uSize ] = 0;
+		pDst[ uSize ] = '\0';
 	}
 
 	typedef bool(* pfnOnFile)(const WIN32_FIND_DATAA& Data, xst_castring& strPath, bool bIsDir, xst_unknown pUserData);
@@ -260,9 +261,19 @@ namespace XSE
 
 	bool OnFileInfo(const WIN32_FIND_DATAA& Data, xst_castring& strPath, bool bDir, xst_unknown pUserData)
 	{
+		if( bDir )
+			return true;
 		IFileSystem::SFileInfo Info;
 		XSE::SetFileInfoFromFileData( &Info, Data );
-		xst_memcpy( Info.strPath, XSE_MAX_FILE_PATH_LENGTH, strPath.data(), strPath.length() );
+		//xst_memcpy( Info.strPath, XSE_MAX_FILE_PATH_LENGTH, strPath.data(), strPath.length() );
+		//xst_memcp
+		CopyWin32Name( Info.strPath, XSE_MAX_DIR_PATH_LENGTH, strPath.c_str(), strPath.length() );
+		u32 uLen = strlen( Data.cFileName );
+		CopyWin32Name( Info.strPath + strPath.length(), XSE_MAX_DIR_PATH_LENGTH, Data.cFileName, uLen );
+		Info.uPathLength = strPath.length() + uLen;
+		Info.strPath[ Info.uPathLength ] = '\0';
+		for(u32 i = 0; i < Info.uPathLength; ++i )
+			if( Info.strPath[i] == '\\' ) Info.strPath[i] = '/';
 		auto* pVec = (IFileSystem::FileInfoVec*)pUserData;
 		pVec->push_back( Info );
 		return true;
@@ -422,7 +433,36 @@ namespace XSE
 	}
 
 	i32	CFileSystem::LoadFile(const SFileInfo& Info, u8** ppData)
-	{ return 0; }
+	{ 
+		XST::IFile::FileHandle hFile = XST::IFile::Open( Info.strPath, XST::IFile::READ_BINARY );
+		if( hFile )
+		{
+			if( XST::IFile::Read( hFile, ppData, Info.uFileSize ) )
+			{
+				if( XST::IFile::Close( hFile ) )
+				{
+					return XST_OK;
+				}
+				else
+				{
+					XST_LOG_ERR( "Unable to close file: " << Info.strPath );
+					return XST_FAIL;
+				}
+			}
+			else
+			{
+				XST_LOG_ERR( "Unable to read file: " << Info.strPath );
+				return XST_FAIL;
+			}
+		}
+		else
+		{
+			XST_LOG_ERR( "Unable to open file: " << Info.strPath );
+			return XST_FAIL;
+		}
+		
+		return XST_OK; 
+	}
 
 	u32	CFileSystem::GetFileCount(xst_castring& strDirPath)
 	{ return 0; }
@@ -437,6 +477,9 @@ namespace XSE
 	}
 
 	i32	CFileSystem::LoadFiles(const SFileInfo* aInfos, u32 uInfoCount, u8** ppOut)
-	{ return 0; }
+	{ 
+
+		return 0; 
+	}
 
 } // xse
