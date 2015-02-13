@@ -27,26 +27,39 @@ namespace XSE
 		u32 uPos2 = strFullPath.find_last_of(".");
 		xst_astring strFileName = strFullPath.substr( uPos+1, strFullPath.length() - uPos );
 		xst_astring strExt = strFullPath.substr( uPos2+1, uPos2 - strFullPath.length() );
-		return AddFileInfo( strDirPath, strFileName, strExt );
+		return AddFileInfo( strDirPath.c_str(), strDirPath.length(), strFileName.c_str(), strFileName.length(),
+							strExt.c_str(), strExt.length() );
 	}
 
-	i32 CResourceFileManager::CGroup::AddFileInfo(xst_castring& strDirPath, xst_castring& strName, xst_castring& strExt)
+	i32 CResourceFileManager::CGroup::AddFileInfo(const IFileSystem::SFileInfo& Info)
+	{
+		u32 uLen = Info.uPathLength - Info.uNameLength;
+		lpcastr strName = Info.strPath + Info.uPathLength - Info.uNameLength;
+		lpcastr strExt = Info.strPath + Info.uPathLength - Info.uExtLength + 1;
+		return AddFileInfo(	Info.strPath, Info.uPathLength, strName, Info.uNameLength, strExt, Info.uExtLength );
+	}
+
+	i32 CResourceFileManager::CGroup::AddFileInfo(	lpcastr strPath, u32 uPathSize, lpcastr strName, u32 uNameSize,
+													lpcastr strExt, u32 uExtSize)
 	{
 		SFileInfo Info;
 		Info.uNameHash = XST::CHash::GetCRC( strName );
 		auto& Itr = m_mFileInfos.find( Info.uNameHash );
 		if( Itr == m_mFileInfos.end() )
 		{
-			Info.uPathHash = XST::CHash::GetCRC( strDirPath );
-			Info.uExtHash = XST::CHash::GetCRC( strExt );
+			Info.uPathHash = XST::CHash::GetCRC( strPath, uPathSize );
+			Info.uExtHash = XST::CHash::GetCRC( strExt, uExtSize );
 			u32 uOffset = (m_aNames.size() == 0) ? 0 : m_aNames.size() - 1;
-			Info.pBuff = &m_aNames[ uOffset ];
-			Info.uPathLen = strDirPath.length();
-			Info.uNameLen = strName.length();
-			Info.uExtLen = strExt.length();
-			m_aNames.push_back_range( strDirPath.c_str(), strDirPath.length() + 1 );
-			m_aNames.push_back_range( strName.c_str(), strName.length() + 1 );
-			m_aNames.push_back_range( strExt.c_str(), strExt.length() + 1 );
+			Info.uBuffHandle = m_aNames.size();
+			Info.uPathLen = uPathSize;
+			Info.uNameLen = uNameSize;
+			Info.uExtLen = uExtSize;
+			m_aNames.push_back_range( strPath, uPathSize );
+			m_aNames.push_back( 0 );
+			m_aNames.push_back_range( strName, uNameSize );
+			m_aNames.push_back( 0 );
+			m_aNames.push_back_range( strExt, uExtSize );
+			m_aNames.push_back( 0 );
 			m_mFileInfos[ Info.uNameHash ] = Info;
 			return XST_OK;
 		}
@@ -63,8 +76,13 @@ namespace XSE
 		for( u32 i = 0; i < m_vLocations.size(); ++i )
 		{
 			auto& Loc = m_vLocations[ i ];
-			IFileSystem::SDirInfo DirInfo;
 			m_pFS->GetFileInfos( Loc.strDir, Loc.bRecursive, &vFiles );
+		}
+
+		for( u32 i = 0; i < vFiles.size(); ++i )
+		{
+			auto& Info = vFiles[ i ];
+			AddFileInfo( Info );
 		}
 		m_bPrepared = true;
 		return XST_OK;
@@ -72,17 +90,49 @@ namespace XSE
 
 	lpcastr	CResourceFileManager::CGroup::GetFileDirPath(const SFileInfo& Info)
 	{
-		return Info.pBuff;
+		lpcastr s = &m_aNames[ Info.uBuffHandle ];
+		return s;
 	}
 
 	lpcastr	CResourceFileManager::CGroup::GetFileName(const SFileInfo& Info)
 	{
-		return Info.pBuff + 1 + Info.uPathLen;
+		lpcastr s = &m_aNames[ Info.uBuffHandle + Info.uPathLen + 1 ];
+		return s;
 	}
 
 	lpcastr	CResourceFileManager::CGroup::GetFileExt(const SFileInfo& Info)
 	{
-		return Info.pBuff + 1 + Info.uPathLen + 1 + Info.uNameLen;
+		lpcastr s = &m_aNames[ Info.uBuffHandle + Info.uPathLen + Info.uNameLen + 2 ];
+		return s;
+	}
+
+	XST::FilePtr CResourceFileManager::CGroup::LoadFile(xst_castring& strName)
+	{
+		u32 uHandle = XST::CHash::GetCRC( strName );
+		auto& Itr = m_mFiles.find( uHandle );
+		if( Itr == m_mFiles.end() )
+		{
+			auto& InfoItr = m_mFileInfos.find( uHandle );
+			if( InfoItr != m_mFileInfos.end() )
+			{
+				XST::FilePtr( xst_new XST::Resources::CFile( strName, );
+			}
+			else
+			{
+				XST_LOG_ERR( "Unable to find file info for file: " << strName );
+				return XST::FilePtr();
+			}
+		}
+		else
+		{
+			return Itr->second;
+		}
+		return XST::FilePtr();
+	}
+			
+	i32	CResourceFileManager::CGroup::Load(FileVec* pOut, bool bSharedMemory)
+	{
+
 	}
 
 	CResourceFileManager::CResourceFileManager(XST::CFileManager* pFileMgr)
@@ -238,8 +288,10 @@ namespace XSE
 		return m_pFileMgr->RegisterLoader( strLoaderName, pLoader );
 	}
 
-	XST::FilePtr	CResourceFileManager::LoadFile(xst_castring& strFileName, xst_castring& strGroupName)
+	XST::FilePtr CResourceFileManager::LoadFile(xst_castring& strFileName, xst_castring& strGroupName)
 	{
+		GroupWeakPtr pGr = GetOrCreateGroup( strGroupName );
+		XST::FilePtr pFile = pGr->LoadFile( strFileName );
 		return m_pFileMgr->LoadFile( strFileName, strGroupName );
 	}
 

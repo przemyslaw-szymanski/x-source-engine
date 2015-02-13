@@ -2,6 +2,7 @@
 #define XSE_CRESOURCE_FILE_MANAGER_H
 
 #include "XSECommon.h"
+#include "XSEIFileSystem.h"
 
 namespace XSE
 {
@@ -37,7 +38,7 @@ namespace XSE
 									XSE_MAX_FILE_EXT_LEN
 				};
 
-				ch8*			pBuff;
+				ul32			uBuffHandle;
 				u16				uPathLen	: 16;
 				u16				uNameLen	: 8;
 				u16				uExtLen		: 8;
@@ -62,6 +63,8 @@ namespace XSE
 			typedef xst_map< i32, IResourceManager* >	ExtMap;
 			typedef xst_map< u32, SFileInfo >			FileInfoMap;
 			typedef XST::TCDynamicArray< ch8 >			NameArray;
+			typedef xst_map< u32, XST::FilePtr >		FileMap;
+			typedef xst_vector< XST::FilePtr >			FileVec;
 			
 			class CGroup : public XST::IObject
 			{
@@ -79,7 +82,9 @@ namespace XSE
 										{ m_aNames.reserve( SFileInfo::NAME_BUFF_LEN * 500 ); }
 
 					i32					AddFileInfo(xst_castring& strFullPath);
-					i32					AddFileInfo(xst_castring& strDirPath, xst_castring& strName, xst_castring& strExt);
+					i32					AddFileInfo(const IFileSystem::SFileInfo& Info);
+					i32					AddFileInfo(lpcastr strPath, u32 uPathSize, lpcastr strName, u32 uNameSize,
+													lpcastr strExt, u32 uExtSize);
 
 					const SFileInfo&	GetFileInfoByName(xst_castring& strFileName) const;
 					const SFileInfo&	GetFileInfoByPath(xst_castring& strFullPath) const;
@@ -102,9 +107,13 @@ namespace XSE
 					xst_fi	bool		IsPrepared() const
 										{ return m_bPrepared; }
 
+					XST::FilePtr		LoadFile(xst_castring& strName);
+					i32					Load(FileVec* pOut, bool bSharedMemory);
+
 				protected:
 
 					FileInfoMap		m_mFileInfos;
+					FileMap			m_mFiles;
 					IFileSystem*	m_pFS;
 					NameArray		m_aNames;
 					xst_astring		m_strName;

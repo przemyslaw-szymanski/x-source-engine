@@ -32,6 +32,11 @@ namespace XSE
 			typedef xst_vector< SDirInfo >	DirInfoVec;
 			typedef xst_vector< SFileInfo > FileInfoVec;
 
+			struct SFileArray
+			{
+				u8*		pData;
+			};
+
 		protected:
 
 		public:
@@ -47,6 +52,7 @@ namespace XSE
 			virtual u32			GetFileCount(xst_castring& strDirPath) { return 0; }
 			virtual i32			GetFileInfos(xst_castring& strDirPath, bool bRecursive, FileInfoVec* pvOut) { return XST_FAIL; }
 			virtual i32			LoadFiles(const SFileInfo* aInfos, u32 uInfoCount, u8** ppOut) { return XST_FAIL; }
+			virtual i32			LoadFiles(const SFileInfo* aInfos, u32 uInfoCount, SFileArray* pOut) { return XST_FAIL; }
 
 		protected:
 	};
