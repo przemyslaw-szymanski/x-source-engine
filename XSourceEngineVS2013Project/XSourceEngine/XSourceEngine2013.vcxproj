@@ -25,6 +25,7 @@
     <ClInclude Include="..\..\Engine\include\XSECDynamicGeometryGroup.h" />
     <ClInclude Include="..\..\Engine\include\XSECDynamicGeometryObject.h" />
     <ClInclude Include="..\..\Engine\include\XSECEngine.h" />
+    <ClInclude Include="..\..\Engine\include\XSECFile.h" />
     <ClInclude Include="..\..\Engine\include\XSECFixedVertexData.h" />
     <ClInclude Include="..\..\Engine\include\XSECFPPCamera.h" />
     <ClInclude Include="..\..\Engine\include\XSECFrustum.h" />
@@ -342,6 +343,7 @@
     <ClCompile Include="..\..\Engine\src\XSECDynamicGeometryGroup.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECDynamicGeometryObject.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECEngine.cpp" />
+    <ClCompile Include="..\..\Engine\src\XSECFile.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECFixedVertexData.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECFPPCamera.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECFrustum.cpp" />

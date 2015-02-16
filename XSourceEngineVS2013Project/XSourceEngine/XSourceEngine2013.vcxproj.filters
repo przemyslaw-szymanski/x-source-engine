@@ -933,6 +933,9 @@
     <ClInclude Include="..\..\Engine\include\XSEIFileSystem.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECFile.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine\dllmain.cpp">
@@ -1576,6 +1579,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine\src\FileSystems\XSECFileSystem.cpp">
       <Filter>src\FileSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECFile.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

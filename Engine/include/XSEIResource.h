@@ -2,6 +2,7 @@
 #define XSE_IRESOURCE_H
 
 #include "XSECommon.h"
+#include "XSECFile.h"
 
 namespace XSE
 {
@@ -46,7 +47,8 @@ namespace XSE
                 xst_fi  Handle          GetResourceGroupHandle() const
                                         { return m_ResourceGroupHandle; }
 
-				xst_fi	const FilePtr	GetResourceFile() const
+				xst_fi	
+				const XST::FilePtr		GetResourceFile() const
 										{ return this->m_pResourceFile; }
 
 				xst_fi	IResourceManager*	GetResourceCreator() const
@@ -99,6 +101,7 @@ namespace XSE
 			protected:
 
 				IResourceManager*	m_pResourceCreator = xst_null;
+				//XSE::Resources::FilePtr		m_pFile;
 				Handle				m_ResourceHandle = 0;
 				Handle				m_ResourceGroupHandle = 0;
 		};

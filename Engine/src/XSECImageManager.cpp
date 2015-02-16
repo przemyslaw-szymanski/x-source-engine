@@ -1,5 +1,6 @@
 #include "XSECImageManager.h"
 #include "DevILSystem/XSECDevILSystem.h"
+#include "XSECResourceFileManager.h"
 
 namespace XSE
 {
@@ -115,7 +116,7 @@ namespace XSE
 		IImage* pImg = (IImage*)pRes.GetPtr();
 		if( pImg->m_pResourceFile != xst_null )
 		{
-			i32 iResult = this->m_pResFileMgr->DestroyResource( pImg->m_pResourceFile->GetName() );
+			i32 iResult = this->m_pResFileMgr->DestroyFile( pImg->m_pResourceFile );
 			pImg->m_pResourceFile = xst_null;
 			pImg->m_iResourceState = XST::ResourceStates::PREPARED;
 		}

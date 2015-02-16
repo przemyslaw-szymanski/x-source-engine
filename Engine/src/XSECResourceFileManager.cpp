@@ -1,6 +1,7 @@
 #include "../include/XSECResourceFileManager.h"
 #include "FileSystems/XSECFileSystem.h"
 #include "FileSystems/XSECVirtualFileSystem.h"
+#include "XSECFile.h"
 
 namespace XSE
 {
@@ -106,7 +107,7 @@ namespace XSE
 		return s;
 	}
 
-	XST::FilePtr CResourceFileManager::CGroup::LoadFile(xst_castring& strName, u8** ppOut)
+	Resources::FileWeakPtr CResourceFileManager::CGroup::LoadFile(xst_castring& strName, u8** ppOut)
 	{
 		u32 uHandle = XST::CHash::GetCRC( strName );
 		auto& Itr = m_mFiles.find( uHandle );
@@ -115,22 +116,37 @@ namespace XSE
 			auto& InfoItr = m_mFileInfos.find( uHandle );
 			if( InfoItr != m_mFileInfos.end() )
 			{
+				bool bSharedData;
 				auto& Info = InfoItr->second;
 				u8* pData = xst_null;
 				if( ppOut && *ppOut )
 				{
 					pData = *ppOut;
+					bSharedData = true;
 				}
 				else
 				{
 					pData = xst_new u8[ Info.uFileSize + 1 ]; // +1 for null termination
+					bSharedData = false;
 				}
 				lpcastr pFilePath = GetFilePath( Info );
-				m_pFS->LoadFile( pFilePath, Info.uPathLen, Info.uFileSize, &pData );
-				XST::FilePtr pFile( xst_new XST::Resources::CFile( strName, pFilePath, &pData, Info.uFileSize, false ) );
+				if( XST_FAILED( m_pFS->LoadFile( pFilePath, Info.uPathLen, Info.uFileSize, &pData ) ) )
+				{
+					return Resources::FileWeakPtr();
+				}
+				//XST::FilePtr pFile( xst_new XST::Resources::CFile( strName, pFilePath, &pData, Info.uFileSize, false ) );
+				Resources::FilePtr pFile( xst_new Resources::CFile() );
 				if( pFile.IsValid() )
 				{
-				
+					Resources::CFile* pTmp = pFile.GetPtr();
+					if( bSharedData )
+						pTmp->m_Data.SetSharedData( pData, Info.uFileSize, false );
+					else
+						pTmp->m_Data.Move(&pData, Info.uFileSize, false );
+					
+					pTmp->m_uFileInfoId = uHandle;
+					pTmp->m_ulHandle = uHandle;
+					pTmp->m_ulGroupHandle = m_uHash;
 				}
 				else
 				{
@@ -141,19 +157,61 @@ namespace XSE
 			else
 			{
 				XST_LOG_ERR( "Unable to find file info for file: " << strName );
-				return XST::FilePtr();
+				return Resources::FileWeakPtr();
 			}
 		}
 		else
 		{
 			return Itr->second;
 		}
-		return XST::FilePtr();
+		return Resources::FileWeakPtr();
 	}
 			
 	i32	CResourceFileManager::CGroup::Load(FileVec* pOut, bool bSharedMemory, u8** ppOut)
 	{
 		return XST_FAIL;
+	}
+
+	void CResourceFileManager::CGroup::_DestroyFileData(Resources::CFile* pFile)
+	{
+		xst_assert2( pFile );
+		pFile->m_Data.Delete();
+	}
+
+	void CResourceFileManager::CGroup::Destroy()
+	{
+		for( auto& Pair : m_mFiles )
+		{
+			_DestroyFileData( Pair.second.GetPtr() );
+		}
+
+		m_mFiles.clear();
+		m_mFileInfos.clear();
+	}
+
+	i32	CResourceFileManager::CGroup::DestroyFile(xst_castring& strName)
+	{
+		ul32 uHash = XST::CHash::GetCRC( strName );
+		return DestroyFile( uHash );
+	}
+			
+	i32	CResourceFileManager::CGroup::DestoryFile(ul32 uHandle)
+	{
+		auto& Itr = m_mFiles.find( uHandle );
+		if( Itr != m_mFiles.end() )
+		{
+			Resources::CFile* pFile = Itr->second.GetPtr();
+			_DestroyFileData( pFile );
+			m_mFiles.erase( Itr );
+			return XST_OK;
+		}
+		XST_LOG_ERR( "Unable to find file with handle: " << uHandle );
+		return XST_FAIL;
+	}
+	
+	i32	CResourceFileManager::CGroup::DestroyFile(Resources::FileWeakPtr pFile)
+	{
+		return DestroyFile( pFile->GetHandle() );
 	}
 
 	CResourceFileManager::CResourceFileManager(XST::CFileManager* pFileMgr)
@@ -335,14 +393,14 @@ namespace XSE
 	XST::FilePtr CResourceFileManager::LoadFile(xst_castring& strFileName, ul32 uGroupHandle)
 	{
 		GroupWeakPtr pGr = GetGroup( uGroupHandle );
-		XST::FilePtr pFile = pGr->LoadFile( strFileName, xst_null );
+		Resources::FilePtr pFile = pGr->LoadFile( strFileName, xst_null );
 		return pFile;
 	}
 
 	XST::FilePtr CResourceFileManager::LoadFile(xst_castring& strFileName, xst_castring& strGroupName)
 	{
 		GroupWeakPtr pGr = GetOrCreateGroup( strGroupName );
-		XST::FilePtr pFile = pGr->LoadFile( strFileName, xst_null );
+		Resources::FilePtr pFile = pGr->LoadFile( strFileName, xst_null );
 		return m_pFileMgr->LoadFile( strFileName, strGroupName );
 	}
 
@@ -361,5 +419,34 @@ namespace XSE
 		return m_pFileMgr->RemoveListener( pListener );
 	}
 
+	i32	CResourceFileManager::DestroyFile(Resources::FileWeakPtr pFile)
+	{
+		xst_assert2( pFile.IsValid() );
+		ul32 uHandle = pFile->GetGroupHandle();
+		GroupWeakPtr pGr = GetGroup( uHandle );
+		xst_assert2( pGr.IsValid() );
+		return pGr->DestroyFile( pFile );
+	}
+					
+	i32	CResourceFileManager::DestroyFile(ul32 uHandle, xst_castring& strGroupName)
+	{
+		GroupWeakPtr pGr = GetGroup( strGroupName );
+		xst_assert2( pGr.IsValid() );
+		return pGr->DestroyFile( uHandle );
+	}
+		
+	i32	CResourceFileManager::DestroyFile(ul32 uHandle, ul32 uGroupHandle)
+	{
+		GroupWeakPtr pGr = GetGroup( uGroupHandle );
+		xst_assert2( pGr.IsValid() );
+		return pGr->DestroyFile( uHandle );
+	}
+		
+	i32	CResourceFileManager::DestroyFile(xst_castring& strName, xst_castring& strGroup)
+	{
+		GroupWeakPtr pGr = GetGroup( strGroup );
+		xst_assert2( pGr.IsValid() );
+		return pGr->DestroyFile( strName );
+	}
 
 }//xse

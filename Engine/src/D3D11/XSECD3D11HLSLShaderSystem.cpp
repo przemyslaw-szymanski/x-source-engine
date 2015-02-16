@@ -981,7 +981,7 @@ namespace XSE
 		{
 			xst_assert2( (*ppShader) );
 			IShader* pShader = (*ppShader);
-			FilePtr pFile = pShader->GetResourceFile();
+			XST::FilePtr pFile = pShader->GetResourceFile();
 			TCData<u8>& Data = pFile->GetData();
 			xst_astring strCode;
 			strCode.reserve( 10000 );

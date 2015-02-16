@@ -296,7 +296,7 @@ namespace XSE
 	{
 		xst_assert( pRes.IsValid(), "(CModelManager::PrepareResource) Resource pointer is invalid" );
 		ModelPtr pModel = pRes;
-		FilePtr pFile = pModel->GetResourceFile();
+		XST::FilePtr pFile = pModel->GetResourceFile();
 		if( pFile.IsValid() )
 		{
 			Resources::IResourceLoader* pLoader = GetLoader( pFile->GetExtension() );
