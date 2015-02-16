@@ -10,6 +10,7 @@ namespace XSE
 	{
 		class XST_API CFile : public XST::IObject
 		{
+			friend class CResourceFileManager;
 			public:
 
 				typedef XST::TCData< u8 >	Data;
@@ -24,8 +25,8 @@ namespace XSE
 				ul32		m_ulInfoHandle;
 		};
 
-		typedef XST::TCObjectSmartPointer< CFile >	FilePtr;
-		typedef XST::TCWeakPointer< CFile >			FileWeakPtr;
+		//typedef XST::TCObjectSmartPointer< CFile >	FilePtr;
+		//typedef XST::TCWeakPointer< CFile >			FileWeakPtr;
 	}
 }
 

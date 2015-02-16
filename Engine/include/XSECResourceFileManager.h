@@ -64,8 +64,8 @@ namespace XSE
 			typedef xst_map< i32, IResourceManager* >	ExtMap;
 			typedef xst_map< u32, SFileInfo >			FileInfoMap;
 			typedef XST::TCDynamicArray< ch8 >			NameArray;
-			typedef xst_map< u32, Resources::FilePtr >	FileMap;
-			typedef xst_vector< Resources::FilePtr >	FileVec;
+			typedef xst_map< u32, XST::FilePtr >	FileMap;
+			typedef xst_vector< XST::FilePtr >	FileVec;
 			
 			class CGroup : public XST::IObject
 			{
@@ -108,12 +108,12 @@ namespace XSE
 					xst_fi	bool		IsPrepared() const
 										{ return m_bPrepared; }
 
-					Resources::FileWeakPtr			LoadFile(xst_castring& strName, u8** ppOut);
+					XST::FilePtr			LoadFile(xst_castring& strName, u8** ppOut);
 					i32					Load(FileVec* pOut, bool bSharedMemory, u8** ppOut);
 
 					i32					DestroyFile(xst_castring& strName);
 					i32					DestoryFile(ul32 uHandle);
-					i32					DestroyFile(Resources::FileWeakPtr pFile);
+					i32					DestroyFile(XST::FilePtr pFile);
 
 					void				Destroy();
 
@@ -178,7 +178,8 @@ namespace XSE
 					GroupWeakPtr		GetGroup(xst_castring& strName) const;
 					GroupWeakPtr		GetGroup(ul32 uHandle) const;
 
-					i32					DestroyFile(Resources::FileWeakPtr pFile);
+					i32					DestroyFile(XST::FilePtr pFile);
+					//i32					DestroyFile(XST::FilePtr pFile);
 					i32					DestroyFile(ul32 uHandle, xst_castring& strGroupName);
 					i32					DestroyFile(ul32 uHandle, ul32 uGroupHandle);
 					i32					DestroyFile(xst_castring& strName, xst_castring& strGroup);
