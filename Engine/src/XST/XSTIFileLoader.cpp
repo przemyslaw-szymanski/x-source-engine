@@ -4,18 +4,29 @@ namespace XST
 {
 	namespace Resources
 	{
-		CFile::CFile(xst_castring& strFileName, xst_castring& strPath, u8** ppData, cul32& ulDataSize, cul32& ulCompressedSize, cul32& ulOffset) : 
+		CFile::CFile(xst_castring& strFileName, xst_castring& strPath, u8** ppData, cul32& ulDataSize, bool bSharedData, cul32& ulCompressedSize, cul32& ulOffset) : 
 			m_pParentDir( xst_null ), m_strName( strFileName ), m_strPath( strPath ), m_ulSize( ulDataSize ), m_ulCompSize( ulCompressedSize ), m_ulOffset( ulOffset )
 		{
 			if( ppData && *ppData )
-				m_Data.Move( ppData, ulDataSize, true );
+			{
+				if( bSharedData )
+					m_Data.SetSharedData( *ppData, ulDataSize, true );
+				else
+					m_Data.Move( ppData, ulDataSize, true );
+			}
 		}
 
-		CFile::CFile(CDirectory* pParentDir, xst_castring& strFileName, u8** ppData, cul32& ulDataSize, cul32& ulCompressedSize, cul32& ulOffset) : 
+		CFile::CFile(CDirectory* pParentDir, xst_castring& strFileName, u8** ppData, cul32& ulDataSize, bool bSharedData, cul32& ulCompressedSize, cul32& ulOffset) : 
 			m_pParentDir( pParentDir ), m_strName( strFileName ), m_ulSize( ulDataSize ), m_ulCompSize( ulCompressedSize ), m_ulOffset( ulOffset )
 		{
 			if( ppData && *ppData )
-				m_Data.Move( ppData, ulDataSize, true );
+			{
+				if( bSharedData )
+					m_Data.SetSharedData( *ppData, ulDataSize, true );
+				else
+					m_Data.Move( ppData, ulDataSize, true );
+			}
+		
 			if( pParentDir != xst_null )
 			{
 				m_strPath = pParentDir->GetPath();

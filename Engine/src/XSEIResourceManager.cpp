@@ -1,6 +1,7 @@
 #include "XSEIResourceManager.h"
 #include "XSTCHash.h"
 #include "XSEIResourceLoader.h"
+#include "XSECResourceFileManager.h"
 
 namespace XSE
 {
@@ -29,11 +30,13 @@ namespace XSE
 
     IResourceManager::IResourceManager()
     {
-        m_pFileMgr = CFileManager::GetSingletonPtr();
+        //m_pFileMgr = CFileManager::GetSingletonPtr();
+		m_pResFileMgr = CResourceFileManager::GetSingletonPtr();
     }
 
     IResourceManager::~IResourceManager()
     {
+		m_pResFileMgr = xst_null;
     }
 
 	void IResourceManager::Destroy()
@@ -53,7 +56,7 @@ namespace XSE
     i32 IResourceManager::Init()
     {
 		m_bDestroyed = false;
-        xst_assert( m_pFileMgr, "(IResourceManager::Init) File manager singleton not created" );
+        xst_assert( m_pResFileMgr, "(IResourceManager::Init) File manager singleton not created" );
         return XST_OK;
     }
 
@@ -320,7 +323,7 @@ namespace XSE
 
 	ResourceWeakPtr IResourceManager::LoadResource(xst_castring &strFileName, xst_castring& strResName, xst_castring &strGroupName, bool bFullLoad)
 	{
-		xst_assert( m_pFileMgr, "(IResourceManager::LoadResource) File manager not created" );
+		xst_assert( m_pResFileMgr, "(IResourceManager::LoadResource) File manager not created" );
 		
 		ResourceHandle ResHandle = CalcHandle( strResName.c_str(), strResName.length() );
 		GroupHandle GrHandle = CalcHandle( strGroupName.c_str(), strResName.length() );
@@ -345,7 +348,7 @@ namespace XSE
 
 	i32	IResourceManager::LoadResource(ResourceWeakPtr pRes, xst_castring& strFileName, xst_castring& strGroupName, bool bFullLoad)
 	{
-		xst_assert( m_pFileMgr, "(IResourceManager::LoadResource) File manager not created" );
+		xst_assert( m_pResFileMgr, "(IResourceManager::LoadResource) File manager not created" );
 		xst_assert2( pRes.IsValid() );
 
 		if( pRes.IsNull() )
@@ -359,7 +362,7 @@ namespace XSE
 			return XST_FAIL;
 		}
 
-		XST::FilePtr pFile = m_pFileMgr->LoadFile( strFileName, strGroupName );
+		XST::FilePtr pFile = m_pResFileMgr->LoadFile( strFileName, strGroupName );
 		if( pFile.IsNull() )
 		{
 			DestroyResource( pRes );

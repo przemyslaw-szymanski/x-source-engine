@@ -31,14 +31,15 @@ namespace XST
 			public:
 
 				typedef XST::TCObjectSmartPointer<CFile>		FilePtr;
+				typedef XST::TCWeakPointer< CFile >				FileWeakPtr;
 				typedef u8										DataType;
 				typedef DataType*								DataTypePtr;
 				typedef TCData< DataType >						Data;
 
 			public:
 
-										CFile(xst_castring& strFileName, xst_castring& strPath = StringUtil::EmptyAString, u8** ppData = xst_null, cul32& ulDataSize = 0, cul32& ulCompressedSize = 0, cul32& ulOffset = 0);
-										CFile(CDirectory* pParentDir, xst_castring& strFileName, u8** ppData, cul32& ulDataSize, cul32& ulCompressedSize = 0, cul32& ulOffset = 0);
+										CFile(xst_castring& strFileName, xst_castring& strPath, u8** ppData, cul32& ulDataSize, bool bSharedData, cul32& ulCompressedSize = 0, cul32& ulOffset = 0);
+										CFile(CDirectory* pParentDir, xst_castring& strFileName, u8** ppData, cul32& ulDataSize, bool bSharedData, cul32& ulCompressedSize = 0, cul32& ulOffset = 0);
 
 										//CFile(const CFile& File);
 				virtual					~CFile();
@@ -80,8 +81,10 @@ namespace XST
 				ul32			m_ulOffset;
 		};
 
-		typedef XST::TCObjectSmartPointer<CFile>		FilePtr;
+		typedef XST::TCObjectSmartPointer< CFile >		FilePtr;
 		XST_TEMPLATE_CLASS XST::TCObjectSmartPointer< CFile >;
+		typedef XST::TCWeakPointer< CFile >				FileWeakPtr;
+		XST_TEMPLATE_CLASS XST::TCWeakPointer< CFile >;
 
 
 		class XST_API CDirectory : public XST::IObject
@@ -143,7 +146,8 @@ namespace XST
 
 	}//resources
 
-	typedef Resources::FilePtr	FilePtr;
+	typedef Resources::FilePtr		FilePtr;
+	typedef Resources::FileWeakPtr	FileWeakPtr;
 
 	class XST_API IFileLoaderListener
 	{

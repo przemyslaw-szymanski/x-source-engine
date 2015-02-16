@@ -335,35 +335,49 @@ namespace XSE
 
 		i32 iLoadingOrder = 0;
 		m_pResFileMgr->SetManager( XSE::ResourceTypes::IMAGE, m_pImgMgr );
-		m_pResFileMgr->SetLoadingOrder( XSE::ResourceTypes::IMAGE, iLoadingOrder );
-		m_pResFileMgr->AddExtension( "dds", XSE::ResourceTypes::IMAGE );
-		m_pResFileMgr->AddExtension( "bmp", XSE::ResourceTypes::IMAGE );
-		m_pResFileMgr->AddExtension( "tga", XSE::ResourceTypes::IMAGE );
-		m_pResFileMgr->AddExtension( "jpg", XSE::ResourceTypes::IMAGE );
-		m_pResFileMgr->AddExtension( "jpeg", XSE::ResourceTypes::IMAGE );
+		m_pResFileMgr->SetManager( XSE::ResourceTypes::TEXTURE, m_pTexMgr );
+		m_pResFileMgr->SetManager( XSE::ResourceTypes::SHADER, m_pShaderMgr );
+		m_pResFileMgr->SetManager( XSE::ResourceTypes::LUA_SCRIPT, m_pLuaScriptMgr );
+		m_pResFileMgr->SetManager( XSE::ResourceTypes::MATERIAL, m_pMatMgr );
+		m_pResFileMgr->SetManager( XSE::ResourceTypes::MODEL, m_pModelMgr );
+		m_pResFileMgr->SetManager( XSE::ResourceTypes::MESH, m_pMeshMgr );
+
+		m_pResFileMgr->SetLoadingOrder( XSE::ResourceTypes::TEXTURE, iLoadingOrder++ );
+		m_pResFileMgr->SetLoadingOrder( XSE::ResourceTypes::SHADER, iLoadingOrder++ );
+		m_pResFileMgr->SetLoadingOrder( XSE::ResourceTypes::MATERIAL, iLoadingOrder++ );
+		m_pResFileMgr->SetLoadingOrder( XSE::ResourceTypes::MESH, iLoadingOrder++ );
+		m_pResFileMgr->SetLoadingOrder( XSE::ResourceTypes::MODEL, iLoadingOrder++ );
+		m_pResFileMgr->SetLoadingOrder( XSE::ResourceTypes::LUA_SCRIPT, iLoadingOrder++ );
+		m_pResFileMgr->SetLoadingOrder( XSE::ResourceTypes::IMAGE, iLoadingOrder++ );
+
+		m_pResFileMgr->AddExtension( "dds", XSE::ResourceTypes::TEXTURE );
+		m_pResFileMgr->AddExtension( "bmp", XSE::ResourceTypes::TEXTURE );
+		m_pResFileMgr->AddExtension( "tga", XSE::ResourceTypes::TEXTURE );
+		m_pResFileMgr->AddExtension( "jpg", XSE::ResourceTypes::TEXTURE );
+		m_pResFileMgr->AddExtension( "jpeg", XSE::ResourceTypes::TEXTURE );
+		m_pResFileMgr->AddExtension( "png", XSE::ResourceTypes::TEXTURE );
 		m_pResFileMgr->AddExtension( "raw", XSE::ResourceTypes::IMAGE );
-		/**m_pResFileMgr->AddExtension( "dds",		XSE::ResourceTypes::IMAGE, iLoadingOrder, m_pImgMgr );
-		m_pResFileMgr->AddExtension( "bmp",		XSE::ResourceTypes::IMAGE, iLoadingOrder, m_pImgMgr );
-		m_pResFileMgr->AddExtension( "tga",		XSE::ResourceTypes::IMAGE, iLoadingOrder, m_pImgMgr );
-		m_pResFileMgr->AddExtension( "jpg",		XSE::ResourceTypes::IMAGE, iLoadingOrder, m_pImgMgr );
-		m_pResFileMgr->AddExtension( "jpeg",	XSE::ResourceTypes::IMAGE, iLoadingOrder, m_pImgMgr );
-		m_pResFileMgr->AddExtension( "raw",		XSE::ResourceTypes::IMAGE, iLoadingOrder, m_pImgMgr );*/
-		++iLoadingOrder;
-		m_pResFileMgr->AddExtension( "fx",		XST::ResourceType::SHADER, iLoadingOrder, m_pShaderMgr );
-		m_pResFileMgr->AddExtension( "vs",		XST::ResourceType::SHADER, iLoadingOrder, m_pShaderMgr );
-		m_pResFileMgr->AddExtension( "ps",		XST::ResourceType::SHADER, iLoadingOrder, m_pShaderMgr );
-		m_pResFileMgr->AddExtension( "gs",		XST::ResourceType::SHADER, iLoadingOrder, m_pShaderMgr );
-		++iLoadingOrder;
-		m_pResFileMgr->AddExtension( "material",XST::ResourceType::MATERIAL, iLoadingOrder, m_pMatMgr );
-		m_pResFileMgr->AddExtension( "xmt",		XST::ResourceType::MATERIAL, iLoadingOrder, m_pMatMgr );
-		++iLoadingOrder;
-		m_pResFileMgr->AddExtension( "xmd",		XST::ResourceType::MODEL, iLoadingOrder, m_pModelMgr );
-		m_pResFileMgr->AddExtension( "model",	XST::ResourceType::MODEL, iLoadingOrder, m_pModelMgr );
-		m_pResFileMgr->AddExtension( "obj",		XST::ResourceType::MODEL, iLoadingOrder, m_pModelMgr );
-		++iLoadingOrder;
-		m_pResFileMgr->AddExtension( "lua",		XST::ResourceType::LUA_SCRIPT, iLoadingOrder, m_pLuaScriptMgr );
-		++iLoadingOrder;
 		
+		m_pResFileMgr->AddExtension( "ps", XSE::ResourceTypes::IMAGE );
+		m_pResFileMgr->AddExtension( "vs", XSE::ResourceTypes::IMAGE );
+		m_pResFileMgr->AddExtension( "psh", XSE::ResourceTypes::IMAGE );
+		m_pResFileMgr->AddExtension( "vsh", XSE::ResourceTypes::IMAGE );
+		
+		m_pResFileMgr->AddExtension( "lua", XSE::ResourceTypes::LUA_SCRIPT );
+		m_pResFileMgr->AddExtension( "xls", XSE::ResourceTypes::LUA_SCRIPT );
+
+
+		m_pResFileMgr->AddExtension( "xmt", XSE::ResourceTypes::MATERIAL );
+		m_pResFileMgr->AddExtension( "material", XSE::ResourceTypes::MATERIAL );
+
+		m_pResFileMgr->AddExtension( "obj", XSE::ResourceTypes::MODEL );
+		m_pResFileMgr->AddExtension( "fbx", XSE::ResourceTypes::MODEL );
+		m_pResFileMgr->AddExtension( "xmd", XSE::ResourceTypes::MODEL );
+		m_pResFileMgr->AddExtension( "model", XSE::ResourceTypes::MODEL );
+
+		m_pResFileMgr->AddExtension( "xms", XSE::ResourceTypes::MESH );
+		m_pResFileMgr->AddExtension( "mesh", XSE::ResourceTypes::MESH );
+
 		m_EngineTimer.Start();
 
 		return RESULT::OK;

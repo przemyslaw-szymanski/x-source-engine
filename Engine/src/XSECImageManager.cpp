@@ -115,7 +115,7 @@ namespace XSE
 		IImage* pImg = (IImage*)pRes.GetPtr();
 		if( pImg->m_pResourceFile != xst_null )
 		{
-			i32 iResult = this->m_pFileMgr->DestroyResource( pImg->m_pResourceFile->GetName() );
+			i32 iResult = this->m_pResFileMgr->DestroyResource( pImg->m_pResourceFile->GetName() );
 			pImg->m_pResourceFile = xst_null;
 			pImg->m_iResourceState = XST::ResourceStates::PREPARED;
 		}

@@ -53,7 +53,7 @@ namespace XST
 		pData[ m_Reader.GetSize() ] = '\0';
 		m_Reader.Close();
 
-		Resources::FilePtr pFile( xst_new Resources::CFile( XST::Path::GetFileName( strFullPath ), strFullPath, &pData, ulDataSize ) );
+		Resources::FilePtr pFile( xst_new Resources::CFile( XST::Path::GetFileName( strFullPath ), strFullPath, &pData, ulDataSize, false ) );
 
 		return pFile;
 	}
@@ -90,7 +90,7 @@ namespace XST
 		{
 			if( !( FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) )
 			{
-				Resources::FilePtr pFile( xst_new Resources::CFile( strDir, Path::GetFileName( FindFileData.cFileName ) ) );
+				Resources::FilePtr pFile( xst_new Resources::CFile( strDir, Path::GetFileName( FindFileData.cFileName ), xst_null, 0, false ) );
 				pmFiles->insert( Resources::CDirectory::FileMap::value_type( pFile->GetName(), pFile ) );
 			}
 			else if( FindFileData.cFileName[0] != '.' && FindFileData.cFileName[1] != '.' )
@@ -103,7 +103,7 @@ namespace XST
 			{
 				if( !( FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) )
 				{
-					Resources::FilePtr pFile( xst_new Resources::CFile( Path::GetFileName( FindFileData.cFileName ), strDir ) );
+					Resources::FilePtr pFile( xst_new Resources::CFile( Path::GetFileName( FindFileData.cFileName ), strDir, xst_null, 0, false ) );
 					pmFiles->insert( Resources::CDirectory::FileMap::value_type( pFile->GetName(), pFile ) );
 				}
 				else if( FindFileData.cFileName[0] != '.' && FindFileData.cFileName[1] != '.' )
@@ -182,7 +182,7 @@ namespace XST
 				{
 					if( !( FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) )
 					{
-						Resources::FilePtr pFile( xst_new Resources::CFile( Path::GetFileName( FindFileData.cFileName ), FindFileData.cFileName ) );
+						Resources::FilePtr pFile( xst_new Resources::CFile( Path::GetFileName( FindFileData.cFileName ), FindFileData.cFileName, xst_null, 0, false ) );
 						m_mFiles.insert( Resources::CDirectory::FileMap::value_type( pFile->GetName(), pFile ) );
 					}
 

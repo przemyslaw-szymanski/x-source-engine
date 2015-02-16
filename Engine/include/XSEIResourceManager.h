@@ -151,7 +151,8 @@ namespace XSE
 			ResLoaderMap		m_mLoaders;
             xst_stringstream    m_ssTmpName;
             XST::IAllocator*    m_pMemoryMgr = xst_null;
-            XST::CFileManager*	m_pFileMgr = xst_null;
+            //XST::CFileManager*	m_pFileMgr = xst_null;
+			CResourceFileManager*	m_pResFileMgr = xst_null;
             lpcastr             m_pStrTmp = "";
             GroupWeakPtr        m_pLastUsedGroup;
             ul32                m_LastUsedGroupHandle = XSE_INVALID_HANDLE;

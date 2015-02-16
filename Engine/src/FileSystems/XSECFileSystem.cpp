@@ -211,12 +211,12 @@ namespace XSE
 		return XSE::GetDirInfos( strDirPath, pOut );
 	}
 
-	i32	CFileSystem::LoadFile(const SFileInfo& Info, u8** ppData)
+	i32	CFileSystem::LoadFile(lpcastr pFullPath, u32 uPathLength, u32 uFileSize, u8** ppData)
 	{ 
-		XST::IFile::FileHandle hFile = XST::IFile::Open( Info.strPath, XST::IFile::READ_BINARY );
+		XST::IFile::FileHandle hFile = XST::IFile::Open( pFullPath, XST::IFile::READ_BINARY );
 		if( hFile )
 		{
-			if( XST::IFile::Read( hFile, ppData, Info.uFileSize ) )
+			if( XST::IFile::Read( hFile, ppData, uFileSize ) )
 			{
 				if( XST::IFile::Close( hFile ) )
 				{
@@ -224,19 +224,19 @@ namespace XSE
 				}
 				else
 				{
-					XST_LOG_ERR( "Unable to close file: " << Info.strPath );
+					XST_LOG_ERR( "Unable to close file: " << pFullPath );
 					return XST_FAIL;
 				}
 			}
 			else
 			{
-				XST_LOG_ERR( "Unable to read file: " << Info.strPath );
+				XST_LOG_ERR( "Unable to read file: " << pFullPath );
 				return XST_FAIL;
 			}
 		}
 		else
 		{
-			XST_LOG_ERR( "Unable to open file: " << Info.strPath );
+			XST_LOG_ERR( "Unable to open file: " << pFullPath );
 			return XST_FAIL;
 		}
 		
@@ -261,7 +261,7 @@ namespace XSE
 		i32 iResult = 0;
 		for( u32 i = 0; i < uInfoCount; ++i )
 		{
-			iResult = LoadFile( aInfos[ i ], &ppOut[ i ] );
+			//iResult = LoadFile( aInfos[ i ], &ppOut[ i ] );
 		}
 		return iResult; 
 	}
@@ -274,7 +274,7 @@ namespace XSE
 		{
 			auto& Info = aInfos[ i ];
 			pOut->pData += uOffset;
-			if( XST_FAILED( LoadFile( Info, &pOut->pData ) ) )
+			//if( XST_FAILED( LoadFile( Info, &pOut->pData ) ) )
 				return XST_FAIL;
 			uOffset += Info.uFileSize;
 		}

@@ -89,9 +89,9 @@ namespace XSE
 					const SFileInfo&	GetFileInfoByName(xst_castring& strFileName) const;
 					const SFileInfo&	GetFileInfoByPath(xst_castring& strFullPath) const;
 
-					lpcastr				GetFileDirPath(const SFileInfo& Info);
-					lpcastr				GetFileName(const SFileInfo& Info);
-					lpcastr				GetFileExt(const SFileInfo& Info);
+					lpcastr				GetFilePath(const SFileInfo& Info) const;
+					lpcastr				GetFileName(const SFileInfo& Info) const;
+					lpcastr				GetFileExt(const SFileInfo& Info) const;
 
 					xst_fi void			SetFileSystem(IFileSystem* pFS)
 										{ m_pFS = pFS; }
@@ -107,14 +107,15 @@ namespace XSE
 					xst_fi	bool		IsPrepared() const
 										{ return m_bPrepared; }
 
-					XST::FilePtr		LoadFile(xst_castring& strName);
-					i32					Load(FileVec* pOut, bool bSharedMemory);
+					XST::FilePtr		LoadFile(xst_castring& strName, u8** ppOut);
+					i32					Load(FileVec* pOut, bool bSharedMemory, u8** ppOut);
 
 				protected:
 
 					FileInfoMap		m_mFileInfos;
 					FileMap			m_mFiles;
 					IFileSystem*	m_pFS;
+					u8*				m_pSharedBuffer = xst_null;
 					NameArray		m_aNames;
 					xst_astring		m_strName;
 					LocVec			m_vLocations;
@@ -152,6 +153,9 @@ namespace XSE
 					IFileSystem*		GetFileSystem(xst_castring& strName) const;
 
 					XST::FilePtr		LoadFile(xst_castring& strFileName, xst_castring& strGroupName);
+					XST::FilePtr		LoadFile(xst_castring& strFileName, ul32 uGroupHandle);
+					i32					LoadGroup(xst_castring& strGroupName);
+					i32					LoadGroup(ul32 uGroupHandle);
 
 					XST::FilePtr		LoadFromFileSystem(xst_castring& strDirPath, xst_castring& strFileName, xst_castring& strGroupName);
 
@@ -160,6 +164,13 @@ namespace XSE
 					i32					RemoveListener(XST::IFileListener* pListener);
 					
 					GroupWeakPtr		GetOrCreateGroup(xst_castring& strName);
+					GroupWeakPtr		GetGroup(xst_castring& strName) const;
+					GroupWeakPtr		GetGroup(ul32 uHandle) const;
+
+					i32					DestroyFile(XST::FileWeakPtr pFile);
+					i32					DestroyFile(ul32 uHandle, xst_castring& strGroupName);
+					i32					DestroyFile(ul32 uHandle, ul32 uGroupHandle);
+					i32					DestroyFile(xst_castring& strName, xst_castring& strGroup);
 
 		protected:
 

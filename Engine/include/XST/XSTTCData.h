@@ -21,7 +21,7 @@ namespace XST
 
 		public:
 
-							TCData() : m_pData(0), m_ulSize(0), m_bNullTerminated(false)
+							TCData()
 							{}
 
 				virtual		~TCData()
@@ -35,6 +35,14 @@ namespace XST
 		xst_fi	
 		const	DataPtr		GetPointer() const
 							{ return m_pData; }
+
+		xst_fi	void		SetSharedData(const DataPtr pData, ul32 uSize, bool bNullTerminated)
+		{ 
+			Delete();
+			m_pData = pData;
+			m_ulSize = uSize;
+			m_bNullTerminated = bNullTerminated;
+		}
 
 		xst_fi	bool		Copy(const DataPtr pSrc, ul32 ulSize, bool bIsNullTerminated)
 							{ 
@@ -95,9 +103,12 @@ namespace XST
 
 		xst_fi	void		Delete()
 							{
-								xst_deletea( m_pData );
+								if( !m_bShared )
+									xst_deletea( m_pData );
 								m_ulSize = 0;
 								m_bNullTerminated = false;
+								m_pData = xst_null;
+								m_bShared = false;
 							}
 
 				bool		Resize(ul32 ulNewSize)
@@ -148,9 +159,10 @@ namespace XST
 
 		protected:
 
-			DataPtr			m_pData;
-			ul32			m_ulSize;
-			bool			m_bNullTerminated;
+			DataPtr			m_pData = xst_null;
+			ul32			m_ulSize = 0;
+			bool			m_bNullTerminated = false;
+			bool			m_bShared = false;
 	};
 
 }//XST
