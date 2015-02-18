@@ -7,7 +7,7 @@
 
 namespace XSE
 {
-	using namespace Resources;
+
 
 	static lpcastr g_alpszShaderTypes[] =
 	{
@@ -37,7 +37,7 @@ namespace XSE
 		}*/
 
 		xst_castring strPSName( "xse_default_ps" );
-		IPixelShader* pPS = m_pRenderSystem->CreateDefaultPixelShader( xst_null, this, 0, strPSName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, xst_null );
+		Resources::IPixelShader* pPS = m_pRenderSystem->CreateDefaultPixelShader( xst_null, this, 0, strPSName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, xst_null );
 		if( pPS == xst_null )
 		{
 			return XST_FAIL;
@@ -97,7 +97,7 @@ namespace XSE
 			this->DestroyResource( pVS );
 			return VertexShaderPtr();
 		}
-		pVS->m_iResourceState = ResourceStates::PREPARED;
+		pVS->m_iResourceState = Resources::ResourceStates::PREPARED;
 		return pVS;
 	}
 
@@ -122,7 +122,7 @@ namespace XSE
 			this->DestroyResource( pPS );
 			return PixelShaderPtr();
 		}
-		pPS->m_iResourceState = ResourceStates::PREPARED;
+		pPS->m_iResourceState = Resources::ResourceStates::PREPARED;
 		return pPS;
 	}
 
@@ -149,8 +149,8 @@ namespace XSE
 	{
 		xst_assert( m_pRenderSystem, "(CShaderManager::_CreateResource) RenderSystem not set" );
 		Resources::IResource* pRes = xst_null;
-		IShader* pShader = xst_null;
-		xst_astr16 strShaderType;
+		Resources::IShader* pShader = xst_null;
+		XST::xst_astr16 strShaderType;
 		//Get file extension
 
 		switch( m_eShaderType )
@@ -159,12 +159,12 @@ namespace XSE
 			{
 				//Set default input layout
 				IInputLayout* pIL = m_pRenderSystem->GetInputLayout( ILE::POSITION );
-				pShader = (IShader*)m_pRenderSystem->CreateVertexShader( pIL, this, ulHandle, strName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, m_pAllocator );
+				pShader = (Resources::IShader*)m_pRenderSystem->CreateVertexShader( pIL, this, ulHandle, strName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, m_pAllocator );
 			}
 			break;
 
 			case ShaderTypes::PIXEL:
-				pShader = (IShader*)m_pRenderSystem->CreatePixelShader( this, ulHandle, strName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, m_pAllocator );
+				pShader = (Resources::IShader*)m_pRenderSystem->CreatePixelShader( this, ulHandle, strName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, m_pAllocator );
 			break;
 		}
 
@@ -264,7 +264,7 @@ namespace XSE
 		return Itr->second;
 	}
 
-	VertexShaderPtr CShaderManager::GetDefaultVertexShader(const CMesh* pMesh)
+	VertexShaderPtr CShaderManager::GetDefaultVertexShader(const Resources::CMesh* pMesh)
 	{
 		return GetDefaultVertexShader( pMesh->GetInputLayout() );
 	}
@@ -272,7 +272,7 @@ namespace XSE
 	i32	CShaderManager::PrepareResource(ResourceWeakPtr pRes)
 	{
 		xst_assert( pRes != xst_null, "(CShaderManager::PrepareResource)" );
-		IShader* pShader = (IShader*)pRes.GetPtr();
+		Resources::IShader* pShader = (Resources::IShader*)pRes.GetPtr();
 		pShader->m_eProfile = this->m_eShaderProfile;
 		pShader->m_eShaderLanguage = this->m_eShaderLang;
 		pShader->m_eShaderType = this->m_eShaderType;
@@ -281,7 +281,7 @@ namespace XSE
 			return XST_FAIL;
 		}
 		//pRes->m_iResourceState = ResourceStates::PREPARED;
-		pShader->m_iResourceState = ResourceStates::PREPARED;
+		pShader->m_iResourceState = Resources::ResourceStates::PREPARED;
 
 		return XST_OK;
 	}

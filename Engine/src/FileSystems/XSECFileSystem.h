@@ -22,6 +22,7 @@ namespace XSE
 			i32			GetFileInfos(xst_castring& strDirPath, bool bRecursive, FileInfoVec* pvOut) xst_implement;
 			i32			LoadFiles(const SFileInfo* aInfos, u32 uInfoCount, u8** ppOut) xst_implement;
 			i32			LoadFiles(const SFileInfo* aInfos, u32 uInfoCount, SFileArray* pOut) xst_implement;
+			ul32		GetFileSize(lpcastr pFullPath, u32 uPathLength) xst_implement;
 
 	};
 } // xse

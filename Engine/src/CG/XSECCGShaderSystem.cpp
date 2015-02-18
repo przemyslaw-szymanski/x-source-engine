@@ -5,8 +5,6 @@
 
 namespace XSE
 {
-	using namespace Resources;
-
 	CCGShaderSystem::CCGShaderSystem() : IShaderSystem( ShaderLanguages::CG )
 	{
 		m_CGContext = xst_null;
@@ -105,7 +103,7 @@ namespace XSE
 	{
 		xst_assert( pVS, "(CCGShaderSystem::CompileVertexShader)" );
 
-		CCGVertexShader* pShader = (CCGVertexShader*)pVS;
+		Resources::CCGVertexShader* pShader = (Resources::CCGVertexShader*)pVS;
 		if( pShader->m_CGShader == xst_null )
 		{
 			//Create program if not created
@@ -125,7 +123,7 @@ namespace XSE
 	{
 		xst_assert( pPS, "(CCGShaderSystem::CompilePixelShader)" );
 
-		CCGPixelShader* pShader = (CCGPixelShader*)pPS;
+		Resources::CCGPixelShader* pShader = (Resources::CCGPixelShader*)pPS;
 		if( pShader->m_CGShader == xst_null )
 		{
 			//Create program if not created
@@ -144,7 +142,7 @@ namespace XSE
 	void CCGShaderSystem::DestroyVertexShader(Resources::IVertexShader* pVS)
 	{
 		xst_assert( pVS, "(CCGShaderSystem::DestroyVertexShader)" );
-		CCGVertexShader* pShader = (CCGVertexShader*)pVS;
+		Resources::CCGVertexShader* pShader = (Resources::CCGVertexShader*)pVS;
 		if( pShader->m_CGShader != xst_null )
 		{
 			cgDestroyProgram( pShader->m_CGShader );
@@ -154,7 +152,7 @@ namespace XSE
 	void CCGShaderSystem::DestroyPixelShader(Resources::IPixelShader* pPS)
 	{
 		xst_assert( pPS, "(CCGShaderSystem::DestroyPixelShader)" );
-		CCGPixelShader* pShader = (CCGPixelShader*)pPS;
+		Resources::CCGPixelShader* pShader = (Resources::CCGPixelShader*)pPS;
 		if( pShader->m_CGShader != xst_null )
 		{
 			cgDestroyProgram( pShader->m_CGShader );
@@ -183,20 +181,20 @@ namespace XSE
 
 	i32 CCGShaderSystem::PrepareResource(Resources::IResource* pRes)
 	{
-		IShader* pShader = (IShader*)pRes;
+		Resources::IShader* pShader = (Resources::IShader*)pRes;
 
 		switch( pShader->GetShaderType() )
 		{
 			case ShaderTypes::VERTEX:
 			{
-				CCGVertexShader* pVShader = (CCGVertexShader*)pShader;
+				Resources::CCGVertexShader* pVShader = (Resources::CCGVertexShader*)pShader;
 				return this->CompileVertexShader( pVShader );
 			}
 			break;
 
 			case ShaderTypes::PIXEL:
 			{
-				CCGPixelShader* pPShader = (CCGPixelShader*)pShader;
+				Resources::CCGPixelShader* pPShader = (Resources::CCGPixelShader*)pShader;
 				return this->CompilePixelShader( pPShader );
 			}
 			break;

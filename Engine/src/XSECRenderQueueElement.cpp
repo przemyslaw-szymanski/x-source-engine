@@ -7,7 +7,7 @@
 
 namespace XSE
 {
-	using namespace Resources;
+
 
 	u32 RenderQueueTypes::TERRAIN		= 0;
 	u32 RenderQueueTypes::STATIC		= 1;
@@ -35,9 +35,9 @@ namespace XSE
 
 		ITechnique* pTech;
 		IPass* pPass;
-		IVertexShader* pVS;
-		IPixelShader* pPS;
-		CMaterial* pMat;
+		Resources::IVertexShader* pVS;
+		Resources::IPixelShader* pPS;
+		Resources::CMaterial* pMat;
 		IRenderableObject* pObj;
 		Mtx4 mtxTmp;
 
@@ -108,8 +108,8 @@ namespace XSE
 		{
 			case ObjectTypes::MODEL:
 			{
-				CModel* pModel = (CModel*)pObject;
-				CModel::MeshVecItr Itr;
+				Resources::CModel* pModel = (Resources::CModel*)pObject;
+				Resources::CModel::MeshVecItr Itr;
 				xst_stl_foreach( Itr, pModel->GetMeshes() )
 				{
 					AddObject( (*Itr) );

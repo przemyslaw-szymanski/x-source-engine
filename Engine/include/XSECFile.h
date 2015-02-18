@@ -2,7 +2,7 @@
 #define XSE_CFILE_H
 
 #include "XSECommon.h"
-#include "XSTTCData.h"
+#include "XST/XSTTCData.h"
 
 namespace XSE
 {
@@ -14,6 +14,8 @@ namespace XSE
 			public:
 
 				typedef XST::TCData< u8 >	Data;
+				typedef XST::TCObjectSmartPointer< CFile >	FilePtr;
+				typedef XST::TCWeakPointer< CFile >			FileWeakPtr;
 
 			public:
 
@@ -24,10 +26,10 @@ namespace XSE
 				ul32		m_ulGroupHandle;
 				ul32		m_ulInfoHandle;
 		};
+	} // resources
 
-		//typedef XST::TCObjectSmartPointer< CFile >	FilePtr;
-		//typedef XST::TCWeakPointer< CFile >			FileWeakPtr;
-	}
-}
+	typedef Resources::CFile::FilePtr		ResFilePtr;
+	typedef Resources::CFile::FileWeakPtr	ResFileWeakPtr;
+} // xse
 
 #endif // XSE_CFILE_H

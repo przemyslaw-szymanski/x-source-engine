@@ -11,7 +11,7 @@
 
 namespace XSE
 {
-	using namespace Resources;
+
 
 	CModelManager::CModelManager(CMeshManager* pMeshMgr)
 	{
@@ -76,7 +76,7 @@ namespace XSE
 		{
 			return XST_FAIL;
 		}*/
-		CModel::MeshVecItr Itr;
+		Resources::CModel::MeshVecItr Itr;
 		xst_stl_foreach( Itr, pModel->GetMeshes() )
 		{
 			//m_pMeshMgr->DestroyMesh( (*Itr), strGroupName );
@@ -286,7 +286,7 @@ namespace XSE
 
 	Resources::IResource*	CModelManager::_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup)
 	{
-		CModel* pModel = xst_new CModel( m_pRenderSystem, m_pRenderSystem->GetInputLayout( ILE::POSITION ), this, ulHandle, strName, 100, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
+		Resources::CModel* pModel = xst_new Resources::CModel( m_pRenderSystem, m_pRenderSystem->GetInputLayout( ILE::POSITION ), this, ulHandle, strName, 100, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
 		//Set default material
 		pModel->SetMaterial( m_pMeshMgr->GetMaterialManager()->GetDefaultMaterial() );
 		return pModel;

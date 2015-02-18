@@ -172,7 +172,7 @@ namespace XSE
 
 	void CMipMapPagingTerrain::Update()
 	{
-		CMesh* pCurrMesh;
+		Resources::CMesh* pCurrMesh;
 		CMipMapTerrainTile* pCurrTile;
         f32 fConstDist = 100;
         f32 fLODDist = fConstDist;
@@ -492,11 +492,11 @@ namespace XSE
 		//pRS->SetInputLayoutWithCheck( m_pInputLayout );
 		//pRS->SetTopology( TopologyTypes::TRIANGLE_LIST );
 
-		CMaterial* pMat = m_pMaterial.GetPtr();
+		Resources::CMaterial* pMat = m_pMaterial.GetPtr();
 		ITechnique* pTech = pMat->GetCurrentTechnique();
 		IPass* pPass;
-		IVertexShader* pVS;
-		IPixelShader* pPS;
+		Resources::IVertexShader* pVS;
+		Resources::IPixelShader* pPS;
 		for(u32 i = 0; i < pTech->GetPassCount(); ++i)
 		{
 			pPass = pTech->GetPass( i );

@@ -21,7 +21,7 @@ namespace XSE
 		return GetMgrByResType( iResType );
 	}
 
-	i32 CResourceFileManager::CGroup::AddFileInfo(xst_castring& strFullPath)
+	i32 CResourceFileManager::CGroup::AddFileInfo(xst_castring& strFullPath, ul32 uFileSize)
 	{
 		u32 uPos = strFullPath.find_last_of("\\/");
 		xst_astring strDirPath = strFullPath.substr(0, uPos + 1);
@@ -29,7 +29,7 @@ namespace XSE
 		xst_astring strFileName = strFullPath.substr( uPos+1, strFullPath.length() - uPos );
 		xst_astring strExt = strFullPath.substr( uPos2+1, uPos2 - strFullPath.length() );
 		return AddFileInfo( strDirPath.c_str(), strDirPath.length(), strFileName.c_str(), strFileName.length(),
-							strExt.c_str(), strExt.length() );
+							strExt.c_str(), strExt.length(), uFileSize );
 	}
 
 	i32 CResourceFileManager::CGroup::AddFileInfo(const IFileSystem::SFileInfo& Info)
@@ -37,13 +37,14 @@ namespace XSE
 		u32 uLen = Info.uPathLength - Info.uNameLength;
 		lpcastr strName = Info.strPath + Info.uPathLength - Info.uNameLength;
 		lpcastr strExt = Info.strPath + Info.uPathLength - Info.uExtLength + 1;
-		return AddFileInfo(	Info.strPath, Info.uPathLength, strName, Info.uNameLength, strExt, Info.uExtLength );
+		return AddFileInfo(	Info.strPath, Info.uPathLength, strName, Info.uNameLength, strExt, Info.uExtLength, Info.uFileSize );
 	}
 
 	i32 CResourceFileManager::CGroup::AddFileInfo(	lpcastr strPath, u32 uPathSize, lpcastr strName, u32 uNameSize,
-													lpcastr strExt, u32 uExtSize)
+													lpcastr strExt, u32 uExtSize, ul32 uFileSize)
 	{
 		SFileInfo Info;
+		xst_zero( &Info, sizeof( SFileInfo ) );
 		Info.uNameHash = XST::CHash::GetCRC( strName );
 		auto& Itr = m_mFileInfos.find( Info.uNameHash );
 		if( Itr == m_mFileInfos.end() )
@@ -55,13 +56,16 @@ namespace XSE
 			Info.uPathLen = uPathSize;
 			Info.uNameLen = uNameSize;
 			Info.uExtLen = uExtSize;
+			if( uFileSize == 0 )
+				uFileSize = m_pFS->GetFileSize( strPath, uPathSize );
+			Info.uFileSize = uFileSize;
 			m_aNames.push_back_range( strPath, uPathSize );
 			m_aNames.push_back( 0 );
 			m_aNames.push_back_range( strName, uNameSize );
 			m_aNames.push_back( 0 );
 			m_aNames.push_back_range( strExt, uExtSize );
 			m_aNames.push_back( 0 );
-			m_mFileInfos[ Info.uNameHash ] = Info;
+			m_mFileInfos.insert( std::make_pair( Info.uNameHash, Info ) );
 			return XST_OK;
 		}
 		return XST_FAIL;
@@ -107,9 +111,8 @@ namespace XSE
 		return s;
 	}
 
-	XST::FilePtr CResourceFileManager::CGroup::LoadFile(xst_castring& strName, u8** ppOut)
+	ResFileWeakPtr CResourceFileManager::CGroup::LoadFile(ul32 uHandle, u8** ppOut)
 	{
-		u32 uHandle = XST::CHash::GetCRC( strName );
 		auto& Itr = m_mFiles.find( uHandle );
 		if( Itr == m_mFiles.end() )
 		{
@@ -132,39 +135,52 @@ namespace XSE
 				lpcastr pFilePath = GetFilePath( Info );
 				if( XST_FAILED( m_pFS->LoadFile( pFilePath, Info.uPathLen, Info.uFileSize, &pData ) ) )
 				{
-					return XST::FilePtr();
+					return ResFilePtr();
 				}
-				XST::FilePtr pFile( xst_new XST::Resources::CFile( strName, pFilePath, &pData, Info.uFileSize, false ) );
-				//XST::FilePtr pFile( xst_new Resources::CFile() );
+				//XST::FilePtr pFile( xst_new XST::Resources::CFile( strName, pFilePath, &pData, Info.uFileSize, false ) );
+				ResFileWeakPtr pFile( xst_new Resources::CFile() );
 				if( pFile.IsValid() )
 				{
-					/*Resources::CFile* pTmp = pFile.GetPtr();
+					Resources::CFile* pTmp = pFile.GetPtr();
 					if( bSharedData )
-						pTmp->m_Data.SetSharedData( pData, Info.uFileSize, false );
+						pTmp->m_Data.SetSharedData( pData, Info.uFileSize, true );
 					else
-						pTmp->m_Data.Move(&pData, Info.uFileSize, false );
+						pTmp->m_Data.Move(&pData, Info.uFileSize, true );
 					
 					pTmp->m_ulInfoHandle = uHandle;
 					pTmp->m_ulHandle = uHandle;
-					pTmp->m_ulGroupHandle = m_uHash;*/
+					pTmp->m_ulGroupHandle = m_uHash;
+					m_mFiles.insert( std::make_pair( uHandle, pFile ) );
+					return pFile;
 				}
 				else
 				{
-					XST_LOG_ERR( "Unable to create file pointer for file: " << strName );
-					return pFile;
+					if( !m_pTmpName ) m_pTmpName = "";
+					XST_LOG_ERR( "Unable to create file pointer for file: " << m_pTmpName );
+					m_pTmpName = xst_null;
+					return ResFileWeakPtr();
 				}
 			}
 			else
 			{
-				XST_LOG_ERR( "Unable to find file info for file: " << strName );
-				return XST::FilePtr();
+				if( !m_pTmpName ) m_pTmpName = "";
+				XST_LOG_ERR( "Unable to find file info for file: " << m_pTmpName );
+				m_pTmpName = xst_null;
+				return ResFileWeakPtr();
 			}
 		}
 		else
 		{
 			return Itr->second;
 		}
-		return XST::FilePtr();
+		return ResFileWeakPtr();
+	}
+
+	ResFileWeakPtr CResourceFileManager::CGroup::LoadFile(xst_castring& strName, u8** ppOut)
+	{
+		u32 uHandle = XST::CHash::GetCRC( strName );
+		m_pTmpName = strName.c_str();
+		return LoadFile( uHandle, ppOut );
 	}
 			
 	i32	CResourceFileManager::CGroup::Load(FileVec* pOut, bool bSharedMemory, u8** ppOut)
@@ -196,7 +212,7 @@ namespace XSE
 		return 0;
 	}
 			
-	i32	CResourceFileManager::CGroup::DestoryFile(ul32 uHandle)
+	i32	CResourceFileManager::CGroup::DestoryFileByHandle(ul32 uHandle)
 	{
 		auto& Itr = m_mFiles.find( uHandle );
 		if( Itr != m_mFiles.end() )
@@ -210,7 +226,7 @@ namespace XSE
 		return XST_FAIL;
 	}
 	
-	i32	CResourceFileManager::CGroup::DestroyFile(XST::FilePtr pFile)
+	i32	CResourceFileManager::CGroup::DestroyFile(ResFilePtr pFile)
 	{
 		//return DestroyFile( pFile->GetHandle() );
 		return 0;
@@ -233,19 +249,19 @@ namespace XSE
 		m_mFileSystems.clear();
 	}
 
-	i32	CResourceFileManager::SetManager( i32 iResourceType, IResourceManager* pMgr )
+	i32	CResourceFileManager::SetManager(i32 iResourceType, IResourceManager* pMgr)
 	{
 		g_mResTypeMgr[ iResourceType ] = pMgr;
 		return XST_OK;
 	}
 					
-	i32	CResourceFileManager::AddExtension( xst_castring& strExt, i32 iResourceType )
+	i32	CResourceFileManager::AddExtension(xst_castring& strExt, i32 iResourceType)
 	{
 		g_mExtResType[ strExt ] = iResourceType;
 		return XST_OK;
 	}
 	
-	i32	CResourceFileManager::SetLoadingOrder( i32 iResourceType, i32 iLoadingOrder )
+	i32	CResourceFileManager::SetLoadingOrder(i32 iResourceType, i32 iLoadingOrder)
 	{
 		g_mResTypeLoadingOrder[ iResourceType ] = iLoadingOrder;
 		return XST_OK;
@@ -287,7 +303,7 @@ namespace XSE
 		return RESULT::OK;
 	}
 
-	CResourceFileManager::GroupWeakPtr CResourceFileManager::GetOrCreateGroup( xst_castring& strName )
+	CResourceFileManager::GroupWeakPtr CResourceFileManager::GetOrCreateGroup(xst_castring& strName)
 	{
 		ul32 uHash = XST::CHash::GetCRC( strName );
 		auto& Itr = m_mGroups.find( uHash );
@@ -373,7 +389,6 @@ namespace XSE
 			}
 		}
 		//Get all shader groups
-		
 
 		return RESULT::OK;
 	}
@@ -394,16 +409,27 @@ namespace XSE
 
 	XST::FilePtr CResourceFileManager::LoadFile(xst_castring& strFileName, ul32 uGroupHandle)
 	{
-		/*GroupWeakPtr pGr = GetGroup( uGroupHandle );
-		XST::FilePtr pFile = pGr->LoadFile( strFileName, xst_null );
-		return pFile;*/
+		GroupWeakPtr pGr = GetGroup( uGroupHandle );
+		ResFilePtr pFile = pGr->LoadFile( strFileName, xst_null );
+		//return pFile;
 		return XST::FilePtr();
 	}
 
 	XST::FilePtr CResourceFileManager::LoadFile(xst_castring& strFileName, xst_castring& strGroupName)
 	{
-		/*GroupWeakPtr pGr = GetOrCreateGroup( strGroupName );
-		XST::FilePtr pFile = pGr->LoadFile( strFileName, xst_null );*/
+		ul32 uHash = XST::CHash::GetCRC( strFileName );
+		if( strGroupName == ALL_GROUPS )
+		{
+			for( auto& Pair : m_mGroups )
+			{
+				ResFileWeakPtr pFile = Pair.second->LoadFile( uHash, xst_null );
+			}
+		}
+		else
+		{
+			GroupWeakPtr pGr = GetGroup( strGroupName );
+			ResFilePtr pFile = pGr->LoadFile( strFileName, xst_null );
+		}
 		return m_pFileMgr->LoadFile( strFileName, strGroupName );
 	}
 
@@ -422,42 +448,39 @@ namespace XSE
 		return m_pFileMgr->RemoveListener( pListener );
 	}
 
-	/*i32	CResourceFileManager::DestroyFile(XST::FilePtr pFile)
+	i32	CResourceFileManager::DestroyFile(ResFilePtr pFile)
 	{
 		xst_assert2( pFile.IsValid() );
-		ul32 uHandle = pFile->GetGroupHandle();
+		ul32 uHandle = pFile->m_ulGroupHandle;
 		GroupWeakPtr pGr = GetGroup( uHandle );
 		xst_assert2( pGr.IsValid() );
 		return pGr->DestroyFile( pFile );
-	}*/
+	}
 
-	i32 CResourceFileManager::DestroyFile( XST::FilePtr pFile )
+	i32 CResourceFileManager::DestroyFile(XST::FilePtr pFile)
 	{
 		return m_pFileMgr->DestroyResource( pFile->GetName() );
 	}
 					
 	i32	CResourceFileManager::DestroyFile(ul32 uHandle, xst_castring& strGroupName)
 	{
-		/*GroupWeakPtr pGr = GetGroup( strGroupName );
+		GroupWeakPtr pGr = GetGroup( strGroupName );
 		xst_assert2( pGr.IsValid() );
-		return pGr->DestroyFile( uHandle );*/
-		return 0;
+		return pGr->DestoryFileByHandle( uHandle );
 	}
 		
 	i32	CResourceFileManager::DestroyFile(ul32 uHandle, ul32 uGroupHandle)
 	{
-		/*GroupWeakPtr pGr = GetGroup( uGroupHandle );
+		GroupWeakPtr pGr = GetGroup( uGroupHandle );
 		xst_assert2( pGr.IsValid() );
-		return pGr->DestroyFile( uHandle );*/
-		return 0;
+		return pGr->DestoryFileByHandle( uHandle );
 	}
 		
 	i32	CResourceFileManager::DestroyFile(xst_castring& strName, xst_castring& strGroup)
 	{
-		/*GroupWeakPtr pGr = GetGroup( strGroup );
+		GroupWeakPtr pGr = GetGroup( strGroup );
 		xst_assert2( pGr.IsValid() );
-		return pGr->DestroyFile( strName );*/
-		return 0;
+		return pGr->DestroyFile( strName );
 	}
 
 }//xse

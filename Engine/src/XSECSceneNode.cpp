@@ -238,7 +238,7 @@ namespace XSE
 
 				case OT::MODEL:
 				{
-					CModel* pModel = (CModel*)pObject;
+					Resources::CModel* pModel = (Resources::CModel*)pObject;
 					for( auto& pMesh : pModel->GetMeshes() )
 					{
 						this->AddObject( pMesh, bAddToScenePartition );

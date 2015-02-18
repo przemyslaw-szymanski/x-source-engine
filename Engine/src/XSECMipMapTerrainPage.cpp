@@ -463,7 +463,7 @@ namespace XSE
 			BOTTOM_RIGHT,
 		};
 
-		/*for( u32 y = 0; y < m_Info.VertexCount.y-1; ++y )
+		for( u32 y = 0; y < m_Info.VertexCount.y-1; ++y )
 		{
 			for( u32 x = 0; x < m_Info.VertexCount.x-1; ++x )
 			{
@@ -490,7 +490,7 @@ namespace XSE
 					avecTriRight[ 1 ] = vPositions[ uTmpIds[4] ]; // bottom right
 					avecTriRight[ 2 ] = vPositions[ uTmpIds[5] ]; // top right
 				}
-				CalcTriangleNormal(&avecNormals[0], avecTriLeft[0], avecTriLeft[2], avecTriLeft[1]);
+				CalcTriangleNormal(&avecNormals[0], avecTriLeft[0], avecTriLeft[1], avecTriLeft[2]);
 				pvNormalsOut->at( uTmpIds[0] ) += avecNormals[0];
 				pvNormalsOut->at( uTmpIds[1] ) += avecNormals[0];
 				pvNormalsOut->at( uTmpIds[2] ) += avecNormals[0];			
@@ -500,9 +500,9 @@ namespace XSE
 				pvNormalsOut->at( uTmpIds[4] ) += avecNormals[1];
 				pvNormalsOut->at( uTmpIds[5] ) += avecNormals[1];
 			}
-		}*/
+		}
 
-		u32 w = m_Info.VertexCount.x;
+		/*u32 w = m_Info.VertexCount.x;
 		u32 h = m_Info.VertexCount.y;
 		u32 uCurrFaceX = 0;
 		u32 uCurrFaceY = 0;
@@ -587,7 +587,7 @@ namespace XSE
 				vNormals[uIds[2]] += vecAvgNormal;
 
 			}
-		}
+		}*/
 
 		// TODO: speed up this. Implement a function: NormalizeVectors and use SSE
 		for( u32 i = pvNormalsOut->size(); i-- > 0; )

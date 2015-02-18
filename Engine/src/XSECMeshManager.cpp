@@ -10,13 +10,13 @@
 
 namespace XSE
 {
-	using namespace Resources;
 
-	i32 CreateBox(CMesh* pMesh, const IInputLayout* pIL, const SBoxOptions& Options);
-	i32 CreateBox(CMesh* pMesh, const IInputLayout* pIL, const SLineBoxOptions& Options);
-	i32 CreatePlane(CMesh* pMesh, const IInputLayout* pIL, const SPlaneOptions& Opts);
-	i32 CreateRect2D(CMesh* pMesh,  const IInputLayout* pIL, const SRect2DOptions& Opts);
-	i32 CreateCircle( CMesh* pMesh, const  IInputLayout* pIL, const SCircleOptions& Opts );
+
+	i32 CreateBox(Resources::CMesh* pMesh, const IInputLayout* pIL, const SBoxOptions& Options);
+	i32 CreateBox(Resources::CMesh* pMesh, const IInputLayout* pIL, const SLineBoxOptions& Options);
+	i32 CreatePlane(Resources::CMesh* pMesh, const IInputLayout* pIL, const SPlaneOptions& Opts);
+	i32 CreateRect2D(Resources::CMesh* pMesh,  const IInputLayout* pIL, const SRect2DOptions& Opts);
+	i32 CreateCircle(Resources::CMesh* pMesh, const  IInputLayout* pIL, const SCircleOptions& Opts );
 
 	ch8 g_astrName[ 128 ];
 	xst_astring g_strName;
@@ -47,7 +47,7 @@ namespace XSE
 
 	void CMeshManager::_DestroyMeshBuffers(ResourcePtr pRes)
 	{
-		CMesh* pMesh = (CMesh*)pRes.GetPtr();
+		Resources::CMesh* pMesh = (Resources::CMesh*)pRes.GetPtr();
 		pMesh->DestroyBuffers();
 	}
 
@@ -66,7 +66,7 @@ namespace XSE
 	void CMeshManager::_OnDestroy()
 	{
 		m_pDefaultMesh = xst_null;
-		TCFreeListAllocator< CMesh >::Destroy();
+		TCFreeListAllocator< Resources::CMesh >::Destroy();
 	}
 
 	ResourceWeakPtr CMeshManager::CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName /* = XST::StringUtil::EmptyAString */, bool bFullClone /* = true */)
@@ -150,11 +150,11 @@ namespace XSE
 	{
 		Resources::CMesh* pMesh = (Resources::CMesh*)pRes.GetPtr();
 		//Resource has to be in created state
-		if( pMesh->GetResourceState() != ResourceStates::CREATED )
+		if( pMesh->GetResourceState() != Resources::ResourceStates::CREATED )
 			return XST_FAIL;
 
 		//pMesh->m_vLODs.reserve( GetDefaultMeshLODCount() );
-		pMesh->_SetResourceState( ResourceStates::PREPARED );
+		pMesh->_SetResourceState( Resources::ResourceStates::PREPARED );
 		return XST_OK;
 	}
 
@@ -163,7 +163,7 @@ namespace XSE
 		xst_assert( m_pRenderSystem ,"(CMeshManager::Init()" );
 		m_pDefaultIL = m_pRenderSystem->GetInputLayout( ILE::POSITION );
 
-		TCFreeListAllocator< CMesh >::Create( CEngine::GetSingletonPtr()->GetSettings().MemSettings.ulMeshCount );
+		TCFreeListAllocator< Resources::CMesh >::Create( CEngine::GetSingletonPtr()->GetSettings().MemSettings.ulMeshCount );
 
 		SBoxOptions Options;
 		m_pDefaultMesh = CreateMesh( "xse_default_mesh", m_pDefaultIL, BasicShapes::BOX, &Options );
@@ -389,7 +389,7 @@ namespace XSE
 		void Render( XSE::IRenderSystem * )
 		{}
 		typedef XST::TCConstantArray< SMeshLOD, 20 >	LODVec;
-		typedef i32 (CMesh::*pfnRender)();
+		typedef i32 (Resources::CMesh::*pfnRender)();
 		//LODVec			m_vLODs;
         SMeshLOD arr[ 200 ];
 		SMeshLOD*		m_pCurrentLOD;
@@ -433,7 +433,7 @@ namespace XSE
 		return pMesh;
 	}
 
-	i32 CreateCircle( CMesh* pMesh, const IInputLayout* pIL, const SCircleOptions& Options )
+	i32 CreateCircle( Resources::CMesh* pMesh, const IInputLayout* pIL, const SCircleOptions& Options )
 	{
 		xst_vector< Vec3 > vPoints;
 		f32 fAngle = 0.0f;
@@ -477,7 +477,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32 CreateBox(CMesh* pMesh, const IInputLayout* pIL, const SBoxOptions& Options)
+	i32 CreateBox(Resources::CMesh* pMesh, const IInputLayout* pIL, const SBoxOptions& Options)
 	{
 		bool bIsNormal = pIL->IsNormal();
 		ul32 ulVertCount = ( bIsNormal )? 24 : 8; //if there are normals use more vertices
@@ -635,7 +635,7 @@ namespace XSE
 	}
 
 
-	i32 CreateBox(CMesh* pMesh, const IInputLayout* pIL, const SLineBoxOptions& Options)
+	i32 CreateBox(Resources::CMesh* pMesh, const IInputLayout* pIL, const SLineBoxOptions& Options)
 	{
 
 		ul32 ulVertCount = 8; 
@@ -659,15 +659,15 @@ namespace XSE
 		const Vec3 vecSize( Options.vecSize * 0.5f );
 		const Vec3 vecPos( vecSize + Options.vecPos );
 
-		Vec3 aCorners[ BoxCorners::_ENUM_COUNT ];
-		aCorners[ BoxCorners::LEFT_BOTTOM_BACK ]	= Vec3( -vecSize.x, -vecSize.y, -vecSize.z ) + Options.vecPos;
-		aCorners[ BoxCorners::LEFT_BOTTOM_FRONT ]	= Vec3( -vecSize.x, -vecSize.y, vecSize.z ) + Options.vecPos;
-		aCorners[ BoxCorners::LEFT_TOP_BACK ]		= Vec3( -vecSize.x, vecSize.y, -vecSize.z ) + Options.vecPos;
-		aCorners[ BoxCorners::LEFT_TOP_FRONT ]		= Vec3( -vecSize.x, vecSize.y, vecSize.z ) + Options.vecPos;
-		aCorners[ BoxCorners::RIGHT_BOTTOM_BACK ]	= Vec3( vecSize.x, -vecSize.y, -vecSize.z ) + Options.vecPos;
-		aCorners[ BoxCorners::RIGHT_BOTTOM_FRONT ]	= Vec3( vecSize.x, -vecSize.y, vecSize.z ) + Options.vecPos;
-		aCorners[ BoxCorners::RIGHT_TOP_FRONT ]		= Vec3( vecSize.x, vecSize.y, vecSize.z ) + Options.vecPos;
-		aCorners[ BoxCorners::RIGHT_TOP_BACK ]		= Vec3( vecSize.x, vecSize.y, -vecSize.z ) + Options.vecPos;
+		Vec3 aCorners[ Resources::BoxCorners::_ENUM_COUNT ];
+		aCorners[ Resources::BoxCorners::LEFT_BOTTOM_BACK ]	= Vec3( -vecSize.x, -vecSize.y, -vecSize.z ) + Options.vecPos;
+		aCorners[ Resources::BoxCorners::LEFT_BOTTOM_FRONT ]	= Vec3( -vecSize.x, -vecSize.y, vecSize.z ) + Options.vecPos;
+		aCorners[ Resources::BoxCorners::LEFT_TOP_BACK ]		= Vec3( -vecSize.x, vecSize.y, -vecSize.z ) + Options.vecPos;
+		aCorners[ Resources::BoxCorners::LEFT_TOP_FRONT ]		= Vec3( -vecSize.x, vecSize.y, vecSize.z ) + Options.vecPos;
+		aCorners[ Resources::BoxCorners::RIGHT_BOTTOM_BACK ]	= Vec3( vecSize.x, -vecSize.y, -vecSize.z ) + Options.vecPos;
+		aCorners[ Resources::BoxCorners::RIGHT_BOTTOM_FRONT ]	= Vec3( vecSize.x, -vecSize.y, vecSize.z ) + Options.vecPos;
+		aCorners[ Resources::BoxCorners::RIGHT_TOP_FRONT ]		= Vec3( vecSize.x, vecSize.y, vecSize.z ) + Options.vecPos;
+		aCorners[ Resources::BoxCorners::RIGHT_TOP_BACK ]		= Vec3( vecSize.x, vecSize.y, -vecSize.z ) + Options.vecPos;
 
 		/*for(i32 i = 0; i < BoxCorners::_ENUM_COUNT; ++i)
 		{
@@ -676,7 +676,7 @@ namespace XSE
 
 		if( pIL->IsPosition() )
 		{
-			for(u32 i = 0; i < BoxCorners::_ENUM_COUNT; ++i)
+			for(u32 i = 0; i < Resources::BoxCorners::_ENUM_COUNT; ++i)
 			{
 				Data.SetPosition( i, aCorners[ i ] );
 			}
@@ -708,44 +708,44 @@ namespace XSE
 		CIndexData& IData = pIB->GetIndexData();
 
 		//Front
-		IData.SetIndex( 0, BoxCorners::LEFT_BOTTOM_FRONT );
-		IData.SetIndex( 1, BoxCorners::LEFT_TOP_FRONT );
+		IData.SetIndex( 0, Resources::BoxCorners::LEFT_BOTTOM_FRONT );
+		IData.SetIndex( 1, Resources::BoxCorners::LEFT_TOP_FRONT );
 
-		IData.SetIndex( 2, BoxCorners::LEFT_TOP_FRONT );
-		IData.SetIndex( 3, BoxCorners::RIGHT_TOP_FRONT );
+		IData.SetIndex( 2, Resources::BoxCorners::LEFT_TOP_FRONT );
+		IData.SetIndex( 3, Resources::BoxCorners::RIGHT_TOP_FRONT );
 
-		IData.SetIndex( 4, BoxCorners::RIGHT_TOP_FRONT );
-		IData.SetIndex( 5, BoxCorners::RIGHT_BOTTOM_FRONT );
+		IData.SetIndex( 4, Resources::BoxCorners::RIGHT_TOP_FRONT );
+		IData.SetIndex( 5, Resources::BoxCorners::RIGHT_BOTTOM_FRONT );
 
-		IData.SetIndex( 6, BoxCorners::RIGHT_BOTTOM_FRONT );
-		IData.SetIndex( 7, BoxCorners::LEFT_BOTTOM_FRONT );
+		IData.SetIndex( 6, Resources::BoxCorners::RIGHT_BOTTOM_FRONT );
+		IData.SetIndex( 7, Resources::BoxCorners::LEFT_BOTTOM_FRONT );
 		
 		//Back
-		IData.SetIndex( 8, BoxCorners::LEFT_BOTTOM_BACK );
-		IData.SetIndex( 9, BoxCorners::LEFT_TOP_BACK );
+		IData.SetIndex( 8, Resources::BoxCorners::LEFT_BOTTOM_BACK );
+		IData.SetIndex( 9, Resources::BoxCorners::LEFT_TOP_BACK );
 
-		IData.SetIndex( 10, BoxCorners::LEFT_TOP_BACK );
-		IData.SetIndex( 11, BoxCorners::RIGHT_TOP_BACK );
+		IData.SetIndex( 10, Resources::BoxCorners::LEFT_TOP_BACK );
+		IData.SetIndex( 11, Resources::BoxCorners::RIGHT_TOP_BACK );
 
-		IData.SetIndex( 12, BoxCorners::RIGHT_TOP_BACK );
-		IData.SetIndex( 13, BoxCorners::RIGHT_BOTTOM_BACK );
+		IData.SetIndex( 12, Resources::BoxCorners::RIGHT_TOP_BACK );
+		IData.SetIndex( 13, Resources::BoxCorners::RIGHT_BOTTOM_BACK );
 
-		IData.SetIndex( 14, BoxCorners::RIGHT_BOTTOM_BACK );
-		IData.SetIndex( 15, BoxCorners::LEFT_BOTTOM_BACK );
+		IData.SetIndex( 14, Resources::BoxCorners::RIGHT_BOTTOM_BACK );
+		IData.SetIndex( 15, Resources::BoxCorners::LEFT_BOTTOM_BACK );
 
 		//Left
-		IData.SetIndex( 16, BoxCorners::LEFT_BOTTOM_FRONT );
-		IData.SetIndex( 17, BoxCorners::LEFT_BOTTOM_BACK );
+		IData.SetIndex( 16, Resources::BoxCorners::LEFT_BOTTOM_FRONT );
+		IData.SetIndex( 17, Resources::BoxCorners::LEFT_BOTTOM_BACK );
 
-		IData.SetIndex( 18, BoxCorners::LEFT_TOP_FRONT );
-		IData.SetIndex( 19, BoxCorners::LEFT_TOP_BACK );
+		IData.SetIndex( 18, Resources::BoxCorners::LEFT_TOP_FRONT );
+		IData.SetIndex( 19, Resources::BoxCorners::LEFT_TOP_BACK );
 
 		//Right
-		IData.SetIndex( 20, BoxCorners::RIGHT_BOTTOM_FRONT );
-		IData.SetIndex( 21, BoxCorners::RIGHT_BOTTOM_BACK );
+		IData.SetIndex( 20, Resources::BoxCorners::RIGHT_BOTTOM_FRONT );
+		IData.SetIndex( 21, Resources::BoxCorners::RIGHT_BOTTOM_BACK );
 
-		IData.SetIndex( 22, BoxCorners::RIGHT_TOP_FRONT );
-		IData.SetIndex( 23, BoxCorners::RIGHT_TOP_BACK );
+		IData.SetIndex( 22, Resources::BoxCorners::RIGHT_TOP_FRONT );
+		IData.SetIndex( 23, Resources::BoxCorners::RIGHT_TOP_BACK );
 
 		if( XST_FAILED( pIB->Unlock() ) )
 		{
@@ -753,13 +753,13 @@ namespace XSE
 		}
 
 		CBoundingVolume Vol;
-		Vol.BuildFromMinMax( aCorners[ BoxCorners::LEFT_BOTTOM_BACK ], aCorners[ BoxCorners::RIGHT_TOP_FRONT ] );
+		Vol.BuildFromMinMax( aCorners[ Resources::BoxCorners::LEFT_BOTTOM_BACK ], aCorners[ Resources::BoxCorners::RIGHT_TOP_FRONT ] );
 		pMesh->SetBoundingVolume( Vol );
 
 		return XST_OK;
 	}
 
-	i32 CreatePlane(CMesh* pMesh, const IInputLayout* pIL, const SPlaneOptions& Opts)
+	i32 CreatePlane(Resources::CMesh* pMesh, const IInputLayout* pIL, const SPlaneOptions& Opts)
 	{
 		bool bIsNormal = pIL->IsNormal();
 		u16 ulVVertCount = (u16)Opts.vecVertexCount.x;
@@ -877,7 +877,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32 CreateRect2D(CMesh* pMesh, const IInputLayout* pIL, const SRect2DOptions& Opts)
+	i32 CreateRect2D(Resources::CMesh* pMesh, const IInputLayout* pIL, const SRect2DOptions& Opts)
 	{
 		Vec3 vecScale( 100 ); 
 		Vec2 vecWidth( 0, 100 );

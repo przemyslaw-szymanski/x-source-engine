@@ -19,7 +19,7 @@
 
 namespace XSE
 {
-	using namespace Resources;
+
 
 
 	CTerrainSystem::CTerrainSystem(CSceneManager* pSceneMgr, CImageManager* pImgMgr, IRenderSystem* pRS) :

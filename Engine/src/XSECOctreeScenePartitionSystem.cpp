@@ -253,7 +253,7 @@ g_uiObjChecked++;
 			pObj = vObjs[ o ];
 
 			const CBoundingSphere& ObjSphere = pObj->GetBoundingVolume().GetSphere();
-			const CAABB& ObjAABB = pObj->GetBoundingVolume().GetAABB();
+			const Resources::CAABB& ObjAABB = pObj->GetBoundingVolume().GetAABB();
 
 			//If this object is disabled by other test do not test it
 			u32 uDisableReason = pObj->GetDisableReason();
@@ -331,7 +331,7 @@ g_uiSphereCullNodeDisabled++;
 				continue;
 			}
 
-			const CAABB& AABB = Volume.GetAABB();
+			const Resources::CAABB& AABB = Volume.GetAABB();
 			if( !pCamera->IsAABBInFrustum( AABB ) /*&& pNode->IsVisible()*/ )
 			{
 #if defined( XSE_RENDERER_DEBUG )

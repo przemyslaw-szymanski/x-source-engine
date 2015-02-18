@@ -4,8 +4,6 @@
 
 namespace XSE
 {
-	using namespace Resources;
-
 	CImageManager::CImageManager() :
 		m_pImgSystem( xst_null )
 	{
@@ -28,10 +26,10 @@ namespace XSE
 	void CImageManager::DestroyResources()
 	{
 		xst_assert( m_pImgSystem, "(CImageManager::DestroyResources) ImageSystem is destroyed or not created" );
-		IImage* pImg;
+		Resources::IImage* pImg;
         this->ForEachResource( [&] ( ResourcePtr pRes, GroupWeakPtr pGroup )
         {
-            pImg = static_cast< IImage* >( pRes.GetPtr() );
+            pImg = static_cast< Resources::IImage* >( pRes.GetPtr() );
             pImg->ClearResource();
         } );
 	}
@@ -75,9 +73,9 @@ namespace XSE
 		return RESULT::OK;
 	}*/
 
-	IResource*	CImageManager::_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup)
+	Resources::IResource*	CImageManager::_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup)
 	{
-		IResource* pRes = m_pImgSystem->CreateImage( this, ulHandle, strName, this->m_pMemoryMgr );
+		Resources::IResource* pRes = m_pImgSystem->CreateImage( this, ulHandle, strName, this->m_pMemoryMgr );
 		return pRes;
 	}
 
@@ -113,7 +111,7 @@ namespace XSE
 		}
 
 		//Unload the image if loaded
-		IImage* pImg = (IImage*)pRes.GetPtr();
+		Resources::IImage* pImg = (Resources::IImage*)pRes.GetPtr();
 		if( pImg->m_pResourceFile != xst_null )
 		{
 			i32 iResult = this->m_pResFileMgr->DestroyFile( pImg->m_pResourceFile );

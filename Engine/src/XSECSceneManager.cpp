@@ -36,7 +36,7 @@ namespace XSE
 		m_pDbg = xst_new CSceneDebug( this );
 		m_RenderQueue._SetRenderSystem( GetRenderSystem() );
 		xst_castring& strLName( "xse_default_light" );
-		m_pDefaultLight = xst_new CLight( strLName, CHash::GetCRC( strLName ), m_pRootNode );
+		m_pDefaultLight = xst_new CLight( strLName, XST::CHash::GetCRC( strLName ), m_pRootNode );
 		xst_assert2( m_pDefaultLight );
 		m_pCurrLight = m_pDefaultLight;
 		//m_pScenePartitionSystem = xst_new COctreeScenePartitionSystem( this );
@@ -458,7 +458,7 @@ namespace XSE
 	{
 		LightPtr pL;
 		u32 uPos;
-		ul32 uHandle = CHash::GetCRC( strName );
+		ul32 uHandle = XST::CHash::GetCRC( strName );
 		if( FindLight( m_vLights, uHandle, &pL, &uPos ) )
 			return pL;
 		pL = xst_new CLight( strName, uHandle, m_pRootNode );
@@ -520,7 +520,7 @@ namespace XSE
 
 	i32 CSceneManager::SetLight(xst_castring& strName)
 	{
-		u32 uHandle = CHash::GetCRC( strName );
+		u32 uHandle = XST::CHash::GetCRC( strName );
 		return SetLight( uHandle );
 	}
 				

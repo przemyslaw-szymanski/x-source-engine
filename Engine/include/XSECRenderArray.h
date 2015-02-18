@@ -5,7 +5,7 @@
 
 namespace XSE
 {
-	using namespace Resources;
+
 	class CRenderObjectArray
 	{
 		public:
@@ -26,11 +26,11 @@ namespace XSE
 		public:
 
 			typedef CRenderObjectArray	ChildArray;
-			typedef xst_map< CMaterial*, CRenderObjectArray* >	ObjectArrayMap;
+			typedef xst_map< Resources::CMaterial*, CRenderObjectArray* >	ObjectArrayMap;
 
 		public:
 
-					i32			AddMaterial(CMaterial* pMat);
+					i32			AddMaterial(Resources::CMaterial* pMat);
 
 					i32			AddObject(IRenderableObject* pObj);
 
@@ -54,11 +54,11 @@ namespace XSE
 
 				i32		AddInputLayout(const IInputLayout* pIL);
 
-				i32		AddMaterial(CMaterial* pMat);
+				i32		AddMaterial(Resources::CMaterial* pMat);
 
 				i32		AddObject(IRenderableObject* pObj);
 
-				CRenderMaterialArray*	GetMaterialArray(CMaterial* pMat);
+				CRenderMaterialArray*	GetMaterialArray(Resources::CMaterial* pMat);
 
 	protected:
 
@@ -72,9 +72,9 @@ namespace XSE
 
 			typedef IRenderableObject*	ObjPtr;
 			//typedef RenderableObjectPtr	ObjPtr;
-			typedef IVertexShader*		VSPtr;
-			typedef	IPixelShader*		PSPtr;
-			typedef ITexture*			TexPtr;
+			typedef Resources::IVertexShader*		VSPtr;
+			typedef	Resources::IPixelShader*		PSPtr;
+			typedef Resources::ITexture*			TexPtr;
 			typedef IInputLayout*		ILPtr;
 
 			/*typedef xst_vector< ObjPtr >			ObjVec;
@@ -95,7 +95,7 @@ namespace XSE
 
 					i32			Add(ObjPtr pObj);
 
-					i32			Add(CModel* pModel);
+					i32			Add(Resources::CModel* pModel);
 
 					i32			Remove(ObjPtr pObj);
 

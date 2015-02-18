@@ -76,6 +76,11 @@ namespace XSE
 		else
 			m_pFileMgr = XST::CFileManager::GetSingletonPtr();
 
+		if( !CResourceFileManager::IsSingletonCreated() )
+			m_pResFileMgr = xst_new CResourceFileManager( m_pFileMgr );
+		else
+			m_pResFileMgr = CResourceFileManager::GetSingletonPtr();
+
 		if( !CLuaScriptManager::IsSingletonCreated() )
 			m_pLuaScriptMgr = xst_new CLuaScriptManager();
 		else
@@ -87,8 +92,6 @@ namespace XSE
 			m_pMatMgr = xst_new CMaterialManager( m_pShaderMgr );
 		else
 			m_pMatMgr = CMaterialManager::GetSingletonPtr();
-
-		m_pResFileMgr = xst_new XSE::CResourceFileManager( m_pFileMgr );
 
 		XST_CREATE_SINGLETON( m_pImgMgr, XSE::CImageManager );
 		XST_CREATE_SINGLETON( m_pTexMgr, XSE::CTextureManager );

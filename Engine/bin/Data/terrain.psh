@@ -17,3 +17,42 @@ float4 ps(VS_OUT IN) : SV_TARGET
 	c.rgb = fDL;
 	return c;
 }
+
+/*
+ fragmentLighting.vert:
+
+attribute vec4 glt_Vertex;
+attribute vec4 glt_Normal;
+
+uniform mat4 glt_ModelView;
+uniform mat4 glt_Projection;
+
+varying vec3 glt_vPosition;
+varying vec3 glt_vNormal;
+
+void main()
+{
+    mat4 mvp = glt_Projection * glt_ModelView;
+    gl_Position = mvp * glt_Vertex;
+    glt_vPosition = (glt_ModelView * glt_Vertex).xyz;
+    glt_vNormal = (glt_ModelView * glt_Normal).xyz;
+}
+
+fragmentLighting.frag
+
+precision mediump float;
+
+uniform samplerCube glt_Texture0;
+
+varying vec3 glt_vPosition;
+varying vec3 glt_vNormal;
+
+void main()
+{
+    vec3 P = normalize(glt_vPosition);
+    vec3 N = normalize(glt_vNormal);
+    gl_FragColor.xyz = reflect(P, N);
+    gl_FragColor.a = 1.0;
+}
+
+*/

@@ -281,4 +281,17 @@ namespace XSE
 		return XST_OK;
 	}
 
+	ul32 CFileSystem::GetFileSize(lpcastr pFullPath, u32 uPathLength)
+	{
+		l32 lSize = XST::IFile::GetSize( pFullPath );
+		if( lSize >= 0 )
+			return lSize;
+		else
+		{
+			XST_LOG_ERR( "Unable to read file: '" << pFullPath << "' size." );
+			return 0;
+		}
+		return 0;
+	}
+
 } // xse

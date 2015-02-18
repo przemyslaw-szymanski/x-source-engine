@@ -7,9 +7,9 @@
 
 namespace XSE
 {
-	i32 CRenderMaterialArray::AddMaterial(CMaterial* pMat)
+	i32 CRenderMaterialArray::AddMaterial(Resources::CMaterial* pMat)
 	{
-		return XST::MapUtils::Insert< ObjectArrayMap, CMaterial*, ChildArray* >( m_mObjects, pMat, xst_null );
+		return XST::MapUtils::Insert< ObjectArrayMap, Resources::CMaterial*, ChildArray* >( m_mObjects, pMat, xst_null );
 	}
 
 	i32 CRenderMaterialArray::AddObject(IRenderableObject* pObj)
@@ -43,7 +43,7 @@ namespace XSE
 		return XST::MapUtils::Insert< ILArrayMap, const IInputLayout*, ChildArray* >( m_mInputLayouts, pIL, xst_null );
 	}
 
-	i32 CRenderArray::AddMaterial(CMaterial* pMat)
+	i32 CRenderArray::AddMaterial(Resources::CMaterial* pMat)
 	{
 		VertexShaderPtr pVS = pMat->GetVertexShader();
 		if( pVS.IsNull() )
@@ -82,7 +82,7 @@ namespace XSE
 		return pMatArr->AddObject( pObj );
 	}
 
-	CRenderMaterialArray* CRenderArray::GetMaterialArray(CMaterial* pMat)
+	CRenderMaterialArray* CRenderArray::GetMaterialArray(Resources::CMaterial* pMat)
 	{
 		xst_assert( pMat, "" );
 		xst_assert( !pMat->GetVertexShader().IsNull(), "" );
@@ -166,7 +166,7 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32 CRenderTree::Add(CModel* pModel)
+	i32 CRenderTree::Add(Resources::CModel* pModel)
 	{
 		xst_assert( pModel != xst_null, "(CRenderTree::Add) Null pointer" );
 		//MeshPtr pMesh = pModel->GetMesh();
@@ -193,7 +193,7 @@ namespace XSE
 		//	Itr.MoveNext();
 		//}
 
-		CModel::MeshVecItr Itr;
+		Resources::CModel::MeshVecItr Itr;
 		xst_stl_foreach( Itr, pModel->GetMeshes() )
 		{
 			if( XST_FAILED( Add( (*Itr).GetPtr() ) ) )

@@ -64,8 +64,8 @@ namespace XSE
 			typedef xst_map< i32, IResourceManager* >	ExtMap;
 			typedef xst_map< u32, SFileInfo >			FileInfoMap;
 			typedef XST::TCDynamicArray< ch8 >			NameArray;
-			typedef xst_map< u32, XST::FilePtr >	FileMap;
-			typedef xst_vector< XST::FilePtr >	FileVec;
+			typedef xst_map< u32, ResFilePtr >			FileMap;
+			typedef xst_vector< ResFilePtr >			FileVec;
 			
 			class CGroup : public XST::IObject
 			{
@@ -82,10 +82,10 @@ namespace XSE
 											m_strName(strName), m_uHash(uHandle)
 										{ m_aNames.reserve( SFileInfo::NAME_BUFF_LEN * 500 ); }
 
-					i32					AddFileInfo(xst_castring& strFullPath);
+					i32					AddFileInfo(xst_castring& strFullPath, ul32 uFileSize);
 					i32					AddFileInfo(const IFileSystem::SFileInfo& Info);
 					i32					AddFileInfo(lpcastr strPath, u32 uPathSize, lpcastr strName, u32 uNameSize,
-													lpcastr strExt, u32 uExtSize);
+													lpcastr strExt, u32 uExtSize, ul32 uFileSize);
 
 					const SFileInfo&	GetFileInfoByName(xst_castring& strFileName) const;
 					const SFileInfo&	GetFileInfoByPath(xst_castring& strFullPath) const;
@@ -108,12 +108,13 @@ namespace XSE
 					xst_fi	bool		IsPrepared() const
 										{ return m_bPrepared; }
 
-					XST::FilePtr			LoadFile(xst_castring& strName, u8** ppOut);
+					ResFileWeakPtr		LoadFile(xst_castring& strName, u8** ppOut);
+					ResFileWeakPtr		LoadFile(ul32 uHansle, u8** ppOut);
 					i32					Load(FileVec* pOut, bool bSharedMemory, u8** ppOut);
 
+					i32					DestoryFileByHandle(ul32 uHandle);
 					i32					DestroyFile(xst_castring& strName);
-					i32					DestoryFile(ul32 uHandle);
-					i32					DestroyFile(XST::FilePtr pFile);
+					i32					DestroyFile(ResFilePtr pFile);
 
 					void				Destroy();
 
@@ -127,6 +128,7 @@ namespace XSE
 					FileMap			m_mFiles;
 					IFileSystem*	m_pFS;
 					u8*				m_pSharedBuffer = xst_null;
+					lpcastr			m_pTmpName = xst_null;
 					NameArray		m_aNames;
 					xst_astring		m_strName;
 					LocVec			m_vLocations;
@@ -179,7 +181,7 @@ namespace XSE
 					GroupWeakPtr		GetGroup(ul32 uHandle) const;
 
 					i32					DestroyFile(XST::FilePtr pFile);
-					//i32					DestroyFile(XST::FilePtr pFile);
+					i32					DestroyFile(ResFilePtr pFile);
 					i32					DestroyFile(ul32 uHandle, xst_castring& strGroupName);
 					i32					DestroyFile(ul32 uHandle, ul32 uGroupHandle);
 					i32					DestroyFile(xst_castring& strName, xst_castring& strGroup);

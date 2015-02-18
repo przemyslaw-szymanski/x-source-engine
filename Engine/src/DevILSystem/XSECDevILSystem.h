@@ -7,8 +7,6 @@ namespace XSE
 {
 	namespace DevIL
 	{
-		using namespace Resources;
-
 		class XST_API CImageSystem : public IImageSystem
 		{
 			friend class CImage;
