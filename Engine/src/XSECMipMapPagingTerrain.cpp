@@ -25,6 +25,9 @@ namespace XSE
 	xst_vector< TileVec > g_vTileGrid;
 	TileVec g_vVisibleTILE;
 
+	VertexBufferPtr g_pVB;
+	IndexBufferPtr g_pIB;
+
 	CPoint CalcImpostorVertexCount( const CPoint& PageVertexCount, u32 uLODCount )
 	{
 		CPoint vc;
@@ -403,6 +406,101 @@ namespace XSE
 
 			vecPos.z += vecPageSize.y;
 		}
+
+		// TEMP
+		g_pVB = m_pSceneMgr->GetRenderSystem()->CreateVertexBuffer();
+		g_pIB = m_pSceneMgr->GetRenderSystem()->CreateIndexBuffer();
+
+		g_pVB->SetInputLayout( m_pInputLayout );
+		g_pVB->SetTopologyType( TopologyTypes::TRIANGLE_LIST );
+		g_pVB->SetUsage( BufferUsages::STATIC );
+		g_pVB->SetVertexCount( m_Options.PageVertexCount.x * m_Options.PageVertexCount.y );
+
+		g_pIB->SetUsage( BufferUsages::STATIC );
+		g_pIB->SetLocationType( BufferLocationTypes::HARDWARE );
+		u32 uCount =  ( ( m_Options.PageVertexCount.x - 1 ) / 1 ) * ( ( m_Options.PageVertexCount.y - 1 ) / 1 ) * 2 * 3;
+		g_pIB->SetIndexCount( uCount );
+
+		g_pVB->Lock();
+		g_pIB->Lock();
+
+		auto& VData = g_pVB->GetVertexData();
+		auto& IData = g_pIB->GetIndexData();
+
+		const Vec2 vecStep( (f32)m_Options.Size.x / m_Options.PageVertexCount.x );
+		Vec3 fPos;
+		ul32 uCurrVertex = 0;
+		for( u32 y = 0; y < m_Options.PageVertexCount.y; ++y )
+		{
+			fPos.z = y * vecStep.y - m_Options.Size.y / 2;
+			fPos.x = 0;
+			for( u32 x = 0; x < m_Options.PageVertexCount.x; ++x )
+			{
+				fPos.x = x * vecStep.x  - m_Options.Size.x / 2;
+				u8 r = m_vpImages[0]->GetChannelColor( x, y, Resources::IImage::CHANNEL::RED );
+				fPos.y = CMipMapTerrainTile::ColorToHeight( m_Options.vecHeightRange, r );
+				VData.SetPosition( uCurrVertex, fPos );
+				VData.SetNormal( uCurrVertex, Vec3::Y );
+				++uCurrVertex;
+			}
+		}
+
+		// Calc index buffer
+		ul32 uCurrId = 0;
+		for( u32 y = 0; y < m_Options.PageVertexCount.y-1; ++y )
+		{
+			for( u32 x = 0; x < m_Options.PageVertexCount.x-1; ++x )
+			{
+				u32 uLeftUp = XST_ARRAY_2D_TO_1D( x, y, m_Options.PageVertexCount.x );
+				u32 uLeftDown = XST_ARRAY_2D_TO_1D( x, y+1, m_Options.PageVertexCount.x );
+				u32 uRightUp = XST_ARRAY_2D_TO_1D( x+1, y, m_Options.PageVertexCount.x );
+				u32 uRightDown = XST_ARRAY_2D_TO_1D( x+1, y+1, m_Options.PageVertexCount.x );
+				// left triangle
+				IData.SetIndex( uCurrId++, uLeftUp );
+				IData.SetIndex( uCurrId++, uLeftDown );
+				IData.SetIndex( uCurrId++, uRightUp );
+				// right triangle
+				IData.SetIndex( uCurrId++, uRightUp );
+				IData.SetIndex( uCurrId++, uLeftDown );
+				IData.SetIndex( uCurrId++, uRightDown );
+			}
+		}
+
+		// Calc normals
+		xst_vector< Vec3 > vNormals( VData.GetVertexCount(), Vec3::ZERO );
+		Vec3 aVertices[3]; // triangle
+		u32 aIds[3];
+		Vec3 vecNormal;
+		for( u32 i = 0; i < IData.GetIndexCount(); i += 3 )
+		{
+			aIds[0] = IData.GetIndex( i+0 );
+			aIds[1] = IData.GetIndex( i+1 );
+			aIds[2] = IData.GetIndex( i+2 );
+
+			VData.GetPosition( aIds[0], &aVertices[0] );
+			VData.GetPosition( aIds[1], &aVertices[1] );
+			VData.GetPosition( aIds[2], &aVertices[2] );
+
+			const Vec3 vecU = aVertices[1] - aVertices[0];
+			const Vec3 vecV = aVertices[2] - aVertices[0];
+			// cross
+			vecNormal.x = ( vecU.y * vecV.z - vecU.z * vecV.y );
+			vecNormal.y = ( vecU.z * vecV.x - vecU.x * vecV.z );
+			vecNormal.z = ( vecU.x * vecV.y - vecU.y * vecV.x );
+
+			vNormals[ aIds[0] ] += vecNormal;
+			vNormals[ aIds[1] ] += vecNormal;
+			vNormals[ aIds[2] ] += vecNormal;
+		}
+
+		for( u32 i = 0; i < vNormals.size(); ++i )
+		{
+			vNormals[ i ].Normalize();
+			VData.SetNormal(i, vNormals[i]);
+		}
+
+		g_pVB->Unlock();
+		g_pIB->Unlock();
 		
 		return XST_OK;
 	}
@@ -547,6 +645,9 @@ namespace XSE
 				pRS->SetVertexBufferWithCheck( TileInfo.pVB );
 				pRS->SetIndexBufferWithCheck( pIB );
 				pRS->DrawIndexed( pIB->GetIndexCount(), 0, TileInfo.ulStartVertex );
+				//pRS->SetVertexBuffer( g_pVB.GetPtr() );
+				//pRS->SetIndexBuffer( g_pIB.GetPtr() );
+				//pRS->DrawIndexed(g_pIB->GetIndexCount(), 0, 0 );
 			}
 		}
 	}
