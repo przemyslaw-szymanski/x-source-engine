@@ -63,7 +63,6 @@
 
 namespace XSE
 {
-	using namespace XSE::Resources;
 	namespace D3D11
 	{
 		#include "XSED3D11FunctionPointers.h"
@@ -862,7 +861,7 @@ namespace XSE
 			return pShader->m_pShaderSystem->SetVertexShader( pVS );
 		}
 
-		i32 CRenderSystem::SetPixelShader(const IPixelShader* pPS)
+		i32 CRenderSystem::SetPixelShader(const Resources::IPixelShader* pPS)
 		{
 			xst_assert( pPS, "" );
 			const CPixelShader* pShader = (CPixelShader*)pPS;
@@ -932,7 +931,7 @@ namespace XSE
 			return pShader->m_pShaderSystem->SetVertexShader( pVS );
 		}
 
-		i32 CRenderSystem::SetPixelShaderWithCheck(const IPixelShader* pPS)
+		i32 CRenderSystem::SetPixelShaderWithCheck(const Resources::IPixelShader* pPS)
 		{
 			xst_assert( pPS, "" );
 			const CPixelShader* pShader = (CPixelShader*)pPS;
@@ -1016,7 +1015,7 @@ namespace XSE
 				return xst_null;
 			}
 
-			IVertexShader* pVS = pSS->CreateVertexShader( pIL, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			Resources::IVertexShader* pVS = pSS->CreateVertexShader( pIL, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
 			this->_SetShaderSystem( pVS, pSS );
 			return pVS;
 		}
@@ -1029,7 +1028,7 @@ namespace XSE
 				return xst_null;
 			}
 
-			IPixelShader* pPS = pSS->CreatePixelShader( pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			Resources::IPixelShader* pPS = pSS->CreatePixelShader( pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
 			this->_SetShaderSystem( pPS, pSS );
 			return pPS;
 		}
@@ -1061,7 +1060,7 @@ namespace XSE
 				return xst_null;
 			}
 
-			IPixelShader* pPS = pSS->CreateDefaultPixelShader( pOptions, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			Resources::IPixelShader* pPS = pSS->CreateDefaultPixelShader( pOptions, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
 			this->_SetShaderSystem( pPS, pSS );
 			return pPS;
 		}

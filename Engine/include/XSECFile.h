@@ -19,6 +19,16 @@ namespace XSE
 
 			public:
 
+				xst_fi Data&		GetData()
+									{ return m_Data; }
+
+				xst_fi 
+				const Data&			GetData() const
+									{ return m_Data; }
+
+				xst_fi ul32			GetInfoHandle() const
+									{ return m_ulInfoHandle; }
+
 			protected:
 
 				Data		m_Data;

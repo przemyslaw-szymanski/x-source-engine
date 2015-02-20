@@ -7,8 +7,6 @@
 
 namespace XSE
 {
-	using namespace XST;
-
 	CMipMapTerrainTile::CMipMapTerrainTile() 
 	{
 	}

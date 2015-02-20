@@ -231,9 +231,9 @@ namespace XSE
 			return strCode;
 		}
 
-		IVertexShader*	CCGShaderSystem::CreateVertexShader(IInputLayout* pIL, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
+		Resources::IVertexShader*	CCGShaderSystem::CreateVertexShader(IInputLayout* pIL, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
 		{
-			CCGVertexShader* pShader = xst_new CCGVertexShader( m_pRenderSystem, this, pIL, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			Resources::CCGVertexShader* pShader = xst_new Resources::CCGVertexShader( m_pRenderSystem, this, pIL, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
 			if( pShader == xst_null )
 			{
 				return xst_null;
@@ -255,9 +255,9 @@ namespace XSE
 
 		}
 
-		IPixelShader*	CCGShaderSystem::CreatePixelShader(XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
+		Resources::IPixelShader*	CCGShaderSystem::CreatePixelShader(XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
 		{
-			CCGPixelShader* pShader = xst_new CCGPixelShader( m_pRenderSystem, this, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			Resources::CCGPixelShader* pShader = xst_new Resources::CCGPixelShader( m_pRenderSystem, this, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
 			if( pShader == xst_null )
 			{
 				return xst_null;
@@ -266,9 +266,9 @@ namespace XSE
 			return pShader;
 		}
 
-		IVertexShader*	CCGShaderSystem::CreateDefaultVertexShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
+		Resources::IVertexShader*	CCGShaderSystem::CreateDefaultVertexShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
 		{
-			CCGVertexShader* pShader = xst_new CCGVertexShader( m_pRenderSystem, this, xst_null, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			Resources::CCGVertexShader* pShader = xst_new Resources::CCGVertexShader( m_pRenderSystem, this, xst_null, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
 			if( pShader == xst_null )
 			{
 				return xst_null;
@@ -277,9 +277,9 @@ namespace XSE
 			return pShader;
 		}
 
-		IPixelShader*	CCGShaderSystem::CreateDefaultPixelShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
+		Resources::IPixelShader*	CCGShaderSystem::CreateDefaultPixelShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
 		{
-			CCGPixelShader* pShader = xst_new CCGPixelShader( m_pRenderSystem, this, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			Resources::CCGPixelShader* pShader = xst_new Resources::CCGPixelShader( m_pRenderSystem, this, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
 			if( pShader == xst_null )
 			{
 				return xst_null;
@@ -291,7 +291,7 @@ namespace XSE
 		i32	CCGShaderSystem::CompileVertexShader(Resources::IVertexShader* pVS)
 		{
 			xst_assert( pVS, "(CCGShaderSystem::CompileVertexShader)" );
-			CCGVertexShader* pShader = (CCGVertexShader*)pVS;
+			Resources::CCGVertexShader* pShader = (Resources::CCGVertexShader*)pVS;
 			if( pShader->GetCGProfile() == CG_PROFILE_UNKNOWN )
 			{
 				pShader->SetCGProfile( this->m_aeProfiles[ pShader->GetProfile() ] );
@@ -321,7 +321,7 @@ namespace XSE
 		{
 			xst_assert( pPS, "(CCGShaderSystem::CompilePixelShader)" );
 			//If profile is not created, create it
-			CCGPixelShader* pShader = (CCGPixelShader*)pPS;
+			Resources::CCGPixelShader* pShader = (Resources::CCGPixelShader*)pPS;
 			if( pShader->GetCGProfile() == CG_PROFILE_UNKNOWN )
 			{
 				pShader->SetCGProfile( this->m_aeProfiles[ pShader->GetProfile() ] );
@@ -356,7 +356,7 @@ namespace XSE
 		i32	CCGShaderSystem::CompileVertexShader(Resources::IVertexShader* pVS, lpcastr lpszShader, ul32 ulShaderSize, lpcastr lpszEntryPoint, SHADER_PROFILE eProfile)
 		{
 			xst_assert( pVS, "(CCGShaderSystem::CompileVertexShader)" );
-			CCGVertexShader* pShader = (CCGVertexShader*)pVS;
+			Resources::CCGVertexShader* pShader = (Resources::CCGVertexShader*)pVS;
 		
 			if( pShader->GetCGProfile() == CG_PROFILE_UNKNOWN )
 			{
@@ -383,7 +383,7 @@ namespace XSE
 		{
 			xst_assert( pPS, "(CCGShaderSystem::CompilePixelShader)" );
 			//If profile is not created, create it
-			CCGPixelShader* pShader = (CCGPixelShader*)pPS;
+			Resources::CCGPixelShader* pShader = (Resources::CCGPixelShader*)pPS;
 			if( pShader->GetCGProfile() == CG_PROFILE_UNKNOWN )
 			{
 				pShader->SetCGProfile( this->m_aeProfiles[ eProfile ] );
@@ -409,7 +409,7 @@ namespace XSE
 		i32	CCGShaderSystem::SetVertexShader(const Resources::IVertexShader* pVS)
 		{
 			xst_assert( pVS, "(D3D11::CCGShaderSystem::SetVertexShader)" );
-			const CCGVertexShader* pShader = (CCGVertexShader*)pVS;
+			const Resources::CCGVertexShader* pShader = (Resources::CCGVertexShader*)pVS;
 			cgD3D11BindProgram( pShader->GetCGShader() );
 			return XST_OK;
 		}

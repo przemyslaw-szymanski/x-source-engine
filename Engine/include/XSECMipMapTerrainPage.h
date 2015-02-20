@@ -34,6 +34,7 @@ namespace XSE
 			Vec2 vecHeightRange; // terrain vertex y position min-max
 			Vec2 vecPageSize; // size x-z of the page
 			const Resources::IImage* pImg = xst_null;
+			const Resources::CTexture*	apTextures[5];
 			const IInputLayout* pInputLayout = xst_null;
 			CMipMapTerrainTile* aTiles = xst_null; // a begin pointer to the tile buffer
 			IVertexBuffer* pVB = xst_null;

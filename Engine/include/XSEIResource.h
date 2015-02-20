@@ -101,7 +101,7 @@ namespace XSE
 			protected:
 
 				IResourceManager*	m_pResourceCreator = xst_null;
-				XSE::Resources::FilePtr		m_pFile;
+				ResFilePtr			m_pFile;
 				Handle				m_ResourceHandle = 0;
 				Handle				m_ResourceGroupHandle = 0;
 		};

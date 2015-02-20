@@ -433,6 +433,35 @@ namespace XSE
 		return m_pFileMgr->LoadFile( strFileName, strGroupName );
 	}
 
+	ResFileWeakPtr CResourceFileManager::LoadFile2(xst_castring& strFileName, ul32 uGroupHandle)
+	{
+		GroupWeakPtr pGr = GetGroup( uGroupHandle );
+		ResFileWeakPtr pFile = pGr->LoadFile( strFileName, xst_null );
+		//return pFile;
+		return pFile;
+	}
+
+	ResFileWeakPtr CResourceFileManager::LoadFile2(xst_castring& strFileName, xst_castring& strGroupName)
+	{
+		ul32 uHash = XST::CHash::GetCRC( strFileName );
+		if( strGroupName == ALL_GROUPS )
+		{
+			for( auto& Pair : m_mGroups )
+			{
+				ResFileWeakPtr pFile = Pair.second->LoadFile( uHash, xst_null );
+				if( pFile.IsValid() )
+					return pFile;
+			}
+		}
+		else
+		{
+			GroupWeakPtr pGr = GetGroup( strGroupName );
+			ResFileWeakPtr pFile = pGr->LoadFile( strFileName, xst_null );
+			return pFile;
+		}
+		return ResFileWeakPtr();;
+	}
+
 	XST::FilePtr CResourceFileManager::LoadFromFileSystem(xst_castring& strDirPath, xst_castring& strFileName, xst_castring& strGroupName)
 	{
 		return m_pFileMgr->LoadFile( strDirPath, strFileName, "FileSystem", strGroupName );
@@ -481,6 +510,15 @@ namespace XSE
 		GroupWeakPtr pGr = GetGroup( strGroup );
 		xst_assert2( pGr.IsValid() );
 		return pGr->DestroyFile( strName );
+	}
+
+	i32	CResourceFileManager::GetFileInfo(ResFileWeakPtr pFile, SFileInfo* pOut)
+	{
+		xst_assert2( pFile.IsValid() );
+		xst_assert2( pOut );
+		GroupWeakPtr pGr = GetGroup( pFile->m_ulGroupHandle );
+		xst_assert2( pGr.IsValid() );
+		return pGr->GetFileInfo( pFile, pOut );
 	}
 
 }//xse

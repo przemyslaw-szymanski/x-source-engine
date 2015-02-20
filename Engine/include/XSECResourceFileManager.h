@@ -16,7 +16,7 @@ namespace XSE
 
 	class XST_API CResourceFileManager : public XST::TCSingleton< CResourceFileManager >
 	{
-		private:
+		public:
 
 			struct SExt
 			{
@@ -89,6 +89,7 @@ namespace XSE
 
 					const SFileInfo&	GetFileInfoByName(xst_castring& strFileName) const;
 					const SFileInfo&	GetFileInfoByPath(xst_castring& strFullPath) const;
+					i32					GetFileInfoByPath(ResFileWeakPtr pFile, SFileInfo* pOut) const;
 
 					lpcastr				GetFilePath(const SFileInfo& Info) const;
 					lpcastr				GetFileName(const SFileInfo& Info) const;
@@ -167,6 +168,8 @@ namespace XSE
 
 					XST::FilePtr		LoadFile(xst_castring& strFileName, xst_castring& strGroupName);
 					XST::FilePtr		LoadFile(xst_castring& strFileName, ul32 uGroupHandle);
+					ResFileWeakPtr		LoadFile2(xst_castring& strFileName, xst_castring& strGroupName);
+					ResFileWeakPtr		LoadFile2(xst_castring& strFileName, ul32 uGroupHandle);
 					i32					LoadGroup(xst_castring& strGroupName);
 					i32					LoadGroup(ul32 uGroupHandle);
 
@@ -185,6 +188,8 @@ namespace XSE
 					i32					DestroyFile(ul32 uHandle, xst_castring& strGroupName);
 					i32					DestroyFile(ul32 uHandle, ul32 uGroupHandle);
 					i32					DestroyFile(xst_castring& strName, xst_castring& strGroup);
+
+					i32					GetFileInfo(ResFileWeakPtr pFile, SFileInfo* pOut);
 
 		protected:
 

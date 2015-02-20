@@ -369,6 +369,13 @@ namespace XSE
 			return XST_FAIL;
 		}
 
+		ResFileWeakPtr pFile2 = m_pResFileMgr->LoadFile2( strFileName, strGroupName );
+		if( pFile2.IsNull() )
+		{
+			DestroyResource( pRes );
+			return XST_FAIL;
+		}
+		pRes->m_pFile = pFile2;
 		pRes->_SetResourceFile( pFile );
 		pRes->_SetResourceState( XST::ResourceStates::LOADED );
 
