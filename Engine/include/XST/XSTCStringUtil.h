@@ -726,14 +726,13 @@ namespace XST
 				return _strString;
 			}
 
-			static lpcastr ToLower(lpastr _strString, ul32 _ulLength)
+			static void xst_i ToLower(lpcastr _strString, ul32 _ulLength, lpastr* ppOut)
 			{
+				lpastr pTmp = *ppOut;
 				for(u32 i = 0; i < _ulLength; ++i)
 				{
-					_strString[i] = tolower( _strString[ i ] );
+					pTmp[i] = tolower( _strString[ i ] );
 				}
-
-				return _strString;
 			}
 
 			static xst_astring ToLower(xst_castring& _strString)

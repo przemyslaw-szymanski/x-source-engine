@@ -13,10 +13,12 @@ namespace XSE
 
 	}
 
-	CTextureManager::~CTextureManager()cr
+	CTextureManager::~CTextureManager()
 	{
 
 	}
+
+	static const ul32 g_DDSHash = XST::CHash::GetCRC( "dds" );
 
 	i32 CTextureManager::PrepareResource(ResourceWeakPtr pRes)
 	{
@@ -31,13 +33,12 @@ namespace XSE
 		if( pFile )
 		{
 			CResourceFileManager::SFileInfo Info;
-			if( !XST_FAILED( CResourceFileManager::GetSingletonPtr()->GetFileInfo( pTex->m_pFile, &Info ) ) )
+			if( !XST_FAILED( m_pResFileMgr->GetFileInfo( pTex->m_pFile, &Info ) ) )
 			{
-				xst_castring& strExt = pFile->GetExtension();
-				if( strExt == "dds" )
+				if( g_DDSHash == Info.uExtHash )
 					Desc.bCompressed = true;
 				Desc.pData = pFile->GetData().GetPointer();
-				Desc.uDataSize = pFile->GetSize();
+				Desc.uDataSize = pFile->GetData().GetSize();
 				Desc.bRawData = true;
 				RSHandle hTex = m_pRS->CreateTexture( Desc );
 				if( hTex.uHandle )

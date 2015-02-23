@@ -89,7 +89,7 @@ namespace XSE
 
 					const SFileInfo&	GetFileInfoByName(xst_castring& strFileName) const;
 					const SFileInfo&	GetFileInfoByPath(xst_castring& strFullPath) const;
-					i32					GetFileInfoByPath(ResFileWeakPtr pFile, SFileInfo* pOut) const;
+					i32					GetFileInfo(ResFileWeakPtr pFile, SFileInfo* pOut) const;
 
 					lpcastr				GetFilePath(const SFileInfo& Info) const;
 					lpcastr				GetFileName(const SFileInfo& Info) const;

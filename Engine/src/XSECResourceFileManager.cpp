@@ -49,6 +49,9 @@ namespace XSE
 		auto& Itr = m_mFileInfos.find( Info.uNameHash );
 		if( Itr == m_mFileInfos.end() )
 		{
+			ch8 aExt[ 10 ];
+			lpastr pTmp = aExt;
+			XST::StringUtil::ToLower( strExt, uExtSize, &pTmp );
 			Info.uPathHash = XST::CHash::GetCRC( strPath, uPathSize );
 			Info.uExtHash = XST::CHash::GetCRC( strExt, uExtSize );
 			u32 uOffset = (m_aNames.size() == 0) ? 0 : m_aNames.size() - 1;
@@ -69,6 +72,16 @@ namespace XSE
 			return XST_OK;
 		}
 		return XST_FAIL;
+	}
+
+	i32 CResourceFileManager::CGroup::GetFileInfo(ResFileWeakPtr pFile, SFileInfo* pOut) const
+	{
+		auto& Itr = m_mFileInfos.find( pFile->m_ulHandle );
+		if( Itr != m_mFileInfos.end() )
+			*pOut = Itr->second;
+		else
+			return XST_FAIL;
+		return XST_OK;
 	}
 
 	i32 CResourceFileManager::CGroup::Prepare()
