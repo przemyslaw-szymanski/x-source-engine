@@ -1,4 +1,5 @@
 #include "XSEIPass.h"
+#include "XSECTextureManager.h"
 
 namespace XSE
 {
@@ -39,5 +40,29 @@ namespace XSE
 			return false;
 		return true;
 	}
+
+	i32	IPass::SetTexture(MATERIAL_TEXTURE_TYPE eType, xst_castring& strName, xst_castring& strGroup)
+	{
+		return SetTexture( strName, strGroup, &m_apTextures[ eType ] );
+	}
+			
+	i32	IPass::SetTexture(MATERIAL_TEXTURE_TYPE eType, TextureWeakPtr pTex)
+	{
+		m_apTextures[ eType ] = pTex;
+		return XST_OK;
+	}
+
+	i32	IPass::SetTexture( xst_castring& strName, xst_castring& strGroup, TexturePtr* ppOut )
+	{
+		xst_assert2( ppOut );
+		TextureWeakPtr pTex = CTextureManager::GetSingletonPtr()->LoadResource( strName, strName, strGroup, true );
+		if( pTex.IsValid() )
+		{
+			( *ppOut ) = pTex;
+			return XST_OK;
+		}
+		return XST_FAIL;
+	}
+
 
 }//xse

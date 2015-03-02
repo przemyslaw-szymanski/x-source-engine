@@ -2,6 +2,7 @@
 #define XSE_ITECHNIQUE_H
 
 #include "XSECommon.h"
+#include "XSECTexture.h"
 
 namespace XSE
 {
@@ -36,6 +37,10 @@ namespace XSE
 
 			virtual IPass*					GetPass(xst_castring& strName) const;
 
+			virtual xst_fi
+			TextureWeakPtr					GetTexture(MATERIAL_TEXTURE_TYPE eType) const
+											{ return m_apTextures[ eType ]; }
+
 			virtual	xst_fi ul32				GetPassCount() const
 											{ return m_vPasses.size(); }
 
@@ -56,6 +61,9 @@ namespace XSE
 
 			virtual i32						Compare(const ITechnique* pOther) const;
 
+			virtual	i32						SetTexture(MATERIAL_TEXTURE_TYPE eType, xst_castring& strName, xst_castring& strGroup);
+			virtual	i32						SetTexture(MATERIAL_TEXTURE_TYPE eType, TextureWeakPtr pTex);
+
 		protected:
 
 			virtual	IPass*					_CreatePass(xst_castring& strName) = 0;
@@ -64,6 +72,7 @@ namespace XSE
 		protected:
 
 			SMaterialAttributes	m_Attribs;
+			TexturePtr			m_apTextures[ MaterialTextureTypes::_ENUM_COUNT ];
 			xst_castring		m_strTechniqueName;
 			PassVector			m_vPasses;
 			l32					m_lTechniqueID;

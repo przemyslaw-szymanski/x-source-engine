@@ -334,8 +334,9 @@ namespace XSE
 		}
 
 		pRes = CreateResource( strResName, strGroupName );
-		if( LoadResource( pRes, strFileName, strGroupName, bFullLoad ) )
+		if( XST_FAILED( LoadResource( pRes, strFileName, strGroupName, bFullLoad ) ) )
 		{
+			DestroyResource( pRes );
 			pRes = XSE_NULLRES;
 		}
 		return pRes;
@@ -363,14 +364,8 @@ namespace XSE
 		}
 
 		XST::FilePtr pFile = m_pResFileMgr->LoadFile( strFileName, strGroupName );
-		if( pFile.IsNull() )
-		{
-			DestroyResource( pRes );
-			return XST_FAIL;
-		}
-
 		ResFileWeakPtr pFile2 = m_pResFileMgr->LoadFile2( strFileName, strGroupName );
-		if( pFile2.IsNull() )
+		if( pFile2.IsNull() && pFile.IsNull() )
 		{
 			DestroyResource( pRes );
 			return XST_FAIL;

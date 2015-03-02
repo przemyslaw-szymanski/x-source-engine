@@ -165,6 +165,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	pVS->SetInputLayout( this->m_pEngine->GetRenderSystem()->GetInputLayout( XSE::ILE::POSITION | XSE::ILE::NORMAL ) );
 	XSE::PixelShaderPtr pPS = XSE::CShaderManager::GetSingletonPtr()->LoadPixelShader("terrain.psh", "terr.ps", "ps", XSE::ShaderProfiles::PS_BEST);
 	pMat->CreateTechnique("tech", pVS, pPS);
+	pMat->SetTexture( XSE::MaterialTextureTypes::DIFFUSE, "heightmap04.jpg", XSE::ALL_GROUPS );
 	
 	xst_assert2(pVS.IsValid() && pPS.IsValid());
 	XSE::ITerrain* pTerrain = this->m_pSceneMgr->CreateTerrain( "Terrain", Options );
@@ -187,8 +188,6 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	pLight->SetPosition( vecPos );
 	//pSphere->GetSceneNode()->AddObject( pLight );
 	m_pSceneMgr->SetLight( pLight );
-
-	XSE::TextureWeakPtr pTex = XSE::CTextureManager::GetSingletonPtr()->LoadResource("heightmap04.jpg", "heightmap04", XSE::ALL_GROUPS);
 
 	return XSE::RESULT::OK;
 }

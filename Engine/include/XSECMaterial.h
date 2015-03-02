@@ -9,6 +9,7 @@
 
 namespace XSE
 {
+
 	namespace Resources
 	{
 		using namespace XST::Math;
@@ -73,6 +74,9 @@ namespace XSE
 						VertexShaderPtr		GetVertexShader();
 										
 						PixelShaderPtr		GetPixelShader();
+
+				xst_fi	TextureWeakPtr		GetTexture(MATERIAL_TEXTURE_TYPE eType) const
+											{ return m_apTextures[ eType ]; }
 						
 						void				SetAmbientColor(const Vec4& vecCol);
 						void				SetDiffuseColor(const Vec4& vecCol);
@@ -83,12 +87,14 @@ namespace XSE
 				const SMaterialAttributes&	GetAttributes() const
 											{ return m_Attribs; }
 
+						i32					SetTexture(MATERIAL_TEXTURE_TYPE eType, xst_castring& strName, xst_castring& strGroup);
+						i32					SetTexture(MATERIAL_TEXTURE_TYPE eType, TextureWeakPtr pTex);
+
 			protected:
 
 				SMaterialAttributes		m_Attribs;
 
-				XSE::TexturePtr			m_pDiffuseTex;
-				XSE::TexturePtr			m_pSpecularTex;
+				TexturePtr				m_apTextures[ MaterialTextureTypes::_ENUM_COUNT ];
 
 				CShaderManager*			m_pShaderMgr;
 

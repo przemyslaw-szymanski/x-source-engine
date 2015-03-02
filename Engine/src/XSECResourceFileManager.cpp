@@ -53,7 +53,7 @@ namespace XSE
 			lpastr pTmp = aExt;
 			XST::StringUtil::ToLower( strExt, uExtSize, &pTmp );
 			Info.uPathHash = XST::CHash::GetCRC( strPath, uPathSize );
-			Info.uExtHash = XST::CHash::GetCRC( strExt, uExtSize );
+			Info.uExtHash = XST::CHash::GetCRC( aExt, uExtSize );
 			u32 uOffset = (m_aNames.size() == 0) ? 0 : m_aNames.size() - 1;
 			Info.uBuffHandle = m_aNames.size();
 			Info.uPathLen = uPathSize;
@@ -430,19 +430,6 @@ namespace XSE
 
 	XST::FilePtr CResourceFileManager::LoadFile(xst_castring& strFileName, xst_castring& strGroupName)
 	{
-		ul32 uHash = XST::CHash::GetCRC( strFileName );
-		if( strGroupName == ALL_GROUPS )
-		{
-			for( auto& Pair : m_mGroups )
-			{
-				ResFileWeakPtr pFile = Pair.second->LoadFile( uHash, xst_null );
-			}
-		}
-		else
-		{
-			GroupWeakPtr pGr = GetGroup( strGroupName );
-			ResFilePtr pFile = pGr->LoadFile( strFileName, xst_null );
-		}
 		return m_pFileMgr->LoadFile( strFileName, strGroupName );
 	}
 

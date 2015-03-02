@@ -4,6 +4,7 @@
 #include "XSECommon.h"
 #include "XSEIVertexShader.h"
 #include "XSEIPixelShader.h"
+#include "XSECTexture.h"
 
 namespace XSE
 {
@@ -37,6 +38,10 @@ namespace XSE
 			virtual	ID							GetPassID() const
 												{ return (ID)&m_lPassId; }
 
+			virtual xst_fi
+			TextureWeakPtr						GetTexture(MATERIAL_TEXTURE_TYPE eType) const
+												{ return m_apTextures[ eType ]; }
+
 
 			virtual	xst_fi	void				SetAmbientColor(const Vec4& vecCol)
 												{ m_Attribs.vecAmbientColor = vecCol; }
@@ -57,9 +62,16 @@ namespace XSE
 
 			static bool							AttribEquals(const SMaterialAttributes& Left, const SMaterialAttributes& Right);
 
+			virtual	i32							SetTexture(MATERIAL_TEXTURE_TYPE eType, xst_castring& strName, xst_castring& strGroup);
+			virtual	i32							SetTexture(MATERIAL_TEXTURE_TYPE eType, TextureWeakPtr pTex);
+
+			static	i32							SetTexture(xst_castring& strName, xst_castring& strGroup, TexturePtr* ppOut);
+
 		protected:
 
 			SMaterialAttributes	m_Attribs;
+
+			TexturePtr		m_apTextures[ MaterialTextureTypes::_ENUM_COUNT ];
 
 			xst_castring	m_strPassName;
 			l32				m_lPassId;

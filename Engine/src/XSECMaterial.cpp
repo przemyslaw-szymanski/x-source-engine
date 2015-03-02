@@ -2,6 +2,7 @@
 #include "XSECShaderManager.h"
 #include "XSECTechnique.h"
 #include "XSECPass.h"
+#include "XSECTextureManager.h"
 
 namespace XSE
 {
@@ -247,6 +248,31 @@ namespace XSE
 		i32 CMaterial::Compare(const MaterialPtr& pMat) const
 		{
 			return Compare( pMat.GetPtr() );
+		}
+
+		i32	CMaterial::SetTexture(MATERIAL_TEXTURE_TYPE eType, xst_castring& strName, xst_castring& strGroup)
+		{
+			if( !XST_FAILED( IPass::SetTexture( strName, strGroup, &m_apTextures[ eType ] ) ) )
+			{
+				i32 iResult = 0;
+				for( auto& pTech : m_vTechniques )
+				{
+					iResult += pTech->SetTexture( eType, m_apTextures[ eType ] );
+				}
+				return iResult;
+			}
+			return XST_FAIL;
+		}
+			
+		i32	CMaterial::SetTexture(MATERIAL_TEXTURE_TYPE eType, TextureWeakPtr pTex)
+		{
+			m_apTextures[ eType ] = pTex;
+			i32 iResult = 0;
+			for( auto& pTech : m_vTechniques )
+			{
+				iResult += pTech->SetTexture( eType, pTex );
+			}
+			return iResult;
 		}
 
 	}//resources

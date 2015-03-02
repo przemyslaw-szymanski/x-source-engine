@@ -345,6 +345,20 @@ namespace XSE
 	};
 	typedef ViewFrustumCullTypes VIEW_FRUSTUM_CULL_TEST_TYPE;
 
+	struct MaterialTextureTypes
+	{
+		enum TYPE
+		{
+			DIFFUSE,
+			NORMAL,
+			DISPLACEMENT,
+			SPECULAR,
+			CUBE,
+			_ENUM_COUNT
+		};
+	};
+	typedef MaterialTextureTypes::TYPE MATERIAL_TEXTURE_TYPE;
+
 }//xse
 
 #endif

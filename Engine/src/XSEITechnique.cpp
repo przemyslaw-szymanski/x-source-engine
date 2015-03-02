@@ -148,4 +148,30 @@ namespace XSE
 		}
 	}
 
+	i32	ITechnique::SetTexture(MATERIAL_TEXTURE_TYPE eType, xst_castring& strName, xst_castring& strGroup)
+	{
+		if( !XST_FAILED( IPass::SetTexture( strName, strGroup, &m_apTextures[ eType ] ) ) )
+		{
+			i32 iResult = 0;
+			for( auto& pPass : m_vPasses )
+			{
+				iResult += pPass->SetTexture( eType, m_apTextures[ eType ] );
+			}
+			return iResult;
+		}
+		return XST_FAIL;
+	}
+						
+	i32	ITechnique::SetTexture(MATERIAL_TEXTURE_TYPE eType, TextureWeakPtr pTex)
+	{
+		m_apTextures[ eType ] = pTex;
+		i32 iResult = 0;
+		for( auto& pPass : m_vPasses )
+		{
+			iResult += pPass->SetTexture( eType, pTex );
+		}
+		return iResult;
+		return XST_OK;
+	}
+
 }//xse
