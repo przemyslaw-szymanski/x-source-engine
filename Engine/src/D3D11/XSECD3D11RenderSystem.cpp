@@ -90,29 +90,29 @@ namespace XSE
 
 		static D3D11_SUBRESOURCE_DATA g_aaTexSubResourcesData[ XSE_MAX_RS_RESOURCE_THREADS ][ XSE_MAX_MIPLEVELS ] = { 0 };
 
-		xst_fi u16 GetRendererResourceHandleId(RSHandleRef Handle)
+		xst_fi u16 GetRendererResourceHandleId(cu64& uHandle)
 		{
-			u16 uVal = ( Handle.uHandle & 0xFFFF0000 ) >> 16;
+			u16 uVal = ( uHandle & 0xFFFF0000 ) >> 16;
 			return uVal;
 		}
 
-		xst_fi u16 GetRendererResourceHandleRefCount(RSHandleRef Handle)
+		xst_fi u16 GetRendererResourceHandleRefCount(cu64& uHandle)
 		{
-			u16 uVal = ( Handle.uHandle & 0x0000FFFF ) >> 0;
+			u16 uVal = ( uHandle & 0x0000FFFF ) >> 0;
 			return uVal;
 		}
 
-		xst_fi void SetRendererResourceHandleId(RSHandlePtr pHandleOut, u16 uId)
+		xst_fi void SetRendererResourceHandleId(u64* pHandleOut, u16 uId)
 		{
 			// Clear bits
-			pHandleOut->uHandle &= ~0xFFFF0000;
-			pHandleOut->uHandle |= ( uId & 0xFFFF ) << 16;
+			*pHandleOut &= ~0xFFFF0000;
+			*pHandleOut |= ( uId & 0xFFFF ) << 16;
 		}
 
-		xst_fi void SetRendererResourceHandleRefCount(RSHandlePtr pHandleOut, u16 uCount)
+		xst_fi void SetRendererResourceHandleRefCount(u64* pHandleOut, u16 uCount)
 		{
-			pHandleOut->uHandle &= ~0x0000FFFF;
-			pHandleOut->uHandle |= ( uCount & 0xFFFF ) << 0;
+			*pHandleOut &= ~0x0000FFFF;
+			*pHandleOut |= ( uCount & 0xFFFF ) << 0;
 		}
 
 		struct STexture
@@ -178,6 +178,8 @@ namespace XSE
 			g_vTexHandles.reserve( 3000 );
 			g_sFreeTexHandles.reserve( 1000 );
 			g_vTextures.reserve( 3000 );
+
+			g_vTextures.push_back( {} ); // add empty texture at null position
 
 			xst_zero( &m_Current, sizeof( SCurrent ) );
 			xst_zero( &g_Diagnostics, sizeof( SRSDiagnostics ) );
@@ -1103,7 +1105,12 @@ namespace XSE
 
 			if( Desc.bRawData )
 			{
-				if( Desc.bCompressed )
+				XST_LOG_ERR( "Raw data not supported" );
+				return hTex;
+			}
+			else
+			{
+				if( Desc.bNative )
 				{
 					hr = CreateDDSTextureFromMemory( m_pDevice, m_pDeviceContext, Desc.pData, Desc.uDataSize, &pTex, &pSRV );
 				}

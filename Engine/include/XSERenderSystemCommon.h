@@ -336,7 +336,8 @@ namespace XSE
 	struct SRendererResourceHandle
 	{
 		friend class IRenderSystem;
-		public:
+		operator bool() { return uHandle == 0; }
+		private:
 			u64 uHandle = 0;
 	};
 	typedef SRendererResourceHandle RSHandle;
@@ -384,8 +385,8 @@ namespace XSE
 		u16					uMipCount : 12;
 		u16					bGenerateMipMaps : 1;
 		u16					bMultisampled : 1;
-		u16					bRawData : 1;
-		u16					bCompressed : 1; // Compressed textures can be only S3TC
+		u16					bRawData : 1; // Uncompressed data
+		u16					bNative : 1; // Native format for a 3D API (e.g. dds for D3D)
 		u16					uPixelSize; // in bytes - bits per pixel / 4
 		RS_FORMAT			eFormat;
 		TEXTURE_TYPE		eType;

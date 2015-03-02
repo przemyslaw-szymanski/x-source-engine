@@ -36,10 +36,10 @@ namespace XSE
 			if( !XST_FAILED( m_pResFileMgr->GetFileInfo( pTex->m_pFile, &Info ) ) )
 			{
 				if( g_DDSHash == Info.uExtHash )
-					Desc.bCompressed = true;
+					Desc.bNative = true;
 				Desc.pData = pFile->GetData().GetPointer();
 				Desc.uDataSize = pFile->GetData().GetSize();
-				Desc.bRawData = true;
+				Desc.bRawData = false;
 				RSHandle hTex = m_pRS->CreateTexture( Desc );
 				if( hTex.uHandle )
 				{
