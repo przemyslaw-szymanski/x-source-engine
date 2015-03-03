@@ -41,7 +41,7 @@ namespace XSE
 				Desc.uDataSize = pFile->GetData().GetSize();
 				Desc.bRawData = false;
 				RSHandle hTex = m_pRS->CreateTexture( Desc );
-				if( hTex.uHandle )
+				if( hTex )
 				{
 					pTex->_SetRenderSystemHandle( hTex );
 					pTex->_SetResourceState( Resources::ResourceStates::PREPARED );

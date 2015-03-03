@@ -277,6 +277,30 @@ namespace XSE
 			return RESULT::OK;
 		}
 
+		void CRenderSystem::_SetRendererResourceHandleId(RSHandlePtr pOut, u16 uId)
+		{
+			pOut->uHandle &= ~0xFFFF0000;
+			*pHandleOut |= ( uId & 0xFFFF ) << 16;
+		}
+			
+		void CRenderSystem::_SetRendererResourceHandleRefCount(RSHandlePtr pOut, u16 uId)
+		{
+			*pHandleOut &= ~0x0000FFFF;
+			*pHandleOut |= ( uCount & 0xFFFF ) << 0;
+		}
+			
+		u16	CRenderSystem::_GetRendererResourceHandleId(const RSHandleRef Handle)
+		{
+			u16 uVal = ( uHandle & 0xFFFF0000 ) >> 16;
+			return uVal;
+		}
+			
+		u16	CRenderSystem::_GetRendererResourceHandleRefCount(const RSHandleRef Handle)
+		{
+			u16 uVal = ( uHandle & 0x0000FFFF ) >> 0;
+			return uVal;
+		}
+
 		i32 CRenderSystem::Init(const SRenderSystemSettings& Options)
 		{
 			//Init base class
@@ -1187,8 +1211,8 @@ namespace XSE
 					g_vTextures[ uId ] = Tex;
 				}
 
-				SetRendererResourceHandleId( &hTex, uId );
-				SetRendererResourceHandleRefCount( &hTex, 1 );
+				SetRendererResourceHandleId( &hTex.uHandle, uId );
+				SetRendererResourceHandleRefCount( &hTex.uHandle, 1 );
 			}
 			else
 			{

@@ -269,6 +269,11 @@ namespace XSE
 
 						DXGI_FORMAT	_ConvertToD3D11Format(RS_FORMAT eFormat);
 
+				xst_i	void		_SetRendererResourceHandleId(RSHandlePtr pOut, u16 uId) xst_implement;
+				xst_i	void		_SetRendererResourceHandleRefCount(RSHandlePtr pOut, u16 uId) xst_implement;
+				xst_i	u16			_GetRendererResourceHandleId(const RSHandleRef Handle) xst_implement;
+				xst_i	u16			_GetRendererResourceHandleRefCount(const RSHandleRef Handle) xst_implement;
+
 			protected:
 
 				xst_unknown				m_ahDlls[ LIB_COUNT ];
