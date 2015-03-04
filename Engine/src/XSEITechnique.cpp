@@ -174,4 +174,12 @@ namespace XSE
 		return XST_OK;
 	}
 
+	void ITechnique::SetSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode)
+	{
+		for( auto& pPass : m_vPasses )
+		{
+			pPass->SetSamplingMode( eType, Mode );
+		}
+	}
+
 }//xse

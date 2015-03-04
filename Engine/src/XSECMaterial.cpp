@@ -275,5 +275,14 @@ namespace XSE
 			return iResult;
 		}
 
+		void CMaterial::SetSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode)
+		{
+			m_aSamplingModes[ eType ] = Mode;
+			for( auto& pTech : m_vTechniques )
+			{
+				pTech->SetSamplingMode( eType, Mode );
+			}
+		}
+
 	}//resources
 }//xse

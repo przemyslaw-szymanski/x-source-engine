@@ -9,7 +9,6 @@
 
 namespace XSE
 {
-
 	namespace Resources
 	{
 		using namespace XST::Math;
@@ -90,10 +89,13 @@ namespace XSE
 						i32					SetTexture(MATERIAL_TEXTURE_TYPE eType, xst_castring& strName, xst_castring& strGroup);
 						i32					SetTexture(MATERIAL_TEXTURE_TYPE eType, TextureWeakPtr pTex);
 
+						void				SetSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode);
+
 			protected:
 
 				SMaterialAttributes		m_Attribs;
 
+				STextureSamplingMode	m_aSamplingModes[ MaterialTextureTypes::_ENUM_COUNT ];
 				TexturePtr				m_apTextures[ MaterialTextureTypes::_ENUM_COUNT ];
 
 				CShaderManager*			m_pShaderMgr;

@@ -153,8 +153,9 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	Options.TileVertexCount = XSE::CPoint( 32 + 1 );
 	Options.uiLODCount = 3;
 	//Options.bColor = true;
-	Options.bBinormal = Options.bNormal = Options.bTangent = Options.bTexCoord = false;
+	Options.bBinormal = Options.bNormal = Options.bTangent = false;
 	Options.bNormal = true;
+	Options.bTexCoord = true;
 
 	XSE::MaterialWeakPtr pMat;
 	{

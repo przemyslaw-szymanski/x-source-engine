@@ -239,6 +239,9 @@ namespace XSE
 		CIndexData& INData = pIB->GetIndexData();
 		const Vec4 vecCol1 = { 1,0,0,1 };
 		const Vec4 vecCol2 = { 0,1,0,1 };
+		const bool bIsColor = pIL->IsColor();
+		const bool bIsNormal = pIL->IsNormal();
+		const bool bIsTexcoord0 = pIL->IsTexCoord0();
 #endif
 		
 		for( u32 uTileY = 0; uTileY < m_Info.TileCount.y; ++uTileY )
@@ -281,14 +284,20 @@ namespace XSE
 
 						VData.SetPosition( ulCurrVertex, vecPos );
 
-						if( pIL->IsColor() )
+						if( bIsColor )
 						{
 							VData.SetColor( ulCurrVertex, vecCol );
 						}
 
-						if( pIL->IsNormal() )
+						if( bIsNormal )
 						{
 							VData.SetNormal( ulCurrVertex, vecNormal );
+						}
+
+						if( bIsTexcoord0 )
+						{
+							const Vec2 vecUV( vecPos.x / m_Info.TileVertexCount.x, vecPos.z / m_Info.TileVertexCount.y );
+							VData.SetTexCoord0( ulCurrVertex, vecUV );
 						}
 
 						VertexPos.x++;

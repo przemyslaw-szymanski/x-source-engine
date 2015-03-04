@@ -616,6 +616,7 @@ namespace XSE
 			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_SPECULAR_COLOR, Vec4( 1, 1.0, 0.3, 1 ) );
 			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_ALPHA, 1.0f );
 			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_SHININESS, 32.0f );
+			pRS->GetShaderSystem()->SetTexture( MaterialTextureTypes::DIFFUSE, pMat->GetTexture( MaterialTextureTypes::DIFFUSE )->GetRSHandle() );
 			pRS->GetShaderSystem()->UpdateMaterialInputs();
 			pRS->UpdateDrawCallInputs();
 				

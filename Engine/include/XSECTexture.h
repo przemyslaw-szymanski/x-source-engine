@@ -30,6 +30,10 @@ namespace XSE
 					xst_fi	RS_FORMAT		GetRenderSystemFormat() const
 											{ return m_eRSFormat; }
 
+					xst_fi 
+					const RSHandleRef		GetRSHandle() const
+											{ return m_RSHandle; }
+
 			protected:
 
 				xst_fi	void				_SetRenderSystemHandle(RSHandleRef Handle)

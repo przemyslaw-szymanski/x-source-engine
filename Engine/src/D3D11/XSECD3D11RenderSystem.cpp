@@ -90,31 +90,6 @@ namespace XSE
 
 		static D3D11_SUBRESOURCE_DATA g_aaTexSubResourcesData[ XSE_MAX_RS_RESOURCE_THREADS ][ XSE_MAX_MIPLEVELS ] = { 0 };
 
-		xst_fi u16 GetRendererResourceHandleId(cu64& uHandle)
-		{
-			u16 uVal = ( uHandle & 0xFFFF0000 ) >> 16;
-			return uVal;
-		}
-
-		xst_fi u16 GetRendererResourceHandleRefCount(cu64& uHandle)
-		{
-			u16 uVal = ( uHandle & 0x0000FFFF ) >> 0;
-			return uVal;
-		}
-
-		xst_fi void SetRendererResourceHandleId(u64* pHandleOut, u16 uId)
-		{
-			// Clear bits
-			*pHandleOut &= ~0xFFFF0000;
-			*pHandleOut |= ( uId & 0xFFFF ) << 16;
-		}
-
-		xst_fi void SetRendererResourceHandleRefCount(u64* pHandleOut, u16 uCount)
-		{
-			*pHandleOut &= ~0x0000FFFF;
-			*pHandleOut |= ( uCount & 0xFFFF ) << 0;
-		}
-
 		struct STexture
 		{
 			ID3D11Resource*	pTexture = xst_null;
@@ -124,6 +99,7 @@ namespace XSE
 		xst_vector< RSHandle > g_vTexHandles;
 		xst_vector< STexture > g_vTextures;
 		xst_stack< u32 > g_sFreeTexHandles;
+		xst_vector< ID3D11SamplerState* > g_vSamplers; // Reserved by the system caps
 
 		CRenderSystem::CRenderSystem(xst_castring& strName) : XSE::IRenderSystem( strName )
 		{
@@ -280,24 +256,24 @@ namespace XSE
 		void CRenderSystem::_SetRendererResourceHandleId(RSHandlePtr pOut, u16 uId)
 		{
 			pOut->uHandle &= ~0xFFFF0000;
-			*pHandleOut |= ( uId & 0xFFFF ) << 16;
+			pOut->uHandle |= ( uId & 0xFFFF ) << 16;
 		}
 			
-		void CRenderSystem::_SetRendererResourceHandleRefCount(RSHandlePtr pOut, u16 uId)
+		void CRenderSystem::_SetRendererResourceHandleRefCount(RSHandlePtr pOut, u16 uCount)
 		{
-			*pHandleOut &= ~0x0000FFFF;
-			*pHandleOut |= ( uCount & 0xFFFF ) << 0;
+			pOut->uHandle &= ~0x0000FFFF;
+			pOut->uHandle |= ( uCount & 0xFFFF ) << 0;
 		}
 			
 		u16	CRenderSystem::_GetRendererResourceHandleId(const RSHandleRef Handle)
 		{
-			u16 uVal = ( uHandle & 0xFFFF0000 ) >> 16;
+			u16 uVal = ( Handle.uHandle & 0xFFFF0000 ) >> 16;
 			return uVal;
 		}
 			
 		u16	CRenderSystem::_GetRendererResourceHandleRefCount(const RSHandleRef Handle)
 		{
-			u16 uVal = ( uHandle & 0x0000FFFF ) >> 0;
+			u16 uVal = ( Handle.uHandle & 0x0000FFFF ) >> 0;
 			return uVal;
 		}
 

@@ -64,6 +64,8 @@ namespace XSE
 			virtual	i32						SetTexture(MATERIAL_TEXTURE_TYPE eType, xst_castring& strName, xst_castring& strGroup);
 			virtual	i32						SetTexture(MATERIAL_TEXTURE_TYPE eType, TextureWeakPtr pTex);
 
+			virtual void					SetSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode);
+
 		protected:
 
 			virtual	IPass*					_CreatePass(xst_castring& strName) = 0;

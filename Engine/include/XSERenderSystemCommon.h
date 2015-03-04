@@ -335,10 +335,8 @@ namespace XSE
 
 	struct SRendererResourceHandle
 	{
-		friend class IRenderSystem;
 		operator bool() { return uHandle == 0; }
-		private:
-			u64 uHandle = 0;
+		u64 uHandle = 0;
 	};
 	typedef SRendererResourceHandle RSHandle;
 	typedef const RSHandle& RSHandleRef;
@@ -528,6 +526,39 @@ namespace XSE
 	};
 	typedef IndexElementSizes::SIZE INDEX_ELEMENT_SIZE;
 
+	struct TextureFilters
+	{
+		enum FILTER
+		{
+			POINT,
+			LINEAR,
+			ANISOTROPIC,
+			_ENUM_COUNT
+		};
+	};
+	typedef TextureFilters::FILTER TEXTURE_FILTER;
+
+	struct TextureAddresses
+	{
+		enum ADDRESS
+		{
+			WRAP,
+			CLAMP,
+			MIRROR,
+			_ENUM_COUNT
+		};
+	};
+	typedef TextureAddresses::ADDRESS TEXTURE_ADDRESS;
+
+	struct STextureSamplingMode
+	{
+		TEXTURE_FILTER	eFilter;
+		TEXTURE_ADDRESS	eAddressU;
+		TEXTURE_ADDRESS eAddressV;
+		TEXTURE_ADDRESS eAddressW;
+		u16				uMinLOD;
+		u16				uMaxLOD;
+	};
 
 	struct XST_API SViewportOptions
 	{

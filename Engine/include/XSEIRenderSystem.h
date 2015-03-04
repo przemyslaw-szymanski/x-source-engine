@@ -170,11 +170,6 @@ namespace XSE
 					void				_SetShaderSystem(Resources::IShader* pShader, IShaderSystem* pShaderSystem)
 										{ pShader->m_pShaderSystem = pShaderSystem; }
 
-			xst_i	void				_SetRendererResourceHandleId(RSHandlePtr pOut, u16 uId) {}
-			xst_i	void				_SetRendererResourceHandleRefCount(RSHandlePtr pOut, u16 uId) {}
-			xst_i	u16					_GetRendererResourceHandleId(const RSHandleRef Handle) { return 0; }
-			xst_i	u16					_GetRendererResourceHandleRefCount(const RSHandleRef Handle) { return 0; }
-
 			//virtual	XST::IAllocator*	_CreateVertexShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null) = 0;
 			//virtual XST::IAllocator*	_CreatePixelShaderMemoryPool(cul32& ulObjCount, XST::IAllocator* pAllocator = xst_null) = 0;
 			virtual	i32					_CreateMemoryPools(void* pMemOptions) = 0;

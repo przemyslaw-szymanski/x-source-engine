@@ -77,6 +77,8 @@ namespace XSE
 			virtual i32							SetConstantValue(u32 uConstant, const i32& value) = 0;
 			virtual i32							SetConstantValue(u32 uConstant, const bool& value) = 0;
 
+			virtual i32							SetTexture(u32 uSlot, const RSHandleRef TexHandle) = 0;
+
 			virtual	xst_fi xst_castring&		GetShaderCode(ShaderCodes::CODE eCode)
 												{ return m_astrShaderCodes[ eCode ]; }
 
