@@ -89,13 +89,14 @@ namespace XSE
 						i32					SetTexture(MATERIAL_TEXTURE_TYPE eType, xst_castring& strName, xst_castring& strGroup);
 						i32					SetTexture(MATERIAL_TEXTURE_TYPE eType, TextureWeakPtr pTex);
 
-						void				SetSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode);
+						void				SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode);
+						void				SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const RSHandleRef Handle);
 
 			protected:
 
 				SMaterialAttributes		m_Attribs;
 
-				STextureSamplingMode	m_aSamplingModes[ MaterialTextureTypes::_ENUM_COUNT ];
+				RSHandle				m_aSamplers[ MaterialTextureTypes::_ENUM_COUNT ];
 				TexturePtr				m_apTextures[ MaterialTextureTypes::_ENUM_COUNT ];
 
 				CShaderManager*			m_pShaderMgr;

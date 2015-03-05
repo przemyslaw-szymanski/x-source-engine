@@ -550,14 +550,31 @@ namespace XSE
 	};
 	typedef TextureAddresses::ADDRESS TEXTURE_ADDRESS;
 
+	struct TextureLODs
+	{
+		enum LOD
+		{
+			LEVEL_0,
+			LEVEL_1,
+			LEVEL_2,
+			LEVEL_3,
+			LEVEL_4,
+			LEVEL_5,
+			_ENUM_COUNT,
+			LEVEL_MIN = 0,
+			LEVEL_MAX = 32
+		};
+	};
+	typedef TextureLODs::LOD TEXTURE_LOD;
+
 	struct STextureSamplingMode
 	{
-		TEXTURE_FILTER	eFilter;
-		TEXTURE_ADDRESS	eAddressU;
-		TEXTURE_ADDRESS eAddressV;
-		TEXTURE_ADDRESS eAddressW;
-		u16				uMinLOD;
-		u16				uMaxLOD;
+		TEXTURE_FILTER	eFilter		= TextureFilters::LINEAR;
+		TEXTURE_ADDRESS	eAddressU	= TextureAddresses::WRAP;
+		TEXTURE_ADDRESS eAddressV	= TextureAddresses::WRAP;
+		TEXTURE_ADDRESS eAddressW	= TextureAddresses::WRAP;
+		TEXTURE_LOD		eMinLOD		= TextureLODs::LEVEL_MIN;
+		TEXTURE_LOD		eMaxLOD		= TextureLODs::LEVEL_MAX;
 	};
 
 	struct XST_API SViewportOptions

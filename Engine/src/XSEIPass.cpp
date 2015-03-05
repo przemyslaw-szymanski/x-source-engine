@@ -1,5 +1,6 @@
 #include "XSEIPass.h"
 #include "XSECTextureManager.h"
+#include "XSEIRenderSystem.h"
 
 namespace XSE
 {
@@ -64,5 +65,9 @@ namespace XSE
 		return XST_FAIL;
 	}
 
+	const RSHandleRef IPass::GetSamplerHandle(const STextureSamplingMode& Mode)
+	{
+		return CTextureManager::GetSingletonPtr()->GetRenderSystem()->CreateSampler( Mode );
+	}
 
 }//xse

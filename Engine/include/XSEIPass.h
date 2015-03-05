@@ -67,18 +67,30 @@ namespace XSE
 
 			static	i32							SetTexture(xst_castring& strName, xst_castring& strGroup, TexturePtr* ppOut);
 
+			virtual void						SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode);
+			virtual xst_fi	void				SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const RSHandleRef Handle)
+												{ m_aSamplers[ eType ] = Handle; }
+
+			virtual xst_fi
+			const RSHandleRef					GetSamplerHandle(MATERIAL_TEXTURE_TYPE eType) const
+												{ return m_aSamplers[ eType ]; }
+
+			static
+			const RSHandleRef					GetSamplerHandle(const STextureSamplingMode& Mode);
+
 		protected:
 
-			SMaterialAttributes	m_Attribs;
+			SMaterialAttributes		m_Attribs;
 
-			TexturePtr		m_apTextures[ MaterialTextureTypes::_ENUM_COUNT ];
+			RSHandle				m_aSamplers[ MaterialTextureTypes::_ENUM_COUNT ];
+			TexturePtr				m_apTextures[ MaterialTextureTypes::_ENUM_COUNT ];
 
-			xst_castring	m_strPassName;
-			l32				m_lPassId;
-			ul32			m_ulPassNameHash;
+			xst_castring			m_strPassName;
+			l32						m_lPassId;
+			ul32					m_ulPassNameHash;
 
-			VertexShaderPtr	m_pVS;
-			PixelShaderPtr	m_pPS;
+			VertexShaderPtr			m_pVS;
+			PixelShaderPtr			m_pPS;
 	};
 
 }//xse

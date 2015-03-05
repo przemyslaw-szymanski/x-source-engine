@@ -64,7 +64,13 @@ namespace XSE
 			virtual	i32						SetTexture(MATERIAL_TEXTURE_TYPE eType, xst_castring& strName, xst_castring& strGroup);
 			virtual	i32						SetTexture(MATERIAL_TEXTURE_TYPE eType, TextureWeakPtr pTex);
 
-			virtual void					SetSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode);
+			virtual void					SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode);
+			virtual void					SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const RSHandleRef Handle);
+			virtual void					SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const RSHandleRef Handle);
+
+			virtual xst_fi
+			const RSHandleRef				GetSamplerHandle(MATERIAL_TEXTURE_TYPE eType) const
+											{ return m_aSamplers[ eType ]; }
 
 		protected:
 
@@ -74,6 +80,7 @@ namespace XSE
 		protected:
 
 			SMaterialAttributes	m_Attribs;
+			RSHandle			m_aSamplers[ MaterialTextureTypes::_ENUM_COUNT ];
 			TexturePtr			m_apTextures[ MaterialTextureTypes::_ENUM_COUNT ];
 			xst_castring		m_strTechniqueName;
 			PassVector			m_vPasses;

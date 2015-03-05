@@ -275,13 +275,19 @@ namespace XSE
 			return iResult;
 		}
 
-		void CMaterial::SetSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode)
+		void CMaterial::SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const RSHandleRef Handle)
 		{
-			m_aSamplingModes[ eType ] = Mode;
+			m_aSamplers[ eType ] = Handle;
 			for( auto& pTech : m_vTechniques )
 			{
-				pTech->SetSamplingMode( eType, Mode );
+				pTech->SetTextureSamplingMode( eType, Handle );
 			}
+		}
+
+		void CMaterial::SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode)
+		{
+			const RSHandleRef Handle = IPass::GetSamplerHandle( Mode );
+			SetTextureSamplingMode(eType, Handle );
 		}
 
 	}//resources
