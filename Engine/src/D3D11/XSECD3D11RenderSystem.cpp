@@ -1187,8 +1187,8 @@ namespace XSE
 					g_vTextures[ uId ] = Tex;
 				}
 
-				SetRendererResourceHandleId( &hTex.uHandle, uId );
-				SetRendererResourceHandleRefCount( &hTex.uHandle, 1 );
+				_SetRendererResourceHandleId( &hTex.uHandle, uId );
+				_SetRendererResourceHandleRefCount( &hTex.uHandle, 1 );
 			}
 			else
 			{
@@ -1202,6 +1202,44 @@ namespace XSE
 		i32	CRenderSystem::DestroyTexture(RSHandlePtr TexHandle)
 		{
 			return XST_FAIL;
+		}
+
+		static const u32 SamplerBitField[] =
+		{
+			0x00000001, // POINT
+			0x00000002, // LINEAR
+			0x00000004, // ANISO
+			0x00000008, // WRAP
+			0x00000010, // CLAMP
+			0x00000020, // MIRROR
+			0x00000040, // MIN LEVEL 0
+			0x00000080, // MIN LEVEL 0
+			0x00000100, // MIN LEVEL 0
+			0x00000200, // MIN LEVEL 0
+			0x00000400, // MIN LEVEL 0
+			0x00000800, // MIN LEVEL 0
+			0x00001000, // MIN LEVEL 0
+			0x00002040, // MIN LEVEL 0
+			0x00004040, // MIN LEVEL 0
+			0x00008040, // MIN LEVEL 0
+			0x00010040, // MIN LEVEL 0
+			0x00020040, // MIN LEVEL 0
+		};
+
+		const RSHandleRef CRenderSystem::CreateSampler(const STextureSamplingMode& Mode)
+		{
+			RSHandle hSampler;
+			u32 uId = 0;
+			switch( Mode.eFilter )
+			{
+				case TextureFilters::LINEAR: uId = 1
+			}
+			return hSampler;
+		}
+						
+		i32	CRenderSystem::DestroySampler(RSHandlePtr pHandle)
+		{
+			return XST_OK;
 		}
 
 		ul32 CRenderSystem::GetShaderMaxSize()
