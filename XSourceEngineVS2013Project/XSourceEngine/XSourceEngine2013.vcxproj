@@ -250,6 +250,7 @@
     <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11PixelShader.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11RenderSystem.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11RenderSystemPlugin.h" />
+    <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11Sampler.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11Technique.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11Texture.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSECD3D11VertexBuffer.h" />

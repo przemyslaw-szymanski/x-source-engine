@@ -8,6 +8,7 @@
 #include "XSECD3D11IndexBuffer.h"
 #include "XSECD3D11CGShaderSystem.h"
 #include "XSECD3D11HLSLShaderSystem.h"
+#include "XSECD3D11Sampler.h"
 
 #include "XSECEngine.h"
 
@@ -99,7 +100,7 @@ namespace XSE
 		xst_vector< RSHandle > g_vTexHandles;
 		xst_vector< STexture > g_vTextures;
 		xst_stack< u32 > g_sFreeTexHandles;
-		xst_vector< ID3D11SamplerState* > g_vSamplers; // Reserved by the system caps
+		xst_map< u32, ID3D11SamplerState* > g_mSamplerStates;
 
 		CRenderSystem::CRenderSystem(xst_castring& strName) : XSE::IRenderSystem( strName )
 		{
@@ -163,6 +164,17 @@ namespace XSE
 
 		CRenderSystem::~CRenderSystem()
 		{
+			for( auto& Pair : g_mSamplerStates )
+			{
+				Pair.second->Release();
+			}
+
+			for( auto& Tex : g_vTextures )
+			{
+				Tex.pTexture->Release();
+				Tex.pShaderView->Release();
+			}
+
 			//Destroy all input layouts
 			for(ILMap::iterator Itr = m_mInputLayouts.begin(); Itr != m_mInputLayouts.end(); ++Itr)
 			{
@@ -1204,36 +1216,28 @@ namespace XSE
 			return XST_FAIL;
 		}
 
-		static const u32 SamplerBitField[] =
-		{
-			0x00000001, // POINT
-			0x00000002, // LINEAR
-			0x00000004, // ANISO
-			0x00000008, // WRAP
-			0x00000010, // CLAMP
-			0x00000020, // MIRROR
-			0x00000040, // MIN LEVEL 0
-			0x00000080, // MIN LEVEL 0
-			0x00000100, // MIN LEVEL 0
-			0x00000200, // MIN LEVEL 0
-			0x00000400, // MIN LEVEL 0
-			0x00000800, // MIN LEVEL 0
-			0x00001000, // MIN LEVEL 0
-			0x00002040, // MIN LEVEL 0
-			0x00004040, // MIN LEVEL 0
-			0x00008040, // MIN LEVEL 0
-			0x00010040, // MIN LEVEL 0
-			0x00020040, // MIN LEVEL 0
-		};
-
 		const RSHandleRef CRenderSystem::CreateSampler(const STextureSamplingMode& Mode)
 		{
 			RSHandle hSampler;
 			u32 uId = 0;
-			switch( Mode.eFilter )
+			uId |= SamplerMinFilterBits[ Mode.eMinFilter ];
+			uId |= SamplerMagFilterBits[ Mode.eMagFilter ];
+			uId |= SamplerMipFilterBits[ Mode.eMipFilter ];
+			uId |= SamplerWrapUBits[ Mode.eAddressU ];
+			uId |= SamplerWrapVBits[ Mode.eAddressV ];
+			uId |= SamplerWrapWBits[ Mode.eAddressW ];
+			uId |= SamplerMinLevelBits[ Mode.eMinLOD ];
+			uId |= SamplerMaxLevelBits[ Mode.eMaxLOD ];
+			// Check if this sampler exits
+#if defined(XST_DEBUG)
+			auto& Itr = g_mSamplerStates.find( uId );
+			if( Itr == g_mSamplerStates.end() )
 			{
-				case TextureFilters::LINEAR: uId = 1
+				XST_LOG_ERR( "Sampler with id: " << uId << " does not exits." );
+				return hSampler;
 			}
+#endif // XST_DEBUG
+			hSampler.uHandle = uId;
 			return hSampler;
 		}
 						

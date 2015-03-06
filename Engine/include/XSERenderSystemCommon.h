@@ -560,16 +560,18 @@ namespace XSE
 			LEVEL_3,
 			LEVEL_4,
 			LEVEL_5,
+			LEVEL_MAX,
 			_ENUM_COUNT,
-			LEVEL_MIN = 0,
-			LEVEL_MAX = 32
+			LEVEL_MIN = LEVEL_0,
 		};
 	};
 	typedef TextureLODs::LOD TEXTURE_LOD;
 
 	struct STextureSamplingMode
 	{
-		TEXTURE_FILTER	eFilter		= TextureFilters::LINEAR;
+		TEXTURE_FILTER	eMinFilter	= TextureFilters::LINEAR;
+		TEXTURE_FILTER	eMagFilter	= TextureFilters::LINEAR;
+		TEXTURE_FILTER	eMipFilter	= TextureFilters::LINEAR;
 		TEXTURE_ADDRESS	eAddressU	= TextureAddresses::WRAP;
 		TEXTURE_ADDRESS eAddressV	= TextureAddresses::WRAP;
 		TEXTURE_ADDRESS eAddressW	= TextureAddresses::WRAP;
