@@ -70,4 +70,9 @@ namespace XSE
 		return CTextureManager::GetSingletonPtr()->GetRenderSystem()->CreateSampler( Mode );
 	}
 
+	void IPass::SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode)
+	{
+		SetTextureSamplingMode( eType, GetSamplerHandle( Mode ) );
+	}
+
 }//xse

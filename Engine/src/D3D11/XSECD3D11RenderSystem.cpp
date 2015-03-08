@@ -1199,8 +1199,8 @@ namespace XSE
 					g_vTextures[ uId ] = Tex;
 				}
 
-				_SetRendererResourceHandleId( &hTex.uHandle, uId );
-				_SetRendererResourceHandleRefCount( &hTex.uHandle, 1 );
+				_SetRendererResourceHandleId( &hTex, uId );
+				_SetRendererResourceHandleRefCount( &hTex, 1 );
 			}
 			else
 			{

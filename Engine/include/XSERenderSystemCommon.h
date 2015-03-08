@@ -335,12 +335,17 @@ namespace XSE
 
 	struct SRendererResourceHandle
 	{
-		operator bool() { return uHandle == 0; }
+		xst_fi bool operator!() const { return uHandle != 0; }
+		xst_fi bool operator>(const SRendererResourceHandle& o) const { return uHandle > o.uHandle; }
+		xst_fi bool operator<(const SRendererResourceHandle& o) const { return uHandle < o.uHandle; }
+		xst_fi operator bool() const { return uHandle > 0; }
+		
 		u64 uHandle = 0;
 	};
 	typedef SRendererResourceHandle RSHandle;
 	typedef const RSHandle& RSHandleRef;
 	typedef RSHandle* RSHandlePtr;
+#define RSHANDLE_OK(_handle) ((_handle).uHandle > 0)
 
 	struct TextureTypes
 	{

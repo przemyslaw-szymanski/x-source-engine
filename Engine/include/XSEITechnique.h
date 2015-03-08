@@ -66,7 +66,6 @@ namespace XSE
 
 			virtual void					SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode);
 			virtual void					SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const RSHandleRef Handle);
-			virtual void					SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const RSHandleRef Handle);
 
 			virtual xst_fi
 			const RSHandleRef				GetSamplerHandle(MATERIAL_TEXTURE_TYPE eType) const
