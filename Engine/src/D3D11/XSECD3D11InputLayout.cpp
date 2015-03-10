@@ -312,41 +312,35 @@ namespace XSE
 		void AddShaderInput(xst_astring& str, lpcastr lpszSemantic, lpcastr lpszType, bool bIsNextParameter)
 		{
 			ch8 aBuff[ 256 ];
-			xst_sprintf( aBuff, 256, "%s i%s : %s%s\n", lpszType, lpszSemantic, lpszSemantic, ( bIsNextParameter )? "," : "" );
+			xst_sprintf( aBuff, 256, "%s %s : %s%s\n", lpszType, XST::StringUtil::ToLower( lpszSemantic ).c_str(), lpszSemantic, ( bIsNextParameter )? "," : "" );
 			str += aBuff;
 		}
 
 		void AddShaderInput(xst_astring& str, lpcastr lpszSemantic, lpcastr lpszType)
 		{
 			ch8 aBuff[ 256 ];
-			xst_sprintf( aBuff, 256, "%s i%s : %s;\n", lpszType, lpszSemantic, lpszSemantic );
+			xst_sprintf( aBuff, 256, "%s %s : %s;\n", lpszType, XST::StringUtil::ToLower( lpszSemantic ).c_str(), lpszSemantic );
 			str += aBuff;
 		}
 
-		void AddShaderOutput(xst_astring& strVS, xst_astring& strPS, lpcastr lpszSemantic, lpcastr lpszType, bool bIsNextParameter)
+		void AddShaderOutput(xst_astring& strVS, lpcastr lpszSemantic, lpcastr lpszType, bool bIsNextParameter)
 		{
 			ch8 aBuff[ 256 ];
-			xst_sprintf( aBuff, 256, "%s o%s : %s%s\n", lpszType, lpszSemantic, lpszSemantic, ( bIsNextParameter )? "," : "" );
+			xst_sprintf( aBuff, 256, "%s %s : %s%s\n", lpszType, XST::StringUtil::ToLower( lpszSemantic ).c_str(), lpszSemantic, ( bIsNextParameter )? "," : "" );
 			strVS += aBuff;
-			xst_zero( aBuff, 256 );
-			xst_sprintf( aBuff, 256, "%s i%s : %s%s\n", lpszType, lpszSemantic, lpszSemantic, ( bIsNextParameter )? "," : "" );
-			strPS += aBuff;
 		}
 
-		void AddShaderOutput(xst_astring& strVS, xst_astring& strPS, lpcastr lpszSemantic, lpcastr lpszType)
+		void AddShaderOutput(xst_astring& strVS, lpcastr lpszSemantic, lpcastr lpszType)
 		{
 			ch8 aBuff[ 256 ];
-			xst_sprintf( aBuff, 256, "%s o%s : %s;\n", lpszType, lpszSemantic, lpszSemantic );
+			xst_sprintf( aBuff, 256, "%s %s : %s;\n", lpszType, XST::StringUtil::ToLower( lpszSemantic ).c_str(), lpszSemantic );
 			strVS += aBuff;
-			xst_zero( aBuff, 256 );
-			xst_sprintf( aBuff, 256, "%s i%s : %s;\n", lpszType, lpszSemantic, lpszSemantic );
-			strPS += aBuff;
 		}
 
 		void AddShaderInOut(xst_astring& strVS, xst_astring& strPS, lpcastr lpszSemantic, lpcastr lpszType, bool bIsNextParameter)
 		{
 			AddShaderInput( strVS, lpszSemantic, lpszType, bIsNextParameter );
-			AddShaderOutput( strVS, strPS, lpszSemantic, lpszType, bIsNextParameter );
+			AddShaderOutput( strPS, lpszSemantic, lpszType, bIsNextParameter );
 		}
 
 		void AddShaderInOut(xst_astring& strVS, xst_astring& strPS, lpcastr lpszSemantic, lpcastr lpszType)
@@ -413,6 +407,7 @@ namespace XSE
 			//m_aInputElements[ 0 ] = CreateInputElement( "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 			ul32 ulOffset = 0;
 			u32 uiTexUnit = 0;
+			ch8 strTmp[ 128 ];
 
 			for(u32 i = 0; i < m_Elements.size(); ++i)
 			{
@@ -426,7 +421,9 @@ namespace XSE
 						m_aInputElements[ i + 0 ] = CreateInputElement( "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetPositionSize();
 						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "POSITION", "POSITION", "float4" );
-						g_strVS_OUT += "\nfloat3 pos : TEXCOORD0;";
+						g_strVS_OUT += "\nfloat3 pos : TEXCOORD";
+						xst_sprintf( strTmp, 128, "%d;", uiTexUnit++ );
+						g_strVS_OUT += strTmp;
 						m_strVSCode += "\nOUT.position = mul( IN.position, [WVP] ); OUT.pos = mul(IN.position.xyz, [W]);";
 						strName += "Position";
 					}
@@ -454,29 +451,40 @@ namespace XSE
 
 					case InputLayoutElements::TEXCOORD0:
 					{
-						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
+						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddShaderInOut( m_strVSCode, m_strPSCode, "TEXCOORD0", "float2", bNext );
-						m_strVSCode += "\nOUT.texcoord0 = IN.texcoord0;";
+						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
+						AddShaderInput( g_strVS_IN, strTmp, "float2" );
+						AddShaderOutput( g_strVS_OUT, strTmp, "float2" );
+						lpastr pTmp = strTmp;
+						XST::StringUtil::ToLower( strTmp, 10, &pTmp );
+						ch8 strTmp2[ 128 ];
+						xst_sprintf( strTmp2, 128, "\nOUT.%s = IN.%s;", strTmp, strTmp );
+						m_strVSCode += strTmp2;
 						strName += "Texcoord0";
+						uiTexUnit++;
 					}
 					break;
 
 					case InputLayoutElements::TEXCOORD1:
 					{
-						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
+						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddShaderInOut( m_strVSCode, m_strPSCode, "TEXCOORD1", "float2", bNext );
+						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
+						AddShaderInOut( m_strVSCode, m_strPSCode, strTmp, "float2", bNext );
 						strName += "Texcoord1";
+						uiTexUnit++;
 					}
 					break;
 
 					case InputLayoutElements::TEXCOORD2:
 					{
-						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
+						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddShaderInOut( m_strVSCode, m_strPSCode, "TEXCOORD2", "float2", bNext );
+						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
+						AddShaderInOut( m_strVSCode, m_strPSCode, strTmp, "float2", bNext );
 						strName += "Texcoord2";
+						uiTexUnit++;
 					}
 					break;
 
@@ -484,8 +492,10 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddShaderInOut( m_strVSCode, m_strPSCode, "TEXCOORD3", "float2", bNext );
+						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
+						AddShaderInOut( m_strVSCode, m_strPSCode, strTmp, "float2", bNext );
 						strName += "Texcoord3";
+						uiTexUnit++;
 					}
 					break;
 
@@ -493,8 +503,10 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddShaderInput( m_strVSCode, "TEXCOORD4", "float2", bNext );
+						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
+						AddShaderInOut( m_strVSCode, m_strPSCode, strTmp, "float2", bNext );
 						strName += "Texcoord4";
+						uiTexUnit++;
 					}
 					break;
 
@@ -502,8 +514,10 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddShaderInput( m_strVSCode, "TEXCOORD5", "float2", i + 1 < m_Elements.size() );
+						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
+						AddShaderInOut( m_strVSCode, m_strPSCode, strTmp, "float2", bNext );
 						strName += "Texcoord5";
+						uiTexUnit++;
 					}
 					break;
 
@@ -511,8 +525,10 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddShaderInput( m_strVSCode, "TEXCOORD6", "float2", i + 1 < m_Elements.size() );
+						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
+						AddShaderInOut( m_strVSCode, m_strPSCode, strTmp, "float2", bNext );
 						strName += "Texcoord6";
+						uiTexUnit++;
 					}
 					break;
 
@@ -520,8 +536,10 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						AddShaderInput( m_strVSCode, "TEXCOORD7", "float2", i + 1 < m_Elements.size() );
+						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
+						AddShaderInOut( m_strVSCode, m_strPSCode, strTmp, "float2", bNext );
 						strName += "Texcoord7";
+						uiTexUnit++;
 					}
 					break;
 

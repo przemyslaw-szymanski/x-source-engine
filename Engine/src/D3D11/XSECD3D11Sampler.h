@@ -129,20 +129,28 @@ namespace XSE
 
 			for( u32 mif = 0; mif < TextureFilters::_ENUM_COUNT; ++mif )
 			{
+				uId |= SamplerMinFilterBits[ mif ];
 				for( u32 maf = 0; maf < TextureFilters::_ENUM_COUNT; ++maf )
 				{
+					uId |= SamplerMagFilterBits[ maf ];
 					for( u32 mipf = 0; mipf < TextureFilters::_ENUM_COUNT; ++mipf )
 					{
+						uId |= SamplerMipFilterBits[ mipf ];
 						for( u32 au = 0; au < TextureAddresses::_ENUM_COUNT; ++au )
 						{
+							uId |= SamplerWrapUBits[ au ];
 							for( u32 av = 0; av < TextureAddresses::_ENUM_COUNT; ++av )
 							{
+								uId |= SamplerWrapVBits[ av ];
 								for( u32 aw = 0; aw < TextureAddresses::_ENUM_COUNT; ++aw )
 								{
+									uId |= SamplerWrapWBits[ aw ];
 									for( u32 lmin = 0; lmin < TextureLODs::_ENUM_COUNT; ++lmin )
 									{
+										uId |= SamplerMinLevelBits[ lmin ];
 										for( u32 lmax = 0; lmax < TextureLODs::_ENUM_COUNT; ++lmax )
 										{
+											uId |= SamplerMaxLevelBits[ lmax ];
 											uCount++;
 										}
 									}
@@ -154,6 +162,65 @@ namespace XSE
 			}
 
 			return uId;
+		}
+
+		typedef xst_map< ul32, RSHandle > U32RSHandleMap;
+		typedef xst_vector< ID3D11SamplerState* > SamplerStateVector;
+
+		static void CalcSamplerIds(U32RSHandleMap* pMapOut)
+		{
+			u32 uId = 0;
+			u32 uMinFilter = 0;
+			u32 uMagFilter = 0;
+			u32 uMipFilter = 0;
+			u32 uAddrU = 0;
+			u32 uAddrV = 0;
+			u32 uAddrW = 0;
+			u32 uMinLOD = 0;
+			u32 uMaxLOD = 0;
+			u32 uCount = 0;
+
+			ul32 uMax = std::pow<u32>(TextureFilters::_ENUM_COUNT, 3) * std::pow<u32>(TextureAddresses::_ENUM_COUNT, 3) * std::pow<u32>( TextureLODs::_ENUM_COUNT, 2 );
+			//pVecOut->reserve( uMax );
+			pMapOut->reserve( uMax );
+
+			for( u32 mif = 0; mif < TextureFilters::_ENUM_COUNT; ++mif )
+			{
+				uId |= SamplerMinFilterBits[ mif ];
+				for( u32 maf = 0; maf < TextureFilters::_ENUM_COUNT; ++maf )
+				{
+					uId |= SamplerMagFilterBits[ maf ];
+					for( u32 mipf = 0; mipf < TextureFilters::_ENUM_COUNT; ++mipf )
+					{
+						uId |= SamplerMipFilterBits[ mipf ];
+						for( u32 au = 0; au < TextureAddresses::_ENUM_COUNT; ++au )
+						{
+							uId |= SamplerWrapUBits[ au ];
+							for( u32 av = 0; av < TextureAddresses::_ENUM_COUNT; ++av )
+							{
+								uId |= SamplerWrapVBits[ av ];
+								for( u32 aw = 0; aw < TextureAddresses::_ENUM_COUNT; ++aw )
+								{
+									uId |= SamplerWrapWBits[ aw ];
+									for( u32 lmin = 0; lmin < TextureLODs::_ENUM_COUNT; ++lmin )
+									{
+										uId |= SamplerMinLevelBits[ lmin ];
+										for( u32 lmax = 0; lmax < TextureLODs::_ENUM_COUNT; ++lmax )
+										{
+											uId |= SamplerMaxLevelBits[ lmax ];
+											RSHandle Handle;
+											Handle.uHandle = uCount;
+											//pVecOut->push_back( Handle );
+											pMapOut->insert( std::make_pair( uId, Handle ) );
+											uCount++;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 
 	} // D3D11

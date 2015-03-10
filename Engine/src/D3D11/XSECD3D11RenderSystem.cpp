@@ -100,7 +100,8 @@ namespace XSE
 		xst_vector< RSHandle > g_vTexHandles;
 		xst_vector< STexture > g_vTextures;
 		xst_stack< u32 > g_sFreeTexHandles;
-		xst_map< u32, ID3D11SamplerState* > g_mSamplerStates;
+		SamplerStateVector g_vSamplerStates;
+		U32RSHandleMap g_mSamplerHandles;
 
 		CRenderSystem::CRenderSystem(xst_castring& strName) : XSE::IRenderSystem( strName )
 		{
@@ -164,9 +165,11 @@ namespace XSE
 
 		CRenderSystem::~CRenderSystem()
 		{
-			for( auto& Pair : g_mSamplerStates )
+			for( auto& pState : g_vSamplerStates )
 			{
-				Pair.second->Release();
+				if( pState )
+					pState->Release();
+				pState = xst_null;
 			}
 
 			for( auto& Tex : g_vTextures )
@@ -1228,15 +1231,10 @@ namespace XSE
 			uId |= SamplerWrapWBits[ Mode.eAddressW ];
 			uId |= SamplerMinLevelBits[ Mode.eMinLOD ];
 			uId |= SamplerMaxLevelBits[ Mode.eMaxLOD ];
+			CalcSamplerId( Mode );
+			CalcSamplerIds( &g_mSamplerHandles );
 			// Check if this sampler exits
-#if defined(XST_DEBUG)
-			auto& Itr = g_mSamplerStates.find( uId );
-			if( Itr == g_mSamplerStates.end() )
-			{
-				XST_LOG_ERR( "Sampler with id: " << uId << " does not exits." );
-				return hSampler;
-			}
-#endif // XST_DEBUG
+			xst_assert( g_mSamplerHandles.find( uId ) != g_mSamplerHandles.end(), "(CRenderSystem::CreateSampler) This sampler is not available" );
 			hSampler.uHandle = uId;
 			return hSampler;
 		}
