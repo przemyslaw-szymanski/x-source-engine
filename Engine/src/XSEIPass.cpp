@@ -13,6 +13,20 @@ namespace XSE
 	{
 	m_pPS = pShader;
 	}*/
+	static const STextureSamplingMode g_DefaultSamplingMode = {};
+
+	IPass::IPass(xst_castring& strName) : 
+		m_strPassName( strName )
+		, m_lPassId( -1 )
+		, m_ulPassNameHash( 0 ) 
+	{
+		const RSHandleRef Handle = GetSamplerHandle( g_DefaultSamplingMode );
+		xst_assert2( Handle );
+		for( u32 i = MaterialTextureTypes::_ENUM_COUNT; i-- > 0; )
+		{
+			m_aSamplers[ i ] = Handle;
+		}
+	}
 
 	i32 IPass::Compare(const IPass* pOther) const
 	{

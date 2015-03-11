@@ -18,7 +18,7 @@ namespace XSE
 
 		public:
 
-												IPass(xst_castring& strName) : m_strPassName( strName ), m_lPassId( -1 ), m_ulPassNameHash( 0 ) {}
+												IPass(xst_castring& strName);
 			virtual								~IPass() {}
 
 			//virtual	void						SetVertexShader(Resources::IVertexShader* pShader);

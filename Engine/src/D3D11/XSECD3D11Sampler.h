@@ -8,6 +8,78 @@ namespace XSE
 {
 	namespace D3D11
 	{
+		static xst_i D3D11_FILTER FindD3DTextureFilter(const STextureSamplingMode& Mode)
+		{
+			if( Mode.eMinFilter == TextureFilters::ANISOTROPIC ||
+				Mode.eMagFilter == TextureFilters::ANISOTROPIC ||
+				Mode.eMipFilter == TextureFilters::ANISOTROPIC )
+			{
+				return D3D11_FILTER_ANISOTROPIC;
+			}
+
+			if( Mode.eMinFilter == TextureFilters::LINEAR &&
+				Mode.eMagFilter == TextureFilters::LINEAR &&
+				Mode.eMipFilter == TextureFilters::LINEAR )
+			{
+				return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+			}
+
+			if( Mode.eMinFilter == TextureFilters::LINEAR &&
+				Mode.eMagFilter == TextureFilters::LINEAR &&
+				Mode.eMipFilter == TextureFilters::POINT )
+			{
+				return D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+			}
+
+			if( Mode.eMinFilter == TextureFilters::LINEAR &&
+				Mode.eMagFilter == TextureFilters::POINT &&
+				Mode.eMipFilter == TextureFilters::LINEAR )
+			{
+				return D3D11_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+			}
+
+			if( Mode.eMinFilter == TextureFilters::POINT &&
+				Mode.eMagFilter == TextureFilters::LINEAR &&
+				Mode.eMipFilter == TextureFilters::LINEAR )
+			{
+				return D3D11_FILTER_MIN_POINT_MAG_MIP_LINEAR;
+			}
+
+			if( Mode.eMinFilter == TextureFilters::POINT &&
+				Mode.eMagFilter == TextureFilters::POINT &&
+				Mode.eMipFilter == TextureFilters::LINEAR )
+			{
+				return D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+			}
+
+			if( Mode.eMinFilter == TextureFilters::LINEAR &&
+				Mode.eMagFilter == TextureFilters::POINT &&
+				Mode.eMipFilter == TextureFilters::POINT )
+			{
+				return D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT;
+			}
+
+			if( Mode.eMinFilter == TextureFilters::POINT &&
+				Mode.eMagFilter == TextureFilters::POINT &&
+				Mode.eMipFilter == TextureFilters::POINT )
+			{
+				return D3D11_FILTER_MIN_MAG_MIP_POINT;
+			}
+
+			return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		}
+
+		static xst_i D3D11_TEXTURE_ADDRESS_MODE FindD3DTextureAddressMode(TEXTURE_ADDRESS eAddr)
+		{
+			switch( eAddr )
+			{
+				case TextureAddresses::WRAP: return D3D11_TEXTURE_ADDRESS_WRAP;
+				case TextureAddresses::CLAMP: return D3D11_TEXTURE_ADDRESS_CLAMP;
+				case TextureAddresses::MIRROR: return D3D11_TEXTURE_ADDRESS_MIRROR;
+			}
+			return D3D11_TEXTURE_ADDRESS_WRAP;
+		}
+
 		enum class SamplerFilterBits : u32
 		{
 			MIN_POINT = 0x00000001,
@@ -129,28 +201,20 @@ namespace XSE
 
 			for( u32 mif = 0; mif < TextureFilters::_ENUM_COUNT; ++mif )
 			{
-				uId |= SamplerMinFilterBits[ mif ];
 				for( u32 maf = 0; maf < TextureFilters::_ENUM_COUNT; ++maf )
 				{
-					uId |= SamplerMagFilterBits[ maf ];
 					for( u32 mipf = 0; mipf < TextureFilters::_ENUM_COUNT; ++mipf )
 					{
-						uId |= SamplerMipFilterBits[ mipf ];
 						for( u32 au = 0; au < TextureAddresses::_ENUM_COUNT; ++au )
 						{
-							uId |= SamplerWrapUBits[ au ];
 							for( u32 av = 0; av < TextureAddresses::_ENUM_COUNT; ++av )
 							{
-								uId |= SamplerWrapVBits[ av ];
 								for( u32 aw = 0; aw < TextureAddresses::_ENUM_COUNT; ++aw )
 								{
-									uId |= SamplerWrapWBits[ aw ];
 									for( u32 lmin = 0; lmin < TextureLODs::_ENUM_COUNT; ++lmin )
 									{
-										uId |= SamplerMinLevelBits[ lmin ];
 										for( u32 lmax = 0; lmax < TextureLODs::_ENUM_COUNT; ++lmax )
 										{
-											uId |= SamplerMaxLevelBits[ lmax ];
 											uCount++;
 										}
 									}

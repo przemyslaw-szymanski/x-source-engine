@@ -13,6 +13,7 @@ namespace XSE
 			m_pShaderMgr( pShaderMgr ), 
 			m_pCurrentTechnique( xst_null )
 		{
+	
 		}
 
 		CMaterial::CMaterial(CShaderManager* pShaderMgr, xst_castring& strDefaultTechniqueName, XSE_IRESOURCE_DECL_PARAMS) :

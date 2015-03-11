@@ -616,6 +616,7 @@ namespace XSE
 		ul32			ulShaderFlags = 0;
 		SHADER_MODEL	eMinFeatureLevel = ShaderModels::UNKNOWN;
 		SHADER_MODEL	eMaxFeatureLevel = ShaderModels::UNKNOWN;
+		u8				uMaxAnisotropy = 16;
 		bool			bFullScreen = false;
 		bool			bDebugMode = false;
 		bool			bVSync = false;

@@ -90,7 +90,7 @@ namespace XSE
 		};
 
 		static D3D11_SUBRESOURCE_DATA g_aaTexSubResourcesData[ XSE_MAX_RS_RESOURCE_THREADS ][ XSE_MAX_MIPLEVELS ] = { 0 };
-
+	
 		struct STexture
 		{
 			ID3D11Resource*	pTexture = xst_null;
@@ -158,6 +158,7 @@ namespace XSE
 			g_vTextures.reserve( 3000 );
 
 			g_vTextures.push_back( {} ); // add empty texture at null position
+			g_vSamplerStates.push_back( xst_null );
 
 			xst_zero( &m_Current, sizeof( SCurrent ) );
 			xst_zero( &g_Diagnostics, sizeof( SRSDiagnostics ) );
@@ -1231,11 +1232,41 @@ namespace XSE
 			uId |= SamplerWrapWBits[ Mode.eAddressW ];
 			uId |= SamplerMinLevelBits[ Mode.eMinLOD ];
 			uId |= SamplerMaxLevelBits[ Mode.eMaxLOD ];
-			CalcSamplerId( Mode );
-			CalcSamplerIds( &g_mSamplerHandles );
-			// Check if this sampler exits
-			xst_assert( g_mSamplerHandles.find( uId ) != g_mSamplerHandles.end(), "(CRenderSystem::CreateSampler) This sampler is not available" );
-			hSampler.uHandle = uId;
+			
+			U32RSHandleMap::iterator Itr;
+			// If there is no such id in the map create new insert
+			if( XST::MapUtils::FindPlace( g_mSamplerHandles, uId, &Itr ) )
+			{
+				ID3D11SamplerState* pState = xst_null;
+				D3D11_SAMPLER_DESC Desc;
+				Desc.AddressU = FindD3DTextureAddressMode( Mode.eAddressU );
+				Desc.AddressV = FindD3DTextureAddressMode( Mode.eAddressV );
+				Desc.AddressW = FindD3DTextureAddressMode( Mode.eAddressW );
+				Desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+				Desc.BorderColor[0] = Desc.BorderColor[1] = Desc.BorderColor[2] = Desc.BorderColor[3] = 0;
+				Desc.Filter = FindD3DTextureFilter( Mode );
+				Desc.MaxAnisotropy = m_Options.uMaxAnisotropy;
+				Desc.MipLODBias = 0.0f;
+				Desc.MaxLOD = ( Mode.eMaxLOD == TextureLODs::LEVEL_MAX )? D3D11_FLOAT32_MAX : Mode.eMaxLOD;
+				Desc.MinLOD = Mode.eMinLOD;
+
+				HRESULT hr = m_pDevice->CreateSamplerState( &Desc, &pState );
+				if( SUCCEEDED( hr ) )
+				{
+					hSampler.uHandle = g_vSamplerStates.size();
+					g_vSamplerStates.push_back( pState );
+					XST::MapUtils::InsertOnPlace( g_mSamplerHandles, uId, hSampler, Itr );
+				}
+				else
+				{
+					XST_LOG_ERR( "Unable to create sampler state" );
+					return hSampler;
+				}
+			}
+			else
+			{
+				hSampler = Itr->second;
+			}
 			return hSampler;
 		}
 						
