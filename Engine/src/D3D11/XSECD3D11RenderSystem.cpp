@@ -1272,7 +1272,22 @@ namespace XSE
 						
 		i32	CRenderSystem::DestroySampler(RSHandlePtr pHandle)
 		{
+			xst_assert2( pHandle->uHandle > 0 );
+			ID3D11SamplerState* pState = g_vSamplerStates[ pHandle->uHandle ];
+			xst_assert2( pState );
+			pState->Release();
+			pState = xst_null;
+			g_sFreeTexHandles.push( pHandle->uHandle );
+			pHandle->uHandle = 0;
 			return XST_OK;
+		}
+
+		void CRenderSystem::SetSampler(u32 uSlot, const RSHandleRef Handle)
+		{
+			xst_assert2( Handle.uHandle > 0 );
+			ID3D11SamplerState* pState = g_vSamplerStates[ Handle.uHandle ];
+			xst_assert2( pState );
+			m_pDeviceContext->PSSetSamplers( uSlot, 1, &pState );
 		}
 
 		ul32 CRenderSystem::GetShaderMaxSize()

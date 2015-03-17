@@ -167,7 +167,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	XSE::PixelShaderPtr pPS = XSE::CShaderManager::GetSingletonPtr()->LoadPixelShader("terrain.psh", "terr.ps", "ps", XSE::ShaderProfiles::PS_BEST);
 	pMat->CreateTechnique("tech", pVS, pPS);
 	pMat->SetTexture( XSE::MaterialTextureTypes::DIFFUSE, "heightmap04.jpg", XSE::ALL_GROUPS );
-	this->m_pEngine->GetRenderSystem()->CreateSampler( XSE::STextureSamplingMode() );
+	pMat->SetTextureSamplingMode( XSE::MaterialTextureTypes::DIFFUSE, XSE::STextureSamplingMode() );
 	
 	xst_assert2(pVS.IsValid() && pPS.IsValid());
 	XSE::ITerrain* pTerrain = this->m_pSceneMgr->CreateTerrain( "Terrain", Options );

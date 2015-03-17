@@ -103,6 +103,7 @@ namespace XSE
 
 						const RSHandleRef	CreateSampler(const STextureSamplingMode& Mode) xst_implement;
 						i32					DestroySampler(RSHandlePtr pHandle) xst_implement;
+						void				SetSampler(u32 uSlot, const RSHandleRef Handle) xst_implement;
 
 						IVertexBuffer*	CreateVertexBuffer();
 
