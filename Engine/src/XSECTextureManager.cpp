@@ -20,9 +20,10 @@ namespace XSE
 
 	static const ul32 g_DDSHash = XST::CHash::GetCRC( "dds" );
 
-	i32 CTextureManager::PrepareResource(ResourceWeakPtr pRes)
+	i32 CTextureManager::PrepareResource(ResourceWeakPtr *const ppRes)
 	{
-		xst_assert2( pRes.IsValid() );
+		xst_assert2( ppRes && (*ppRes).IsValid() );
+		auto pRes = *ppRes;
 		xst_assert2( m_pRS );
 
 		auto& Desc = g_aDescs[ 0 ];

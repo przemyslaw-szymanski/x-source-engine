@@ -82,6 +82,8 @@ namespace XSE
 											m_strName(strName), m_uHash(uHandle)
 										{ m_aNames.reserve( SFileInfo::NAME_BUFF_LEN * 500 ); }
 
+					virtual				~CGroup() { Destroy(); }
+
 					i32					AddFileInfo(xst_castring& strFullPath, ul32 uFileSize);
 					i32					AddFileInfo(const IFileSystem::SFileInfo& Info);
 					i32					AddFileInfo(lpcastr strPath, u32 uPathSize, lpcastr strName, u32 uNameSize,

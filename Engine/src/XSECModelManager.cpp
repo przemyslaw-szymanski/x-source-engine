@@ -292,9 +292,10 @@ namespace XSE
 		return pModel;
 	}
 
-	i32	CModelManager::PrepareResource(ResourceWeakPtr pRes)
+	i32	CModelManager::PrepareResource(ResourceWeakPtr *const ppRes)
 	{
-		xst_assert( pRes.IsValid(), "(CModelManager::PrepareResource) Resource pointer is invalid" );
+		xst_assert2( ppRes && (*ppRes).IsValid() );
+		auto pRes = *ppRes;
 		ModelPtr pModel = pRes;
 		XST::FilePtr pFile = pModel->GetResourceFile();
 		if( pFile.IsValid() )

@@ -17,7 +17,7 @@ namespace XSE
 				i32						Init() xst_implement;
 				void					Destroy() xst_implement;
 
-				i32						PrepareResource(ResourceWeakPtr pRes) xst_implement;
+				i32						PrepareResource(ResourceWeakPtr *const ppRes) xst_implement;
 
 				ModelPtr				CreateModel(xst_castring& strName, xst_castring& strGroup = DEFAULT_GROUP);
 				ModelPtr				CreateModel(xst_castring& strName, BASIC_SHAPE eShape, IInputLayout* pLayout, xst_unknown pOptions = xst_null, xst_castring& strGroup = DEFAULT_GROUP);

@@ -17,7 +17,7 @@ namespace XSE
 {
 	#define CALC_XY(_x, _y, _width) ( (_x) + (_y) * (_width) )
 #define ADD_TILE_TO_PARTITION_SYSTEM 1
-#define USE_DIAMOND_TRIANGLE_RENDERING 0
+#define USE_DIAMOND_TRIANGLE_RENDERING 1
 
 	Vec3* g_avecNormals = xst_null;
 	bool g_bCCW = true;
@@ -149,6 +149,8 @@ namespace XSE
 	CMipMapPagingTerrain::~CMipMapPagingTerrain()
 	{
 		DestroyData();
+		g_pVB = xst_null;
+		g_pIB = xst_null;
 	}
 
 	void CMipMapPagingTerrain::DestroyData()
@@ -408,6 +410,7 @@ namespace XSE
 		}
 
 		// TEMP
+#if USE_DIAMOND_TRIANGLE_RENDERING == 0
 		g_pVB = m_pSceneMgr->GetRenderSystem()->CreateVertexBuffer();
 		g_pIB = m_pSceneMgr->GetRenderSystem()->CreateIndexBuffer();
 
@@ -501,7 +504,7 @@ namespace XSE
 
 		g_pVB->Unlock();
 		g_pIB->Unlock();
-		
+#endif // USE_DIAMOND_TRIANGLE_RENDERING
 		return XST_OK;
 	}
 
@@ -519,7 +522,7 @@ namespace XSE
 				return XST_FAIL;
 			}
 
-			if( XST_FAILED( pImgMgr->LoadResource( pImg, ALL_GROUPS ) ) ) // search this file in all prepared resource groups
+			if( XST_FAILED( pImgMgr->LoadResource( (ResourceWeakPtr*)&pImg, ALL_GROUPS ) ) ) // search this file in all prepared resource groups
 			{
 				return XST_FAIL;
 			}
@@ -607,7 +610,10 @@ namespace XSE
 			//Set shaders
 			pRS->SetVertexShaderWithCheck( pVS );
 			pRS->SetPixelShaderWithCheck( pPS );
-				
+
+			// Set samplers
+			pRS->SetSampler( MaterialTextureTypes::DIFFUSE, pPass->GetSamplerHandle( MaterialTextureTypes::DIFFUSE ), true );
+			pRS->SetTexture( MaterialTextureTypes::DIFFUSE, pMat->GetTexture( MaterialTextureTypes::DIFFUSE )->GetRSHandle(), true );	
 			//Do transformations
 			pRS->SetMatrix( MatrixTypes::WORLD, mtxTransform );
 			//Update shaders input
@@ -616,7 +622,7 @@ namespace XSE
 			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_SPECULAR_COLOR, Vec4( 1, 1.0, 0.3, 1 ) );
 			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_ALPHA, 1.0f );
 			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_SHININESS, 32.0f );
-			//pRS->GetShaderSystem()->SetTexture( MaterialTextureTypes::DIFFUSE, pMat->GetTexture( MaterialTextureTypes::DIFFUSE )->GetRSHandle() );
+			
 			pRS->GetShaderSystem()->UpdateMaterialInputs();
 			pRS->UpdateDrawCallInputs();
 				

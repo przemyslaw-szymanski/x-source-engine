@@ -20,7 +20,8 @@ namespace XSE
 		, m_lPassId( -1 )
 		, m_ulPassNameHash( 0 ) 
 	{
-		const RSHandleRef Handle = GetSamplerHandle( g_DefaultSamplingMode );
+		RSHandle Handle;
+		GetSamplerHandle( g_DefaultSamplingMode, &Handle );
 		xst_assert2( Handle );
 		for( u32 i = MaterialTextureTypes::_ENUM_COUNT; i-- > 0; )
 		{
@@ -67,10 +68,10 @@ namespace XSE
 		return XST_OK;
 	}
 
-	i32	IPass::SetTexture( xst_castring& strName, xst_castring& strGroup, TexturePtr* ppOut )
+	i32	IPass::SetTexture(xst_castring& strName, xst_castring& strGroup, TexturePtr* ppOut)
 	{
 		xst_assert2( ppOut );
-		TextureWeakPtr pTex = CTextureManager::GetSingletonPtr()->LoadResource( strName, strName, strGroup, true );
+		TextureWeakPtr pTex = CTextureManager::GetSingletonPtr()->LoadResource( strName, strGroup, strName, strGroup, true );
 		if( pTex.IsValid() )
 		{
 			( *ppOut ) = pTex;
@@ -79,14 +80,18 @@ namespace XSE
 		return XST_FAIL;
 	}
 
-	const RSHandleRef IPass::GetSamplerHandle(const STextureSamplingMode& Mode)
+	i32 IPass::GetSamplerHandle(const STextureSamplingMode& Mode, RSHandlePtr pOut)
 	{
-		return CTextureManager::GetSingletonPtr()->GetRenderSystem()->CreateSampler( Mode );
+		return CTextureManager::GetSingletonPtr()->GetRenderSystem()->CreateSampler( Mode, pOut );
 	}
 
 	void IPass::SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode)
 	{
-		SetTextureSamplingMode( eType, GetSamplerHandle( Mode ) );
+		RSHandle Handle;
+		if( !XST_FAILED( GetSamplerHandle( Mode, &Handle ) ) )
+		{
+			SetTextureSamplingMode( eType, Handle );
+		}
 	}
 
 }//xse

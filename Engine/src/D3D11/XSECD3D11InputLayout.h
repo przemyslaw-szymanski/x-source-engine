@@ -85,6 +85,7 @@ namespace XSE
 				PixelShaderPtr						m_pPS;
 				ul32								m_ulVertexSize;
 				ul32								m_ulHandle;
+				ul32								m_uTexCoordCount = 0;
 		};
 
 	}//d3d11

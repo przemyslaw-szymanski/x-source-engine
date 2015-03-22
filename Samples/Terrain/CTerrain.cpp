@@ -154,7 +154,8 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	Options.uiLODCount = 3;
 	//Options.bColor = true;
 	Options.bBinormal = Options.bNormal = Options.bTangent = false;
-	Options.bNormal = true;
+	Options.bNormal = false;
+	Options.bColor = false;
 	Options.bTexCoord = true;
 
 	XSE::MaterialWeakPtr pMat;
@@ -175,7 +176,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	pTerrain->SetMaterial( pMat );
 	}
 
-	XSE::ModelPtr pSphere = XSE::CModelManager::GetSingleton().LoadResource("torus.obj", XSE::ALL_GROUPS);
+	XSE::ModelPtr pSphere = XSE::CModelManager::GetSingleton().LoadResource("untitled.obj", XSE::ALL_GROUPS);
 	XSE::Vec3 vecPos =m_pDbgCam->GetPosition() + XSE::Vec3(0,500,0);
 	if( pSphere.IsValid() )
 	{

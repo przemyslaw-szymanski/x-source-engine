@@ -163,8 +163,10 @@ namespace XSE
 		return Itr->second;
 	}
 
-	i32	CMaterialManager::PrepareResource(ResourceWeakPtr pRes)
+	i32	CMaterialManager::PrepareResource(ResourceWeakPtr *const ppRes)
 	{
+		xst_assert2( ppRes && (*ppRes).IsValid() );
+		auto pRes = *ppRes;
 		MaterialPtr pMat = pRes;
 		//Compile material
 

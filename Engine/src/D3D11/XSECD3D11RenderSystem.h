@@ -100,10 +100,13 @@ namespace XSE
 
 						const RSHandleRef	CreateTexture(const STextureDesc& Desc) xst_implement;
 						i32					DestroyTexture(RSHandlePtr pTexHandle) xst_implement;
+						void				SetTexture(u32 uSlot, const RSHandleRef hTexture, bool bForceSet) xst_implement;
+						void				SetTextures() xst_implement;
 
-						const RSHandleRef	CreateSampler(const STextureSamplingMode& Mode) xst_implement;
+						i32					CreateSampler(const STextureSamplingMode& Mode, RSHandlePtr pOut) xst_implement;
 						i32					DestroySampler(RSHandlePtr pHandle) xst_implement;
-						void				SetSampler(u32 uSlot, const RSHandleRef Handle) xst_implement;
+						void				SetSampler(u32 uSlot, const RSHandleRef Handle, bool bForceSet) xst_implement;
+						void				SetSamplers() xst_implement;
 
 						IVertexBuffer*	CreateVertexBuffer();
 

@@ -75,8 +75,7 @@ namespace XSE
 			const RSHandleRef					GetSamplerHandle(MATERIAL_TEXTURE_TYPE eType) const
 												{ return m_aSamplers[ eType ]; }
 
-			static
-			const RSHandleRef					GetSamplerHandle(const STextureSamplingMode& Mode);
+			static i32							GetSamplerHandle(const STextureSamplingMode& Mode, RSHandlePtr pOut);
 
 		protected:
 

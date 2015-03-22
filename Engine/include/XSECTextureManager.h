@@ -15,7 +15,7 @@ namespace XSE
 										CTextureManager();
 				virtual					~CTextureManager();
 
-				i32						PrepareResource(ResourceWeakPtr pRes) xst_implement;
+				i32						PrepareResource(ResourceWeakPtr *const ppRes) xst_implement;
 
 				xst_fi IRenderSystem*	GetRenderSystem() const
 										{ return m_pRS; }

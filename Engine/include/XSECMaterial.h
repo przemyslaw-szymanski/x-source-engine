@@ -90,7 +90,7 @@ namespace XSE
 						i32					SetTexture(MATERIAL_TEXTURE_TYPE eType, TextureWeakPtr pTex);
 
 						void				SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode);
-						void				SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const RSHandleRef Handle);
+						void				SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const RSHandle& Handle);
 
 			protected:
 

@@ -35,8 +35,10 @@ namespace XSE
 		return RESULT::OK;
 	}*/
 
-	i32	CLuaScriptManager::PrepareResource(ResourceWeakPtr pRes)
+	i32	CLuaScriptManager::PrepareResource(ResourceWeakPtr *const ppRes)
 	{
+		xst_assert2( ppRes && (*ppRes).IsValid() );
+		auto pRes = *ppRes;
 		//Compile script
 		LuaScriptPtr pScript = pRes;
 		return pScript->Compile();

@@ -339,7 +339,7 @@ namespace XSE
 		xst_fi bool operator>(const SRendererResourceHandle& o) const { return uHandle > o.uHandle; }
 		xst_fi bool operator<(const SRendererResourceHandle& o) const { return uHandle < o.uHandle; }
 		xst_fi operator bool() const { return uHandle > 0; }
-		
+		xst_fi void operator=( const SRendererResourceHandle& Other ) { uHandle = Other.uHandle; }
 		u64 uHandle = 0;
 	};
 	typedef SRendererResourceHandle RSHandle;

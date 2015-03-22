@@ -186,7 +186,11 @@ namespace XSE
 
 	void ITechnique::SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode)
 	{
-		SetTextureSamplingMode( eType, IPass::GetSamplerHandle( Mode ) );
+		RSHandle Handle;
+		if( !XST_FAILED( IPass::GetSamplerHandle( Mode, &Handle ) ) )
+		{
+			SetTextureSamplingMode( eType, Handle );
+		}
 	}
 
 }//xse

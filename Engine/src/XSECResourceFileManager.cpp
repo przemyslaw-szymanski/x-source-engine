@@ -151,7 +151,7 @@ namespace XSE
 					return ResFilePtr();
 				}
 				//XST::FilePtr pFile( xst_new XST::Resources::CFile( strName, pFilePath, &pData, Info.uFileSize, false ) );
-				ResFileWeakPtr pFile( xst_new Resources::CFile() );
+				ResFilePtr pFile( xst_new Resources::CFile() );
 				if( pFile.IsValid() )
 				{
 					Resources::CFile* pTmp = pFile.GetPtr();

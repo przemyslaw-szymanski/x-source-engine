@@ -276,7 +276,7 @@ namespace XSE
 			return iResult;
 		}
 
-		void CMaterial::SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const RSHandleRef Handle)
+		void CMaterial::SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const RSHandle& Handle)
 		{
 			m_aSamplers[ eType ] = Handle;
 			for( auto& pTech : m_vTechniques )
@@ -287,8 +287,11 @@ namespace XSE
 
 		void CMaterial::SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode)
 		{
-			const RSHandleRef Handle = IPass::GetSamplerHandle( Mode );
-			SetTextureSamplingMode(eType, Handle );
+			RSHandle Handle;
+			if( !XST_FAILED( IPass::GetSamplerHandle( Mode, &Handle ) ) )
+			{
+				SetTextureSamplingMode( eType, Handle );
+			}
 		}
 
 	}//resources

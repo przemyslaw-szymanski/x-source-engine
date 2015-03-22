@@ -83,14 +83,14 @@ namespace XSE
 			g_strName.assign( g_astrName );
 		}
 
-		ResourcePtr pNewRes( this->CreateMesh( g_strName/*this->m_ssTmpName.str()*/, this->GetGroup( pSrcMesh->GetResourceGroupHandle() ) ) );
+		ResourceWeakPtr pNewRes( this->CreateMesh( g_strName/*this->m_ssTmpName.str()*/, this->GetGroup( pSrcMesh->GetResourceGroupHandle() ) ) );
 	
 		if( pNewRes == xst_null )
 		{
 			return pNewRes;
 		}
 
-		if( XST_FAILED( PrepareResource( pNewRes ) ) )
+		if( XST_FAILED( PrepareResource( &pNewRes ) ) )
 		{
 			this->DestroyResource( pNewRes );
 			return ResourcePtr();
@@ -146,8 +146,10 @@ namespace XSE
 		return pNewRes;
 	}
 
-	i32	CMeshManager::PrepareResource(ResourceWeakPtr pRes)
+	i32	CMeshManager::PrepareResource(ResourceWeakPtr *const ppRes)
 	{
+		xst_assert2( ppRes && (*ppRes).IsValid() );
+		auto pRes = *ppRes;
 		Resources::CMesh* pMesh = (Resources::CMesh*)pRes.GetPtr();
 		//Resource has to be in created state
 		if( pMesh->GetResourceState() != Resources::ResourceStates::CREATED )

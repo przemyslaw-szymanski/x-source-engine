@@ -297,13 +297,13 @@ namespace XSE
     ResourceWeakPtr IResourceManager::PrepareResource(xst_castring &strName, GroupWeakPtr pGroup)
 	{
         xst_assert( pGroup.IsValid(), "(IResourceManager::PrepareResource) Group is null" );
-		ResourcePtr pRes = pGroup->GetResource( strName );
+		ResourceWeakPtr pRes = pGroup->GetResource( strName );
 		if( !pRes ) 
 		{
 			return XSE_NULLRES;
 		}
 
-		if( XST_FAILED( PrepareResource( pRes ) ) )
+		if( XST_FAILED( PrepareResource( &pRes ) ) )
 		{
 			return XSE_NULLRES;
 		}
@@ -318,23 +318,23 @@ namespace XSE
 
     ResourceWeakPtr IResourceManager::LoadResource(xst_castring &strName, xst_castring &strGroupName, bool bFullLoad)
 	{
-		return LoadResource( strName, strName, strGroupName, bFullLoad );
+		return LoadResource( strName, strGroupName, strName, strGroupName, bFullLoad );
 	}
 
-	ResourceWeakPtr IResourceManager::LoadResource(xst_castring &strFileName, xst_castring& strResName, xst_castring &strGroupName, bool bFullLoad)
+	ResourceWeakPtr IResourceManager::LoadResource(xst_castring& strResName, xst_castring& strResGroupName, xst_castring &strFileName, xst_castring &strFileGroupName, bool bFullLoad)
 	{
 		xst_assert( m_pResFileMgr, "(IResourceManager::LoadResource) File manager not created" );
 		
 		ResourceHandle ResHandle = CalcHandle( strResName.c_str(), strResName.length() );
-		GroupHandle GrHandle = CalcHandle( strGroupName.c_str(), strResName.length() );
+		GroupHandle GrHandle = CalcHandle( strResGroupName.c_str(), strResName.length() );
 		ResourceWeakPtr pRes = GetResource( ResHandle, GrHandle );
 		if( pRes.IsValid() )
 		{
 			return pRes;
 		}
 
-		pRes = CreateResource( strResName, strGroupName );
-		if( XST_FAILED( LoadResource( pRes, strFileName, strGroupName, bFullLoad ) ) )
+		pRes = CreateResource( strResName, strResGroupName );
+		if( XST_FAILED( LoadResource( &pRes, strFileName, strFileGroupName, bFullLoad ) ) )
 		{
 			DestroyResource( pRes );
 			pRes = XSE_NULLRES;
@@ -342,32 +342,23 @@ namespace XSE
 		return pRes;
 	}
 
-	i32	IResourceManager::LoadResource(ResourceWeakPtr pRes, xst_castring& strGroupName, bool bFullLoad)
+	i32	IResourceManager::LoadResource(ResourceWeakPtr *const ppRes, xst_castring& strGroupName, bool bFullLoad)
 	{
-		return LoadResource( pRes, pRes->GetResourceName(), strGroupName, bFullLoad );
+		xst_assert2( ppRes && ( *ppRes ).IsValid() );
+		return LoadResource( ppRes, (*ppRes)->GetResourceName(), strGroupName, bFullLoad );
 	}
 
-	i32	IResourceManager::LoadResource(ResourceWeakPtr pRes, xst_castring& strFileName, xst_castring& strGroupName, bool bFullLoad)
+	i32	IResourceManager::LoadResource(ResourceWeakPtr *const ppRes, xst_castring& strFileName, xst_castring& strGroupName, bool bFullLoad)
 	{
 		xst_assert( m_pResFileMgr, "(IResourceManager::LoadResource) File manager not created" );
-		xst_assert2( pRes.IsValid() );
+		xst_assert2( (*ppRes).IsValid() );
 
-		if( pRes.IsNull() )
-		{
-			XST_LOG_ERR( "Resource is null" );
-			return XST_FAIL;
-		}
-
-		if( pRes.IsNull() )
-		{
-			return XST_FAIL;
-		}
+		Resources::IResource* pRes = (*ppRes).GetPtr();
 
 		XST::FilePtr pFile = m_pResFileMgr->LoadFile( strFileName, strGroupName );
 		ResFileWeakPtr pFile2 = m_pResFileMgr->LoadFile2( strFileName, strGroupName );
 		if( pFile2.IsNull() && pFile.IsNull() )
 		{
-			DestroyResource( pRes );
 			return XST_FAIL;
 		}
 		pRes->m_pFile = pFile2;
@@ -376,9 +367,8 @@ namespace XSE
 
 		if( bFullLoad )
 		{
-			if( XST_FAILED( PrepareResource( pRes ) ) )
+			if( XST_FAILED( PrepareResource( ppRes ) ) )
 			{
-				DestroyResource( pRes );
 				return XST_FAIL;
 			}
 		}

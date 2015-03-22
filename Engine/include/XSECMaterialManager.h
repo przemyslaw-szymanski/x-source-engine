@@ -28,7 +28,7 @@ namespace XSE
 
 					i32				PrepareMaterials(xst_castring& strGroup);
 
-					i32				PrepareResource(ResourceWeakPtr pRes) xst_implement;
+					i32				PrepareResource(ResourceWeakPtr *const ppRes) xst_implement;
 
 					MaterialPtr		LoadMaterial(xst_castring& strName, xst_castring& strGroupName = DEFAULT_GROUP);
 

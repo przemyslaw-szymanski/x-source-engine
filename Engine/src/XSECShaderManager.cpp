@@ -185,7 +185,7 @@ namespace XSE
 		this->m_strEntryPoint = strEntryPoint;
 		this->m_eShaderProfile = eProfile;
 
-		ResourcePtr pRes = this->LoadResource( strFileName, strShaderName, strGroupName );
+		ResourcePtr pRes = this->LoadResource( strShaderName, strGroupName, strFileName, strGroupName );
 		if( pRes.IsNull() )
 		{
 			return ShaderPtr();
@@ -269,9 +269,10 @@ namespace XSE
 		return GetDefaultVertexShader( pMesh->GetInputLayout() );
 	}
 
-	i32	CShaderManager::PrepareResource(ResourceWeakPtr pRes)
+	i32	CShaderManager::PrepareResource(ResourceWeakPtr *const ppRes)
 	{
-		xst_assert( pRes != xst_null, "(CShaderManager::PrepareResource)" );
+		xst_assert2( ppRes && (*ppRes).IsValid() );
+		auto pRes = *ppRes;
 		Resources::IShader* pShader = (Resources::IShader*)pRes.GetPtr();
 		pShader->m_eProfile = this->m_eShaderProfile;
 		pShader->m_eShaderLanguage = this->m_eShaderLang;

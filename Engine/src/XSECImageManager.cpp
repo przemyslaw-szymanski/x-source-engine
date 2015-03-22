@@ -103,8 +103,10 @@ namespace XSE
 		m_pImgSystem->GenerateMipMaps( pImg.GetPtr(), pOut );
 	}
 
-	i32	CImageManager::PrepareResource(ResourceWeakPtr pRes)
+	i32	CImageManager::PrepareResource(ResourceWeakPtr *const ppRes)
 	{
+		xst_assert2( ppRes && (*ppRes).IsValid() );
+		auto pRes = *ppRes;
 		if( XST_FAILED( m_pImgSystem->PrepareResource( pRes.GetPtr() ) ) )
 		{
 			return XST_FAIL;

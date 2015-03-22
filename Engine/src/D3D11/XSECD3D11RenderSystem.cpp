@@ -74,6 +74,10 @@ namespace XSE
 		#define XSE_D3D11_DEFAULT_FORMAT	DXGI_FORMAT_R8G8B8A8_UNORM
 		#define XSE_MAX_RS_RESOURCE_THREADS 4
 		#define XSE_MAX_MIPLEVELS			20
+		#define XSE_MAX_ACTIVE_SAMPLERS		10
+#if !defined(XSE_RENDERER_API_CHECK)
+#	define XSE_RENDERER_API_CHECK 1
+#endif // XSE_RENDERER_API_CHECK
 
 		XMMATRIX g_aMatrices[ MatrixTypes::_ENUM_COUNT ];
 		XMMATRIX g_aTmpMatrices[ MatrixTypes::_ENUM_COUNT ];
@@ -102,6 +106,34 @@ namespace XSE
 		xst_stack< u32 > g_sFreeTexHandles;
 		SamplerStateVector g_vSamplerStates;
 		U32RSHandleMap g_mSamplerHandles;
+
+		class CSamplerManager
+		{
+			public:
+
+				void ResetSamplers()
+				{
+					xst_zero( m_apSamplers, sizeof(ID3D11SamplerState*) * XSE_MAX_ACTIVE_SAMPLERS );
+					xst_zero( m_aHandles, sizeof(RSHandle) * XSE_MAX_ACTIVE_SAMPLERS );
+					m_uActiveSamplers = 0;
+				}
+
+				void SetSampler(u32 uId, ID3D11SamplerState* pState)
+				{
+					xst_assert2( uId < XSE_MAX_ACTIVE_SAMPLERS );
+					xst_assert2( pState );
+					if( !m_apSamplers[ uId ] )
+					{
+						m_uActiveSamplers++;
+					}
+				}
+
+			ID3D11SamplerState* m_apSamplers[ XSE_MAX_ACTIVE_SAMPLERS ];
+			RSHandle			m_aHandles[ XSE_MAX_ACTIVE_SAMPLERS ];
+			u32					m_uActiveSamplers = 0;
+		};
+
+		CSamplerManager g_SamplerMgr;
 
 		CRenderSystem::CRenderSystem(xst_castring& strName) : XSE::IRenderSystem( strName )
 		{
@@ -162,21 +194,21 @@ namespace XSE
 
 			xst_zero( &m_Current, sizeof( SCurrent ) );
 			xst_zero( &g_Diagnostics, sizeof( SRSDiagnostics ) );
+
+			g_SamplerMgr.ResetSamplers();
 		}
 
 		CRenderSystem::~CRenderSystem()
 		{
 			for( auto& pState : g_vSamplerStates )
 			{
-				if( pState )
-					pState->Release();
-				pState = xst_null;
+				xst_release( pState );
 			}
 
 			for( auto& Tex : g_vTextures )
 			{
-				Tex.pTexture->Release();
-				Tex.pShaderView->Release();
+				xst_release( Tex.pTexture );
+				xst_release( Tex.pShaderView );
 			}
 
 			//Destroy all input layouts
@@ -1116,9 +1148,6 @@ namespace XSE
 				
 			}
 
-			ID3D11Resource* pTex = xst_null;
-			ID3D11ShaderResourceView* pSRV = xst_null;
-
 			if( Desc.bRawData )
 			{
 				XST_LOG_ERR( "Raw data not supported" );
@@ -1128,11 +1157,11 @@ namespace XSE
 			{
 				if( Desc.bNative )
 				{
-					hr = CreateDDSTextureFromMemory( m_pDevice, m_pDeviceContext, Desc.pData, Desc.uDataSize, &pTex, &pSRV );
+					hr = CreateDDSTextureFromMemory( m_pDevice, m_pDeviceContext, Desc.pData, Desc.uDataSize, &Tex.pTexture, &Tex.pShaderView );
 				}
 				else
 				{
-					hr = CreateWICTextureFromMemory( m_pDevice, m_pDeviceContext, Desc.pData, Desc.uDataSize, &pTex, &pSRV );
+					hr = CreateWICTextureFromMemory( m_pDevice, m_pDeviceContext, Desc.pData, Desc.uDataSize, &Tex.pTexture, &Tex.pShaderView );
 				}
 			}
 
@@ -1203,8 +1232,7 @@ namespace XSE
 					g_vTextures[ uId ] = Tex;
 				}
 
-				_SetRendererResourceHandleId( &hTex, uId );
-				_SetRendererResourceHandleRefCount( &hTex, 1 );
+				hTex.uHandle = uId;
 			}
 			else
 			{
@@ -1220,7 +1248,21 @@ namespace XSE
 			return XST_FAIL;
 		}
 
-		const RSHandleRef CRenderSystem::CreateSampler(const STextureSamplingMode& Mode)
+		void CRenderSystem::SetTexture(u32 uSlot, const RSHandleRef hTexture, bool bForceSet)
+		{
+			xst_assert2( hTexture.uHandle > 0 && hTexture.uHandle < g_vTextures.size() );
+			const auto& Tex = g_vTextures[ hTexture.uHandle ];
+			xst_assert2( Tex.pShaderView );
+			if( bForceSet )
+				m_pDeviceContext->PSSetShaderResources( uSlot, 1, &Tex.pShaderView );
+		}
+			
+		void CRenderSystem::SetTextures()
+		{
+
+		}
+
+		i32 CRenderSystem::CreateSampler(const STextureSamplingMode& Mode, RSHandlePtr pOut)
 		{
 			RSHandle hSampler;
 			u32 uId = 0;
@@ -1260,14 +1302,15 @@ namespace XSE
 				else
 				{
 					XST_LOG_ERR( "Unable to create sampler state" );
-					return hSampler;
+					return XST_FAIL;
 				}
 			}
 			else
 			{
 				hSampler = Itr->second;
 			}
-			return hSampler;
+			*pOut = hSampler;
+			return XST_OK;
 		}
 						
 		i32	CRenderSystem::DestroySampler(RSHandlePtr pHandle)
@@ -1282,12 +1325,21 @@ namespace XSE
 			return XST_OK;
 		}
 
-		void CRenderSystem::SetSampler(u32 uSlot, const RSHandleRef Handle)
+		void CRenderSystem::SetSampler(u32 uSlot, const RSHandleRef Handle, bool bForceSet)
 		{
-			xst_assert2( Handle.uHandle > 0 );
+			xst_assert( Handle.uHandle > 0 && Handle.uHandle < g_vSamplerStates.size(), "(CRenderSystem::SetSampler) Invalid handle" );
 			ID3D11SamplerState* pState = g_vSamplerStates[ Handle.uHandle ];
 			xst_assert2( pState );
-			m_pDeviceContext->PSSetSamplers( uSlot, 1, &pState );
+			if( bForceSet )
+				m_pDeviceContext->PSSetSamplers( uSlot, 1, &pState );
+			else
+				g_SamplerMgr.SetSampler( uSlot, pState );
+		}
+
+		void CRenderSystem::SetSamplers()
+		{
+			xst_assert2( g_SamplerMgr.m_apSamplers );
+			m_pDeviceContext->PSSetSamplers( 0, g_SamplerMgr.m_uActiveSamplers, g_SamplerMgr.m_apSamplers );
 		}
 
 		ul32 CRenderSystem::GetShaderMaxSize()

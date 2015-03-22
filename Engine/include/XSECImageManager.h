@@ -24,7 +24,7 @@ namespace XSE
 
 					i32				RegisterImageSystem(IImageSystem* pImgSystem, bool bAutoDestroy = true);
 
-					i32				PrepareResource(ResourceWeakPtr pRes) xst_implement;
+					i32				PrepareResource(ResourceWeakPtr *const ppRes) xst_implement;
 
 			virtual	void			DestroyResources() xst_implement;
 

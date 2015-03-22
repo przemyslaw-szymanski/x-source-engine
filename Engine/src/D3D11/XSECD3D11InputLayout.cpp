@@ -61,6 +61,7 @@ namespace XSE
 				m_Elements.push_back( Element );
 				m_ulVertexSize += Element.ulSize;
 				this->m_aAvailableElements[ ILEIds::TEXCOORD0 ] = true;
+				m_uTexCoordCount++;
 			}
 
 			if( ulElements & InputLayoutElements::BINORMAL )
@@ -109,6 +110,7 @@ namespace XSE
 				m_Elements.push_back( Element );
 				m_ulVertexSize += Element.ulSize;
 				this->m_aAvailableElements[ ILEIds::TEXCOORD1 ] = true;
+				m_uTexCoordCount++;
 			}
 
 			if( ulElements & InputLayoutElements::TEXCOORD2 )
@@ -121,6 +123,7 @@ namespace XSE
 				m_Elements.push_back( Element );
 				m_ulVertexSize += Element.ulSize;
 				this->m_aAvailableElements[ ILEIds::TEXCOORD2 ] = true;
+				m_uTexCoordCount++;
 			}
 
 			if( ulElements & InputLayoutElements::TEXCOORD3 )
@@ -133,6 +136,7 @@ namespace XSE
 				m_Elements.push_back( Element );
 				m_ulVertexSize += Element.ulSize;
 				this->m_aAvailableElements[ ILEIds::TEXCOORD3 ] = true;
+				m_uTexCoordCount++;
 			}
 
 			if( ulElements & InputLayoutElements::TEXCOORD4 )
@@ -145,6 +149,7 @@ namespace XSE
 				m_Elements.push_back( Element );
 				m_ulVertexSize += Element.ulSize;
 				this->m_aAvailableElements[ ILEIds::TEXCOORD4 ] = true;
+				m_uTexCoordCount++;
 			}
 
 			if( ulElements & InputLayoutElements::TEXCOORD5 )
@@ -157,6 +162,7 @@ namespace XSE
 				m_Elements.push_back( Element );
 				m_ulVertexSize += Element.ulSize;
 				this->m_aAvailableElements[ ILEIds::TEXCOORD5 ] = true;
+				m_uTexCoordCount++;
 			}
 
 			if( ulElements & InputLayoutElements::TEXCOORD6 )
@@ -169,6 +175,7 @@ namespace XSE
 				m_Elements.push_back( Element );
 				m_ulVertexSize += Element.ulSize;
 				this->m_aAvailableElements[ ILEIds::TEXCOORD6 ] = true;
+				m_uTexCoordCount++;
 			}
 
 			if( ulElements & InputLayoutElements::TEXCOORD7 )
@@ -181,6 +188,7 @@ namespace XSE
 				m_Elements.push_back( Element );
 				m_ulVertexSize += Element.ulSize;
 				this->m_aAvailableElements[ ILEIds::TEXCOORD7 ] = true;
+				m_uTexCoordCount++;
 			}
 
 			if( ulElements & InputLayoutElements::SPECULAR )
@@ -406,7 +414,7 @@ namespace XSE
 			//Add default POSITION
 			//m_aInputElements[ 0 ] = CreateInputElement( "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 			ul32 ulOffset = 0;
-			u32 uiTexUnit = 0;
+			u32 uiTexUnit = m_uTexCoordCount;
 			ch8 strTmp[ 128 ];
 
 			for(u32 i = 0; i < m_Elements.size(); ++i)
@@ -421,8 +429,8 @@ namespace XSE
 						m_aInputElements[ i + 0 ] = CreateInputElement( "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetPositionSize();
 						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "POSITION", "POSITION", "float4" );
-						g_strVS_OUT += "\nfloat3 pos : TEXCOORD";
-						xst_sprintf( strTmp, 128, "%d;", uiTexUnit++ );
+						g_strVS_OUT += "float3 pos : TEXCOORD";
+						xst_sprintf( strTmp, 128, "%d;\n", uiTexUnit++ );
 						g_strVS_OUT += strTmp;
 						m_strVSCode += "\nOUT.position = mul( IN.position, [WVP] ); OUT.pos = mul(IN.position.xyz, [W]);";
 						strName += "Position";
@@ -451,16 +459,9 @@ namespace XSE
 
 					case InputLayoutElements::TEXCOORD0:
 					{
-						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
+						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
-						AddShaderInput( g_strVS_IN, strTmp, "float2" );
-						AddShaderOutput( g_strVS_OUT, strTmp, "float2" );
-						lpastr pTmp = strTmp;
-						XST::StringUtil::ToLower( strTmp, 10, &pTmp );
-						ch8 strTmp2[ 128 ];
-						xst_sprintf( strTmp2, 128, "\nOUT.%s = IN.%s;", strTmp, strTmp );
-						m_strVSCode += strTmp2;
+						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "TEXCOORD0", "float2" );
 						strName += "Texcoord0";
 						uiTexUnit++;
 					}
@@ -468,10 +469,9 @@ namespace XSE
 
 					case InputLayoutElements::TEXCOORD1:
 					{
-						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
+						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", 1, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
-						AddShaderInOut( m_strVSCode, m_strPSCode, strTmp, "float2", bNext );
+						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "TEXCOORD1", "float2" );
 						strName += "Texcoord1";
 						uiTexUnit++;
 					}
@@ -479,10 +479,9 @@ namespace XSE
 
 					case InputLayoutElements::TEXCOORD2:
 					{
-						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
+						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", 2, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
-						AddShaderInOut( m_strVSCode, m_strPSCode, strTmp, "float2", bNext );
+						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "TEXCOORD2", "float2" );
 						strName += "Texcoord2";
 						uiTexUnit++;
 					}
@@ -490,10 +489,9 @@ namespace XSE
 
 					case InputLayoutElements::TEXCOORD3:
 					{
-						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
+						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", 3, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
-						AddShaderInOut( m_strVSCode, m_strPSCode, strTmp, "float2", bNext );
+						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "TEXCOORD3", "float2" );
 						strName += "Texcoord3";
 						uiTexUnit++;
 					}
@@ -501,10 +499,9 @@ namespace XSE
 
 					case InputLayoutElements::TEXCOORD4:
 					{
-						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
+						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", 4, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
-						AddShaderInOut( m_strVSCode, m_strPSCode, strTmp, "float2", bNext );
+						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "TEXCOORD4", "float2" );
 						strName += "Texcoord4";
 						uiTexUnit++;
 					}
@@ -512,10 +509,9 @@ namespace XSE
 
 					case InputLayoutElements::TEXCOORD5:
 					{
-						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
+						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", 5, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
-						AddShaderInOut( m_strVSCode, m_strPSCode, strTmp, "float2", bNext );
+						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "TEXCOORD5", "float2" );
 						strName += "Texcoord5";
 						uiTexUnit++;
 					}
@@ -523,10 +519,9 @@ namespace XSE
 
 					case InputLayoutElements::TEXCOORD6:
 					{
-						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
+						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", 6, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
-						AddShaderInOut( m_strVSCode, m_strPSCode, strTmp, "float2", bNext );
+						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "TEXCOORD6", "float2" );
 						strName += "Texcoord6";
 						uiTexUnit++;
 					}
@@ -534,10 +529,9 @@ namespace XSE
 
 					case InputLayoutElements::TEXCOORD7:
 					{
-						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", uiTexUnit++, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
+						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", 7, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetTexCoordSize();
-						xst_sprintf( strTmp, 128, "TEXCOORD%d", uiTexUnit );
-						AddShaderInOut( m_strVSCode, m_strPSCode, strTmp, "float2", bNext );
+						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "TEXCOORD7", "float2" );
 						strName += "Texcoord7";
 						uiTexUnit++;
 					}
