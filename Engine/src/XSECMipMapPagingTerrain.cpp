@@ -613,7 +613,7 @@ namespace XSE
 
 			// Set samplers
 			pRS->SetSampler( MaterialTextureTypes::DIFFUSE, pPass->GetSamplerHandle( MaterialTextureTypes::DIFFUSE ), true );
-			pRS->SetTexture( MaterialTextureTypes::DIFFUSE, pMat->GetTexture( MaterialTextureTypes::DIFFUSE )->GetRSHandle(), true );	
+			//pRS->SetTexture( MaterialTextureTypes::DIFFUSE, pMat->GetTexture( MaterialTextureTypes::DIFFUSE )->GetRSHandle(), true );	
 			//Do transformations
 			pRS->SetMatrix( MatrixTypes::WORLD, mtxTransform );
 			//Update shaders input

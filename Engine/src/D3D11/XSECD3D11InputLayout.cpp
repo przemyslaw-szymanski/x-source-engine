@@ -428,11 +428,14 @@ namespace XSE
 					{
 						m_aInputElements[ i + 0 ] = CreateInputElement( "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
 						ulOffset += GetPositionSize();
-						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "POSITION", "POSITION", "float4" );
+						//AddShaderInOut( g_strVS_IN, g_strVS_OUT, "POSITION0", "SV_POSITION", "float3" );
+						AddShaderInput(g_strVS_IN, "POSITION", "float3");
+						AddShaderOutput(g_strVS_OUT, "SV_POSITION", "float4");
 						g_strVS_OUT += "float3 pos : TEXCOORD";
 						xst_sprintf( strTmp, 128, "%d;\n", uiTexUnit++ );
 						g_strVS_OUT += strTmp;
-						m_strVSCode += "\nOUT.position = mul( IN.position, [WVP] ); OUT.pos = mul(IN.position.xyz, [W]);";
+						m_strVSCode += "\nOUT.sv_position = mul(float4(IN.position.xyz,1),[WVP]);";
+						m_strVSCode += "\nOUT.pos = mul(IN.position.xyz,[W]);";
 						strName += "Position";
 					}
 					break;
@@ -459,10 +462,13 @@ namespace XSE
 
 					case InputLayoutElements::TEXCOORD0:
 					{
-						m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
+						//m_aInputElements[ i + 0 ] = CreateInputElement( "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 );
+						D3D11_INPUT_ELEMENT_DESC d = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, ulOffset, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+						m_aInputElements[ i + 0 ] = d;
 						ulOffset += GetTexCoordSize();
 						AddShaderInOut( g_strVS_IN, g_strVS_OUT, "TEXCOORD0", "float2" );
 						strName += "Texcoord0";
+						m_strVSCode += "\nOUT.texcoord0=IN.texcoord0;";
 						uiTexUnit++;
 					}
 					break;

@@ -170,10 +170,11 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	pMat->SetTexture( XSE::MaterialTextureTypes::DIFFUSE, "heightmap04.jpg", XSE::ALL_GROUPS );
 	pMat->SetTextureSamplingMode( XSE::MaterialTextureTypes::DIFFUSE, XSE::STextureSamplingMode() );
 	
+	
 	xst_assert2(pVS.IsValid() && pPS.IsValid());
 	XSE::ITerrain* pTerrain = this->m_pSceneMgr->CreateTerrain( "Terrain", Options );
     xst_assert( pTerrain != xst_null, "(CTerrain::Init) Terrain sample creation failed. Engine error!!!" );
-	pTerrain->SetMaterial( pMat );
+	//pTerrain->SetMaterial( pMat );
 	}
 
 	XSE::ModelPtr pSphere = XSE::CModelManager::GetSingleton().LoadResource("untitled.obj", XSE::ALL_GROUPS);

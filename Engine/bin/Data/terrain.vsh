@@ -4,6 +4,7 @@ struct VS_IN {
 	//float3 f3Normal : NORMAL;
 	float2 f2TexCoord : TEXCOORD0;
 	//float4 f4Color : COLOR;
+	//float3 f3Tangent : TANGENT;
 };
 
 
@@ -21,7 +22,7 @@ VS_OUT vs(VS_IN IN)
 	OUT.f4VertexPos = mul( IN.f4Position, mtxObjWVP );
 	//OUT.f3Normal =  normalize( mul( IN.f3Normal, mtxObjWorld ) );
 	OUT.f3Pos = mul( IN.f4Position.xyz, mtxObjWorld );
-	OUT.f2TexCoord = IN.f2TexCoord;
+	//OUT.f2TexCoord = IN.f2TexCoord;
 	//OUT.f4Color = IN.f4Color;
 	return OUT;
 }
