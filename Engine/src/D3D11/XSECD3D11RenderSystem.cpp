@@ -324,6 +324,15 @@ namespace XSE
 			u16 uVal = ( Handle.uHandle & 0x0000FFFF ) >> 0;
 			return uVal;
 		}
+		ID3D11InputLayout* g_pIL;
+		ID3D11Buffer* g_pVB, *g_pIB;
+		ID3D11VertexShader* g_pVS;
+		ID3D11PixelShader* g_pPS;
+		struct SimpleVertex
+{
+    XMFLOAT3 Pos;
+    XMFLOAT2 Tex;
+};
 
 		i32 CRenderSystem::Init(const SRenderSystemSettings& Options)
 		{
@@ -344,12 +353,24 @@ namespace XSE
 			}
 
 			//Enumerate primary video card
-			hr = m_pD3DFactory->EnumAdapters( 0, &m_pD3DAdapter );
-			if( FAILED( hr ) )
+			xst_vector< IDXGIAdapter* > vpAdapters;
+			u32 uAdapterId = 0;
+			IDXGIAdapter* pTmpAdapter = xst_null;
+			while( m_pD3DFactory->EnumAdapters( uAdapterId, &pTmpAdapter ) != DXGI_ERROR_NOT_FOUND )
 			{
-				XST_LOG_ERR( "[D3D11]: Failed to enumerate dxgi factory adapters: " << _ErrorToString( hr ) );
+				vpAdapters.push_back( pTmpAdapter );
+				DXGI_ADAPTER_DESC Desc;
+				pTmpAdapter->GetDesc(&Desc);
+				uAdapterId++;
+			}
+			
+			if( !vpAdapters.empty() )
+			{
+				XST_LOG_ERR( "D3D11 ERROR: No adapter found." );
 				return XST_FAIL;
 			}
+
+			m_pD3DAdapter = vpAdapters[0]; // get the default adapter
 
 			if( XST_FAILED( SetFeatureLevel( Options.eMinFeatureLevel, Options.eMaxFeatureLevel ) ) )
 			{
@@ -478,6 +499,148 @@ namespace XSE
 			{
 				return XST_FAIL;
 			}
+			// TEMP ------------------------------------------------------------------------------------------
+			const char* pData = 
+				"struct VS_IN {"
+"float4 position : POSITION;"
+"float2 texcoord : TEXCOORD;"
+"};"
+"struct VS_OUT {"
+"float4 sv_position : SV_POSITION;"
+"float2 texcoord : TEXCOORD;"
+"};"
+"VS_OUT vs_main(VS_IN IN) {"
+"VS_OUT OUT;"
+"OUT.sv_position = IN.position;"
+"OUT.texcoord=IN.texcoord;"
+"return OUT;"
+"}"
+		"struct PS_IN {"
+"float4 sv_position : SV_POSITION;"
+"float2 texcoord : TEXCOORD;"
+"};"
+"float4 ps_main(PS_IN IN) : SV_TARGET{"
+"float4 C = float4(1,0.02,0.5,0);"
+"C *= float4(IN.texcoord.x, IN.texcoord.y, 1, 1);"
+"return C;"
+"}"
+				;
+			ID3DBlob* pError = xst_null;
+			ID3D10Blob* pVSBlob, *pPSBlob;
+			u32 size = strlen(pData);
+			hr = D3DCompile( pData, size, "tmp_vs", xst_null, xst_null,
+				"vs_main", "vs_4_0", D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG, 0, &pVSBlob, &pError );
+			if( pError )
+			{
+				lpcastr strErr = (lpcastr)pError->GetBufferPointer();
+				XST_LOG_ERR( "[D3D11]: Failed to compile shader from memory: " << strErr );
+				pError->Release();
+			}
+
+			XST_LOG_ERR( pData );
+			hr = D3DCompile( pData, size, "tmp_ps", xst_null, xst_null,
+				"ps_main", "ps_4_0", D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG, 0, &pPSBlob, &pError );
+			if( pError )
+			{
+				lpcastr strErr = (lpcastr)pError->GetBufferPointer();
+				XST_LOG_ERR( "[D3D11]: Failed to compile shader from memory: " << strErr );
+				pError->Release();
+			}
+
+			XST_LOG_ERR( pData );
+			hr = m_pDevice->CreatePixelShader( pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), NULL, &g_pPS );
+			pPSBlob->Release();
+			if( FAILED( hr ) )
+				return hr;
+			hr = m_pDevice->CreateVertexShader( pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &g_pVS );
+			if( FAILED( hr ) )
+				return hr;
+
+			D3D11_INPUT_ELEMENT_DESC layout[] =
+			{
+				{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+				{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			};
+			UINT numElements = ARRAYSIZE( layout );
+			// Create the input layout
+			hr = m_pDevice->CreateInputLayout( layout, numElements, pVSBlob->GetBufferPointer(),
+												  pVSBlob->GetBufferSize(), &g_pIL );
+			pVSBlob->Release();
+			 // Create vertex buffer
+			SimpleVertex vertices[] =
+			{
+				{ XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT2( 0.0f, 0.0f ) },
+				{ XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT2( 1.0f, 0.0f ) },
+				{ XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT2( 1.0f, 1.0f ) },
+				{ XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT2( 0.0f, 1.0f ) },
+
+				{ XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT2( 0.0f, 0.0f ) },
+				{ XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT2( 1.0f, 0.0f ) },
+				{ XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT2( 1.0f, 1.0f ) },
+				{ XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT2( 0.0f, 1.0f ) },
+
+				{ XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT2( 0.0f, 0.0f ) },
+				{ XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT2( 1.0f, 0.0f ) },
+				{ XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT2( 1.0f, 1.0f ) },
+				{ XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT2( 0.0f, 1.0f ) },
+
+				{ XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT2( 0.0f, 0.0f ) },
+				{ XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT2( 1.0f, 0.0f ) },
+				{ XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT2( 1.0f, 1.0f ) },
+				{ XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT2( 0.0f, 1.0f ) },
+
+				{ XMFLOAT3( -1.0f, -1.0f, -1.0f ), XMFLOAT2( 0.0f, 0.0f ) },
+				{ XMFLOAT3( 1.0f, -1.0f, -1.0f ), XMFLOAT2( 1.0f, 0.0f ) },
+				{ XMFLOAT3( 1.0f, 1.0f, -1.0f ), XMFLOAT2( 1.0f, 1.0f ) },
+				{ XMFLOAT3( -1.0f, 1.0f, -1.0f ), XMFLOAT2( 0.0f, 1.0f ) },
+
+				{ XMFLOAT3( -1.0f, -1.0f, 1.0f ), XMFLOAT2( 0.0f, 0.0f ) },
+				{ XMFLOAT3( 1.0f, -1.0f, 1.0f ), XMFLOAT2( 1.0f, 0.0f ) },
+				{ XMFLOAT3( 1.0f, 1.0f, 1.0f ), XMFLOAT2( 1.0f, 1.0f ) },
+				{ XMFLOAT3( -1.0f, 1.0f, 1.0f ), XMFLOAT2( 0.0f, 1.0f ) },
+			};
+
+			D3D11_BUFFER_DESC bd;
+			ZeroMemory( &bd, sizeof(bd) );
+			bd.Usage = D3D11_USAGE_DEFAULT;
+			bd.ByteWidth = sizeof( SimpleVertex ) * 24;
+			bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			bd.CPUAccessFlags = 0;
+			D3D11_SUBRESOURCE_DATA InitData;
+			ZeroMemory( &InitData, sizeof(InitData) );
+			InitData.pSysMem = vertices;
+			hr = m_pDevice->CreateBuffer( &bd, &InitData, &g_pVB );
+			if( FAILED( hr ) )
+				return hr;
+			WORD indices[] =
+			{
+				3,1,0,
+				2,1,3,
+
+				6,4,5,
+				7,4,6,
+
+				11,9,8,
+				10,9,11,
+
+				14,12,13,
+				15,12,14,
+
+				19,17,16,
+				18,17,19,
+
+				22,20,21,
+				23,20,22
+			};
+
+			bd.Usage = D3D11_USAGE_DEFAULT;
+			bd.ByteWidth = sizeof( WORD ) * 36;
+			bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+			bd.CPUAccessFlags = 0;
+			InitData.pSysMem = indices;
+			hr = m_pDevice->CreateBuffer( &bd, &InitData, &g_pIB );
+			if( FAILED( hr ) )
+				return hr;
 
 			return RESULT::OK;
 		}
@@ -622,6 +785,18 @@ namespace XSE
 			///////////////////////////////////////////////////////////////////////////
 
 			///////////////////////////////////////////////////////////////////////////
+
+			// TMP
+			m_pDeviceContext->IASetInputLayout(g_pIL);
+			m_pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			m_pDeviceContext->IASetIndexBuffer(g_pIB, DXGI_FORMAT_R16_UINT, 0);
+			UINT stride = sizeof( SimpleVertex );
+			UINT offset = 0;
+			m_pDeviceContext->IASetVertexBuffers(0, 1, &g_pVB, &stride, &offset);
+			m_pDeviceContext->VSSetShader(g_pVS, 0, 0);
+			m_pDeviceContext->PSSetShader(g_pPS, 0,0);
+			m_pDeviceContext->DrawIndexed(36, 0, 0);
+			m_pDeviceContext->Flush();
 
 			return XST_OK;
 		}

@@ -598,6 +598,8 @@ namespace XSE
 			if( this->m_aAvailableElements[ InputLayoutElementIds::NORMAL ] )
 				m_strPSCode += "\nfloat3 P=IN.pos;\nfloat3 N=normalize(IN.normal);\nfloat3 L=normalize(float3(0,1000,0)-P);\nfloat DL=max(dot(N,L),0);\nfloat3 V=normalize(float3(-389,450,230)-P);\nfloat3 H=normalize(L+V);C=C*DL;";
 				//m_strPSCode += "C.xyz = IN.normal; C.w=1;";
+			if( this->m_aAvailableElements[ InputLayoutElementIds::TEXCOORD0 ] )
+				m_strPSCode += "\nC *= float4(IN.texcoord.x, IN.texcoord.y, 1, 1);";
 
 			m_strPSCode += "\nreturn C;\n}";
 			FindAndReplace( &m_strPSCode, "[VS_OUT]", g_strVS_OUT );
@@ -639,6 +641,8 @@ namespace XSE
 			{
 				return XST_FAIL;
 			}
+
+			ID3D11ClassLinkage* pLinker;
 
 			ID3DBlob* pPSBlob = pPS->m_pBlob;
 
