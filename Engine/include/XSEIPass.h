@@ -90,6 +90,7 @@ namespace XSE
 
 			VertexShaderPtr			m_pVS;
 			PixelShaderPtr			m_pPS;
+            u8 m_padding[ 12 ];
 	};
 
 }//xse

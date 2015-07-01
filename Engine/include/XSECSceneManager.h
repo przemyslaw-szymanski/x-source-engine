@@ -29,6 +29,7 @@ namespace XSE
             CObject*                pObj = xst_null;
             OBJECT_DISABLE_REASON   eDisableReason = ODR::OTHER;
             bool                    bVisible = false;
+            u8 m_padding[ 3 ];
         };
 
 		//typedef xst_map< ul32, CCamera* >		CameraMap;
@@ -207,6 +208,7 @@ namespace XSE
 		DynamicGeometryMap	    m_mDynamicGeometries;
 		TerrainVec			    m_vTerrains;
 		LightVec				m_vLights;
+        u8 m_padding[ 12 ];
 		Vec4					m_vecAmbientColor;
 		ITerrainSystem*		    m_pTerrainSystem;
 		IScenePartitionSystem*	m_pScenePartitionSystem;
@@ -219,6 +221,7 @@ namespace XSE
 		LightPtr				m_pCurrLight; // current selected light
 		f32					    m_fSize;
 		CSceneDebug*		    m_pDbg;
+        u8 m_padding2[ 4 ];
 	};
 
 	XST_TEMPLATE_CLASS XST::TCIterator< CSceneManager::CameraMap >;

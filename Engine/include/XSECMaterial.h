@@ -92,6 +92,8 @@ namespace XSE
 						void				SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const STextureSamplingMode& Mode);
 						void				SetTextureSamplingMode(MATERIAL_TEXTURE_TYPE eType, const RSHandle& Handle);
 
+                        bool                ValidateInputLayout(const IInputLayout* pIL);
+
 			protected:
 
 				SMaterialAttributes		m_Attribs;

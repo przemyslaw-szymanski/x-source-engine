@@ -98,6 +98,8 @@ namespace XSE
 
 			virtual	i32							PrepareResource(Resources::IResource* pRes) = 0;
 
+            virtual xst_fi  void                DoNotValidateNextVertexShaderInput() {}
+
 			/*virtual void			SetWorldMatrix(const Mtx4& mtxWorld) = 0;
 			virtual void			SetViewMatrix(const Mtx4& mtxView) = 0;
 			virtual void			SetProjectionMatrix(const Mtx4& mtxProj) = 0;

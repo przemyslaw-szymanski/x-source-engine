@@ -173,15 +173,22 @@ namespace XSE
 			m_RenderMethod = &CMesh::_RenderIndexed;
 		}
 
-		void CMesh::SetMaterial(XSE::MaterialWeakPtr pMat, cu32& uiLODId)
+		bool CMesh::SetMaterial(XSE::MaterialWeakPtr pMat, cu32& uiLODId)
 		{
 			xst_assert( pMat != xst_null, "(CMesh::SetMaterial) Trying to set a null material" );
 			//TODO Override GetMaterial method for mesh. Should returns current lod material
-			this->m_pMaterial = pMat;
 			if( uiLODId < m_vLODs.size() )
 			{
-				m_vLODs[ uiLODId ].pMaterial = pMat;
+                // For each vertex buffer check input layout
+                auto& CurrLOD = m_vLODs[ uiLODId ];
+                if( CurrLOD.pVertexBuffer.IsValid() && !pMat->ValidateInputLayout( CurrLOD.pVertexBuffer->GetInputLayout() ) )
+                {
+                    return false;
+                }
+				CurrLOD.pMaterial = pMat;
 			}
+            this->m_pMaterial = pMat;
+            return true;
 		}
 
 		void CMesh::_SetSceneNode(CSceneNode* pNode)

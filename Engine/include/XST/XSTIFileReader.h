@@ -18,6 +18,7 @@ namespace XST
 		}Data;
 
 		bool bAscii;
+        u8 m_padding[ 3 ];
 		ul32 ulSize;
 
 	}SFile;

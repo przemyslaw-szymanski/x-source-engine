@@ -97,6 +97,7 @@ namespace XSE
 				u16					m_usBeginIndex;
 				u16					m_usBeginVertex;
 				u16					m_usIndexCount;
+                u8 m_padding[ 2 ];
 				ul32				m_ulGroupId;
 				ul32				m_ulSubGroupId;
 				IGUIRenderer*		m_pGUIRenderer;

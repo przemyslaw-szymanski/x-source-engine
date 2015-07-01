@@ -69,7 +69,7 @@ namespace XSE
             // TODO: implement case if pMat is null if( !pMat ) this resource should be destroyed
 			IPass* pPass = pMat->CreateTechnique( DEFAULT_TECHNIQUE, true )->GetPass( 0 );
 			strShaderCode = m_pShaderMgr->CreateShaderCode( ILE::POSITION | ILE::COLOR, ILE::POSITION | ILE::COLOR );	
-			VertexShaderPtr pVS = m_pShaderMgr->CompileVertexShader( "xse_default_color_vs", "vs_main", strShaderCode );
+			VertexShaderPtr pVS = m_pShaderMgr->CompileVertexShader( "xse_default_color_vs", "vs_main", ILE::POSITION | ILE::COLOR, strShaderCode );
 			PixelShaderPtr pPS = m_pShaderMgr->CompilePixelShader( "xse_default_color_ps", "ps_main", strShaderCode );
 
 			pPass->SetVertexShader( pVS );

@@ -294,5 +294,21 @@ namespace XSE
 			}
 		}
 
+        bool CMaterial::ValidateInputLayout(const IInputLayout* pIL)
+        {
+            for( auto* pTech : m_vTechniques )
+            {
+                for( auto* pPass : pTech->GetPasses() )
+                {
+                    const IVertexShader* pVS = pPass->GetVertexShader().GetPtr();
+                    if( pVS && pVS->GetInputLayout() != pIL )
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
 	}//resources
 }//xse

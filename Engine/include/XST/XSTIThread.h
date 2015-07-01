@@ -74,6 +74,7 @@ namespace XST
 			dword	m_dwThreadID;
 			bool	m_bIsThreadStarted;
 			bool	m_bFinished;
+            u8      m_padding[ 2 ];
 
 			XST::CCriticalSection m_CriticalSection;
 

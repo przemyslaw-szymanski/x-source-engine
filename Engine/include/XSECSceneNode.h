@@ -126,8 +126,10 @@ namespace XSE
 			ObjectVector	m_vObjects;
 			CSceneNode*		m_pParentNode;
 			bool			m_bAutoDestroy;
+            u8 m_padding[ 3 ];
 			ul32			m_ulObjHandle;
 			xst_astring		m_strName;
+            u8 m_padding2[ 4 ];
 	};
 
 	//typedef XST::TCObjectSmartPointer< CSceneNode >	SceneNodePtr;

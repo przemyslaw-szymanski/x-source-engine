@@ -7,7 +7,7 @@ namespace XSE
 {
 	using namespace XST::Types;
 
-	class IFileSystem
+	class XST_API IFileSystem
 	{
 		public:
 
@@ -16,7 +16,7 @@ namespace XSE
 				ch8		strPath[ XSE_MAX_DIR_PATH_LENGTH ];
 				u32		uFileCount;
 				u32		uDirCount;
-				u16		uParentDirId;
+				u16		uParentDirId; u8 m_padding[ 2 ];
 			};
 
 			struct SFileInfo
@@ -26,7 +26,7 @@ namespace XSE
 				u16			uPathLength : 16;
 				u16			uNameLength : 8;
 				u16			uExtLength	: 8;
-				u16			uParentDirId;
+				u16			uParentDirId; u8 m_padding[ 2 ];
 			};
 
 			typedef xst_vector< SDirInfo >	DirInfoVec;

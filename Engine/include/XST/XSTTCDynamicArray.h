@@ -278,6 +278,7 @@ namespace XST
 			};
 
 			typedef fastdelegate::FastDelegate2< const _T_&, const _T_&, bool >	CompareDelegate;
+            class XST_API CompareDelegate;
 #if( XST_VS_VER < 10 )
 			XST_TEMPLATE_CLASS fastdelegate::FastDelegate2< const _T_&, const _T_&, bool >;
 #endif
@@ -410,7 +411,7 @@ namespace XST
 
 				void			_push_back_sorted(const _T_& _tData, cu32& _uiBeginPos, cu32& _uiEndPos)
 				{
-					u32 uiHalfSize = ( _uiBeginPos + _uiEndPos ) * 0.5f;
+					u32 uiHalfSize = (u32)(( _uiBeginPos + _uiEndPos ) * 0.5f);
 					//if( uiHalfSize >= this->m_uiSize ) uiHalfSize = XST::Math::Max< u32 >( 0, this->m_uiSize - 1 );
 					_T_& tHalfEl = this->m_pData[ uiHalfSize ];
 

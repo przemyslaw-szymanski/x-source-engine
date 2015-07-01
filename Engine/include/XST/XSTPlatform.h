@@ -224,8 +224,8 @@ namespace XST
 				if( aiCPUInfo[0] >= 1 )
 				{
 					xst_cpuid(aiCPUInfo, 1);
-					dwECX = aiCPUInfo[2];
-					dwEDX = aiCPUInfo[3];
+					dwECX = (u32)aiCPUInfo[2];
+					dwEDX = (u32)aiCPUInfo[3];
 				}
 
 				xst_cpuid(aiCPUInfo, 0x80000000);

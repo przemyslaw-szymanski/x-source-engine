@@ -110,7 +110,7 @@ namespace XSE
 				pfnRender		m_RenderMethod;
 				u8				m_byCurrLod;
 				u8				m_byMinLod;
-				u8				m_byMaxLod;
+				u8				m_byMaxLod; u8 m_padding[ 57 ];
 		};
 
 		XST_TEMPLATE_CLASS XST::TCObjectSmartPointer< CModel >;

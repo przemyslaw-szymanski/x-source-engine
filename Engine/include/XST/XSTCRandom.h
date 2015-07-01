@@ -18,6 +18,9 @@ namespace XST
 				Randomize();
 			}
 
+            CRandom(const CRandom&) = delete;
+            void operator=(const CRandom&) = delete;
+
 			xst_fi void Randomize()
 			{
 				SetSeed( XST::CTime::GetTickCount() );
@@ -30,7 +33,7 @@ namespace XST
 
 			xst_fi i32 GetNextInt()
 			{
-				return m_IRand();
+				return (i32)m_IRand();
 			}
 
 			xst_fi i32 GetNextInt(ci32& iMax)

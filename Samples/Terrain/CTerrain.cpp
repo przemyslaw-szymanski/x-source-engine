@@ -103,7 +103,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	for(u32 i = 0; i < 000; ++i)
 	{
 		//XSTSimpleProfiler();
-		sprintf( buff, "xse_cloned_mesh_000000000%d", i );
+        xst_sprintf( buff, sizeof( buff ), "xse_cloned_mesh_000000000%d", i );
 		str.assign( buff );
 		//XSE::Resources::CMesh* pMesh = xst_new XSE::Resources::CMesh( 0, 0, 0, 0, "" );
 		XSE::MeshPtr pMesh = pMgr->CreateMesh( str );
@@ -177,8 +177,8 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	//pTerrain->SetMaterial( pMat );
 	}
 
+    XSE::Vec3 vecPos =m_pDbgCam->GetPosition() + XSE::Vec3(0,500,0);
 	XSE::ModelPtr pSphere = XSE::CModelManager::GetSingleton().LoadResource("untitled.obj", XSE::ALL_GROUPS);
-	XSE::Vec3 vecPos =m_pDbgCam->GetPosition() + XSE::Vec3(0,500,0);
 	if( pSphere.IsValid() )
 	{
 		pSphere->SetMaterial( pMat );
@@ -188,7 +188,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	}
 
 	XSE::CLight* pLight = m_pSceneMgr->CreateLight("terrain");
-	pLight->SetColor( XSE::Vec4( 0.3, 0.6, 0.9, 1.0f ) );
+	pLight->SetColor( XSE::Vec4( 0.3f, 0.6f, 0.9f, 1.0f ) );
 	pLight->SetPosition( vecPos );
 	//pSphere->GetSceneNode()->AddObject( pLight );
 	m_pSceneMgr->SetLight( pLight );
@@ -201,11 +201,11 @@ void CTerrain::OnUpdate()
 	XSE::IKeyboard* pKeyboard = m_pRenderWindow->GetKeyboard( );
 	if( pKeyboard->IsKeyPressed( XSE::KeyCodes::CAPITAL_Z ) )
 	{
-		this->m_pDbgCam->RotateX( -0.1 );
+		this->m_pDbgCam->RotateX( -0.1f );
 	}
 	else if( pKeyboard->IsKeyPressed( XSE::KeyCodes::CAPITAL_X ) )
 	{
-		this->m_pDbgCam->RotateX( 0.1 );
+		this->m_pDbgCam->RotateX( 0.1f );
 	}
 	else if( pKeyboard->IsKeyPressed( XSE::KeyCodes::CAPITAL_R ) )
 	{

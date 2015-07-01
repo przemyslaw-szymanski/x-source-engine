@@ -92,6 +92,7 @@ namespace XSE
 			CStaticGeometry*	m_pDynamicGeometry;
 			BuildDelegate		m_OnObjectBuild;
 			ul32				m_ulID;
+            u8 m_padding[ 12 ];
 	};
 
 }//xse

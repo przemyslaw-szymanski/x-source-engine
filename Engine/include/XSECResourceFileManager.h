@@ -52,7 +52,7 @@ namespace XSE
 			struct SFileSystem
 			{
 				IFileSystem*	pSys;
-				bool			bAutoDestroy;
+				bool			bAutoDestroy; u8 m_padding[ 3 ];
 			};
 
 		public:
@@ -73,6 +73,7 @@ namespace XSE
 				{
 					xst_astring strDir;
 					bool		bRecursive;
+                    u8 m_padding[ 3 ];
 				};
 				typedef xst_vector< SLocation > LocVec;
 				friend class CResourceFileManager;
@@ -137,6 +138,7 @@ namespace XSE
 					LocVec			m_vLocations;
 					ul32			m_uHash;
 					bool			m_bPrepared = false;
+                    u8 m_padding[ 3 ];
 			};
 
 			static const i32			DEFAULT_ORDER = -1;

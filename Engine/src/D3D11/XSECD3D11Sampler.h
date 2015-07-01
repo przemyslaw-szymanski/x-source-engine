@@ -244,7 +244,9 @@ namespace XSE
 			u32 uMaxLOD = 0;
 			u32 uCount = 0;
 
-			ul32 uMax = std::pow<u32>(TextureFilters::_ENUM_COUNT, 3) * std::pow<u32>(TextureAddresses::_ENUM_COUNT, 3) * std::pow<u32>( TextureLODs::_ENUM_COUNT, 2 );
+			ul32 uMax = (ul32)std::pow<u32>( TextureFilters::_ENUM_COUNT, 3 ) * 
+                        (ul32)std::pow<u32>( TextureAddresses::_ENUM_COUNT, 3 ) * 
+                        (ul32)std::pow<u32>( TextureLODs::_ENUM_COUNT, 2 );
 			//pVecOut->reserve( uMax );
 			pMapOut->reserve( uMax );
 

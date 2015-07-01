@@ -129,8 +129,8 @@ namespace XST
 		#define XST_TEMPLATE_STRUCT		XST_TEMPLATE_API template struct XST_API
 
 		#if defined XST_STL
-		#	define xst_vector		std::vector
-		#	define xst_list			std::list
+		#	define xst_vector		::std::vector
+		#	define xst_list			::std::list
         #   if defined ( XST_VISUAL_STUDIO )
         #       define xst_map          stdext::hash_map
         #   elif defined ( XST_GCC )
@@ -138,19 +138,21 @@ namespace XST
         #else
         #   error "Compiler not supproted"
         #endif // XST_VISUAL_STUDIO
-        #   define xst_hash_table   std::unordered_map
-		#	define xst_pair			std::pair
-		#	define xst_astring		std::string
-		#	define xst_wstring		std::wstring
-		#	define xst_queue		std::queue
-		#	define xst_sort			std::sort
-		#	define xst_find			std::find
-		#	define xst_stringstream	std::stringstream
-		#	define xst_ostream		std::ostream
-		#	define xst_istream		std::istream
-		#	define xst_fstream		std::fstream
-		#	define xst_basic_stream	std::basic_stream
-		#	define xst_basic_string	std::basic_string
+        #   define xst_hash_table   ::std::unordered_map
+		#	define xst_pair			::std::pair
+		#	define xst_astring		::std::string
+		#	define xst_wstring		::std::wstring
+		#	define xst_queue		::std::queue
+		#	define xst_sort			::std::sort
+		#	define xst_find			::std::find
+		#	define xst_stringstream	::std::stringstream
+		#	define xst_ostream		::std::ostream
+		#	define xst_istream		::std::istream
+		#	define xst_fstream		::std::fstream
+		#	define xst_basic_stream	::std::basic_stream
+		#	define xst_basic_string	::std::basic_string
+            //XST_TEMPLATE_CLASS ::std::basic_string < char, ::std::char_traits<char>, ::std::allocator<char> > ;
+            //XST_TEMPLATE_CLASS ::std::basic_string < wchar_t, ::std::char_traits<wchar_t>, ::std::allocator<wchar_t> > ;
 		#elif defined XST_STLPORT
 		#	define xst_vector		_STL::vector
 		#	define xst_map			_STL::map
@@ -186,8 +188,8 @@ namespace XST
 		#	define XST_MAX_FILE_NAME_LENGTH 128
 		#endif
 
-		typedef const std::string	xst_castring;
-		typedef const std::wstring	xst_cwstring;
+		typedef const xst_astring	xst_castring;
+		typedef const xst_wstring	xst_cwstring;
 
 		#if( XST_VS_VER > 9 )
 		#	define xst_stlx( _container )					XST_TEMPLATE_CLASS _container
@@ -232,7 +234,8 @@ namespace XST
 		#define XST_OK	XST::RESULT::OK
 		#define XST_FAIL XST::RESULT::FAILED
 
-		#define XST_FAILED(_exp) ( ( _exp ) != XST::RESULT::OK )
+		#define XST_FAILED(_exp) ( ( _exp ) != XST_OK )
+        #define XST_SUCCEEDED(_exp) ( ( _exp ) == XST_OK )
 		#define XST_RET_FAIL(_exp) { if((_exp)) { return XST_FAIL; } }
 
 		#define XST_TOSTRING(_type) #_type
@@ -336,11 +339,11 @@ namespace XST
 		//#define xst_new new
 		//#define xst_delete delete
 		#if defined(XST_DEBUG) || defined (_DEBUG)
-		#   define xst_delete(_pPtr) do { delete (_pPtr); (_pPtr) = xst_null; } while(0)
-		#   define xst_deletea(_pArray) do { delete[] (_pArray); (_pArray) = xst_null; } while(0)
+		#   define xst_delete(_pPtr) do { delete (_pPtr); (_pPtr) = xst_null; } while(0,0)
+		#   define xst_deletea(_pArray) do { delete[] (_pArray); (_pArray) = xst_null; } while(0,0)
 		#else//if defined(_DEBUG)
-		#   define xst_delete(_pPtr) do { delete (_pPtr); (_pPtr) = xst_null; } while(0)
-		#   define xst_deletea(_pArray) do { delete[] (_pArray); (_pArray) = xst_null; } while(0)
+		#   define xst_delete(_pPtr) do { delete (_pPtr); (_pPtr) = xst_null; } while(0,0)
+		#   define xst_deletea(_pArray) do { delete[] (_pArray); (_pArray) = xst_null; } while(0,0)
 		#endif
 
 		#if defined(XST_VISUAL_STUDIO)

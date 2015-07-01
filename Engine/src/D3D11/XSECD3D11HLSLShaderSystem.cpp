@@ -3,6 +3,7 @@
 #include "XSECD3D11PixelShader.h"
 #include "XSECD3D11RenderSystem.h"
 #include "XSED3D11DefaultShaders.h"
+#include "XSED3D11FunctionPointers.h"
 
 namespace XSE
 {
@@ -15,7 +16,7 @@ namespace XSE
 		static const u32 FLOAT4_SIZE = sizeof(DirectX::XMFLOAT4);
 		static const u32 INT_SIZE = sizeof(i32);
 		static const u32 INT2_SIZE = sizeof(i32);
-
+   
 		class CCBBuilder
 		{
 			public:
@@ -150,7 +151,7 @@ namespace XSE
 						m_ss << "\tfloat4 " << strName << " : " << offBuff << ";" << xst_endl;
 					break;
 					case MATRIX3:
-						m_ss << "\matrix " << strName << " : " << offBuff << ";" << xst_endl;
+						m_ss << "\tmatrix " << strName << " : " << offBuff << ";" << xst_endl;
 					break;
 					case MATRIX4:
 						m_ss << "\tmatrix " << strName << " : " << offBuff << ";" << xst_endl;
@@ -892,6 +893,65 @@ namespace XSE
 			return m_pRS->_CreatePixelShader( pShader );
 		}
 
+#if (XSE_RENDERER_DEBUG) || (XSE_RENDERER_VERIFY_VS_INPUT_LAYOUT)
+        ul32 GetVSInputLayout(ID3D10Blob* pShaderBlob)
+        {
+            ID3D11ShaderReflection* pReflection;
+            HRESULT hr = D3DReflect( pShaderBlob->GetBufferPointer(), pShaderBlob->GetBufferSize(),
+                                                  IID_ID3D11ShaderReflection, ( void** )&pReflection );
+            if( FAILED( hr ) )
+            {
+                XST_LOG_ERR( "[D3D11]: Unable to create D3DReflrect object." );
+                return 0;
+            }
+
+            D3D11_SHADER_DESC Desc;
+            pReflection->GetDesc( &Desc );
+            XST::xst_astr32 strSemanticName;
+            ul32 uInputLayoutElementIds = 0; // engine IL
+
+            for( u32 i = 0; i < Desc.InputParameters; ++i )
+            {
+                D3D11_SIGNATURE_PARAMETER_DESC ParamDesc;
+                pReflection->GetInputParameterDesc( i, &ParamDesc );
+                strSemanticName = ParamDesc.SemanticName;
+
+                if( strSemanticName == "POSITION" && ParamDesc.SemanticIndex == 0 )
+                {
+                    uInputLayoutElementIds |= InputLayoutElements::POSITION;
+                }
+                else if( strSemanticName == "NORMAL" && ParamDesc.SemanticIndex == 0 )
+                {
+                    uInputLayoutElementIds |= InputLayoutElements::NORMAL;
+                }
+                else if( strSemanticName == "TEXCOORD" )
+                {
+                    for( u32 i = 0; i < 8; ++i )
+                    {
+                        if( ParamDesc.SemanticIndex == i )
+                        {
+                            uInputLayoutElementIds |= InputLayoutElements::TEXCOORD0 << i;
+                        }
+                    }
+                }
+                else if( strSemanticName == "COLOR" && ParamDesc.SemanticIndex == 0 )
+                {
+                    uInputLayoutElementIds |= InputLayoutElements::COLOR;
+                }
+                else if( strSemanticName == "TANGENT" && ParamDesc.SemanticIndex == 0 )
+                {
+                    uInputLayoutElementIds |= InputLayoutElements::TANGENT;
+                }
+                else if( strSemanticName == "BINORMAL" && ParamDesc.SemanticIndex == 0 )
+                {
+                    uInputLayoutElementIds |= InputLayoutElements::BINORMAL;
+                }
+            }
+
+            return uInputLayoutElementIds;
+        }
+#endif // XSE_RENDERER_DEBUG
+
 		i32	CHLSLShaderSystem::CompileVertexShader(Resources::IVertexShader* pVS, lpcastr lpszShader, ul32 ulShaderSize, lpcastr lpszEntryPoint, SHADER_PROFILE eProfile)
 		{
 			xst_assert( m_pRS, "(CHLSLShaderSystem::CompileVertexShader)" );
@@ -903,11 +963,34 @@ namespace XSE
 			{
 				return XST_FAIL;
 			}*/
-			if( XST_FAILED( m_pRS->_CompileShaderFromMemory( lpszShader, ulShaderSize, m_astrProfiles[ eProfile ].data(), pShader ) ) )
+			if( XST_SUCCEEDED( m_pRS->_CompileShaderFromMemory( lpszShader, ulShaderSize, m_astrProfiles[ eProfile ].data(), pShader ) ) )
 			{
-				return XST_FAIL;
+                pShader->m_bIsCompiled = true;
+			    if( XST_SUCCEEDED( m_pRS->_CreateVertexShader( pShader ) ) )
+                {
+                    // Verify shader input
+#if (XSE_RENDERER_DEBUG) || (XSE_RENDERER_VERIFY_VS_INPUT_LAYOUT)
+                    if( m_bValidateNextVSInput )
+                    {
+                        xst_assert2( pShader->m_pBlob && pShader->m_pBlob->GetBufferPointer() );
+                        ul32 uILId = GetVSInputLayout( pShader->m_pBlob );
+                        DoNotValidateNextVertexShaderInput();
+                        IInputLayout* pIL = m_pRS->GetInputLayout( uILId );
+                        xst_assert( pShader->m_pIL && pShader->m_pIL == pIL, "(CHLSLShaderSystem::CompileVertexShader) Input layout is not compatible with vertex shader." );
+                        if( pShader->m_pIL != pIL )
+                        {
+                            XST_LOG_ERR( "[D3D11] Input layout is not compatible with vertex shader." );
+                            return XST_FAIL;
+                        }
+                    }
+                    m_bValidateNextVSInput = true;
+                    //pShader->SetInputLayout( m_pRS->GetInputLayout( uILId ) );
+#endif // XSE_RENDERER_DEBUG
+                    return XST_OK;
+                }	
 			}
-			return m_pRS->_CreateVertexShader( pShader );
+            
+            return XST_FAIL;
 		}
 
 		i32	CHLSLShaderSystem::CompilePixelShader(Resources::IPixelShader* pPS, lpcastr lpszShader, ul32 ulShaderSize, lpcastr lpszEntryPoint, SHADER_PROFILE eProfile)
@@ -925,6 +1008,7 @@ namespace XSE
 			{
 				return XST_FAIL;
 			}
+            pShader->m_bIsCompiled = true;
 			return m_pRS->_CreatePixelShader( pShader );
 		}
 

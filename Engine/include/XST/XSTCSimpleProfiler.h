@@ -31,6 +31,7 @@ namespace XST
 			xst_astr128	m_strName;
 			xst_astr16	m_strTime;
 			u32			m_uiLine;
+            u8          m_padding[ 4 ];
 	};
 
 #if defined (XST_DEBUG) || (XST_ENABLE_PROFILER)

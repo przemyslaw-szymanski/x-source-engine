@@ -33,6 +33,7 @@ namespace XSE
 		if( iLeft == iRight ) return 0;
 		if( iLeft < iRight ) return -1;
 		if( iLeft > iRight) return 1;
+        return 0;
 	}
 
 	//void SortByMaterial(CDynamicGeometryGroup::ObjectVector& vObjs);

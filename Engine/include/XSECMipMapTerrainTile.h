@@ -103,6 +103,7 @@ namespace XSE
 			u32							m_uiLOD = 0;
 			MIPMAP_TERRAIN_STITCH_TYPE	m_eStitchType = MipMapTerrainStitchTypes::NONE;
 			xst_vector<bool>::iterator	m_pbIsVisible; // a pointer to a bool array from MipMapPagingTerrain (set in Init method)
+            u8 m_padding[ 12 ];
 	};
 }//xse
 #endif

@@ -98,8 +98,8 @@ namespace XST
 			{
 				return StringUtil::EmptyAString;
 			}
-
 		}
+        return StringUtil::EmptyAString;
 	}
 
 	CFileManager::CFileManager()

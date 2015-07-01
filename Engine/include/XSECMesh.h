@@ -36,7 +36,7 @@ namespace XSE
 		ul32			ulBeginIndexId;
 		ul32			ulEndIndexId;
 		f32				fDistance;
-		ch8				byID;
+		ch8				byID; u8 m_padding[ 3 ];
 	};
 
 	namespace Resources
@@ -137,7 +137,7 @@ namespace XSE
 
 						void				DestroyBuffers();
 
-						void				SetMaterial(MaterialWeakPtr pMat, cu32& uiLODId = 0);
+						bool				SetMaterial(MaterialWeakPtr pMat, cu32& uiLODId = 0);
 
 						MaterialWeakPtr		GetMaterial() xst_implement;
 				const	MaterialWeakPtr		GetMaterial() const xst_implement;
@@ -174,7 +174,7 @@ namespace XSE
 
 				ul32			m_ulCloneId;
 				bool			m_bIndexedGeometry;
-				bool			m_bIsCloned;
+				bool			m_bIsCloned; u8 m_padding[ 30 ];
 		};
 
 		XST_TEMPLATE_CLASS XST::TCObjectSmartPointer< CMesh >;

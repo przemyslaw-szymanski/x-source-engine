@@ -121,7 +121,7 @@ namespace XSE
 									{ xst_assert( m_pSceneNode == xst_null, "(IRenderableObject::_SetSceneNode) This object already has a scene node" ); m_pSceneNode = pNode; }
 
 		protected:
-
+            u8 m_padding[ 16 ];
 			Mtx4					m_mtxTransform;
 			MaterialPtr				m_pMaterial;
 			const IInputLayout*		m_pInputLayout;
@@ -129,7 +129,7 @@ namespace XSE
 			CSceneNode*				m_pSceneNode;
 			Vec3					m_vecWorldPosition;
 			bool					m_bManualRendering;
-			bool					m_bVisible;
+			bool					m_bVisible; u8 m_padding2[ 30 ];
 	};
 
 	typedef XST::TCObjectSmartPointer< IRenderableObject > RenderableObjectPtr;

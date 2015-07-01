@@ -6,7 +6,8 @@
 #if defined (XST_WINDOWS)
 #include <d3d9.h>
 //#include <d3dx9.h>
-
+#pragma warning(push)
+#pragma warning(disable: 4172)
 namespace XSE
 {
 	namespace D3D9
@@ -137,5 +138,6 @@ namespace XSE
 
 	}//d3d9
 }//xse
+#pragma warning(pop)
 #endif //XST_VISUAL_STUDIO
 #endif //XSE_CD3D11_RENDER_SYSTEM_H

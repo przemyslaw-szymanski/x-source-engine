@@ -22,6 +22,7 @@ namespace XSE
 						//i32						AddElement(const INPUT_LAYOUT_ELEMENT& _eElement);
 
 						i32						Create(cul32& ulElements);
+                        i32                     Create(cul32& uElements, CVertexShader* pShader);
 
 						ul32					GetHandle() const xst_implement
 												{ return m_ulHandle; }

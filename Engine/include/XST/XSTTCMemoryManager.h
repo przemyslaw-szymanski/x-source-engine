@@ -12,6 +12,7 @@ namespace XST
 		//u8* pNextFree;
 		u32 uiNextFree;
 		bool bFree;
+        u8 m_padding[ 3 ];
 	}SMemoryBlock;
 
 	template<class  _T_>
@@ -196,6 +197,7 @@ namespace XST
 			u32			m_uiElementCount;
 			u32			m_uiFreeBlockCount;
 			bool		m_bMemoryPoolCreated;
+            u8 m_padding[ 3 ];
 	};
 
 }//XST

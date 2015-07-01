@@ -200,8 +200,10 @@ namespace XST
 				return xst_mbstowcs(&uiCharsConverted, _pDstBuffer, _ulDstSize, _pSrcBuffer, _ulSrcSize);
 			}
 
-			static inline int UnicodeToAscii(ch8* _pDstBuffer, ch16* _pSrcBuffer, ul32 _ulSrcSize)
+			static inline int UnicodeToAscii(ch8* pDstBuffer, const ch16* pSrcBuffer, ul32 ulSrcSize)
 			{
+                pDstBuffer = (ch8*)pSrcBuffer;
+                return 0;
 			}
 
 			static xst_astring UnicodeToAscii(xst_cwstring& _strWstr, const u32& _uiEncoding = 0)
@@ -215,7 +217,7 @@ namespace XST
 				if (!len)
 					return "ErrorW2A";
 
-				std::vector<char> abuff(len + 1);
+				std::vector<char> abuff(static_cast<unsigned>(len) + 1);
 
 				// NOTE: this does not NULL terminate the string in abuff, but this is ok
 				//       since it was zero-initialized in the vector constructor
@@ -256,15 +258,11 @@ namespace XST
 
 			static lpcastr WCharToUTF8(xst_cwstring& rWStr )
 			{
-				if (sizeof(ch16) == sizeof(u8))
-					return (lpcastr)rWStr.c_str();
-
-
 				unsigned size = rWStr.size() * sizeof(ch16);
 				std::vector<ch8> buffer( size+1, 0 );
 				//ch8* buffer = xst_new ch8[size+1];
 				#if defined (XST_WINDOWS)
-				if (0 == ::WideCharToMultiByte( CP_UTF8, 0, rWStr.c_str(), rWStr.length(), &buffer[0], size, NULL, NULL ))
+				if (0 == ::WideCharToMultiByte( CP_UTF8, 0, rWStr.c_str(), rWStr.length(), &buffer[0], (int)size, NULL, NULL ))
 				{
 					DWORD err = GetLastError();
 
@@ -698,7 +696,7 @@ namespace XST
 				for(xst_astring::iterator Itr = _strString.begin(); Itr != _strString.end(); ++Itr)
 				{
 					//_strString[i] = toupper(_strString[i]);
-					*Itr = toupper(*Itr);
+					*Itr = (char)toupper(*Itr);
 				}
 
 				return _strString;
@@ -720,7 +718,7 @@ namespace XST
 				for(xst_astring::iterator Itr = _strString.begin(); Itr != _strString.end(); ++Itr)
 				{
 					//_strString[i] = toupper(_strString[i]);
-					*Itr = tolower(*Itr);
+					*Itr = (char)tolower(*Itr);
 				}
 
 				return _strString;
@@ -731,7 +729,7 @@ namespace XST
 				lpastr pTmp = *ppOut;
 				for(u32 i = 0; i < _ulLength; ++i)
 				{
-					pTmp[i] = tolower( _strString[ i ] );
+					pTmp[i] = (char)tolower( _strString[ i ] );
 				}
 			}
 
@@ -741,7 +739,7 @@ namespace XST
 
 				for(u32 i = 0; i < _strString.length(); ++i)
 				{
-					strString += tolower( _strString[i] );
+					strString += (char)tolower( _strString[i] );
 				}
 
 				return strString;
@@ -792,7 +790,7 @@ namespace XST
 					va_start(marker, strFormat);
 
 					// Get formatted string length adding one for NULL
-					size_t len = xst_vscprintf( (const char*)strFormat, marker) + 1;
+					size_t len = (size_t)xst_vscprintf( (const char*)strFormat, marker) + 1;
 
 					// Create a char vector to hold the formatted string.
 					xst_vector<char> buffer(len, '\0');

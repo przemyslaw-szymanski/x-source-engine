@@ -83,7 +83,7 @@ namespace XSE
 			ul32				m_ulTriangleCount;
 			ul32				m_ulCurrentTriangleId;
 			u16					m_usIndexSize; //size of the one index in bytes
-			ul32				m_ulIndexCount;
+			ul32				m_ulIndexCount; u8 m_padding[ 2 ];
 			ul32				m_ulBufferSize;
 	};
 

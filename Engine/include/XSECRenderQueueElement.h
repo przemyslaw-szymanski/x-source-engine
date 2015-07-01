@@ -65,6 +65,7 @@ namespace XSE
 			ObjectVector		m_vManualRenderObjects;
 			RENDER_QUEUE_TYPE	m_uiElementType;
 			bool				m_bManualDestroy;
+            u8 m_padding[ 3 ];
 	};
 
 }//xse

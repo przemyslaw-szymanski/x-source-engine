@@ -44,6 +44,12 @@ namespace XSE
 			virtual	xst_fi ul32				GetPassCount() const
 											{ return m_vPasses.size(); }
 
+            virtual PassVector&             GetPasses()
+                                            { return m_vPasses; }
+
+            virtual const PassVector&       GetPasses() const
+                                            { return m_vPasses; }
+
 			virtual	xst_fi xst_castring&	GetName() const
 											{ return m_strTechniqueName; }
 

@@ -196,10 +196,10 @@ namespace XSE
 			ul32				m_ulObjHandle = 0;
 			u32					m_uiObjDisableReason = ODR::NOT_DISABLED;
 			f32					m_fObjDistToCamera = -1.0f; // object distance to camera
-			bool				m_bObjDirty = false;
+            bool				m_bObjDirty = false; u8 m_padding[ 3 ];
 #if defined( XSE_SCENE_DEBUG )
 			Resources::CMesh*	m_pAABBMesh = xst_null;
-			bool				m_bDbgObject = false;
+			bool				m_bDbgObject = false; 
 #endif
 	};
 

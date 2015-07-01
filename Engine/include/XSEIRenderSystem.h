@@ -63,7 +63,7 @@ namespace XSE
 			virtual	Resources::IPixelShader*		CreatePixelShader(XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator) = 0;
 			//virtual Resources::IVertexShader*		CreateDefaultVertexShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator) = 0;
 			virtual	Resources::IPixelShader*		CreateDefaultPixelShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator) = 0;
-			virtual RSHandleRef			CreateTexture(const STextureDesc& Desc) = 0;
+			virtual RSHandle			CreateTexture(const STextureDesc& Desc) = 0;
 			virtual i32					DestroyTexture(RSHandlePtr pTexHandle) = 0;
 			virtual void				SetTexture(u32 uSlot, const RSHandleRef hTexture, bool bForceSet) = 0;
 			virtual void				SetTextures() = 0;

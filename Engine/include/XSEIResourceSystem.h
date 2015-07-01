@@ -5,7 +5,7 @@
 
 namespace XSE
 {
-	class IResourceSystem
+	class XST_API IResourceSystem
 	{
 		friend class IResourceManager;
 		public:

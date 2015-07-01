@@ -80,6 +80,8 @@ namespace XST
 
 			l32		    m_lRefCounter = 1;
 			bool		m_bIsNull = false;
+            u8          m_padding[ 3 ];
+
 		#if defined(XST_OBJ_DEBUG)
 			//xst_astring	m_strDbgName;
 			xst_obj_dbg_name m_strDbgName;

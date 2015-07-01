@@ -83,9 +83,10 @@ namespace XSE
 						
 						void			DestroyViewport(IViewport* pViewport);
 
-						IInputLayout*	BuildInputLayout(ul32 ulElements);
+						IInputLayout*	BuildInputLayout(ul32 ulElements) xst_implement;
+                        IInputLayout*   BuildInputLayout(ul32 uElements, CVertexShader* pShader);
 
-						IInputLayout*	GetInputLayout(ul32 ulElements);
+						IInputLayout*	GetInputLayout(ul32 ulElements) xst_implement;
 						
 						IViewport*		GetCurrentViewport()
 										{ return (IViewport*)m_pViewport; }
@@ -98,7 +99,7 @@ namespace XSE
 			
 						Resources::IPixelShader*	CreateDefaultPixelShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator);
 
-						const RSHandleRef	CreateTexture(const STextureDesc& Desc) xst_implement;
+						RSHandle	        CreateTexture(const STextureDesc& Desc) xst_implement;
 						i32					DestroyTexture(RSHandlePtr pTexHandle) xst_implement;
 						void				SetTexture(u32 uSlot, const RSHandleRef hTexture, bool bForceSet) xst_implement;
 						void				SetTextures() xst_implement;
@@ -269,6 +270,7 @@ namespace XSE
 
 						i32			_CreateVertexBuffer(CVertexBuffer* pVB);
 						i32			_CreateInputLayout(CInputLayout* pIL);
+                        IInputLayout*   _GetInputLayout(ul32 uElements, CVertexShader* pShader);
 
 						lpcastr		_ErrorToString(HRESULT hr);
 

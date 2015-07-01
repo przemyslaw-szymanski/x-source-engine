@@ -16,6 +16,7 @@ namespace XST
 			Vec4	vecPosition;
 			Vec4	vecCenter;
 			f32		fSize;
+            u8 m_padding[ 12 ];
 	};
 
 	//template<class _T_>
@@ -58,7 +59,9 @@ namespace XST
 			Node		*m_apChildren[ 8 ];
 			Node*		m_pParent;
 			CAABB		m_Bounds;
+            u8 m_padding[ 12 ];
 			u16			m_usDepth;
+            u8 m_padding2[ 14 ];
 	};
 
 

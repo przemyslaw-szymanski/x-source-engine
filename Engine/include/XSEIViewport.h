@@ -34,8 +34,8 @@ namespace XSE
 		protected:
 
 			IRenderSystem*		m_pRenderSystem;
-			bool				m_bViewportCreated;
-			XST::CColor			m_BGColor;
+			bool				m_bViewportCreated; u8 m_padding[ 3 ];
+			XST::CColor			m_BGColor; 
 	};
 
 }//xse

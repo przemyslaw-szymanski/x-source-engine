@@ -218,6 +218,7 @@ namespace XST
 		private:
 
 			bool m_bDeleteOnClose;
+            u8 m_padding[ 3 ];
 			xst_unknown	m_hFile;
 			FILE_ENCODING m_eEncoding;
 			ul32 m_ulSize;
@@ -230,7 +231,7 @@ namespace XST
 			{
 				
 			};
-
+            u8 m_padding2[ 3 ];
 			//SFile		m_File;
 			//IAllocator*	m_pAllocator;
 	};

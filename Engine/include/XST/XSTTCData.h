@@ -46,8 +46,9 @@ namespace XST
 
 		xst_fi	bool		Copy(const DataPtr pSrc, ul32 ulSize, bool bIsNullTerminated)
 							{ 
-								if( !Create( pSrc, ulSize, bIsNullTerminated ) )
-									return false;
+								if( Create( pSrc, ulSize, bIsNullTerminated ) )
+									return true;
+                                return false;
 							}
 
 		xst_fi	void		Move(DataPtr* ppData, ul32 uSize, bool bIsNullTerminated)
@@ -163,6 +164,7 @@ namespace XST
 			ul32			m_ulSize = 0;
 			bool			m_bNullTerminated = false;
 			bool			m_bShared = false;
+            u8 m_padding[ 2 ];
 	};
 
 }//XST

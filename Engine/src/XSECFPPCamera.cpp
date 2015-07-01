@@ -48,8 +48,8 @@ namespace XSE
 		//CPoint delta( m_mouseDelta - m_lastMousePos );
 		
 		//m_lastMousePos = m_mouseDelta;
-		this->RotateX( -m_mouseDelta.x /** this->m_fHorizontalSpeed*//*(f32)delta.x /** this->m_fHorizontalSpeed*/ );
-		this->RotateY( -m_mouseDelta.y /** this->m_fHorizontalSpeed*//*(f32)delta.y /** this->m_fVerticalSpeed*/ );
+		this->RotateX( -(f32)m_mouseDelta.x /** this->m_fHorizontalSpeed*//*(f32)delta.x /** this->m_fHorizontalSpeed*/ );
+		this->RotateY( -(f32)m_mouseDelta.y /** this->m_fHorizontalSpeed*//*(f32)delta.y /** this->m_fVerticalSpeed*/ );
 		m_mouseDelta.x = m_mouseDelta.y = 0;
 	}
 

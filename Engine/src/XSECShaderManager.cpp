@@ -76,9 +76,30 @@ namespace XSE
 		return XST_OK;
 	}*/
 
-	VertexShaderPtr CShaderManager::CompileVertexShader(xst_castring& strName, xst_castring& strEntryPoint, xst_castring& strCode, xst_castring& strGroupName)
+    ShaderWeakPtr CShaderManager::_CompileShader(SHADER_TYPE eType, SHADER_PROFILE eProfile, xst_castring& strName, xst_castring& strEntryPoint, const IInputLayout* pIL, xst_castring& strCode, xst_castring& strGroupName)
+    {
+        ShaderPtr pShader = _CreateShader( eType, strName, strEntryPoint, strGroupName );
+        auto pSh = pShader.GetPtr();
+        if( pSh )
+        {
+            if( eType == ShaderTypes::VERTEX )
+            {
+                Resources::IVertexShader* pVSh = reinterpret_cast< Resources::IVertexShader* >( pSh );
+                pVSh->SetInputLayout( pIL );
+            }
+
+            if( XST_SUCCEEDED( pSh->Compile( strEntryPoint, eProfile, strCode ) ) )
+            {
+                pSh->_SetResourceState( Resources::ResourceStates::PREPARED );
+                return pShader;
+            }
+        }
+        return ShaderWeakPtr();
+    }
+
+	VertexShaderPtr CShaderManager::CompileVertexShader(xst_castring& strName, xst_castring& strEntryPoint, u32 uInputLayoutElementIds, xst_castring& strCode, xst_castring& strGroupName)
 	{
-		ShaderPtr pShader = _CreateShader( ShaderTypes::VERTEX, strName, strEntryPoint, strGroupName );
+		/*ShaderPtr pShader = _CreateShader( ShaderTypes::VERTEX, strName, strEntryPoint, strGroupName );
 		if( pShader == xst_null )
 		{
 			return pShader;
@@ -86,19 +107,16 @@ namespace XSE
 
 		VertexShaderPtr pVS( pShader );
 		
-		/*if( XST_FAILED( PrepareResource( pVS ) ) )
-		{
-			this->DestroyResourceByHandle( pVS->m_ulResourceHandle, pVS->m_ulResourceGroupId );
-			return VertexShaderPtr();
-		}*/
-
+        pVS->SetInputLayout( m_pRenderSystem->GetInputLayout( uInputLayoutElementIds ) );
 		if( XST_FAILED( pVS->Compile( strEntryPoint, ShaderProfiles::VS_BEST, strCode ) ) )
 		{
 			this->DestroyResource( pVS );
 			return VertexShaderPtr();
 		}
 		pVS->m_iResourceState = Resources::ResourceStates::PREPARED;
-		return pVS;
+		return pVS;*/
+        return _CompileShader( ShaderTypes::VERTEX, ShaderProfiles::VS_BEST, strName, strEntryPoint, 
+                               m_pRenderSystem->GetInputLayout( uInputLayoutElementIds ), strCode, strGroupName );
 	}
 
 	PixelShaderPtr CShaderManager::CompilePixelShader(xst_castring& strName, xst_castring& strEntryPoint, xst_castring& strCode, xst_castring& strGroupName)
@@ -111,12 +129,6 @@ namespace XSE
 
 		PixelShaderPtr pPS( pShader );
 		
-		/*if( XST_FAILED( PrepareResource( pPS ) ) )
-		{
-			this->DestroyResourceByHandle( pPS->m_ulResourceHandle, pPS->m_ulResourceGroupId );
-			return PixelShaderPtr();
-		}*/
-
 		if( XST_FAILED( pPS->Compile( strEntryPoint, ShaderProfiles::PS_BEST, strCode ) ) )
 		{
 			this->DestroyResource( pPS );
@@ -157,9 +169,7 @@ namespace XSE
 		{
 			case ShaderTypes::VERTEX:
 			{
-				//Set default input layout
-				IInputLayout* pIL = m_pRenderSystem->GetInputLayout( ILE::POSITION );
-				pShader = (Resources::IShader*)m_pRenderSystem->CreateVertexShader( pIL, this, ulHandle, strName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, m_pAllocator );
+				pShader = (Resources::IShader*)m_pRenderSystem->CreateVertexShader( xst_null, this, ulHandle, strName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, m_pAllocator );
 			}
 			break;
 

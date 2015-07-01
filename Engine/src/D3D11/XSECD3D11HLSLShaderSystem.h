@@ -90,6 +90,9 @@ namespace XSE
 
 						i32				PrepareResource(Resources::IResource* pRes);
 
+                xst_fi  void            DoNotValidateNextVertexShaderInput() xst_implement
+                                        { m_bValidateNextVSInput = false; }
+
 			protected:
 
 						//i32				_AddConstantBuffers(IShader** ppShader, xst_castring* astrCBs, u32 uCBCount);
@@ -103,6 +106,7 @@ namespace XSE
 				FloatVec			m_vConstantValues[ ConstantBuffers::_ENUM_COUNT ];
 				ConstantValueVec	m_vAllConstantValues;
 				ConstantValueVec	m_vUserConstantValues;
+                bool                m_bValidateNextVSInput = true;
 		};
 	}//d3d11
 }//xse

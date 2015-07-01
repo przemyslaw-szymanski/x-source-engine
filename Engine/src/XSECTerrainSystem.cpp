@@ -76,7 +76,7 @@ namespace XSE
 		if( Options.bTexCoord )	uiEls |= XSE::ILE::TEXCOORD0;
 
 		IInputLayout* pIL = m_pRenderSystem->GetInputLayout( uiEls );
-		
+        xst_assert2( pIL );
 
 		//Create terrain
 		CMipMapPagingTerrain* pTerrain = xst_new CMipMapPagingTerrain( strName, pIL, m_pSceneMgr );

@@ -85,7 +85,7 @@ namespace XSE
 #if( XST_VS_VER < 10 )
 			XST_TEMPLATE_CLASS std::allocator< ObjPtr >;
 #endif
-			xst_tvectorx( ObjPtr )				ObjVec;
+			typedef xst_vector< ObjPtr >		ObjVec;
 			xst_tmapx( TexPtr, ObjVec* )		TexObjMap;
 			xst_tmapx( PSPtr, TexObjMap* )		PSTexMap;
 			xst_tmapx( VSPtr, PSTexMap* )		VSPSMap;

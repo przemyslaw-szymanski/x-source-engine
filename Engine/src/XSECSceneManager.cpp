@@ -486,6 +486,7 @@ namespace XSE
 			m_pCurrLight = m_pDefaultLight;
 		xst_delete( *ppLight );
 		*ppLight = xst_null;
+        return XST_OK;
 	}
 				
 	i32	CSceneManager::DestroyLight(xst_castring& strName)

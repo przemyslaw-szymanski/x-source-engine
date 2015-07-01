@@ -259,6 +259,7 @@
     <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11Common.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11DefaultShaders.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11FunctionPointers.h" />
+    <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11FuncTypedefs.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11InputLayouts.h" />
     <ClInclude Include="..\..\Engine\src\D3D11\XSEID3D11ShaderBase.h" />
     <ClInclude Include="..\..\Engine\src\D3D9\XSECD3D9RenderSystem.h" />
@@ -318,6 +319,7 @@
     <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11VertexBuffer.cpp" />
     <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11VertexShader.cpp" />
     <ClCompile Include="..\..\Engine\src\D3D11\XSECD3D11Viewport.cpp" />
+    <ClCompile Include="..\..\Engine\src\D3D11\XSED3D11FuncDef.cpp" />
     <ClCompile Include="..\..\Engine\src\D3D11\XSEID3D11ShaderBase.cpp" />
     <ClCompile Include="..\..\Engine\src\D3D9\XSECD3D9RenderSystem.cpp" />
     <ClCompile Include="..\..\Engine\src\D3D9\XSECD3D9Viewport.cpp" />
@@ -568,7 +570,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <WarningLevel>Level2</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;XST_DLL_EXPORT;XST_STL;XSE_CG;XST_DEBUG_ALL;XSE_DEBUG_ALL;_DEBUG</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\Engine\src;..\..\Engine\include\XST\ThirdParty\lua51;$(CG_INC_PATH);$(WIN81_SDK)\Include;$(DXSDK)\include2;..\..\Engine\include\XST;..\..\Engine\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

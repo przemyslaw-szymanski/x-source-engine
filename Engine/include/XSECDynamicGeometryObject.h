@@ -48,6 +48,7 @@ namespace XSE
 			ul32						m_ulBeginVertex;
 			ul32						m_ulVertexCount;
 			u16							m_usBeginIndex;
+            u8 m_padding[ 2 ];
 			ul32						m_ulIndexCount;
 			Resources::CMesh*			m_pMesh;
 			Vec3						m_vecPosition;
@@ -88,6 +89,7 @@ namespace XSE
 			ul32						m_ulBeginVertex;
 			ul32						m_ulVertexCount;
 			u16							m_usBeginIndex;
+            u8 m_padding[ 2 ];
 			ul32						m_ulIndexCount;
 	};
 

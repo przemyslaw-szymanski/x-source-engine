@@ -115,7 +115,8 @@ namespace XST
 			ILogger*	m_pDisabledLogger;
 			bool		m_bAutoDestroyLogger;
 			bool		m_bEnabled = true;
-			std::stringstream	m_StrStream;
+            u8          m_padding[ 2 ];
+			xst_stringstream	m_StrStream;
 			ul32		m_ulLogMode;
 	};
 

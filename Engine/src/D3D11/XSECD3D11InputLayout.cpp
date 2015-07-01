@@ -21,6 +21,14 @@ namespace XSE
 			//xst_release( m_pD3DVertexShaderBlob );
 		}
 
+        i32 CInputLayout::Create(cul32& uElements, CVertexShader* pShader)
+        {
+            xst_assert2( pShader );
+            xst_assert2( m_pVS.IsValid() );
+            m_pVS = pShader;
+            return Create( uElements );
+        }
+
 		i32 CInputLayout::Create(cul32& ulElements)
 		{
 			m_ulCurrentOffset = 0;
@@ -599,7 +607,7 @@ namespace XSE
 				m_strPSCode += "\nfloat3 P=IN.pos;\nfloat3 N=normalize(IN.normal);\nfloat3 L=normalize(float3(0,1000,0)-P);\nfloat DL=max(dot(N,L),0);\nfloat3 V=normalize(float3(-389,450,230)-P);\nfloat3 H=normalize(L+V);C=C*DL;";
 				//m_strPSCode += "C.xyz = IN.normal; C.w=1;";
 			if( this->m_aAvailableElements[ InputLayoutElementIds::TEXCOORD0 ] )
-				m_strPSCode += "\nC *= float4(IN.texcoord.x, IN.texcoord.y, 1, 1);";
+				m_strPSCode += "\nC *= float4(IN.texcoord0.x, IN.texcoord0.y, 1, 1);";
 
 			m_strPSCode += "\nreturn C;\n}";
 			FindAndReplace( &m_strPSCode, "[VS_OUT]", g_strVS_OUT );
@@ -613,19 +621,25 @@ namespace XSE
 			XST::CDebug::PrintDebugLN(m_strPSCode);
 		
 			IShaderSystem* pSS = m_pRS->GetShaderSystem();
-			CVertexShader* pVS = (CVertexShader*)pSS->CreateVertexShader( this, xst_null, 0, strName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, xst_null );
-			if( pVS == xst_null )
-			{
-				return XST_FAIL;
-			}
 
-			pVS->m_strShaderEntryPoint = "VS";
-			pVS->m_eProfile = ShaderProfiles::VS_BEST;
-		
-			if( XST_FAILED( pSS->CompileVertexShader( pVS, m_strVSCode.data(), m_strVSCode.length(), pVS->m_strShaderEntryPoint.data(), pVS->m_eProfile ) ) )
-			{
-				return XST_FAIL;
-			}
+            CVertexShader* pVS = (CVertexShader*)m_pVS.GetPtr();
+            if( !pVS )
+            {
+                pVS = ( CVertexShader* )pSS->CreateVertexShader( this, xst_null, 0, strName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, xst_null );
+                if( pVS == xst_null )
+                {
+                    return XST_FAIL;
+                }
+
+                pVS->m_strShaderEntryPoint = "VS";
+                pVS->m_eProfile = ShaderProfiles::VS_BEST;
+                pSS->DoNotValidateNextVertexShaderInput(); // Disable ComnpileVertexShader to validate its input due to it is not created yet
+                if( XST_FAILED( pSS->CompileVertexShader( pVS, m_strVSCode.data(), m_strVSCode.length(), pVS->m_strShaderEntryPoint.data(), pVS->m_eProfile ) ) )
+                {
+                    xst_assert(0, "(InputLayout) COMPILE VERTEX SHADER ERROR");
+                    return XST_FAIL;
+                }
+            }
 
 			// Pixel Shader
 			CPixelShader* pPS = (CPixelShader*)pSS->CreatePixelShader( xst_null, 0, strName, XST::ResourceType::SHADER, XST::ResourceStates::CREATED, xst_null );
@@ -639,6 +653,7 @@ namespace XSE
 		
 			if( XST_FAILED( pSS->CompilePixelShader( pPS, m_strPSCode.data(), m_strPSCode.length(), pPS->m_strShaderEntryPoint.data(), pPS->m_eProfile ) ) )
 			{
+                xst_assert(0, "(InputLayout) COMPILE PIXEL SHADER ERROR");
 				return XST_FAIL;
 			}
 
@@ -650,16 +665,20 @@ namespace XSE
 			m_pD3DVertexShaderBlob = pVS->m_pBlob; // Need for D3D11 CreateInputLayout, after that it must be released
 			if( XST_FAILED( m_pRS->_CreateInputLayout( this ) ) )
 			{
-				xst_release( pVS->m_pBlob );
+				if( m_pVS.IsNull() ) 
+                    xst_release( pVS->m_pBlob );
 				xst_release( pPS->m_pBlob );
 				return XST_FAIL;
 			}
 
-			xst_release( pVS->m_pBlob );
+            if( m_pVS.IsNull() )
+            {
+                xst_release( pVS->m_pBlob );
+                m_pVS = VertexShaderPtr( pVS );
+            }
 			xst_release( pPS->m_pBlob );
 			m_pD3DVertexShaderBlob = xst_null;
 
-			m_pVS = VertexShaderPtr( pVS );
 			m_pPS = PixelShaderPtr( pPS );
 			return XST_OK;
 		}

@@ -17,6 +17,6 @@ float4 ps(VS_OUT IN) : SV_TARGET
 	float fDL = dot( f3N, f3L ); //max( dot( f3N, f3L ), 0.0 );
 	float4 c;
 	float4 tc = DiffuseTex.Sample( DiffuseSampler, IN.f2TexCoord );
-	c.rgb = tc * fDL;
+	c.rgb = fDL;
 	return c;
 }

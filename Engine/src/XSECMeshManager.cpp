@@ -441,7 +441,7 @@ namespace XSE
 		f32 fAngle = 0.0f;
 		for( u32 i = 0; i <= 360; i += Options.uStep )
 		{
-			fAngle = XST::Math::DegreesToRadians( i );
+			fAngle = XST::Math::DegreesToRadians( (f32)i );
 			vPoints.push_back( Vec3( XST::Math::Cos( fAngle ) * Options.fRadius, XST::Math::Sin( fAngle ) * Options.fRadius, 0.0f ) );
 		}
 

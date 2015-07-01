@@ -26,7 +26,7 @@ namespace XST
 					return RESULT::FAILED;
 				}
 
-				m_ulDataSize = IFile::GetSize( m_hFile );
+				m_ulDataSize = (ul32)IFile::GetSize( m_hFile );
 
 				return RESULT::OK;
 			}
@@ -211,35 +211,35 @@ namespace XST
 				{
 					xst_assert(m_pData != 0, "File not read");
 					//Read string size
-					i32 iSize = ReadUInt32();
-					if( iSize <= 0 )
+					u32 uSize = ReadUInt32();
+					if( uSize <= 0 )
 						return "";
 
-					ch8* pBuff = (ch8*)xst_malloc( iSize + 1 );
+					ch8* pBuff = (ch8*)xst_malloc( uSize + 1 );
 					if( !pBuff )
 						return XST::StringUtil::EmptyAString;
-					ReadChars( &pBuff, iSize );
-					xst_astring s( pBuff, iSize );
+					ReadChars( &pBuff, uSize );
+					xst_astring s( pBuff, uSize );
 					xst_free( pBuff );
 					return s;
 				}
 				else
 				{
-					i32 iSize = ReadUInt32();
-					if( iSize <= 0 )
+					u32 uSize = ReadUInt32();
+					if( uSize <= 0 )
 						return "";
 
-					ch8* pBuff = (ch8*)xst_malloc( iSize + 1 );
+					ch8* pBuff = (ch8*)xst_malloc( uSize + 1 );
 					if( !pBuff )
 						return XST::StringUtil::EmptyAString;
-					if( !IFile::Read( m_hFile, (u8**)&pBuff, iSize ) )
+					if( !IFile::Read( m_hFile, (u8**)&pBuff, uSize ) )
 					{
 						m_bIsError = true;
 					}
 
-					m_pCurrPtr += sizeof( ch8 ) * iSize;
+					m_pCurrPtr += sizeof( ch8 ) * uSize;
 
-					xst_astring s( pBuff, iSize );
+					xst_astring s( pBuff, uSize );
 					xst_free( pBuff );
 					return s;
 				}
@@ -390,6 +390,7 @@ namespace XST
 			ul32			m_ulDataSize;
 			bool			m_bDeleteOnClose;
 			bool			m_bIsError;
+            u8              m_padding[ 2 ];
 	};
 
 

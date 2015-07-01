@@ -6,7 +6,7 @@
 
 namespace XSE
 {
-	class IImageSystem : public IResourceSystem
+	class XST_API IImageSystem : public IResourceSystem
 	{
 		friend class CImageManager;
 		public:

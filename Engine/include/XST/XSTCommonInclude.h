@@ -1,17 +1,18 @@
 #ifndef XST_COMMON_INCLUDE_H
 #define XST_COMMON_INCLUDE_H
 
+#pragma warning(disable: 4251)
+#pragma warning(disable: 4503)
+
 #include "XSTCommonPreprocesor.h"
 
-//Disable warning ''extern' before template explicit instantiation
-#pragma warning (disable : 4231)
-//Disable warning 'decorated name length exceeded, name was truncated' for stl
-#pragma warning( disable: 4503 )
-//Disable warning 'class needs to have dll-interface to be used by clients of class' only for stl
-#pragma warning( disable: 4251 )
-#pragma warning( disable: 4275 )
-
 #include "STL/XSTTCAlignedAllocator.h"
+
+// system headers warnings
+#pragma warning(push)
+#pragma warning(disable: 4820)
+#pragma warning(disable: 4668)
+#pragma warning(disable: 4251)
 
 #if defined XST_STL
 #include <vector>
@@ -63,5 +64,6 @@
 #include <cstdio>
 #include <cstdlib>
 
+#pragma warning(pop)
 
 #endif//XST_COMMON_INCLUDE_H

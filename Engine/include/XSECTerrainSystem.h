@@ -45,8 +45,10 @@ namespace XSE
 			IRenderSystem*		m_pRenderSystem;
 			TerrainMap			m_mTerrains;
 			XST::TCOctree		m_Octree;
+            u8 m_padding[ 8 ];
 			CStaticGeometry*	m_pDbgGeom;
 			TerrainVec			m_vTerrains;
+            u8 m_padding2[ 12 ];
 	};
 
 }//xse

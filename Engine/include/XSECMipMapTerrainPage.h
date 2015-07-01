@@ -20,6 +20,7 @@ namespace XSE
 
 			CBoundingVolume		Volume;
 			CVertexData*		pData;
+            u8 m_padding[ 12 ];
 		};
 
 		struct SInfo
@@ -95,10 +96,12 @@ namespace XSE
 
 		CMipMapPagingTerrain*	m_pTerrain = xst_null;
 		CBoundingVolume			m_BoundingVolume;
+        u8 m_padding[ 12 ];
 		SInfo					m_Info;
 		//MeshPtr					m_pMesh; // Not drawable
 		xst_vector<Vec3>		m_vVertices;
 		xst_vector<Vec3>		m_vNormals;
+        u8 m_padding2[ 12 ];
 	};
 }//xse
 

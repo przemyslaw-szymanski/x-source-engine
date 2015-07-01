@@ -81,6 +81,7 @@ namespace XSE
 			CMeshManager*	m_pMeshMgr;
 			BuildDelegate	m_OnBuild;
 			bool			m_bIsBuilt;
+            u8 m_padding[ 59 ];
 	};
 
 	typedef XST::TCObjectSmartPointer< CDynamicGeometry >	DynamicGeometryPtr;

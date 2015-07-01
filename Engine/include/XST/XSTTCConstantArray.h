@@ -78,14 +78,14 @@ namespace XST
                 template<class _A_, cu32 _MAX_SIZEA_>
                 xst_fi void operator=(const TIConstantContainer<_A_, _MAX_SIZEA_>& Left)
                 {
-                    cu32 uMinSize = std::min<u32>( Container.size(), MAX_SIZE );
-					xst_memcpy( m_pData, MAX_SIZE, Container.data(), uMinSize );
+                    cu32 uMinSize = std::min<u32>( Left.size(), MAX_SIZE );
+					xst_memcpy( m_pData, MAX_SIZE, Left.data(), uMinSize );
 					m_uiSize = uMinSize;
                 }
 
                 xst_fi void operator=(const TIConstantContainer& Left)
                 {
-                    this->operator=( Left );
+                    this->operator=< TIConstantContainer, TIConstantContainer::MAX_SIZE >( Left );
                 }
 
 				xst_fi	u32		size()

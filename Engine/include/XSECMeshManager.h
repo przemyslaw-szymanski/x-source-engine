@@ -92,6 +92,7 @@ namespace XSE
 			MeshPtr				m_pDefaultMesh;
 			IInputLayout*		m_pDefaultIL;
 			u16					m_usDefaultLODCount;
+            u8 m_padding[ 2 ];
 	};
 
 }//xse

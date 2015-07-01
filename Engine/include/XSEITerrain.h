@@ -28,9 +28,10 @@ namespace XSE
 		bool			bBinormal;
 		bool			bColor;
 		bool			bTexCoord;
+        u8 m_padding[ 2 ];
 	};
 
-	class ITerrain : public IRenderableObject
+	class XST_API ITerrain : public IRenderableObject
 	{
 		public:
 
@@ -45,6 +46,7 @@ namespace XSE
 		protected:
 
 			STerrainOptions		m_Options;
+            u8 m_padding[ 56 ];
 	};
 }//xse
 

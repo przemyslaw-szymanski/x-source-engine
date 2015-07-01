@@ -25,34 +25,33 @@ namespace XST
 	#define XST_STR_TEXT		1024
 	#define XST_STR_LONG_TEXT	2048
 
-	template<typename, cu32> class CConstLengthString;
-	template<cu32> class CConstLengthAsciiString;
-	template<cu32> class CConstLengthUnicodeString;
+	template<typename, cu32> class XST_API CConstLengthString;
+	template<cu32> class XST_API CConstLengthAsciiString;
+	template<cu32> class XST_API CConstLengthUnicodeString;
 
-	typedef CConstLengthAsciiString< XST_STR_SHORT_NAME >	xst_short_name_ascii_string;
-	typedef CConstLengthAsciiString< XST_STR_NAME >			xst_name_ascii_string;
-	typedef CConstLengthAsciiString< XST_STR_LONG_NAME >	xst_long_name_ascii_string;
-	typedef CConstLengthAsciiString< XST_STR_SHORT >		xst_short_ascii_string;
-	typedef CConstLengthAsciiString< XST_STR_NORMAL >		xst_normal_ascii_string;
-	typedef CConstLengthAsciiString< XST_STR_LONG >			xst_long_ascii_string;
-	typedef CConstLengthAsciiString< XST_STR_SHORT_TEXT >	xst_short_ascii_text;
-	typedef CConstLengthAsciiString< XST_STR_TEXT >			xst_ascii_text;
-	typedef CConstLengthAsciiString< XST_STR_LONG_TEXT >	xst_long_ascii_text;
+	typedef XST_API CConstLengthAsciiString< XST_STR_SHORT_NAME >	xst_short_name_ascii_string;
+	typedef XST_API CConstLengthAsciiString< XST_STR_NAME >			xst_name_ascii_string;
+	typedef XST_API CConstLengthAsciiString< XST_STR_LONG_NAME >	xst_long_name_ascii_string;
+	typedef XST_API CConstLengthAsciiString< XST_STR_SHORT >		xst_short_ascii_string;
+	typedef XST_API CConstLengthAsciiString< XST_STR_NORMAL >		xst_normal_ascii_string;
+	typedef XST_API CConstLengthAsciiString< XST_STR_LONG >			xst_long_ascii_string;
+	typedef XST_API CConstLengthAsciiString< XST_STR_SHORT_TEXT >	xst_short_ascii_text;
+	typedef XST_API CConstLengthAsciiString< XST_STR_TEXT >			xst_ascii_text;
+	typedef XST_API CConstLengthAsciiString< XST_STR_LONG_TEXT >	xst_long_ascii_text;
+    
+	typedef XST_API CConstLengthUnicodeString< XST_STR_SHORT_NAME >	xst_short_name_unicode_string;
+	typedef XST_API CConstLengthUnicodeString< XST_STR_NAME >		xst_name_unicode_string;
+	typedef XST_API CConstLengthUnicodeString< XST_STR_LONG_NAME >	xst_long_name_unicode_string;
+	typedef XST_API CConstLengthUnicodeString< XST_STR_SHORT >		xst_short_unicode_string;
+	typedef XST_API CConstLengthUnicodeString< XST_STR_NORMAL >		xst_normal_unicode_string;
+	typedef XST_API CConstLengthUnicodeString< XST_STR_LONG >		xst_long_unicode_string;
+	typedef XST_API CConstLengthUnicodeString< XST_STR_SHORT_TEXT >	xst_short_unicode_text;
+	typedef XST_API CConstLengthUnicodeString< XST_STR_TEXT >		xst_unicode_text;
+	typedef XST_API CConstLengthUnicodeString< XST_STR_LONG_TEXT >	xst_long_unicode_text;
 
-
-	typedef CConstLengthUnicodeString< XST_STR_SHORT_NAME >	xst_short_name_unicode_string;
-	typedef CConstLengthUnicodeString< XST_STR_NAME >		xst_name_unicode_string;
-	typedef CConstLengthUnicodeString< XST_STR_LONG_NAME >	xst_long_name_unicode_string;
-	typedef CConstLengthUnicodeString< XST_STR_SHORT >		xst_short_unicode_string;
-	typedef CConstLengthUnicodeString< XST_STR_NORMAL >		xst_normal_unicode_string;
-	typedef CConstLengthUnicodeString< XST_STR_LONG >		xst_long_unicode_string;
-	typedef CConstLengthUnicodeString< XST_STR_SHORT_TEXT >	xst_short_unicode_text;
-	typedef CConstLengthUnicodeString< XST_STR_TEXT >		xst_unicode_text;
-	typedef CConstLengthUnicodeString< XST_STR_LONG_TEXT >	xst_long_unicode_text;
-
-	typedef CConstLengthAsciiString< XST_MAX_OBJ_DBG_NAME_LENGTH >	xst_obj_dbg_name;
-	typedef CConstLengthAsciiString< XST_MAX_RESOURCE_NAME_LENGTH >	xst_resource_name;
-	typedef CConstLengthAsciiString< XST_MAX_FILE_NAME_LENGTH >		xst_file_name;
+	typedef XST_API CConstLengthAsciiString< XST_MAX_OBJ_DBG_NAME_LENGTH >	xst_obj_dbg_name;
+	typedef XST_API CConstLengthAsciiString< XST_MAX_RESOURCE_NAME_LENGTH >	xst_resource_name;
+	typedef XST_API CConstLengthAsciiString< XST_MAX_FILE_NAME_LENGTH >		xst_file_name;
 
 	typedef xst_short_name_ascii_string		xst_astr8;
 	typedef xst_name_ascii_string			xst_astr16;
@@ -126,6 +125,7 @@ namespace XST
 		protected:
 
 			CHAR	m_pData[ MAX_LENGTH + 1 ];
+            u8      m_padding[ 3 ];
 			ul32	m_ulLength;
 
 		public:
@@ -894,6 +894,7 @@ namespace XST
 		}
 
 		ch8 strData[ MAX_LENGTH + 1 ];
+        u8 m_padding[ 3 ];
 		u32	ulLength;
 	};
 

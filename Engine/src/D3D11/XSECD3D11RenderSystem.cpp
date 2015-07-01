@@ -62,11 +62,16 @@
 #	pragma warning( disable : 4005 ) //macro redefinition
 #endif
 
+#define XSE_LOAD_FUNC_NS(_ns, _func, _handle) \
+	_ns::_func = ( XST_ADD( pfn, _func ) )XST::Platform::GetProcAddress( _handle, XST_TOSTRING( _func ) ); \
+	if( _ns::_func == xst_null ) { XST_LOG_ERR( "Function: " << XST_TOSTRING( _func ) << " doesn't exists in library" ); return RESULT::FAILED; }
+
+#include "XSED3D11FunctionPointers.h"
+
 namespace XSE
 {
 	namespace D3D11
 	{
-		#include "XSED3D11FunctionPointers.h"
 		using namespace DirectX;
 
 		SRSDiagnostics g_Diagnostics;
@@ -297,6 +302,7 @@ namespace XSE
 			XSE_LOAD_FUNC3( CreateDXGIFactory,	m_ahDlls[ DXGI ] );
 			XSE_LOAD_FUNC3( CreateDXGIFactory1, m_ahDlls[ DXGI ] );
 			XSE_LOAD_FUNC3( D3D11CreateDevice,	m_ahDlls[ D3D11 ] );
+            XSE_LOAD_FUNC3( D3DReflect, m_ahDlls[ D3DCOMPILER ] );
 
 			return RESULT::OK;
 		}
@@ -364,13 +370,11 @@ namespace XSE
 				uAdapterId++;
 			}
 			
-			if( !vpAdapters.empty() )
+			if( vpAdapters.empty() )
 			{
 				XST_LOG_ERR( "D3D11 ERROR: No adapter found." );
 				return XST_FAIL;
 			}
-
-			m_pD3DAdapter = vpAdapters[0]; // get the default adapter
 
 			if( XST_FAILED( SetFeatureLevel( Options.eMinFeatureLevel, Options.eMaxFeatureLevel ) ) )
 			{
@@ -422,6 +426,8 @@ namespace XSE
 				XST_LOG_ERR( "[D3D11] Unable to create Direct3D11 device: " << _ErrorToString( hr ) );
 				return XST_FAIL;
 			}
+
+            m_pD3DAdapter = vpAdapters[0]; // get the default adapter
 	
 			//Get caps
 			if( XST_FAILED( _GetCaps( &this->m_Caps ) ) )
@@ -937,6 +943,17 @@ namespace XSE
 			return RESULT::OK;
 		}
 
+        IInputLayout* CRenderSystem::_GetInputLayout(ul32 uElements, CVertexShader* pShader)
+        {
+            auto Itr = m_mInputLayouts.find( uElements );
+            if( Itr != m_mInputLayouts.end() )
+            {
+                return Itr->second;
+            }
+
+            return BuildInputLayout( uElements, pShader );
+        }
+
 		IInputLayout*	CRenderSystem::GetInputLayout(ul32 ulElements)
 		{
 			ILMap::iterator Itr = m_mInputLayouts.find( ulElements );
@@ -956,6 +973,29 @@ namespace XSE
 				pIL = xst_new CInputLayout( this );
 
 				if( XST_FAILED( pIL->Create( ulElements ) ) )
+				{
+					xst_delete( pIL );
+					return xst_null;
+				}
+				m_mInputLayouts.insert( ILMap::value_type( ulElements, pIL ) );
+			}
+			else
+			{
+				pIL = Itr->second;
+			}
+
+			return pIL;
+		}
+
+        IInputLayout*	CRenderSystem::BuildInputLayout(ul32 ulElements, CVertexShader* pShader)
+		{
+			CInputLayout* pIL = xst_null;
+			ILMap::iterator Itr = m_mInputLayouts.find( ulElements );
+			if( Itr == m_mInputLayouts.end() )
+			{
+				pIL = xst_new CInputLayout( this );
+
+				if( XST_FAILED( pIL->Create( ulElements, pShader ) ) )
 				{
 					xst_delete( pIL );
 					return xst_null;
@@ -1295,7 +1335,7 @@ namespace XSE
 			return m_aFormats[ eFormat ];
 		}
 
-		RSHandleRef CRenderSystem::CreateTexture(const STextureDesc& Desc)
+		RSHandle CRenderSystem::CreateTexture(const STextureDesc& Desc)
 		{
 			STexture Tex;
 			RSHandle hTex;
@@ -1465,7 +1505,7 @@ namespace XSE
 				Desc.MaxAnisotropy = m_Options.uMaxAnisotropy;
 				Desc.MipLODBias = 0.0f;
 				Desc.MaxLOD = ( Mode.eMaxLOD == TextureLODs::LEVEL_MAX )? D3D11_FLOAT32_MAX : Mode.eMaxLOD;
-				Desc.MinLOD = Mode.eMinLOD;
+				Desc.MinLOD = (f32)Mode.eMinLOD;
 
 				HRESULT hr = m_pDevice->CreateSamplerState( &Desc, &pState );
 				if( SUCCEEDED( hr ) )
@@ -1906,8 +1946,9 @@ namespace XSE
 			/*return _CompileShaderFromMemory(pData, ulDataSize, pShader->GetShaderName().data(), xst_null, xst_null, pShader->_GetEntryPoint(), 
 											lpszProfile, pShader->m_ulFlags, 0, xst_null, &pShader->m_pBlob, xst_null );*/
 			ID3DBlob* pError = xst_null;
-			HRESULT hr = D3DCompile( pData, ulDataSize, pShader->GetShaderName().data(), xst_null, xst_null,
-				pShader->_GetEntryPoint(), lpszProfile, pShader->m_ulFlags, 0, &pShader->m_pBlob, &pError );
+			HRESULT hr = D3DCompile(    pData, ulDataSize, pShader->GetShaderName().data(), xst_null, xst_null,
+				                        pShader->_GetEntryPoint(), lpszProfile, pShader->m_ulFlags, 0, &pShader->m_pBlob, 
+                                        &pError );
 			if( SUCCEEDED( hr ) )
 			{
 				return XST_OK;
@@ -1959,13 +2000,12 @@ namespace XSE
 		{
 			ul32 ulSize = pShader->m_pBlob->GetBufferSize();
 			HRESULT hr = m_pDevice->CreateVertexShader( pShader->m_pBlob->GetBufferPointer(), pShader->m_pBlob->GetBufferSize(), xst_null, &pShader->m_pD3DVertexShader );
-			if( FAILED( hr ) )
+			if( SUCCEEDED( hr ) )
 			{
-				XST_LOG_ERR( "[D3D11]: VertexShader creation failed: " << _ErrorToString( hr ) );
-				return XST_FAIL;
+                return XST_OK;
 			}
-			pShader->m_bIsCompiled = true;
-			return XST_OK;
+			XST_LOG_ERR( "[D3D11]: VertexShader creation failed: " << _ErrorToString( hr ) );
+			return XST_FAIL;
 		}
 
 		i32	CRenderSystem::_CreateVertexShader(ID3DBlob* pVSBlob, ID3D11VertexShader** pShader)

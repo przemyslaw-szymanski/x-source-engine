@@ -27,9 +27,11 @@ namespace XSE
 
 					i32						PrepareResource(ResourceWeakPtr *const ppRes) xst_implement;
 
-					VertexShaderPtr			CompileVertexShader(xst_castring& strName, xst_castring& strEntryPoint, xst_castring& strCode, xst_castring& strGroupName = DEFAULT_GROUP);
+					VertexShaderPtr			CompileVertexShader(xst_castring& strName, xst_castring& strEntryPoint, u32 uInputLayoutElementIds, xst_castring& strCode, xst_castring& strGroupName = DEFAULT_GROUP);
 
 					PixelShaderPtr			CompilePixelShader(xst_castring& strName, xst_castring& strEntryPoint, xst_castring& strCode, xst_castring& strGroupName = DEFAULT_GROUP);
+
+                    VertexShaderPtr			CompileVertexShader(xst_castring& strName, xst_castring& strEntryPoint, const IInputLayout* pIL, xst_castring& strCode, xst_castring& strGroupName = DEFAULT_GROUP);
 
 					VertexShaderPtr			LoadVertexShader(xst_castring& strFileName, xst_castring& strShaderName, xst_castring& strEntryPoint, SHADER_PROFILE eProfile, xst_castring& strGroupName = ALL_GROUPS);
 
@@ -69,6 +71,8 @@ namespace XSE
 					ShaderPtr			_LoadShader(SHADER_TYPE eType, xst_castring& strFileName, xst_castring& strShaderName, xst_castring& strEntryPoint, SHADER_PROFILE eProfile, xst_castring& strGroupName);
 
 					ShaderPtr			_CreateShader(SHADER_TYPE eType, xst_castring& strName, xst_castring& strEntryPoint, xst_castring& strGroupName);
+
+                    ShaderWeakPtr       _CompileShader(SHADER_TYPE eType, SHADER_PROFILE eProfile, xst_castring& strName, xst_castring& strEntryPoint, const IInputLayout* pIL, xst_castring& strCode, xst_castring& strGroupName);
 
 		protected:
 

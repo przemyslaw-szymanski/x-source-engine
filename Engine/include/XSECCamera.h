@@ -219,6 +219,7 @@ namespace XSE
 			Vec3			m_vecCameraDistance; //distance from the following point
 			Vec3			m_vecCamDirection;
 			Vec3			m_vecCamPosition;
+            u8 m_padding[ 36 ];
 			Mtx4			m_mtxProjection;
 			Mtx4			m_mtxView;
 			Mtx4			m_mtxViewProj;
@@ -240,6 +241,7 @@ namespace XSE
 			bool			m_bRightCalc;
 			bool			m_bUpCalc;
 			bool			m_bCompute;
+            u8 m_padding2[ 45 ];
 	};
 
 }//xse

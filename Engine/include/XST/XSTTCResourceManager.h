@@ -54,7 +54,7 @@ namespace XST
 	{
 		public:
 
-			static const _HASH_&	GetHash(const _KEY_& key)
+			static _HASH_	GetHash(const _KEY_& key)
 			{
 				return XST::CHash::GetCRC( key );
 			}
@@ -157,12 +157,14 @@ namespace XST
             typedef _KEY_							Key;
 			typedef _HASH_							Hash;
             typedef _RESOURCE_						Resource;
-            xst_tmapx( Hash, Resource )				ResourceMap;
+            //xst_tmapx( Hash, Resource )				ResourceMap;
+            typedef xst_map< Hash, Resource >    ResourceMap;
 			typedef typename ResourceMap::value_type	ResourcePair;
 
 			//typedef _OPERATOR_*						ResourceListenerPtr;
 			//typedef TIBaseResourceListener< _RESOURCE_ >* ResourceListenerPtr;
 			typedef fastdelegate::FastDelegate1< _RESOURCE_& >	Delegate;
+            class XST_API Delegate;
 #if( XST_VS_VER > 9 )
 
 #else
@@ -486,6 +488,7 @@ namespace XST
             typedef _RESOURCE_      Resource;
             typedef XST_RES_GROUP	ResourceGroup;
             typedef TCObjectSmartPointer< ResourceGroup >   GroupPtr;
+            class XST_API GroupPtr;
             //typedef TCWeakPointer< ResourceGroup >          WeakGroupPtr;
 			typedef GroupPtr WeakGroupPtr;
             //typedef _OPERATOR_		OperatorClass;
@@ -495,12 +498,15 @@ namespace XST
             typedef xst_astring		GroupKey;
 			typedef ul32			GroupHash;
 			typedef typename std::pair< GroupHash, GroupPtr >	GroupPair;
+            class XST_API GroupPair;
 
 			typedef typename XST_RESMGR_GRMGR::ResourceMap      GroupMap;
 			typedef typename XST_RESMGR_GRMGR::HashClass		GroupHashClass;
 			typedef typename TCBaseResourceManager< XST_RESMGR_TEMPLATE_PARAMS >::ResourceMap	ResourceMap;
 			typedef fastdelegate::FastDelegate1< _RESOURCE_& >	ResourceDelegate;
+            class XST_API ResourceDelegate;
 			typedef fastdelegate::FastDelegate1< GroupPtr& >	GroupDelegate;
+            class XST_API GroupDelegate;
 			typedef typename ResourceGroup::ResourceIterator	ResourceIterator;
 			typedef typename XST_RESMGR_GRMGR::Iterator			GroupIterator;
 

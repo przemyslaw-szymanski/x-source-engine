@@ -7,9 +7,7 @@
 
 namespace XSE
 {
-	
-
-	class ITerrainSystem
+	class XST_API ITerrainSystem
 	{
 		public:
 

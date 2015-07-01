@@ -11,6 +11,7 @@ namespace XSE
 		Vec4	vecSpecularColor;
 		f32		fSpecularPower;
 		f32		fPower;
+        // 12 bytes of padding
 	};
 
 	class CLight : public CObject
@@ -57,6 +58,7 @@ namespace XSE
 		protected:
 
 			SLightAttributes	m_Attribs;
+            u8 m_padding[ 12 ];
 	};
 } // xse
 

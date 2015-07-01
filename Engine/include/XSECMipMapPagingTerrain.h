@@ -29,6 +29,7 @@ namespace XSE
 				MIPMAP_TERRAIN_STITCH_TYPE	eType;
 				IndexBufferPtr		pIndexBuffer;
 				u8					byLOD;
+                u8 m_padding[ 3 ];
 			};
 
             struct STileInfo
@@ -227,6 +228,7 @@ namespace XSE
 			bool			m_bBoundingObjectsCreated = false;
 #endif // XSE_RENDERER_DEBUG
 			bool			m_bTileLocked;
+            u8 m_padding[ 6 ];
 	};
 
 

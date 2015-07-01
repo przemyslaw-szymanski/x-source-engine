@@ -300,8 +300,8 @@ namespace XSE
 		ValidateOptions( &m_Options );
 
 		cu32 uPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
-		m_TileCount = CPoint( ceilf( (f32)(m_Options.PageVertexCount.x-1) / (m_Options.TileVertexCount.x-1) ), 
-							  ceilf( (f32)(m_Options.PageVertexCount.y-1) / (m_Options.TileVertexCount.y-1) ) );
+		m_TileCount = CPoint( (i32)ceilf( (f32)(m_Options.PageVertexCount.x-1) / (m_Options.TileVertexCount.x-1) ), 
+							  (i32)ceilf( (f32)(m_Options.PageVertexCount.y-1) / (m_Options.TileVertexCount.y-1) ) );
 		m_vTiles.resize( ( m_TileCount.x * m_TileCount.y ) * uPageCount );
 		m_vTileVisibility.resize( m_vTiles.size(), false );
 		m_vPageVisibility.resize( uPageCount, false );
@@ -349,7 +349,7 @@ namespace XSE
 		//u32 uiPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
 		const Vec3 vecRightTopCorner = ( -m_Options.Size.x * 0.5f, 0.0f, -m_Options.Size.y * 0.5f );
 		Vec3 vecPos = vecRightTopCorner;
-		const Vec2 vecPageSize( m_Options.Size.x / m_Options.PageCount.x, m_Options.Size.y / m_Options.PageCount.y );
+		const Vec2 vecPageSize( (f32)m_Options.Size.x / m_Options.PageCount.x, (f32)m_Options.Size.y / m_Options.PageCount.y );
 		u32 uPageCount = m_Options.PageCount.x * m_Options.PageCount.y;
 		m_vPages.resize( uPageCount, CMipMapTerrainPage( this ) );
 		u32 uTileCount = (m_TileCount.x * m_TileCount.y);
@@ -617,9 +617,9 @@ namespace XSE
 			//Do transformations
 			pRS->SetMatrix( MatrixTypes::WORLD, mtxTransform );
 			//Update shaders input
-			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_DIFFUSE_COLOR, Vec4( 1, 0.5, 0.3, 1 ) );
-			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_AMBIENT_COLOR, Vec4( 0.5f, 0.5f, 0.5f, 1 ) );
-			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_SPECULAR_COLOR, Vec4( 1, 1.0, 0.3, 1 ) );
+			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_DIFFUSE_COLOR, Vec4( 1.0f, 0.5f, 0.3f, 1.0f ) );
+			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_AMBIENT_COLOR, Vec4( 0.5f, 0.5f, 0.5f, 1.0f ) );
+			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_SPECULAR_COLOR, Vec4( 1.0f, 1.0f, 0.3f, 1.0f ) );
 			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_ALPHA, 1.0f );
 			pRS->GetShaderSystem()->SetConstantValue( ShaderConstants::MATERIAL_SHININESS, 32.0f );
 			
@@ -842,7 +842,7 @@ namespace XSE
 	u32 CMipMapPagingTerrain::CalcLODStep(u32 uiLOD)
 	{
 		//uiLOD = pow< u32, u32 >( 2, uiLOD );
-		uiLOD = pow( 2.0, (f64)uiLOD );
+		uiLOD = (u32)pow( 2.0, (f64)uiLOD );
 		return uiLOD;
 	}
 

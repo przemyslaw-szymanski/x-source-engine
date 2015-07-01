@@ -62,6 +62,7 @@ namespace XST
 		};
 
 		bool IsNull;
+        u8 m_padding[ 3 ];
 	};
 
 	template<u32 _STRING_LENGTH_ = 32>
