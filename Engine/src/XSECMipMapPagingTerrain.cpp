@@ -661,6 +661,13 @@ namespace XSE
 
 	void CMipMapPagingTerrain::SetMaterial(MaterialPtr pMat)
 	{
+        // Check material layout
+        xst_assert2( pMat->ValidateInputLayout(m_pInputLayout) );
+        if( !pMat->ValidateInputLayout(m_pInputLayout) )
+        {
+            XST_LOG_ERR("Invalid material vertex shader input layout");
+            return;
+        }
 		ITerrain::SetMaterial( pMat );
 	}
 

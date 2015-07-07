@@ -96,6 +96,7 @@ namespace XSE
 			protected:
 
 						//i32				_AddConstantBuffers(IShader** ppShader, xst_castring* astrCBs, u32 uCBCount);
+                        i32             _ValidateVSInputLayout(CVertexShader** ppShader);
 
 			protected:
 

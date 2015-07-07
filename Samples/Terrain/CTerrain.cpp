@@ -154,7 +154,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	Options.uiLODCount = 3;
 	//Options.bColor = true;
 	Options.bBinormal = Options.bNormal = Options.bTangent = false;
-	Options.bNormal = false;
+	Options.bNormal = true;
 	Options.bColor = false;
 	Options.bTexCoord = true;
 
@@ -164,7 +164,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 		pMat = XSE::CMaterialManager::GetSingletonPtr()->CreateMaterial( "terrain" );
 	XSE::VertexShaderPtr pVS = XSE::CShaderManager::GetSingletonPtr()->LoadVertexShader("terrain.vsh", "terr.vs", "vs", XSE::ShaderProfiles::VS_BEST);
 	xst_assert2(pVS.IsValid());
-	pVS->SetInputLayout( this->m_pEngine->GetRenderSystem()->GetInputLayout( XSE::ILE::POSITION | XSE::ILE::NORMAL ) );
+	//pVS->SetInputLayout( this->m_pEngine->GetRenderSystem()->GetInputLayout( XSE::ILE::POSITION | XSE::ILE::NORMAL ) );
 	XSE::PixelShaderPtr pPS = XSE::CShaderManager::GetSingletonPtr()->LoadPixelShader("terrain.psh", "terr.ps", "ps", XSE::ShaderProfiles::PS_BEST);
 	pMat->CreateTechnique("tech", pVS, pPS);
 	pMat->SetTexture( XSE::MaterialTextureTypes::DIFFUSE, "heightmap04.jpg", XSE::ALL_GROUPS );
@@ -174,7 +174,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	xst_assert2(pVS.IsValid() && pPS.IsValid());
 	XSE::ITerrain* pTerrain = this->m_pSceneMgr->CreateTerrain( "Terrain", Options );
     xst_assert( pTerrain != xst_null, "(CTerrain::Init) Terrain sample creation failed. Engine error!!!" );
-	//pTerrain->SetMaterial( pMat );
+	pTerrain->SetMaterial( pMat );
 	}
 
     XSE::Vec3 vecPos =m_pDbgCam->GetPosition() + XSE::Vec3(0,500,0);

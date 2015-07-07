@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Windows Desktop
+# Visual Studio 2013
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XSourceEngine2013", "XSourceEngine\XSourceEngine2013.vcxproj", "{00FC135B-F3C8-421C-BB1A-76F861A49C6F}"
@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleManager2013", "Sample
 	ProjectSection(ProjectDependencies) = postProject
 		{00FC135B-F3C8-421C-BB1A-76F861A49C6F} = {00FC135B-F3C8-421C-BB1A-76F861A49C6F}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleManagerCMD", "SampleManagerCMD\SampleManagerCMD.vcxproj", "{5C163A82-CEC5-499F-90FD-226BCB571B55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +26,10 @@ Global
 		{397012D1-8739-DD86-A7B0-F027DE3CEB3E}.Debug|Win32.Build.0 = Debug|Win32
 		{397012D1-8739-DD86-A7B0-F027DE3CEB3E}.Release|Win32.ActiveCfg = Release|Win32
 		{397012D1-8739-DD86-A7B0-F027DE3CEB3E}.Release|Win32.Build.0 = Release|Win32
+		{5C163A82-CEC5-499F-90FD-226BCB571B55}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5C163A82-CEC5-499F-90FD-226BCB571B55}.Debug|Win32.Build.0 = Debug|Win32
+		{5C163A82-CEC5-499F-90FD-226BCB571B55}.Release|Win32.ActiveCfg = Release|Win32
+		{5C163A82-CEC5-499F-90FD-226BCB571B55}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

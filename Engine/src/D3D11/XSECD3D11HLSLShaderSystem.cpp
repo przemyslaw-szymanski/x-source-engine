@@ -858,41 +858,6 @@ namespace XSE
 			return pShader;
 		}
 
-		i32	CHLSLShaderSystem::CompileVertexShader(Resources::IVertexShader* pVS)
-		{
-			xst_assert( m_pRS, "(CHLSLShaderSystem::CompileVertexShader)" );
-			CVertexShader* pShader = (CVertexShader*)pVS;
-			pShader->m_ulFlags = m_pRS->_GetShaderFlags();
-			//Add default constants
-			//xst_castring& strData = (lpcastr)pShader->GetResourceFile().GetPtr()->GetData().GetData();
-			//xst_castring& strShader = HLSL::CreateVShader( strData, pVS->GetEntryPoint() );
-			//XST_LOG_ERR( strShader );
-
-			if( XST_FAILED( m_pRS->_CompileShader( pShader, m_astrProfiles[ pShader->GetProfile() ].data() ) ) )
-			//if( XST_FAILED( m_pRS->_CompileShaderFromMemory( HLSL::g_strShader.data(), HLSL::g_strShader.length(), m_astrProfiles[ pShader->GetProfile() ].data(), pShader ) ) )
-			{
-				return XST_FAIL;
-			}
-			return m_pRS->_CreateVertexShader( pShader );
-		}
-		
-		i32	CHLSLShaderSystem::CompilePixelShader(Resources::IPixelShader* pPS)
-		{
-			xst_assert( m_pRS, "(CHLSLShaderSystem::CompilePixelShader)" );
-			CPixelShader* pShader = (CPixelShader*)pPS;
-			pShader->m_ulFlags = m_pRS->_GetShaderFlags();
-			//Add default constants
-			//xst_castring& strData = (lpcastr)pShader->GetResourceFile().GetPtr()->GetData().GetData();
-			//xst_castring& strShader = HLSL::CreatePShader( strData, pPS->GetEntryPoint() );
-
-			if( XST_FAILED( m_pRS->_CompileShader( pShader, m_astrProfiles[ pShader->GetProfile() ].data() ) ) )
-			//if( XST_FAILED( m_pRS->_CompileShaderFromMemory( HLSL::g_strShader.data(), HLSL::g_strShader.length(), m_astrProfiles[ pShader->GetProfile() ].data(), pShader ) ) )
-			{
-				return XST_FAIL;
-			}
-			return m_pRS->_CreatePixelShader( pShader );
-		}
-
 #if (XSE_RENDERER_DEBUG) || (XSE_RENDERER_VERIFY_VS_INPUT_LAYOUT)
         ul32 GetVSInputLayout(ID3D10Blob* pShaderBlob)
         {
@@ -952,6 +917,69 @@ namespace XSE
         }
 #endif // XSE_RENDERER_DEBUG
 
+        i32 CHLSLShaderSystem::_ValidateVSInputLayout(CVertexShader** ppShader)
+        {
+#if (XSE_RENDERER_DEBUG) || (XSE_RENDERER_VERIFY_VS_INPUT_LAYOUT)
+            if( m_bValidateNextVSInput )
+            {
+                CVertexShader* pShader = *ppShader;
+                xst_assert2( pShader->m_pBlob && pShader->m_pBlob->GetBufferPointer() );
+                ul32 uILId = GetVSInputLayout( pShader->m_pBlob );
+                DoNotValidateNextVertexShaderInput();
+                IInputLayout* pIL = m_pRS->GetInputLayout( uILId );
+                if (pShader->m_pIL == xst_null)  
+                {
+                    pShader->m_pIL = pIL;
+                }
+                xst_assert( pShader->m_pIL && pShader->m_pIL == pIL, "(CHLSLShaderSystem::CompileVertexShader) Input layout is not compatible with vertex shader." );
+                if( pShader->m_pIL != pIL )
+                {
+                    XST_LOG_ERR( "[D3D11] Input layout is not compatible with vertex shader." );
+                    return XST_FAIL;
+                }
+            }
+            m_bValidateNextVSInput = true;
+#endif // XSE_RENDERER_DEBUG
+            return XST_OK;
+        }
+
+		i32	CHLSLShaderSystem::CompileVertexShader(Resources::IVertexShader* pVS)
+		{
+			xst_assert( m_pRS, "(CHLSLShaderSystem::CompileVertexShader)" );
+			CVertexShader* pShader = (CVertexShader*)pVS;
+			pShader->m_ulFlags = m_pRS->_GetShaderFlags();
+			//Add default constants
+			//xst_castring& strData = (lpcastr)pShader->GetResourceFile().GetPtr()->GetData().GetData();
+			//xst_castring& strShader = HLSL::CreateVShader( strData, pVS->GetEntryPoint() );
+			//XST_LOG_ERR( strShader );
+
+			if( XST_SUCCEEDED( m_pRS->_CompileShader( pShader, m_astrProfiles[ pShader->GetProfile() ].data() ) ) )
+			{
+				if( XST_SUCCEEDED( m_pRS->_CreateVertexShader( pShader ) ) )
+                {
+                    return _ValidateVSInputLayout( &pShader );
+                }	
+			}
+			return XST_FAIL;
+		}
+		
+		i32	CHLSLShaderSystem::CompilePixelShader(Resources::IPixelShader* pPS)
+		{
+			xst_assert( m_pRS, "(CHLSLShaderSystem::CompilePixelShader)" );
+			CPixelShader* pShader = (CPixelShader*)pPS;
+			pShader->m_ulFlags = m_pRS->_GetShaderFlags();
+			//Add default constants
+			//xst_castring& strData = (lpcastr)pShader->GetResourceFile().GetPtr()->GetData().GetData();
+			//xst_castring& strShader = HLSL::CreatePShader( strData, pPS->GetEntryPoint() );
+
+			if( XST_FAILED( m_pRS->_CompileShader( pShader, m_astrProfiles[ pShader->GetProfile() ].data() ) ) )
+			//if( XST_FAILED( m_pRS->_CompileShaderFromMemory( HLSL::g_strShader.data(), HLSL::g_strShader.length(), m_astrProfiles[ pShader->GetProfile() ].data(), pShader ) ) )
+			{
+				return XST_FAIL;
+			}
+			return m_pRS->_CreatePixelShader( pShader );
+		}
+
 		i32	CHLSLShaderSystem::CompileVertexShader(Resources::IVertexShader* pVS, lpcastr lpszShader, ul32 ulShaderSize, lpcastr lpszEntryPoint, SHADER_PROFILE eProfile)
 		{
 			xst_assert( m_pRS, "(CHLSLShaderSystem::CompileVertexShader)" );
@@ -968,25 +996,7 @@ namespace XSE
                 pShader->m_bIsCompiled = true;
 			    if( XST_SUCCEEDED( m_pRS->_CreateVertexShader( pShader ) ) )
                 {
-                    // Verify shader input
-#if (XSE_RENDERER_DEBUG) || (XSE_RENDERER_VERIFY_VS_INPUT_LAYOUT)
-                    if( m_bValidateNextVSInput )
-                    {
-                        xst_assert2( pShader->m_pBlob && pShader->m_pBlob->GetBufferPointer() );
-                        ul32 uILId = GetVSInputLayout( pShader->m_pBlob );
-                        DoNotValidateNextVertexShaderInput();
-                        IInputLayout* pIL = m_pRS->GetInputLayout( uILId );
-                        xst_assert( pShader->m_pIL && pShader->m_pIL == pIL, "(CHLSLShaderSystem::CompileVertexShader) Input layout is not compatible with vertex shader." );
-                        if( pShader->m_pIL != pIL )
-                        {
-                            XST_LOG_ERR( "[D3D11] Input layout is not compatible with vertex shader." );
-                            return XST_FAIL;
-                        }
-                    }
-                    m_bValidateNextVSInput = true;
-                    //pShader->SetInputLayout( m_pRS->GetInputLayout( uILId ) );
-#endif // XSE_RENDERER_DEBUG
-                    return XST_OK;
+                    return _ValidateVSInputLayout( &pShader );
                 }	
 			}
             
