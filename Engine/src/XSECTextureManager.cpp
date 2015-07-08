@@ -30,11 +30,11 @@ namespace XSE
 		xst_zero( &Desc, sizeof(STextureDesc) );
 		
 		Resources::CTexture* pTex = (Resources::CTexture*) pRes.GetPtr();
-		const Resources::CFile* pFile = pTex->m_pFile.GetPtr();
+		const Resources::CFile* pFile = pTex->m_pResourceFile.GetPtr();
 		if( pFile )
 		{
 			CResourceFileManager::SFileInfo Info;
-			if( !XST_FAILED( m_pResFileMgr->GetFileInfo( pTex->m_pFile, &Info ) ) )
+			if( !XST_FAILED( m_pResFileMgr->GetFileInfo( pTex->m_pResourceFile, &Info ) ) )
 			{
 				if( g_DDSHash == Info.uExtHash )
 					Desc.bNative = true;
@@ -47,7 +47,7 @@ namespace XSE
 					pTex->_SetRenderSystemHandle( hTex );
 					pTex->_SetResourceState( Resources::ResourceStates::PREPARED );
 					pTex->m_pResourceFile = xst_null;
-					pTex->m_pFile = xst_null;
+					//pTex->m_pFile = xst_null;
 				}
 				else
 				{
@@ -66,7 +66,7 @@ namespace XSE
 
 	Resources::IResource* CTextureManager::_CreateResource( xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup )
 	{
-		Resources::CTexture* pTex = xst_new Resources::CTexture( m_pRS, this, ulHandle, strName, ResourceTypes::TEXTURE, Resources::ResourceStates::CREATED, xst_null );
+		Resources::CTexture* pTex = xst_new Resources::CTexture( m_pRS, this, ulHandle, strName, ResourceTypes::TEXTURE, Resources::ResourceStates::CREATED/*, xst_null*/ );
 		if( !pTex )
 		{
 			XST_LOG_ERR( "Unable to create texture: '" << strName << "'. Memory error." );

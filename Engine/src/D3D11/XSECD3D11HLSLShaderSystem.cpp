@@ -797,14 +797,14 @@ namespace XSE
 
 		Resources::IVertexShader*	CHLSLShaderSystem::CreateVertexShader(IInputLayout* pIL, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
 		{
-			CVertexShader* pShader = xst_new CVertexShader( m_pRS, this, pIL, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			CVertexShader* pShader = xst_new CVertexShader( m_pRS, this, pIL, pResourceMgr, ulHandle, strName, iType, iState/*, pAllocator*/ );
 			pShader->m_eShaderLanguage = ShaderLanguages::HLSL;
 			return pShader;
 		}
 
 		Resources::IPixelShader*	CHLSLShaderSystem::CreatePixelShader(XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
 		{
-			CPixelShader* pShader = xst_new CPixelShader( m_pRS, this, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			CPixelShader* pShader = xst_new CPixelShader( m_pRS, this, pResourceMgr, ulHandle, strName, iType, iState/*, pAllocator*/ );
 			pShader->m_eShaderLanguage = ShaderLanguages::HLSL;
 			return pShader;
 		}
@@ -814,7 +814,7 @@ namespace XSE
 			xst_assert( pOptions != xst_null, "(CRendersystem::CreateDefaultVertexShader) pOptions must be an non null created input layout" );
 			IInputLayout* pIL = (IInputLayout*)pOptions;
 
-			CVertexShader* pShader = xst_new CVertexShader( m_pRS, this, xst_null, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			CVertexShader* pShader = xst_new CVertexShader( m_pRS, this, xst_null, pResourceMgr, ulHandle, strName, iType, iState/*, pAllocator*/ );
 			pShader->m_eShaderLanguage = ShaderLanguages::HLSL;
 			pShader->m_strShaderEntryPoint = "VS";
 			pShader->m_eProfile = ShaderProfiles::VS_1_1;
@@ -836,7 +836,7 @@ namespace XSE
 
 		Resources::IPixelShader*	CHLSLShaderSystem::CreateDefaultPixelShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
 		{
-			CPixelShader* pShader = xst_new CPixelShader( m_pRS, this, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			CPixelShader* pShader = xst_new CPixelShader( m_pRS, this, pResourceMgr, ulHandle, strName, iType, iState/*, pAllocator*/ );
 			pShader->m_eShaderLanguage = ShaderLanguages::HLSL;
 			pShader->m_strShaderEntryPoint = "PS";
 			pShader->m_eProfile = ShaderProfiles::PS_2_0;
@@ -1071,20 +1071,20 @@ namespace XSE
 			return XST_OK;
 		}
 
-		i32 _AddConstantBuffers(Resources::IShader** ppShader, xst_castring* *const astrCBs, u32 uCount)
+		xst_astring _AddConstantBuffers(Resources::IShader** ppShader, xst_castring* *const astrCBs, u32 uCount)
 		{
 			xst_assert2( (*ppShader) );
 			Resources::IShader* pShader = (*ppShader);
-			XST::FilePtr pFile = pShader->GetResourceFile();
+			ResFileWeakPtr pFile = pShader->GetResourceFile();
 			XST::TCData<u8>& Data = pFile->GetData();
 			xst_astring strCode;
 			strCode.reserve( 10000 );
 			for(u32 i = 0; i < uCount; ++i )
 				strCode += *(astrCBs[ i ]);
 			strCode.append( (lpcastr)Data.GetPointer(), Data.GetSize() );
-			Data.Copy( (u8*)strCode.c_str(), strCode.length(), true );
+			//Data.Copy( (u8*)strCode.c_str(), strCode.length(), true );
 			//strCode = (lpcastr)Data.GetData();
-			return XST_OK;
+			return strCode;
 		}
 
 		i32	CHLSLShaderSystem::PrepareResource(Resources::IResource* pRes)
@@ -1097,9 +1097,10 @@ namespace XSE
 				{
 					xst_castring* a[] = {	&this->GetShaderCode( ShaderCodes::PER_FRAME_VS_CBUFFER ),
 											&this->GetShaderCode( ShaderCodes::PER_DRAWCALL_VS_CBUFFER )};
-					_AddConstantBuffers( &pShader, a, 2 );
+					xst_astring str = _AddConstantBuffers( &pShader, a, 2 );
 					CVertexShader* pVShader = (CVertexShader*)pShader;
-					return this->CompileVertexShader( pVShader );
+                    return this->CompileVertexShader( pVShader, str.data(), str.length(), pVShader->GetEntryPoint().c_str(),
+                                                     pVShader->GetProfile() );
 				}
 				break;
 
@@ -1108,9 +1109,10 @@ namespace XSE
 					xst_castring* a[] = {	&this->GetShaderCode( ShaderCodes::PER_FRAME_PS_CBUFFER ),
 											&this->GetShaderCode( ShaderCodes::PER_MATERIAL_PS_CBUFFER ),
 											&this->GetShaderCode( ShaderCodes::PER_DRAWCALL_PS_CBUFFER )};
-					_AddConstantBuffers( &pShader, a, 3 );
+					xst_astring str = _AddConstantBuffers( &pShader, a, 3 );
 					CPixelShader* pPShader = (CPixelShader*)pShader;
-					return this->CompilePixelShader( pPShader );
+					return this->CompilePixelShader( pPShader, str.c_str(), str.length(), pPShader->GetEntryPoint().c_str(),
+                                                    pPShader->GetProfile() );
 				}
 				break;
 			}

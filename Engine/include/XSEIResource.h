@@ -12,12 +12,12 @@ namespace XSE
 
 		#define XSE_INVALID_HANDLE	0
 
-		#define XSE_IRESOURCE_DECL_PARAMS_DEFAULT	XSE::IResourceManager* pCreator, const Handle& Handle = XSE_INVALID_HANDLE, XST_IRESOURCE_DECL_PARAMS_DEFAULT
-		#define XSE_IRESOURCE_DECL_PARAMS			XSE::IResourceManager* pCreator, const Handle& Handle, XST_IRESOURCE_DECL_PARAMS
-		#define	XSE_IRESOURCE_PARAMS				pCreator, Handle, XST_IRESOURCE_PARAMS
+		#define XSE_IRESOURCE_DECL_PARAMS_DEFAULT	XSE::IResourceManager* pCreator = xst_null, const Handle& Handle = 0, const Name& strName = "", XST::Types::ci32& iType = 0, XST::Types::ci32& iState = 0
+		#define XSE_IRESOURCE_DECL_PARAMS			XSE::IResourceManager* pCreator, const Handle& Handle, const Name& strName, XST::Types::ci32& iType, XST::Types::ci32& iState
+		#define	XSE_IRESOURCE_PARAMS				pCreator, Handle, strName, iType, iState
 		#define	XSE_IRESOURCE_CTOR					XSE::Resources::IResource( XSE_IRESOURCE_PARAMS )
 
-		class XST_API IResource : public XST::Resources::IResource
+		class XST_API IResource : public virtual XST::IObject //XST::Resources::IResource
 		{
 			friend class XSE::IResourceManager;
             friend class XSE::IResourceGroup;
@@ -28,17 +28,26 @@ namespace XSE
 				typedef XST::TCObjectSmartPointer< IResource >	ResourcePtr;
                 typedef XST::TCWeakPointer< IResource >         ResourceWeakPtr;
                 typedef ul32                                    Handle;
+                typedef xst_astr32                              Name;
 			
 			public:
 				
 										IResource() { /*xst_assert( 0, "(IResource::IResource) Do not use this constructor" );*/ }
-										IResource(XSE_IRESOURCE_DECL_PARAMS_DEFAULT) : m_ResourceHandle( Handle ), m_pResourceCreator( pCreator ), XST_IRESOURCE_CTOR {}
+										IResource(XSE::IResourceManager* pCreator, const Handle& Handle, const Name& strName, 
+                                                  XST::Types::ci32& iType, XST::Types::ci32& iState) :
+#if (XST_OBJ_DEBUG)
+                                                  m_strName(strName)
+#endif
+                                                  , m_ResourceHandle( Handle )
+                                                  , m_ResourceGroupHandle( Handle )
+                                                  , m_pResourceCreator( pCreator )
+                                                  , m_iResourceType( iType )
+                                                  , m_iResourceState( iState )
+                                        {}
 				
 				virtual					~IResource() 
 										{
-											m_ResourceHandle = 0;
-											m_pResourceCreator = xst_null;
-											m_ResourceGroupHandle = 0;
+                                            ClearResource();
 										}
 
 				xst_fi	Handle			GetResourceHandle() const
@@ -47,9 +56,19 @@ namespace XSE
                 xst_fi  Handle          GetResourceGroupHandle() const
                                         { return m_ResourceGroupHandle; }
 
-				xst_fi	
+                xst_fi  const Name&     GetResourceName() const 
+                                        { return m_strName; }
+
+                xst_fi  i32             GetResourceState() const 
+                                        { return m_iResourceState; }
+
+				/*xst_fi	
 				const XST::FilePtr		GetResourceFile() const
-										{ return this->m_pResourceFile; }
+										{ return this->m_pResourceFile; }*/
+
+                xst_fi	
+				const ResFileWeakPtr	GetResourceFile() const
+										{ return m_pResourceFile; }
 
 				xst_fi	IResourceManager*	GetResourceCreator() const
 											{ return m_pResourceCreator; }
@@ -58,39 +77,42 @@ namespace XSE
 
 				xst_i	void			SetResource(const IResource* pOther)
 										{
-											this->m_pResourceFile = pOther->m_pResourceFile;
-											this->m_iResourceState = pOther->m_iResourceState;
-											this->m_iResourceType = pOther->m_iResourceType;
+											m_pResourceFile = pOther->m_pResourceFile;
+											m_iResourceState = pOther->m_iResourceState;
+											m_iResourceType = pOther->m_iResourceType;
 										}
 
 				xst_fi	void			SetResource(const ResourcePtr pOther)
 										{ SetResource( pOther.GetPtr() ); }
 
-				virtual	i32				ClearResource() xst_implement;
+				virtual	i32				ClearResource();
 
             protected:
 
 				xst_fi	void			_Init(XSE::IResourceManager* pCreator, const Handle& Handle, const Name& strName, XST::Types::ci32& iType, XST::Types::ci32& iState)
 				{
-					XST::Resources::IResource::_Init( strName, iType, iState );
 					m_pResourceCreator = pCreator;
 					m_ResourceHandle = Handle;
+                    m_ResourceGroupHandle = 0;
+                    m_strName = strName;
+                    m_iResourceType = iType;
+                    m_iResourceState = iState;
 				}
 
                 xst_fi  void            _SetResourceState(ci32& iState)
                 {
-                     this->m_iResourceState = iState;
+                     m_iResourceState = iState;
                 }
 
-                xst_fi  void            _SetResourceName(xst_castring& strName)
+                xst_fi  void            _SetResourceName(const Name& strName)
                 {
                     //this->m_strResourceName = strName;
 					XST_SET_DBG_NAME( this, strName.c_str() );
                 }
 
-                xst_fi  void            _SetResourceFile(FilePtr pFile)
+                xst_fi  void            _SetResourceFile(ResFileWeakPtr pFile)
                 {
-                    this->m_pResourceFile = pFile;
+                    m_pResourceFile = pFile;
                 }
 
                 xst_fi  void            _SetResourceType(ci32& iType)
@@ -99,11 +121,15 @@ namespace XSE
                 }
 
 			protected:
-
+#if (XST_OBJ_DEBUG)
+                Name                m_strName;
+#endif
 				IResourceManager*	m_pResourceCreator = xst_null;
-				ResFilePtr			m_pFile;
+				ResFilePtr			m_pResourceFile;
 				Handle				m_ResourceHandle = 0;
 				Handle				m_ResourceGroupHandle = 0;
+                i32                 m_iResourceState;
+                i32                 m_iResourceType;
 		};
 
 	}//resources

@@ -48,7 +48,7 @@ namespace XSE
 	{
 		m_mDefaultMaterials.clear();
 		//Create default material
-		Resources::CMaterial* pMat = xst_new Resources::CMaterial( m_pShaderMgr, DEFAULT_TECHNIQUE, this, 0, "xse_default_material", XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED, xst_null );
+		Resources::CMaterial* pMat = xst_new Resources::CMaterial( m_pShaderMgr, DEFAULT_TECHNIQUE, this, 0, "xse_default_material", XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED/*, xst_null*/ );
 		if( pMat == xst_null )
 		{
 			return XST_FAIL;
@@ -115,7 +115,7 @@ namespace XSE
 
 	Resources::IResource* CMaterialManager::_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup)
 	{
-		Resources::CMaterial* pMat = xst_new Resources::CMaterial( m_pShaderMgr, this, ulHandle, strName, XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
+		Resources::CMaterial* pMat = xst_new Resources::CMaterial( m_pShaderMgr, this, ulHandle, strName, XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED/*, this->m_pMemoryMgr*/ );
 		if( pMat == xst_null )
 		{
 			XST_LOG_ERR( "Create material: " << strName << " failed. Not enough memory." );
@@ -141,7 +141,7 @@ namespace XSE
 		{
 			//Create new material	
 			u32 uILHandle = pIL->GetHandle();
-			Resources::CMaterial* pMat = xst_new Resources::CMaterial( m_pShaderMgr, DEFAULT_TECHNIQUE, this, uILHandle, XST::StringUtil::EmptyAString, XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED, xst_null );
+			Resources::CMaterial* pMat = xst_new Resources::CMaterial( m_pShaderMgr, DEFAULT_TECHNIQUE, this, uILHandle, XST::StringUtil::EmptyAString, XST::ResourceType::MATERIAL, XST::ResourceStates::CREATED/*, xst_null*/ );
 			if( pMat == xst_null )
 			{
 				XST_LOG_ERR( "Default material creation failed. Memory error." );

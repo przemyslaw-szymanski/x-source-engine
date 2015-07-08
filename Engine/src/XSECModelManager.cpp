@@ -283,24 +283,30 @@ namespace XSE
 		return pModel;
 	}
 
-
 	Resources::IResource*	CModelManager::_CreateResource(xst_castring& strName, const ResourceHandle& ulHandle, GroupWeakPtr pGroup)
 	{
-		Resources::CModel* pModel = xst_new Resources::CModel( m_pRenderSystem, m_pRenderSystem->GetInputLayout( ILE::POSITION ), this, ulHandle, strName, 100, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
+		Resources::CModel* pModel = xst_new Resources::CModel( m_pRenderSystem, m_pRenderSystem->GetInputLayout( ILE::POSITION ), this, ulHandle, strName, 100, XST::ResourceStates::CREATED/*, this->m_pMemoryMgr*/ );
 		//Set default material
 		pModel->SetMaterial( m_pMeshMgr->GetMaterialManager()->GetDefaultMaterial() );
 		return pModel;
 	}
+
+    xst_castring GetExtension(const XSE::Resources::IResource::Name& strName)
+    {
+        i32 iPos = strName.find_first_of('.');
+        auto ext = strName.substr(iPos, strName.length() - iPos);
+        return xst_astring( ext.data() );
+    }
 
 	i32	CModelManager::PrepareResource(ResourceWeakPtr *const ppRes)
 	{
 		xst_assert2( ppRes && (*ppRes).IsValid() );
 		auto pRes = *ppRes;
 		ModelPtr pModel = pRes;
-		XST::FilePtr pFile = pModel->GetResourceFile();
+		ResFileWeakPtr pFile = pModel->GetResourceFile();
 		if( pFile.IsValid() )
 		{
-			Resources::IResourceLoader* pLoader = GetLoader( pFile->GetExtension() );
+			Resources::IResourceLoader* pLoader = GetLoader( GetExtension( pModel->GetResourceName() ) );
 			if( !pLoader )
 			{
 				return XST_FAIL;

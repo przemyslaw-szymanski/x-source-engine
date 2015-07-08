@@ -26,7 +26,7 @@ namespace XSE
 
 						i32			Load();
 
-						i32			Load(XST::FilePtr pFile);
+						i32			Load(ResFileWeakPtr pFile);
 
 						i32			Load(cu8* pData, cul32& ulDataSize);
 

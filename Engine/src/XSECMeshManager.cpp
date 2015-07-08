@@ -412,7 +412,7 @@ namespace XSE
 		Resources::CMesh* pMesh;
 		{
 			//XSTSimpleProfiler2("CMeshManager::_CreateResource"); //0.002 - 0.005 sec in debug
-			pMesh = xst_new Resources::CMesh( m_pRenderSystem, m_pDefaultIL, this, ulHandle, strName, XST::ResourceType::MESH, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
+			pMesh = xst_new Resources::CMesh( m_pRenderSystem, m_pDefaultIL, this, ulHandle, strName, XST::ResourceType::MESH, XST::ResourceStates::CREATED/*, this->m_pMemoryMgr*/ );
             if( !pMesh )
             {
                 XST_LOG_ERR( "Unable to create Mesh object: " << strName << ". No memory." );

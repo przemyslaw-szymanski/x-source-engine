@@ -233,7 +233,7 @@ namespace XSE
 
 		Resources::IVertexShader*	CCGShaderSystem::CreateVertexShader(IInputLayout* pIL, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
 		{
-			Resources::CCGVertexShader* pShader = xst_new Resources::CCGVertexShader( m_pRenderSystem, this, pIL, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			Resources::CCGVertexShader* pShader = xst_new Resources::CCGVertexShader( m_pRenderSystem, this, pIL, pResourceMgr, ulHandle, strName, iType, iState/*, pAllocator*/ );
 			if( pShader == xst_null )
 			{
 				return xst_null;
@@ -257,7 +257,7 @@ namespace XSE
 
 		Resources::IPixelShader*	CCGShaderSystem::CreatePixelShader(XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
 		{
-			Resources::CCGPixelShader* pShader = xst_new Resources::CCGPixelShader( m_pRenderSystem, this, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			Resources::CCGPixelShader* pShader = xst_new Resources::CCGPixelShader( m_pRenderSystem, this, pResourceMgr, ulHandle, strName, iType, iState/*, pAllocator*/ );
 			if( pShader == xst_null )
 			{
 				return xst_null;
@@ -268,7 +268,7 @@ namespace XSE
 
 		Resources::IVertexShader*	CCGShaderSystem::CreateDefaultVertexShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
 		{
-			Resources::CCGVertexShader* pShader = xst_new Resources::CCGVertexShader( m_pRenderSystem, this, xst_null, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			Resources::CCGVertexShader* pShader = xst_new Resources::CCGVertexShader( m_pRenderSystem, this, xst_null, pResourceMgr, ulHandle, strName, iType, iState/*, pAllocator*/ );
 			if( pShader == xst_null )
 			{
 				return xst_null;
@@ -279,7 +279,7 @@ namespace XSE
 
 		Resources::IPixelShader*	CCGShaderSystem::CreateDefaultPixelShader(xst_unknown pOptions, XSE::IResourceManager* pResourceMgr, cul32& ulHandle, xst_castring& strName, ci32& iType, ci32& iState, XST::IAllocator* pAllocator)
 		{
-			Resources::CCGPixelShader* pShader = xst_new Resources::CCGPixelShader( m_pRenderSystem, this, pResourceMgr, ulHandle, strName, iType, iState, pAllocator );
+			Resources::CCGPixelShader* pShader = xst_new Resources::CCGPixelShader( m_pRenderSystem, this, pResourceMgr, ulHandle, strName, iType, iState/*, pAllocator*/ );
 			if( pShader == xst_null )
 			{
 				return xst_null;

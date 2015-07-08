@@ -46,7 +46,7 @@ namespace XSE
 
 	Resources::IResource* CLuaScriptManager::_CreateResource(xst_castring &strName, const IResourceManager::ResourceHandle& ulHandle, XSE::IResourceManager::GroupWeakPtr pGroup)
 	{
-		Resources::CLuaScript* pScript = xst_new Resources::CLuaScript( m_pDefaultApi, this, ulHandle, strName, XST::ResourceType::LUA_SCRIPT, XST::ResourceStates::CREATED, this->m_pMemoryMgr );
+		Resources::CLuaScript* pScript = xst_new Resources::CLuaScript( m_pDefaultApi, this, ulHandle, strName, XST::ResourceType::LUA_SCRIPT, XST::ResourceStates::CREATED/*, this->m_pMemoryMgr*/ );
 		if( pScript == xst_null )
 		{
 			XST_LOG_ERR( "Create script: " << strName << " failed. Not enough memory" );

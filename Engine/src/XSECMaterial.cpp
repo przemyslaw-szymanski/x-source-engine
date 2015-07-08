@@ -17,7 +17,7 @@ namespace XSE
 		}
 
 		CMaterial::CMaterial(CShaderManager* pShaderMgr, xst_castring& strDefaultTechniqueName, XSE_IRESOURCE_DECL_PARAMS) :
-			CMaterial( pShaderMgr, pCreator, Handle, strName, iType, iState, pAllocator )
+			CMaterial( pShaderMgr, pCreator, Handle, strName, iType, iState/*, pAllocator*/ )
 		{
 			ITechnique* pTech = CreateTechnique( strDefaultTechniqueName, true );
 			xst_assert2( pTech );

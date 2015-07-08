@@ -35,7 +35,9 @@ namespace XSE
 
 					VertexShaderPtr			LoadVertexShader(xst_castring& strFileName, xst_castring& strShaderName, xst_castring& strEntryPoint, SHADER_PROFILE eProfile, xst_castring& strGroupName = ALL_GROUPS);
 
-					PixelShaderPtr			LoadPixelShader(xst_castring& strFileName, xst_castring& strShaderName, xst_castring& strEntryPoint, SHADER_PROFILE eProfile, xst_castring& strGroupName = ALL_GROUPS );
+					PixelShaderPtr			LoadPixelShader(xst_castring& strFileName, xst_castring& strShaderName, xst_castring& strEntryPoint, SHADER_PROFILE eProfile, xst_castring& strGroupName = ALL_GROUPS);
+
+                    i32                     LoadShaders(xst_castring& strFileName, xst_castring& strShaderName, xst_castring& strVSEntryPoint, xst_castring& strPSEntryPoint, SHADER_PROFILE eVSProfile, SHADER_PROFILE ePSProfile, xst_castring& strGroupName = ALL_GROUPS);
 
 			xst_fi	VertexShaderPtr			GetDefaultVertexShader()
 											{ return m_pDefaultVS; }

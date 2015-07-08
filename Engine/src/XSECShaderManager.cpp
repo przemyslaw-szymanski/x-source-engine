@@ -255,6 +255,13 @@ namespace XSE
 		return _LoadShader( ShaderTypes::PIXEL, strFileName, strShaderName, strEntryPoint, eProfile, strGroupName );
 	}
 
+    i32 CShaderManager::LoadShaders(xst_castring& strFileName, xst_castring& strShaderName, xst_castring& strVSEntryPoint, 
+                                    xst_castring& strPSEntryPoint, SHADER_PROFILE eVSProfile, SHADER_PROFILE ePSProfile, 
+                                    xst_castring& strGroupName)
+    {
+        return 0;
+    }
+
 	xst_astring CShaderManager::CreateShaderCode(u32 uiVSInput, u32 uiPSInput)
 	{
 		return m_pRenderSystem->GetShaderSystem()->CreateShaderCode( uiVSInput, uiPSInput );

@@ -296,7 +296,8 @@ namespace XSE
 
 						if( bIsTexcoord0 )
 						{
-							const Vec2 vecUV( vecPos.x / m_Info.TileVertexCount.x, vecPos.z / m_Info.TileVertexCount.y );
+							const Vec2 vecUV( (f32)uVertexX / m_Info.TileVertexCount.x, 
+                                             (f32)uVertexY / m_Info.TileVertexCount.y );
 							VData.SetTexCoord0( ulCurrVertex, vecUV );
 						}
 

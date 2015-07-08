@@ -16,7 +16,11 @@ namespace XSE
 
 			public:
 
-										IShader(IShaderSystem* pSS, SHADER_TYPE eType, XSE_IRESOURCE_DECL_PARAMS) : m_eProfile( ShaderProfiles::UNKNOWN ), m_pShaderSystem( pSS ), m_eShaderType( eType ), XSE_IRESOURCE_CTOR {}
+										IShader(IShaderSystem* pSS, SHADER_TYPE eType, XSE_IRESOURCE_DECL_PARAMS_DEFAULT) : 
+                                            m_eProfile( ShaderProfiles::UNKNOWN )
+                                            , m_pShaderSystem( pSS )
+                                            , m_eShaderType( eType )
+                                            , XSE_IRESOURCE_CTOR {}
 				
 				virtual					~IShader() {}
 

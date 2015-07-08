@@ -5,8 +5,6 @@
 
 namespace XSE
 {
-	xst_castring IResourceManager2::ALL_GROUPS = XST::ALL_GROUPS;
-	xst_castring IResourceManager2::DEFAULT_GROUP = XST::DEFAULT_GROUP;
 
 #define XSE_HASH(_string) XST::CHash::GetCRC( (_string).c_str(), (_string).length() )
 #define XSE_NULLRES ResourcePtr()
@@ -24,6 +22,12 @@ namespace XSE
 		{
 			m_ResourceHandle = 0;
 			m_ResourceGroupHandle = 0;
+#if (XST_OBJ_DEBUG)
+            m_strName.clear();
+#endif
+            m_pResourceCreator = xst_null;
+            m_iResourceState = XST::ResourceStates::UNKNOWN;
+            m_iResourceType = XST::ResourceType::UNKNOWN;
 			return XST_OK;
 		}
 	}//Resources
@@ -354,15 +358,17 @@ namespace XSE
 		xst_assert2( (*ppRes).IsValid() );
 
 		Resources::IResource* pRes = (*ppRes).GetPtr();
-
-		XST::FilePtr pFile = m_pResFileMgr->LoadFile( strFileName, strGroupName );
+        
+		//XST::FilePtr pFile = m_pResFileMgr->LoadFile( strFileName, strGroupName );
 		ResFileWeakPtr pFile2 = m_pResFileMgr->LoadFile2( strFileName, strGroupName );
-		if( pFile2.IsNull() && pFile.IsNull() )
+		if( pFile2.IsNull() /*&& pFile.IsNull()*/ )
 		{
 			return XST_FAIL;
 		}
-		pRes->m_pFile = pFile2;
-		pRes->_SetResourceFile( pFile );
+		pRes->m_pResourceFile = pFile2;
+
+		//pRes->_SetResourceFile( pFile );
+        //pRes->_SetResourceFile( pFile2 );
 		pRes->_SetResourceState( XST::ResourceStates::LOADED );
 
 		if( bFullLoad )
@@ -714,335 +720,5 @@ namespace XSE
 	}
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	IResourceManager2::IResourceManager2() : m_pMemoryMgr( xst_null ), m_pFileMgr( xst_null )
-	{
-		/*if( !XST::CFileManager::IsSingletonCreated() )
-		{
-			m_pFileMgr = xst_new XST::CFileManager();
-		}
-		else
-		{
-			m_pFileMgr = XST::CFileManager::GetSingletonPtr();
-		}*/
-
-		m_pFileMgr = XST::CFileManager::GetSingletonPtr();
-	}
-
-	IResourceManager2::~IResourceManager2()
-	{
-		DestroyListeners();
-		xst_delete( this->m_pMemoryMgr );
-		this->m_pMemoryMgr = xst_null;
-	}
-
-	void IResourceManager2::DestroyListeners()
-	{
-		ListenerList::iterator Itr;
-		for(Itr = m_lListeners.begin(); Itr != m_lListeners.end(); ++Itr)
-		{
-			xst_delete( (*Itr) );
-		}
-
-		m_lListeners.clear();
-	}
-
-	void IResourceManager2::RemoveListener(XSE::IResourceManager2::Listener* pListener, bool bDestroy)
-	{
-		m_lListeners.remove( pListener );
-		if( bDestroy ) xst_delete( pListener );
-	}
-
-	XST::IAllocator& IResourceManager2::GetMemoryPool()
-	{
-		xst_assert( m_pMemoryMgr, "(IResourceManager2::GetMemoryPool) Memory Manager not created" );
-		return *m_pMemoryMgr;
-	}
-
-	ResourcePtr IResourceManager2::CloneResource(const Resources::IResource* pSrcRes, xst_castring& strNewName /* = XST::StringUtil::EmptyAString */, bool bFullClone /* = true */)
-	{
-		m_ssTmpName.str( "" );
-		if( strNewName.empty() )
-			m_ssTmpName << XST::CTime::GetQPerfTickCount() << "_cloned";
-		else
-			m_ssTmpName << strNewName;
-
-		GroupPtr pGroup = this->GetGroupByHandle( pSrcRes->GetResourceGroupHandle() );
-		xst_assert( pGroup != xst_null, "(IResourceManager2::CloneResource)" );
-		ResourcePtr pNewRes = CreateResource( m_ssTmpName.str(), pGroup );
-		if( pNewRes == xst_null )
-		{
-			return pNewRes; 
-		}
-
-		if( XST_FAILED( PrepareResource( pNewRes ) ) )
-		{
-			this->DestroyResourceByHandle( pNewRes->GetResourceGroupHandle() );
-			return ResourcePtr();
-		}
-
-
-
-		return pNewRes;
-	}
-
-	ResourcePtr IResourceManager2::CreateResource(xst_castring &strName, xst_castring &strGroupName)
-	{
-		GroupPtr pGr = this->GetOrCreateGroup( strGroupName );
-		return CreateResource( strName, pGr );
-	}
-
-	ResourcePtr IResourceManager2::CreateResource(xst_castring& strName, IResourceManager2::GroupPtr pGroup)
-	{
-		ul32 ulHandle; 
-		Resources::IResource* pBaseRes;
-		{
-			//XSTSimpleProfiler2("IResourceManager2::GetHash"); //~0.000008sec in debug
-			ulHandle = this->GetHash( strName );
-		}
-		{
-			//XSTSimpleProfiler2("IResourceManager2::_CreateResource"); //~0.003sec in debug
-		pBaseRes = _CreateResource( strName, ulHandle, pGroup );
-		if( pBaseRes == xst_null )
-		{
-			return m_pNullRes;
-		}
-		}
-
-		pBaseRes->m_ResourceGroupHandle = pGroup->GetGroupHandle();
-		//pBaseRes->m_strResourceName = strName;
-		pBaseRes->m_ResourceHandle = ulHandle;
-
-		ResourcePtr pRes( pBaseRes );
-		{ 
-			//XSTSimpleProfiler2( "CreateResource::AddResourceByHandle" ); //~0.0007sec in debug
-		if( pGroup->AddResourceByHandle( ulHandle, pRes ) != RESULT::OK )
-		{
-			pRes = xst_null;
-			XST_LOG_ERR( "Resource: " << strName << " already exists in group: " << pGroup->GetGroupName() );
-			return m_pNullRes;
-		}
-		}
-		//XSE_DO_LISTENER_VOID_METHOD( ResourceCreated, ListenerList::iterator, m_lListeners, pRes );
-
-		return pRes;
-	}
-
-	ResourcePtr IResourceManager2::GetOrCreateResource(xst_castring &strName, xst_castring &strGroupName, bool* pbCreatedOut)
-	{
-		GroupPtr pGr = this->GetOrCreateGroup( strGroupName );
-		return GetOrCreateResource( strName, pGr, pbCreatedOut );
-	}
-
-	ResourcePtr IResourceManager2::GetOrCreateResource(xst_castring &strName, IResourceManager2::GroupPtr pGroup, bool* pbCreatedOut)
-	{
-		ResourcePtr pRes;
-		bool bCreated = false;
-
-		if( !XST_FAILED( pGroup->GetResource( strName, &pRes ) ) )
-		{
-			//If resource with given name already exists return it
-			if( pbCreatedOut ) *pbCreatedOut = bCreated;
-			return pRes;
-		}
-		
-		//If not exists create it
-		{ 
-			//XSTSimpleProfiler2( "ResourceGroup::CreateResource" );
-		pRes = CreateResource( strName, pGroup );
-		}
-		bCreated = true;
-		
-		if( pbCreatedOut ) *pbCreatedOut = bCreated;
-
-		return pRes;
-	}
-
-	ResourcePtr IResourceManager2::LoadResource(xst_castring &strName, xst_castring &strGroupName)
-	{
-		xst_assert( m_pFileMgr, "File manager not created" );
-		XST::FilePtr pFile;
-		if( strGroupName == ALL_GROUPS )
-		{
-			pFile = m_pFileMgr->LoadFile( strName );
-		}
-		else
-		{
-			pFile = m_pFileMgr->LoadFile( strName, strGroupName );
-		}
-
-		if( pFile.IsNull() )
-		{
-			return m_pNullRes;
-		}
-
-		ResourcePtr pRes = GetOrCreateResource( strName, strGroupName );
-		if( pRes.IsNull() )
-		{
-			return m_pNullRes;
-		}
-
-		pRes->m_pResourceFile = pFile;
-		pRes->_SetResourceFile( pFile );
-
-		return pRes;
-	}
-
-	ResourcePtr IResourceManager2::LoadResource(xst_castring &strFileName, xst_castring& strResName, xst_castring &strGroupName)
-	{
-		xst_assert( m_pFileMgr, "File manager not created" );
-
-		ResourcePtr pRes = GetOrCreateResource( strResName, strGroupName );
-		if( pRes.IsNull() )
-		{
-			return m_pNullRes;
-		}
-
-		XST::FilePtr pFile;
-		if( strGroupName == ALL_GROUPS )
-		{
-			pFile = m_pFileMgr->LoadFile( strFileName );
-		}
-		else
-		{
-			pFile = m_pFileMgr->LoadFile( strFileName, strGroupName );
-		}
-
-		if( pFile.IsNull() )
-		{
-			return m_pNullRes;
-		}
-
-		pRes->m_pResourceFile = pFile;
-		pRes->_SetResourceFile( pFile );
-
-		return pRes;
-	}
-
-	i32	IResourceManager2::LoadResource(ResourcePtr pRes, xst_castring& strGroupName)
-	{
-		return LoadResource( pRes, pRes->GetResourceName(), strGroupName );
-	}
-
-	i32	IResourceManager2::LoadResource(ResourcePtr pRes, xst_castring& strFileName, xst_castring& strGroupName)
-	{
-		xst_assert( m_pFileMgr, "File manager not created" );
-		xst_assert2( pRes != xst_null );
-
-		if( pRes.IsNull() )
-		{
-			XST_LOG_ERR( "Resource is null" );
-			return XST_FAIL;
-		}
-
-		XST::FilePtr pFile;
-		if( strGroupName == ALL_GROUPS )
-		{
-			pFile = m_pFileMgr->LoadFile( strFileName );
-		}
-		else
-		{
-			pFile = m_pFileMgr->LoadFile( strFileName, strGroupName );
-		}
-
-		if( pFile.IsNull() )
-		{
-			return XST_FAIL;
-		}
-
-		pRes->m_pResourceFile = pFile;
-		pRes->_SetResourceFile( pFile );
-
-		return XST_OK;
-	}
-
-
-	/*i32 IResourceManager2::LoadResource(ResourcePtr pRes)
-	{
-		xst_assert( m_pFileMgr, "File manager not created" );
-		xst_assert2( pRes != xst_null );
-
-		GroupPtr pGr = GetOrCreateGroup( pRes->m_ulResourceGroupId );
-
-		XST::FilePtr pFile;
-		if( pGr->GetGroupName() == ALL_GROUPS )
-		{
-			pFile = m_pFileMgr->LoadFile( pGr->GetGroupName() );
-		}
-		else
-		{
-			pFile = m_pFileMgr->LoadFile( pRes->m_strResourceName, pGr->GetGroupName() );
-		}
-
-		if( pFile.IsNull() )
-		{
-			return XST_FAIL;
-		}
-
-		pRes->_SetResourceFile( pFile );
-
-		return XST_OK;
-	}*/
-
-	ResourcePtr IResourceManager2::GetResource(xst_castring &strName, xst_castring &strGroup)
-	{
-		ResourcePtr pRes;
-
-		if( strGroup == ALL_GROUPS )
-		{
-			_GroupIterator GroupItr = this->m_mResources.begin();
-			for(; GroupItr != this->m_mResources.end(); ++GroupItr)
-			{
-				if( GroupItr->second->GetResource( strName, &pRes ) == RESULT::OK )
-				{
-					return pRes;
-				}
-			}
-		}
-		else
-		{
-			GroupPtr pGr = this->GetGroup( strGroup );
-			if( !pGr.IsNull() )
-			{
-				pGr->GetResource( strName, &pRes );
-			}
-		}
-
-		return pRes;
-	}
-
-
-	ResourcePtr	IResourceManager2::GetResource(xst_castring& strName, GroupPtr pGroup)
-	{
-		if( pGroup.IsNull() )
-		{
-			XST_LOG_ERR( "Group is null" );
-			return ResourcePtr();
-		}
-
-		ResourcePtr pRes;
-		if( XST_FAILED( pGroup->GetResource( strName, &pRes ) ) )
-		{
-			XST_LOG_ERR( "Resource: " << strName << " not found" );
-			return ResourcePtr();
-		}
-
-		return pRes;
-	}
-
-	ResourcePtr IResourceManager2::PrepareResource(XST::Types::xst_castring &strName, XST::Types::xst_castring &strGroupName)
-	{
-		ResourcePtr pRes = GetResource( strName, strGroupName );
-		if( pRes.IsNull() ) 
-		{
-			return ResourcePtr();
-		}
-		if( XST_FAILED( PrepareResource( pRes ) ) )
-		{
-			return ResourcePtr();
-		}
-
-		return pRes;
-	}
 
 }//xse

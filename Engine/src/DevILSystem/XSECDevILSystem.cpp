@@ -192,7 +192,7 @@ namespace XSE
 		
 		Resources::IResource*	CImageSystem::CreateResource(IResourceManager* pCreator, ul32 ulResHandle, xst_castring& strResName, XST::IAllocator* pAllocator)
 		{
-			CImage* pImg = xst_new CImage( this, pCreator, ulResHandle, strResName, ResourceTypes::IMAGE, ResourceStates::CREATED, pAllocator );
+			CImage* pImg = xst_new CImage( this, pCreator, ulResHandle, strResName, ResourceTypes::IMAGE, ResourceStates::CREATED/*, pAllocator*/ );
 			if( pImg == xst_null )
 			{
 				XST_LOG_ERR( "Could not create an image: " << strResName << ". Memory error." );

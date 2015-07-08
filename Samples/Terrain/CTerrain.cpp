@@ -162,10 +162,14 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	{
 		XSTSimpleProfiler2( "CreateTerrain");
 		pMat = XSE::CMaterialManager::GetSingletonPtr()->CreateMaterial( "terrain" );
-	XSE::VertexShaderPtr pVS = XSE::CShaderManager::GetSingletonPtr()->LoadVertexShader("terrain.vsh", "terr.vs", "vs", XSE::ShaderProfiles::VS_BEST);
+        XSE::VertexShaderPtr pVS;
+        XSE::PixelShaderPtr pPS;
+	pVS = XSE::CShaderManager::GetSingletonPtr()->LoadVertexShader("terrain.vsh", "terr.vs", "vs", XSE::ShaderProfiles::VS_BEST);
 	xst_assert2(pVS.IsValid());
-	//pVS->SetInputLayout( this->m_pEngine->GetRenderSystem()->GetInputLayout( XSE::ILE::POSITION | XSE::ILE::NORMAL ) );
-	XSE::PixelShaderPtr pPS = XSE::CShaderManager::GetSingletonPtr()->LoadPixelShader("terrain.psh", "terr.ps", "ps", XSE::ShaderProfiles::PS_BEST);
+	pPS = XSE::CShaderManager::GetSingletonPtr()->LoadPixelShader("terrain.psh", "terr.ps", "ps", XSE::ShaderProfiles::PS_BEST);
+    /*XSE::CShaderManager::GetSingletonPtr()->LoadPixelShaders("terrain.shader", "terrain", "vs", "ps", 
+                                                             XSE::ShaderProfiles::VS_BEST, XSE::ShaderProfiles::PS_BEST,
+                                                             &pVS, &pPS);*/
 	pMat->CreateTechnique("tech", pVS, pPS);
 	pMat->SetTexture( XSE::MaterialTextureTypes::DIFFUSE, "heightmap04.jpg", XSE::ALL_GROUPS );
 	pMat->SetTextureSamplingMode( XSE::MaterialTextureTypes::DIFFUSE, XSE::STextureSamplingMode() );
