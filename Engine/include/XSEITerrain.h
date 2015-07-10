@@ -22,12 +22,13 @@ namespace XSE
 		u32				uiLODCount;
 		u32				uiMaxLODCount;
 		StringVector	vHeightmaps;
-		bool			bStatic;
-		bool			bNormal;
-		bool			bTangent;
-		bool			bBinormal;
-		bool			bColor;
-		bool			bTexCoord;
+		u32 			bStatic : 1;
+		u32 			bNormal : 1;
+		u32 			bTangent : 1;
+		u32 			bBinormal : 1;
+		u32 			bColor : 1;
+		u32 			bTexCoord : 1;
+        u32             bEachTileHasOwnTexCoords : 1;
         u8 m_padding[ 2 ];
 	};
 

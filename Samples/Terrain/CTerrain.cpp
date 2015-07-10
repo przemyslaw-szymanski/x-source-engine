@@ -130,6 +130,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	this->m_pViewCam->SetPosition( -389, 450, 230 );
 	this->m_pViewCam->SetAngleX( 1.879f );
 	this->m_pViewCam->SetAngleY( 0.701f );
+    this->m_pDbgCam->SetSpeed(10000, 100, 100);
 #endif
 	/////////////////////////////////////////
 
@@ -145,18 +146,19 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	u32 uiCount = 11;
 	Options.PageCount = XSE::CPoint( 1, 1 );
 	Options.vHeightmaps.push_back( "heightmap04.jpg" );
-	//Options.PageVertexCount = XSE::CPoint( 32 * 1 + 1 );
-	//Options.TileVertexCount = XSE::CPoint( 16 * 1 + 1 );
+	Options.PageVertexCount = XSE::CPoint( 32 * 1 + 1 );
+	Options.TileVertexCount = XSE::CPoint( 16 * 1 + 1 );
 	//Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
 	//Options.TileVertexCount = XSE::CPoint( 16 + 1 );
-	Options.PageVertexCount = XSE::CPoint( 32 + 1 );
-	Options.TileVertexCount = XSE::CPoint( 32 + 1 );
+	//Options.PageVertexCount = XSE::CPoint( 32 + 1 );
+	//Options.TileVertexCount = XSE::CPoint( 32 + 1 );
 	Options.uiLODCount = 3;
 	//Options.bColor = true;
 	Options.bBinormal = Options.bNormal = Options.bTangent = false;
 	Options.bNormal = true;
 	Options.bColor = false;
 	Options.bTexCoord = true;
+    Options.bEachTileHasOwnTexCoords = true;
 
 	XSE::MaterialWeakPtr pMat;
 	{

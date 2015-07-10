@@ -400,6 +400,7 @@ namespace XSE
 				Info.ImpostorVertexCount = ImpVertCount;
 				//Info.pIB = GetIndexBuffer( 0, 0 ).pIndexBuffer.GetPtr();
 				Info.pImpImg = m_vpImages[1].GetPtr(); // TEMP
+                Info.bEachTileHasOwnTexCoords = m_Options.bEachTileHasOwnTexCoords;
 				
 				XST_RET_FAIL( pPage->Init( Info ) );
 
@@ -648,7 +649,8 @@ namespace XSE
 				auto* Tile = g_vVisibleTILE[ t ];
 				// TODO: probably cache miss here. Use array of pVB,ulStartVertex structures
 				const auto& TileInfo = Tile->m_Info;
-				pIB = GetIndexBuffer( /*Tile->m_uiLOD*/0, Tile->m_eStitchType /*XSE::MipMapTerrainStitchTypes::DOWN*/ ).pIndexBuffer.GetPtr();
+				//pIB = GetIndexBuffer( /*Tile->m_uiLOD*/0, Tile->m_eStitchType /*XSE::MipMapTerrainStitchTypes::DOWN*/ ).pIndexBuffer.GetPtr();
+                pIB = GetIndexBuffer( Tile->m_uiLOD, Tile->m_eStitchType ).pIndexBuffer.GetPtr();
 				//lpcastr n = pIB->_GetDbgName();
 				pRS->SetVertexBufferWithCheck( TileInfo.pVB );
 				pRS->SetIndexBufferWithCheck( pIB );

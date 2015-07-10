@@ -44,6 +44,7 @@ namespace XSE
 			const Resources::IImage* pImpImg = xst_null; // impostor image
 			u32 uTileCount = 0; // a end indicator in the tile buffer
 			u32	uPageId;
+            bool bEachTileHasOwnTexCoords = false;
 		};
 
 		typedef xst_vector< CMipMapTerrainTile >	TileVec;
