@@ -23,6 +23,7 @@ namespace XSE
 			{
 				enum CODE
 				{
+					//PER_FRAME_ALL_CBUFFER,
 					PER_FRAME_VS_CBUFFER,
 					PER_DRAWCALL_VS_CBUFFER,
 					PER_FRAME_PS_CBUFFER,

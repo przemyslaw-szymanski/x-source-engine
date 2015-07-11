@@ -146,10 +146,10 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	u32 uiCount = 11;
 	Options.PageCount = XSE::CPoint( 1, 1 );
 	Options.vHeightmaps.push_back( "heightmap04.jpg" );
-	Options.PageVertexCount = XSE::CPoint( 32 * 1 + 1 );
-	Options.TileVertexCount = XSE::CPoint( 16 * 1 + 1 );
-	//Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
-	//Options.TileVertexCount = XSE::CPoint( 16 + 1 );
+	//Options.PageVertexCount = XSE::CPoint( 32 * 1 + 1 );
+	//Options.TileVertexCount = XSE::CPoint( 16 * 1 + 1 );
+	Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
+	Options.TileVertexCount = XSE::CPoint( 16 + 1 );
 	//Options.PageVertexCount = XSE::CPoint( 32 + 1 );
 	//Options.TileVertexCount = XSE::CPoint( 32 + 1 );
 	Options.uiLODCount = 3;
@@ -158,7 +158,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	Options.bNormal = true;
 	Options.bColor = false;
 	Options.bTexCoord = true;
-    Options.bEachTileHasOwnTexCoords = true;
+    Options.bEachTileHasOwnTexCoords = false;
 
 	XSE::MaterialWeakPtr pMat;
 	{
@@ -166,14 +166,14 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 		pMat = XSE::CMaterialManager::GetSingletonPtr()->CreateMaterial( "terrain" );
         XSE::VertexShaderPtr pVS;
         XSE::PixelShaderPtr pPS;
-	pVS = XSE::CShaderManager::GetSingletonPtr()->LoadVertexShader("terrain.vsh", "terr.vs", "vs", XSE::ShaderProfiles::VS_BEST);
+	pVS = XSE::CShaderManager::GetSingletonPtr()->LoadVertexShader("terrain.shader", "terr.vs", "vs", XSE::ShaderProfiles::VS_BEST);
 	xst_assert2(pVS.IsValid());
-	pPS = XSE::CShaderManager::GetSingletonPtr()->LoadPixelShader("terrain.psh", "terr.ps", "ps", XSE::ShaderProfiles::PS_BEST);
+	pPS = XSE::CShaderManager::GetSingletonPtr()->LoadPixelShader("terrain.shader", "terr.ps", "ps", XSE::ShaderProfiles::PS_BEST);
     /*XSE::CShaderManager::GetSingletonPtr()->LoadPixelShaders("terrain.shader", "terrain", "vs", "ps", 
                                                              XSE::ShaderProfiles::VS_BEST, XSE::ShaderProfiles::PS_BEST,
                                                              &pVS, &pPS);*/
 	pMat->CreateTechnique("tech", pVS, pPS);
-	pMat->SetTexture( XSE::MaterialTextureTypes::DIFFUSE, "heightmap04.jpg", XSE::ALL_GROUPS );
+	pMat->SetTexture( XSE::MaterialTextureTypes::DIFFUSE, "terrtex01.jpg", XSE::ALL_GROUPS );
 	pMat->SetTextureSamplingMode( XSE::MaterialTextureTypes::DIFFUSE, XSE::STextureSamplingMode() );
 	
 	

@@ -218,6 +218,15 @@ namespace XSE
 
 		CCBBuilder g_aCBBuilders[ ConstantBuffers::_ENUM_COUNT ];
 		
+		XST_ALIGN(16) struct SALLOncePerFrame
+		{
+			Vec3				vecCamPos;
+			f32					fTime;
+			Vec3				vecCamDir;
+			f32					padding0;
+			Vec2				vecScreenSize;
+		};
+
 		XST_ALIGN(16) struct SVSOncePerFrame
 		{
 			DirectX::XMMATRIX	mtxView;
@@ -305,6 +314,30 @@ namespace XSE
 			xst_fi void AddConstant(CCBBuilder* pOut, CCBBuilder::TYPE eType, u32 uConstant, xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ])
 			{
 				pOut->Add( eType, astrConstants[ uConstant ], uConstant );
+			}
+
+			xst_castring& CreatePerFrameALLCBuffer(xst_castring astrConstants[ShaderConstants::_ENUM_COUNT], u32 uRegister)
+			{
+				auto& str = g_astrCBufferCodes[ ConstantBuffers::VS_ONCE_PER_FRAME ];
+				if (!str.empty())
+					return str;
+				/*
+				Vec3				vecCamPos;
+				f32					fTime;
+				Vec3				vecCamDir;
+				f32					padding0;
+				Vec2				vecScreenSize;
+				*/
+				xst_stringstream ss;
+				ss << "cbuffer cbFrame : register(b" << uRegister << ")" << xst_endl;
+				ss << "{" << xst_endl;
+				ss << "\tfloat3 " << astrConstants[ShaderConstants::CAMERA_POSITION] << ";" << xst_endl;
+				ss << "\tfloat " << astrConstants[ShaderConstants::TIME] << ";" << xst_endl;
+				ss << "\tfloat3 " << astrConstants[ShaderConstants::CAMERA_DIRECTION] << ";" << xst_endl;
+				ss << "\tfloat2 " << astrConstants[ShaderConstants::SCREEN_SIZE] << ";" << xst_endl;
+				ss << "}" << xst_endl;
+				str = ss.str();
+				return str;
 			}
 
 			xst_castring& CreatePerFrameVSCBuffer(xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ], u32 uRegister)
@@ -515,6 +548,7 @@ namespace XSE
 
 		i32 CHLSLShaderSystem::ApplyShaderConstantNames()
 		{
+			//this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_FRAME_ALL_CBUFFER ]	= HLSL::CreatePerFrameALLCBuffer(this->CONSTANT_NAMES, m_aConstantBuffers[ConstantBuffers::ALL_ONCE_PER_FRAME].uRegister);
 			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_FRAME_VS_CBUFFER ]		= HLSL::CreatePerFrameVSCBuffer( this->CONSTANT_NAMES, m_aConstantBuffers[ ConstantBuffers::VS_ONCE_PER_FRAME ].uRegister );
 			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_FRAME_PS_CBUFFER ]		= HLSL::CreatePerFramePSCBuffer( this->CONSTANT_NAMES, m_aConstantBuffers[ ConstantBuffers::PS_ONCE_PER_FRAME ].uRegister );
 			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_MATERIAL_PS_CBUFFER ]	= HLSL::CreatePerMaterialPSCBuffer( this->CONSTANT_NAMES, m_aConstantBuffers[ ConstantBuffers::PS_ONCE_PER_MATERIAL ].uRegister );
@@ -542,37 +576,38 @@ namespace XSE
 
 			m_vAllConstantValues.resize( ShaderConstants::_ENUM_COUNT );
 			u32 uPSCurrReg = 0, uVSCurrReg = 0;
-
+			u32 uCurrRegister = 0;
+			{
+				auto& cb = m_aConstantBuffers[ConstantBuffers::VS_ONCE_PER_FRAME];
+				cb.strName = "cbFrame";
+				cb.uDataSize = sizeof(SVSOncePerFrame);
+				cb.uRegister = uCurrRegister++;
+			}
+			{
+				auto& cb = m_aConstantBuffers[ConstantBuffers::VS_ONCE_PER_DRAWCALL];
+				cb.strName = "cbDrawCall";
+				cb.uDataSize = sizeof(SVSOncePerDrawCall);
+				cb.uRegister = uCurrRegister++;
+			}
+			{
+				auto& cb = m_aConstantBuffers[ConstantBuffers::PS_ONCE_PER_FRAME];
+				cb.strName = "cbFrame";
+				cb.uDataSize = sizeof(SPSOncePerFrame);
+				cb.uRegister = uCurrRegister++;
+			}
+			{
+				auto& cb = m_aConstantBuffers[ConstantBuffers::PS_ONCE_PER_MATERIAL];
+				cb.strName = "cbMaterial";
+				cb.uDataSize = sizeof(PSOncePerMaterial);
+				cb.uRegister = uCurrRegister++;
+			}
 			{
 				auto& cb = m_aConstantBuffers[ ConstantBuffers::PS_ONCE_PER_DRAWCALL ];
 				cb.strName = "cbDrawCall";
 				cb.uDataSize = sizeof( SPSOncePerDrawCall );
-				cb.uRegister = 2;
+				cb.uRegister = uCurrRegister++;
 			}
-			{
-				auto& cb = m_aConstantBuffers[ ConstantBuffers::PS_ONCE_PER_FRAME ];
-				cb.strName = "cbFrame";
-				cb.uDataSize = sizeof( SPSOncePerFrame );
-				cb.uRegister = 0;
-			}
-			{
-				auto& cb = m_aConstantBuffers[ ConstantBuffers::PS_ONCE_PER_MATERIAL ];
-				cb.strName = "cbMaterial";
-				cb.uDataSize = sizeof( PSOncePerMaterial );
-				cb.uRegister = 1;
-			}
-			{
-				auto& cb = m_aConstantBuffers[ ConstantBuffers::VS_ONCE_PER_DRAWCALL ];
-				cb.strName = "cbDrawCall";
-				cb.uDataSize = sizeof( SVSOncePerDrawCall );
-				cb.uRegister = 1;
-			}
-			{
-				auto& cb = m_aConstantBuffers[ ConstantBuffers::VS_ONCE_PER_FRAME ];
-				cb.strName = "cbFrame";
-				cb.uDataSize = sizeof( SVSOncePerFrame );
-				cb.uRegister = 0;
-			}
+			
 
 			//Shader codes
 			//Apply default names
@@ -1082,8 +1117,8 @@ namespace XSE
 			for(u32 i = 0; i < uCount; ++i )
 				strCode += *(astrCBs[ i ]);
 			strCode.append( (lpcastr)Data.GetPointer(), Data.GetSize() );
-			//Data.Copy( (u8*)strCode.c_str(), strCode.length(), true );
-			//strCode = (lpcastr)Data.GetData();
+			Data.Copy( (u8*)strCode.c_str(), strCode.length(), true );
+			strCode = (lpcastr)Data.GetPointer();
 			return strCode;
 		}
 

@@ -296,17 +296,8 @@ namespace XSE
 
 						if( bIsTexcoord0 )
 						{
-                            Vec2 vecUV;
-                            if (m_Info.bEachTileHasOwnTexCoords)
-                            {
-                                vecUV.x = (f32)uVertexX / m_Info.TileVertexCount.x;
-                                vecUV.y = (f32)uVertexY / m_Info.TileVertexCount.y;
-                            }
-                            else
-                            {
-                                vecUV.x = (f32)(uTileX * m_Info.TileVertexCount.x + uVertexX) / m_Info.VertexCount.x;
-                                vecUV.y = (f32)(uTileY * m_Info.TileVertexCount.y + uVertexY) / m_Info.VertexCount.y;
-                            }
+							const Vec2 vecUV(	(f32)( uTileX * ( m_Info.TileVertexCount.x - 1 ) + uVertexX ) / m_Info.VertexCount.x,
+												(f32)( uTileY * ( m_Info.TileVertexCount.y - 1 ) + uVertexY ) / m_Info.VertexCount.y);
 							VData.SetTexCoord0( ulCurrVertex, vecUV );
 						}
 

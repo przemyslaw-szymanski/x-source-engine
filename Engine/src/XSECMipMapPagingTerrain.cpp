@@ -545,6 +545,8 @@ namespace XSE
 			pImpImg->Scale( VC.x, VC.y );
 			m_vpImages.push_back( pImpImg );
 
+			pImg->Save("hm.jpg");
+
 			//STextureDesc Desc;
 			//Desc.eFormat = pImg->GetRenderSystemFormat();
 			//Desc.bGenerateMipMaps = true;
