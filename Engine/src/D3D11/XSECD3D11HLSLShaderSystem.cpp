@@ -232,11 +232,6 @@ namespace XSE
 			DirectX::XMMATRIX	mtxView;
 			DirectX::XMMATRIX	mtxProj;
 			DirectX::XMMATRIX	mtxViewProj;
-			Vec3				vecCamPos;
-			f32					fTime;
-			Vec3				vecCamDir;
-			f32					padding0;
-			Vec2				vecScreenSize;
 		};
 
 		XST_ALIGN(16) struct SPSOncePerFrame
@@ -245,15 +240,11 @@ namespace XSE
 			Vec4		vecSceneAmbient;
 			Vec4		vecLightSpecularColor;
 			Vec3		vecLightPos;
-			f32			fTime;
-			Vec3		vecCamPos;
 			f32			fLightSpecularPower;
-			Vec3		vecCamDir;
 			f32			fLightPower;
-			Vec2		vecScreenSize;
 		};
 
-		XST_ALIGN( 16 ) struct PSOncePerMaterial
+		XST_ALIGN( 16 ) struct SOncePerMaterial
 		{
 			Vec4	vecAmbientColor;
 			Vec4	vecDiffuseColor;
@@ -275,19 +266,22 @@ namespace XSE
 			Vec4 vecTmp2;
 		};
 		
+		SALLOncePerFrame	g_ALLOncePerFrame;
 		SVSOncePerFrame		g_VSOncePerFrame;
 		SVSOncePerDrawCall	g_VSOncePerObj;
 		SPSOncePerFrame		g_PSOncePerFrame;
 		SPSOncePerDrawCall	g_PSOncePerObj;
 
+		SALLOncePerFrame*	g_pOncePerFrame = xst_null;
 		SVSOncePerFrame*	g_pOncePerFrameVS = xst_null;
 		SVSOncePerDrawCall*	g_pOncePerObjVS = xst_null;
 		SPSOncePerFrame*	g_pOncePerFramePS = xst_null;
 		SPSOncePerDrawCall*	g_pOncePerObjPS = xst_null;
-		PSOncePerMaterial*	g_pOncePerMatPS = xst_null;
+		SOncePerMaterial*	g_pOncePerMatPS = xst_null;
 		u32 g_auConstantBufferRegisters[ ConstantBuffers::_ENUM_COUNT ];
 
 		D3D11_MAPPED_SUBRESOURCE				g_MappedSubresource;
+		xst_astring g_strShaderCBCode;
 
 		void SetProfILE(XST::xst_astr8* astrProfiles, ul32 ulSize, lpcastr lpszValue)
 		{
@@ -316,10 +310,10 @@ namespace XSE
 				pOut->Add( eType, astrConstants[ uConstant ], uConstant );
 			}
 
-			xst_castring& CreatePerFrameALLCBuffer(xst_castring astrConstants[ShaderConstants::_ENUM_COUNT], u32 uRegister)
+			xst_castring& CreatePerFrameCBuffer(xst_castring astrConstants[ShaderConstants::_ENUM_COUNT], u32 uRegister)
 			{
-				auto& str = g_astrCBufferCodes[ ConstantBuffers::VS_ONCE_PER_FRAME ];
-				if (!str.empty())
+				auto& str = g_astrCBufferCodes[ ConstantBuffers::ONCE_PER_FRAME ];
+				if( !str.empty() )
 					return str;
 				/*
 				Vec3				vecCamPos;
@@ -329,6 +323,8 @@ namespace XSE
 				Vec2				vecScreenSize;
 				*/
 				xst_stringstream ss;
+				ss << "#ifndef __XSE_CB_FRAME__" << xst_endl;
+				ss << "#define __XSE_CB_FRAME__" << xst_endl;
 				ss << "cbuffer cbFrame : register(b" << uRegister << ")" << xst_endl;
 				ss << "{" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ShaderConstants::CAMERA_POSITION] << ";" << xst_endl;
@@ -336,6 +332,7 @@ namespace XSE
 				ss << "\tfloat3 " << astrConstants[ShaderConstants::CAMERA_DIRECTION] << ";" << xst_endl;
 				ss << "\tfloat2 " << astrConstants[ShaderConstants::SCREEN_SIZE] << ";" << xst_endl;
 				ss << "}" << xst_endl;
+				ss << "#endif" << xst_endl;
 				str = ss.str();
 				return str;
 			}
@@ -349,23 +346,17 @@ namespace XSE
 				DirectX::XMMATRIX	mtxView;
 			DirectX::XMMATRIX	mtxProj;
 			DirectX::XMMATRIX	mtxViewProj;
-			Vec3				vecCamPos;
-			f32					fTime;
-			Vec3				vecCamDir;
-			f32					padding0;
-			Vec2				vecScreenSize;
 				*/
 				xst_stringstream ss;
-				ss << "cbuffer cbFrame : register(b" << uRegister << ")" << xst_endl;
+				ss << "#ifndef __XSE_CB_VS_FRAME__" << xst_endl;
+				ss << "#define __XSE_CB_VS_FRAME__" << xst_endl;
+				ss << "cbuffer cbVSFrame : register(b" << uRegister << ")" << xst_endl;
 				ss << "{" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_VIEW ]				<< ";" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_PROJECTION ]		<< ";" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_VIEW_PROJ ]		<< ";" << xst_endl;
-				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_POSITION ]		<< ";" << xst_endl;
-				ss << "\tfloat "  << astrConstants[ ShaderConstants::TIME ]					<< ";" << xst_endl;
-				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_DIRECTION ]		<< ";" << xst_endl;
-				ss << "\tfloat2 " << astrConstants[ ShaderConstants::SCREEN_SIZE ]			<< ";" << xst_endl;
 				ss << "}" << xst_endl;
+				ss << "#endif" << xst_endl;
 				str = ss.str();
 				return str;
 			}
@@ -376,12 +367,15 @@ namespace XSE
 				if( !str.empty() )
 					return str;
 				xst_stringstream ss;
-				ss << "cbuffer cbDrawcall : register(b" << uRegister << ")" << xst_endl;
+				ss << "#ifndef __XSE_CB_VS_DRAWCALL__" << xst_endl;
+				ss << "#define __XSE_CB_VS_DRAWCALL__" << xst_endl;
+				ss << "cbuffer cbVSDrawcall : register(b" << uRegister << ")" << xst_endl;
 				ss << "{" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_OBJ_WORLD ]					<< ";" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_OBJ_WORLD_VIEW_PROJECTION ]	<< ";" << xst_endl;
 				ss << "\tmatrix " << astrConstants[ ShaderConstants::MTX_OBJ_WORLD_INVERSE_TRANSPOSE ]	<< ";" << xst_endl;
 				ss << "}" << xst_endl;
+				ss << "#endif" << xst_endl;
 				str = ss.str();
 				return str;
 			}
@@ -396,27 +390,22 @@ namespace XSE
 			Vec4		vecSceneAmbient;
 			Vec4		vecLightSpecularColor;
 			Vec3		vecLightPos;
-			f32			fTime;
-			Vec3		vecCamPos;
 			f32			fLightSpecularPower;
-			Vec3		vecCamDir;
 			f32			fLightPower;
-			Vec2		vecScreenSize;
 				*/
 				xst_stringstream ss;
-				ss << "cbuffer cbFrame : register(b" << uRegister << ")" << xst_endl;
+				ss << "#ifndef __XSE_CB_PS_FRAME__" << xst_endl;
+				ss << "#define __XSE_CB_PS_FRAME__" << xst_endl;
+				ss << "cbuffer cbPSFrame : register(b" << uRegister << ")" << xst_endl;
 				ss << "{" << xst_endl;
 				ss << "\tfloat4 " << astrConstants[ ShaderConstants::LIGHT_COLOR ]			<< ";" << xst_endl;
 				ss << "\tfloat4 " << astrConstants[ ShaderConstants::SCENE_AMBIENT_COLOR ]	<< ";" << xst_endl;
 				ss << "\tfloat4 " << astrConstants[ ShaderConstants::LIGHT_SPECULAR_COLOR ]	<< ";" << xst_endl;
 				ss << "\tfloat3 " << astrConstants[ ShaderConstants::LIGHT_POSITION ]		<< ";" << xst_endl;
-				ss << "\tfloat "  << astrConstants[ ShaderConstants::TIME ]					<< ";" << xst_endl;
-				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_POSITION ]		<< ";" << xst_endl;
 				ss << "\tfloat "  << astrConstants[ ShaderConstants::LIGHT_SPECULAR_POWER ]	<< ";" << xst_endl;
-				ss << "\tfloat3 " << astrConstants[ ShaderConstants::CAMERA_DIRECTION ]		<< ";" << xst_endl;
 				ss << "\tfloat "  << astrConstants[ ShaderConstants::LIGHT_POWER ]			<< ";" << xst_endl;
-				ss << "\tfloat2 " << astrConstants[ ShaderConstants::SCREEN_SIZE ]			<< ";" << xst_endl;
 				ss << "}" << xst_endl;
+				ss << "#endif" << xst_endl;
 				str = ss.str();
 				return str;
 			}
@@ -435,9 +424,9 @@ namespace XSE
 				return str;
 			}
 
-			xst_castring& CreatePerMaterialPSCBuffer(xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ], u32 uRegister)
+			xst_castring& CreatePerMaterialCBuffer(xst_castring astrConstants[ ShaderConstants::_ENUM_COUNT ], u32 uRegister)
 			{
-				auto& str = g_astrCBufferCodes[ ConstantBuffers::PS_ONCE_PER_MATERIAL ];
+				auto& str = g_astrCBufferCodes[ ConstantBuffers::ONCE_PER_MATERIAL ];
 				if( !str.empty() )
 					return str;
 				/*
@@ -448,6 +437,8 @@ namespace XSE
 			f32		fAlpha;
 				*/
 				xst_stringstream ss;
+				ss << "#ifndef __XSE_CB_MATERIAL__" << xst_endl;
+				ss << "#define __XSE_CB_MATERIAL__" << xst_endl;
 				ss << "cbuffer cbMaterial : register(b" << uRegister << ")" << xst_endl;
 				ss << "{" << xst_endl;
 				ss << "\tfloat4 " << astrConstants[ ShaderConstants::MATERIAL_AMBIENT_COLOR ]	<< ";" << xst_endl;
@@ -456,6 +447,7 @@ namespace XSE
 				ss << "\tfloat4 " << astrConstants[ ShaderConstants::MATERIAL_SHININESS ]		<< ";" << xst_endl;
 				ss << "\tfloat4 " << astrConstants[ ShaderConstants::MATERIAL_ALPHA ]			<< ";" << xst_endl;
 				ss << "}" << xst_endl;
+				ss << "#endif" << xst_endl;
 				str = ss.str();
 				return str;
 			}
@@ -546,16 +538,35 @@ namespace XSE
 			}
 		}
 
+		XST::IFile::FileHandle g_hShaderInc;
+
 		i32 CHLSLShaderSystem::ApplyShaderConstantNames()
 		{
-			//this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_FRAME_ALL_CBUFFER ]	= HLSL::CreatePerFrameALLCBuffer(this->CONSTANT_NAMES, m_aConstantBuffers[ConstantBuffers::ALL_ONCE_PER_FRAME].uRegister);
+			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_FRAME_CBUFFER ]		= HLSL::CreatePerFrameCBuffer( this->CONSTANT_NAMES, m_aConstantBuffers[ConstantBuffers::ONCE_PER_FRAME].uRegister );
 			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_FRAME_VS_CBUFFER ]		= HLSL::CreatePerFrameVSCBuffer( this->CONSTANT_NAMES, m_aConstantBuffers[ ConstantBuffers::VS_ONCE_PER_FRAME ].uRegister );
 			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_FRAME_PS_CBUFFER ]		= HLSL::CreatePerFramePSCBuffer( this->CONSTANT_NAMES, m_aConstantBuffers[ ConstantBuffers::PS_ONCE_PER_FRAME ].uRegister );
-			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_MATERIAL_PS_CBUFFER ]	= HLSL::CreatePerMaterialPSCBuffer( this->CONSTANT_NAMES, m_aConstantBuffers[ ConstantBuffers::PS_ONCE_PER_MATERIAL ].uRegister );
+			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_MATERIAL_CBUFFER ]		= HLSL::CreatePerMaterialCBuffer( this->CONSTANT_NAMES, m_aConstantBuffers[ ConstantBuffers::ONCE_PER_MATERIAL ].uRegister );
 			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_DRAWCALL_VS_CBUFFER ]	= HLSL::CreatePerDrawcallVSCBuffer( this->CONSTANT_NAMES, m_aConstantBuffers[ ConstantBuffers::VS_ONCE_PER_DRAWCALL ].uRegister );
 			this->m_astrShaderCodes[ IShaderSystem::ShaderCodes::PER_DRAWCALL_PS_CBUFFER ]	= HLSL::CreatePerDrawcallPSCBuffer( this->CONSTANT_NAMES, m_aConstantBuffers[ ConstantBuffers::PS_ONCE_PER_DRAWCALL ].uRegister );
 			HLSL::CreateVUniforms( this->CONSTANT_NAMES );
 			HLSL::CreatePUniforms( this->CONSTANT_NAMES );
+
+			g_strShaderCBCode.reserve( 1000 );
+			g_strShaderCBCode += "#ifndef __XSE_SHADER_INC_H__\n#define __XSE_SHADER_INC_H__\n";
+			for (u32 i = 0; i < IShaderSystem::ShaderCodes::_ENUM_COUNT; ++i)
+			{
+				g_strShaderCBCode += m_astrShaderCodes[i] + "\n";
+			}
+			g_strShaderCBCode += "#endif";
+#if (XSE_RENDERER_DEBUG)
+			bool bResult = XST::IFile::Write(g_hShaderInc, (void*)g_strShaderCBCode.c_str(), g_strShaderCBCode.length());
+			xst_assert( bResult, "(CHLSLShaderSystem::ApplyShaderConstantNames) Unable to write data to file" );
+			if( !bResult )
+			{
+				XST_LOG_ERR( "Unable to write cbuffers to cache shader_inc.h file" );
+				return XST_FAIL;
+			}
+#endif
 			return XST_OK;
 		}
 
@@ -564,6 +575,14 @@ namespace XSE
 			m_pRS = (CRenderSystem*)pRS;
 			//Check options
 			//Check feature level
+
+			// Create cache file with cbuffers and samplers
+			g_hShaderInc = XST::IFile::Create( "shader_inc.h", XST::IFile::WRITE );
+			if ( !g_hShaderInc )
+			{
+				XST_LOG_ERR( "Unable to create cache file: shader_inc.h" );
+				return XST_FAIL;
+			}
 
 			for( i32 i = ConstantBuffers::_ENUM_COUNT; i --> 0; )
 				m_apD3DConstantBuffers[ i ] = xst_null;
@@ -578,32 +597,38 @@ namespace XSE
 			u32 uPSCurrReg = 0, uVSCurrReg = 0;
 			u32 uCurrRegister = 0;
 			{
-				auto& cb = m_aConstantBuffers[ConstantBuffers::VS_ONCE_PER_FRAME];
+				auto& cb = m_aConstantBuffers[ConstantBuffers::ONCE_PER_FRAME];
 				cb.strName = "cbFrame";
+				cb.uDataSize = sizeof(SALLOncePerFrame);
+				cb.uRegister = uCurrRegister++;
+			}
+			{
+				auto& cb = m_aConstantBuffers[ConstantBuffers::VS_ONCE_PER_FRAME];
+				cb.strName = "cbVSFrame";
 				cb.uDataSize = sizeof(SVSOncePerFrame);
 				cb.uRegister = uCurrRegister++;
 			}
 			{
 				auto& cb = m_aConstantBuffers[ConstantBuffers::VS_ONCE_PER_DRAWCALL];
-				cb.strName = "cbDrawCall";
+				cb.strName = "cbVSDrawCall";
 				cb.uDataSize = sizeof(SVSOncePerDrawCall);
 				cb.uRegister = uCurrRegister++;
 			}
 			{
 				auto& cb = m_aConstantBuffers[ConstantBuffers::PS_ONCE_PER_FRAME];
-				cb.strName = "cbFrame";
+				cb.strName = "cbPSFrame";
 				cb.uDataSize = sizeof(SPSOncePerFrame);
 				cb.uRegister = uCurrRegister++;
 			}
 			{
-				auto& cb = m_aConstantBuffers[ConstantBuffers::PS_ONCE_PER_MATERIAL];
+				auto& cb = m_aConstantBuffers[ConstantBuffers::ONCE_PER_MATERIAL];
 				cb.strName = "cbMaterial";
-				cb.uDataSize = sizeof(PSOncePerMaterial);
+				cb.uDataSize = sizeof(SOncePerMaterial);
 				cb.uRegister = uCurrRegister++;
 			}
 			{
 				auto& cb = m_aConstantBuffers[ ConstantBuffers::PS_ONCE_PER_DRAWCALL ];
-				cb.strName = "cbDrawCall";
+				cb.strName = "cbPSDrawCall";
 				cb.uDataSize = sizeof( SPSOncePerDrawCall );
 				cb.uRegister = uCurrRegister++;
 			}
@@ -754,6 +779,19 @@ namespace XSE
 		// TODO: separate updates for vertex and fragment shaders
 		void CHLSLShaderSystem::UpdateFrameInputs()
 		{	
+			{
+				auto& cb = m_aConstantBuffers[ ConstantBuffers::ONCE_PER_FRAME ];
+				m_pRS->m_pDeviceContext->Map( cb.pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
+				g_pOncePerFrame = (SALLOncePerFrame*)g_MappedSubresource.pData;
+				cb.pData = (xst_unknown)g_pOncePerFrame;
+				g_pOncePerFrame->vecCamPos.Set( m_vAllConstantValues[ ShaderConstants::CAMERA_POSITION ].float3 );
+				g_pOncePerFrame->vecCamDir.Set( m_vAllConstantValues[ ShaderConstants::CAMERA_DIRECTION].float3 );
+				g_pOncePerFrame->vecScreenSize.Set( m_vAllConstantValues[ ShaderConstants::SCREEN_SIZE ].float2 );
+				g_pOncePerFrame->fTime = m_vAllConstantValues[ ShaderConstants::TIME ].float1[0];
+				m_pRS->m_pDeviceContext->Unmap( cb.pBuffer, 0 );
+				m_pRS->m_pDeviceContext->VSSetConstantBuffers( cb.uRegister, 1, &cb.pBuffer );
+				m_pRS->m_pDeviceContext->PSSetConstantBuffers( cb.uRegister, 1, &cb.pBuffer );
+			}
 			auto& vcb = m_aConstantBuffers[ ConstantBuffers::VS_ONCE_PER_FRAME ];
 			m_pRS->m_pDeviceContext->Map( vcb.pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
 			g_pOncePerFrameVS = (SVSOncePerFrame*)g_MappedSubresource.pData;
@@ -761,10 +799,6 @@ namespace XSE
 			m_pRS->GetMatrix( MatrixTypes::PROJECTION,	&g_pOncePerFrameVS->mtxProj );
 			m_pRS->GetMatrix( MatrixTypes::VIEW,		&g_pOncePerFrameVS->mtxView );
 			m_pRS->GetMatrix( MatrixTypes::VIEW_PROJ,	&g_pOncePerFrameVS->mtxViewProj );
-			g_pOncePerFrameVS->vecCamPos.Set( m_vAllConstantValues[ ShaderConstants::CAMERA_POSITION ].float3 );
-			g_pOncePerFrameVS->vecCamDir.Set( m_vAllConstantValues[ ShaderConstants::CAMERA_DIRECTION ].float3 );
-			g_pOncePerFrameVS->vecScreenSize.Set( m_vAllConstantValues[ ShaderConstants::SCREEN_SIZE ].float2 );
-			g_pOncePerFrameVS->fTime = m_vAllConstantValues[ ShaderConstants::TIME ].float1[0];
 			m_pRS->m_pDeviceContext->Unmap( vcb.pBuffer, 0 );
 			m_pRS->m_pDeviceContext->VSSetConstantBuffers( vcb.uRegister, 1, &vcb.pBuffer );
 
@@ -774,20 +808,16 @@ namespace XSE
 			g_pOncePerFramePS->vecLightColor.Set( m_vAllConstantValues[ ShaderConstants::LIGHT_COLOR ].float4 );
 			g_pOncePerFramePS->vecSceneAmbient.Set( m_vAllConstantValues[ ShaderConstants::SCENE_AMBIENT_COLOR ].float4 );
 			g_pOncePerFramePS->vecLightPos.Set( m_vAllConstantValues[ ShaderConstants::LIGHT_POSITION ].float3 );
-			g_pOncePerFramePS->vecCamPos.Set( m_vAllConstantValues[ ShaderConstants::CAMERA_POSITION ].float3 );
-			g_pOncePerFramePS->vecCamDir.Set( m_vAllConstantValues[ ShaderConstants::CAMERA_DIRECTION ].float3 );
-			g_pOncePerFramePS->vecScreenSize.Set( m_vAllConstantValues[ ShaderConstants::SCREEN_SIZE ].float2 );
 			g_pOncePerFramePS->fLightSpecularPower = ( m_vAllConstantValues[ ShaderConstants::LIGHT_SPECULAR_POWER ].float1[0] );
-			g_pOncePerFramePS->fTime = ( m_vAllConstantValues[ ShaderConstants::TIME ].float1[0] );
 			m_pRS->m_pDeviceContext->Unmap( pcb.pBuffer, 0 );
 			m_pRS->m_pDeviceContext->PSSetConstantBuffers( pcb.uRegister, 1, &pcb.pBuffer );
 		}
 
 		void CHLSLShaderSystem::UpdateMaterialInputs()
 		{
-			auto& pcb = m_aConstantBuffers[ ConstantBuffers::PS_ONCE_PER_MATERIAL ];
+			auto& pcb = m_aConstantBuffers[ ConstantBuffers::ONCE_PER_MATERIAL ];
 			m_pRS->m_pDeviceContext->Map( pcb.pBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &g_MappedSubresource );
-			g_pOncePerMatPS = (PSOncePerMaterial*)g_MappedSubresource.pData;
+			g_pOncePerMatPS = (SOncePerMaterial*)g_MappedSubresource.pData;
 			pcb.pData = g_MappedSubresource.pData;
 			g_pOncePerMatPS->vecAmbientColor.Set( m_vAllConstantValues[ ShaderConstants::MATERIAL_AMBIENT_COLOR ].float4 );
 			m_pRS->m_pDeviceContext->Unmap( pcb.pBuffer, 0 );
@@ -1106,6 +1136,11 @@ namespace XSE
 			return XST_OK;
 		}
 
+		bool ContainsString(cch8* strShader, xst_castring* pStrCB, cch8* str)
+		{
+			return pStrCB->find( str ) != 0 && strstr( strShader, str ) != xst_null;
+		}
+
 		xst_astring _AddConstantBuffers(Resources::IShader** ppShader, xst_castring* *const astrCBs, u32 uCount)
 		{
 			xst_assert2( (*ppShader) );
@@ -1114,11 +1149,16 @@ namespace XSE
 			XST::TCData<u8>& Data = pFile->GetData();
 			xst_astring strCode;
 			strCode.reserve( 10000 );
-			for(u32 i = 0; i < uCount; ++i )
-				strCode += *(astrCBs[ i ]);
+			/*for( u32 i = 0; i < uCount; ++i )
+			{
+				strCode += *(astrCBs[i]);
+			}
 			strCode.append( (lpcastr)Data.GetPointer(), Data.GetSize() );
 			Data.Copy( (u8*)strCode.c_str(), strCode.length(), true );
-			strCode = (lpcastr)Data.GetPointer();
+			strCode = (lpcastr)Data.GetPointer();*/
+
+			strCode = g_strShaderCBCode;
+			strCode.append((lpcastr)Data.GetPointer(), Data.GetSize());
 			return strCode;
 		}
 
@@ -1130,24 +1170,29 @@ namespace XSE
 			{
 				case ShaderTypes::VERTEX:
 				{
-					xst_castring* a[] = {	&this->GetShaderCode( ShaderCodes::PER_FRAME_VS_CBUFFER ),
-											&this->GetShaderCode( ShaderCodes::PER_DRAWCALL_VS_CBUFFER )};
-					xst_astring str = _AddConstantBuffers( &pShader, a, 2 );
 					CVertexShader* pVShader = (CVertexShader*)pShader;
+					xst_castring* a[] = {   &this->GetShaderCode( ShaderCodes::PER_FRAME_CBUFFER ),
+											&this->GetShaderCode( ShaderCodes::PER_FRAME_VS_CBUFFER ),
+											&this->GetShaderCode( ShaderCodes::PER_MATERIAL_CBUFFER ),
+											&this->GetShaderCode( ShaderCodes::PER_DRAWCALL_VS_CBUFFER )};
+					xst_astring str = _AddConstantBuffers( &pShader, a, sizeof(a) / sizeof(xst_castring*) );
                     return this->CompileVertexShader( pVShader, str.data(), str.length(), pVShader->GetEntryPoint().c_str(),
                                                      pVShader->GetProfile() );
+					//return this->CompileVertexShader( pVShader );
 				}
 				break;
 
 				case ShaderTypes::PIXEL:
 				{
-					xst_castring* a[] = {	&this->GetShaderCode( ShaderCodes::PER_FRAME_PS_CBUFFER ),
-											&this->GetShaderCode( ShaderCodes::PER_MATERIAL_PS_CBUFFER ),
-											&this->GetShaderCode( ShaderCodes::PER_DRAWCALL_PS_CBUFFER )};
-					xst_astring str = _AddConstantBuffers( &pShader, a, 3 );
 					CPixelShader* pPShader = (CPixelShader*)pShader;
+					xst_castring* a[] = {   &this->GetShaderCode( ShaderCodes::PER_FRAME_CBUFFER ),
+											&this->GetShaderCode( ShaderCodes::PER_FRAME_PS_CBUFFER ),
+											&this->GetShaderCode( ShaderCodes::PER_MATERIAL_CBUFFER ),
+											&this->GetShaderCode( ShaderCodes::PER_DRAWCALL_PS_CBUFFER )};
+					xst_astring str = _AddConstantBuffers( &pShader, a, sizeof(a) / sizeof(xst_castring*) );
 					return this->CompilePixelShader( pPShader, str.c_str(), str.length(), pPShader->GetEntryPoint().c_str(),
                                                     pPShader->GetProfile() );
+					//return this->CompilePixelShader( pPShader );
 				}
 				break;
 			}

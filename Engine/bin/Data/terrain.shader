@@ -33,10 +33,10 @@ Texture2D DiffuseTex;
 
 float4 ps(VS_OUT IN) : SV_TARGET
 {
-	const float3 f3LightPos = float3( 0, 100, 0 );
+	//const float3 f3LightPos = float3( 0, 100, 0 );
 	const float3 f3VertexPos = IN.f3Pos;
 	float3 f3N = normalize( IN.f3Normal );
-	float4 tc = DiffuseTex.Sample( DiffuseSampler, IN.f2TexCoord );
+	float4 tc = DiffuseTex.Sample( DiffuseSampler, IN.f2TexCoord * 100 );
 	//f3N = normalize( tc.rgb );
 	float3 f3L = normalize( f3LightPos - f3VertexPos );
 	float fDL = max( dot( f3N, f3L ), 0.0 );

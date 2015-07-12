@@ -89,6 +89,7 @@ class CToString
 xst_fi CToString ToString() { return CToString(); }
 
 #define DEBUG_CAMERA 1
+XSE::CLight* pLight;
 
 i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 {
@@ -146,13 +147,13 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	u32 uiCount = 11;
 	Options.PageCount = XSE::CPoint( 1, 1 );
 	Options.vHeightmaps.push_back( "heightmap04.jpg" );
-	//Options.PageVertexCount = XSE::CPoint( 32 * 1 + 1 );
-	//Options.TileVertexCount = XSE::CPoint( 16 * 1 + 1 );
+	//Options.PageVertexCount = XSE::CPoint( 32 * 32 + 1 );
+	//Options.TileVertexCount = XSE::CPoint( 32 * 1 + 1 );
 	Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
 	Options.TileVertexCount = XSE::CPoint( 16 + 1 );
 	//Options.PageVertexCount = XSE::CPoint( 32 + 1 );
 	//Options.TileVertexCount = XSE::CPoint( 32 + 1 );
-	Options.uiLODCount = 3;
+	Options.uiLODCount = 4;
 	//Options.bColor = true;
 	Options.bBinormal = Options.bNormal = Options.bTangent = false;
 	Options.bNormal = true;
@@ -193,9 +194,9 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 		pSphere->GetSceneNode()->SetPosition( m_pDbgCam->GetPosition() );
 	}
 
-	XSE::CLight* pLight = m_pSceneMgr->CreateLight("terrain");
+	pLight = m_pSceneMgr->CreateLight("terrain");
 	pLight->SetColor( XSE::Vec4( 0.3f, 0.6f, 0.9f, 1.0f ) );
-	pLight->SetPosition( vecPos );
+	pLight->SetPosition( 1000,500,0 );
 	//pSphere->GetSceneNode()->AddObject( pLight );
 	m_pSceneMgr->SetLight( pLight );
 
@@ -222,6 +223,39 @@ void CTerrain::OnUpdate()
 		this->m_pDbgCam->Move( -0.5f, this->m_pDbgCam->GetDirection() );
 	}
 	this->m_pDbgCam->Update(0);
+
+	if (pKeyboard->IsKeyPressed(XSE::KeyCodes::UP))
+	{
+		pLight->MoveObject(XSE::Vec3(0,100,0));
+	}
+	else if (pKeyboard->IsKeyPressed(XSE::KeyCodes::DOWN))
+	{
+		pLight->MoveObject(XSE::Vec3(0, -100, 0));
+	}
+	else if (pKeyboard->IsKeyPressed(XSE::KeyCodes::LEFT))
+	{
+		pLight->MoveObject(XSE::Vec3(-100, 0, 0));
+	}
+	else if (pKeyboard->IsKeyPressed(XSE::KeyCodes::RIGHT))
+	{
+		pLight->MoveObject(XSE::Vec3(100, 0, 0));
+	}
+
+	if (pKeyboard->IsKeyPressed(XSE::KeyCodes::CAPITAL_N))
+	{
+		XSE::MeshWeakPtr pNormals = XSE::CMeshManager::GetSingletonPtr()->GetResource("tmp_normal_mesh");
+		if (pNormals.IsValid())
+		{
+			pNormals->SetVisible(!pNormals->IsVisible());
+		}
+	}
+
+	if (pKeyboard->IsKeyPressed(XSE::KeyCodes::CAPITAL_C))
+	{
+		this->m_pViewCam->SetPosition(this->m_pDbgCam->GetPosition());
+		this->m_pViewCam->SetAngleX(this->m_pDbgCam->GetAngles().x);
+		this->m_pViewCam->SetAngleY(this->m_pDbgCam->GetAngles().y);
+	}
 }
 
 void CTerrain::OnKeyPressEvent( int iKey )
