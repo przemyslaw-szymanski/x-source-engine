@@ -26,3 +26,5 @@ II. Run sample manager
 	5. Copy platforms directory to the bin directory
 	6. Copy DevIL.dll into the bin directory
 	7. Copy DirectX dll into the bin directory
+
+	![Alt text](https://github.com/przemyslaw-szymanski/x-source-engine/blob/master/screenshots/terrain02.jpg "Terrain LOD")
