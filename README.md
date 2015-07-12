@@ -27,4 +27,8 @@ II. Run sample manager
 	6. Copy DevIL.dll into the bin directory
 	7. Copy DirectX dll into the bin directory
 
-	![Alt text](https://github.com/przemyslaw-szymanski/x-source-engine/blob/master/screenshots/terrain02.jpg "Terrain LOD")
+![Settings Window](https://github.com/przemyslaw-szymanski/x-source-engine/blob/master/screenshots/terrain02.jpg)
+![Settings Window](https://github.com/przemyslaw-szymanski/x-source-engine/blob/master/screenshots/terrain03.jpg)
+![Settings Window](https://github.com/przemyslaw-szymanski/x-source-engine/blob/master/screenshots/terrain04.jpg)
+![Settings Window](https://github.com/przemyslaw-szymanski/x-source-engine/blob/master/screenshots/terrain05.jpg)
+![Settings Window](https://github.com/przemyslaw-szymanski/x-source-engine/blob/master/screenshots/terrain08.jpg)
