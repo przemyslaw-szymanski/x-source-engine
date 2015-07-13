@@ -33,3 +33,4 @@ II. Run sample manager
 ![Settings Window](https://github.com/przemyslaw-szymanski/x-source-engine/blob/master/screenshots/terrain05.jpg)
 ![Settings Window](https://github.com/przemyslaw-szymanski/x-source-engine/blob/master/screenshots/terrain08.jpg)
 ![Settings Window](https://github.com/przemyslaw-szymanski/x-source-engine/blob/master/screenshots/terrain09.jpg)
+![Settings Window](https://github.com/przemyslaw-szymanski/x-source-engine/blob/master/screenshots/terrain10.jpg)
