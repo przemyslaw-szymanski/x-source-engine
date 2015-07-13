@@ -166,6 +166,16 @@ class SAMPLE_API ISample : public XSE::IKeyboardListener, public XSE::IMouseList
 				//m_pSceneMgr->GetCurrentCamera()->Move( XSE::Vec3( 0, 1, 0 ) );
 				m_pMoveCam->Move( vecUp );
 			}
+
+            if( pKeyboard->IsKeyPressed( XSE::KeyCodes::F1 ) )
+			{
+                m_pMoveCam->SetMoveSpeed(m_pMoveCam->GetMoveSpeed()-10);
+			}
+
+            if( pKeyboard->IsKeyPressed( XSE::KeyCodes::F2 ) )
+			{
+                m_pMoveCam->SetMoveSpeed(m_pMoveCam->GetMoveSpeed()+10);
+			}
 		}
 
 	protected:

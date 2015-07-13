@@ -36,8 +36,9 @@ namespace XSE
 	{
 		m_fSize = fSize;
 		cf32 fHalfSize = m_fSize * 0.5f;
-		m_vecMinCorner = vecMinCorner - fHalfSize;
+		m_vecMinCorner = vecMinCorner/* - fHalfSize*/;
 		m_pParent = pParent;
+        m_byCurrDepth = byCurrDepth;
 		_Init();
 	}
 

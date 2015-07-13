@@ -9,12 +9,27 @@
 #include "XSECMaterialManager.h"
 #include "XST/XSTCToString.h"
 
+#define XSE_DRAW_OCTREE 0
+
 namespace XSE
 {
 	void NoCullTest(const CCamera*, const CBoundingVolume&, OBJECT_DISABLE_REASON*);
 	void SphereCullTest(const CCamera*, const CBoundingVolume&, OBJECT_DISABLE_REASON*);
 	void AABBCullTest(const CCamera*, const CBoundingVolume&, OBJECT_DISABLE_REASON*);
 	void SphereAABBCullTest(const CCamera*, const CBoundingVolume&, OBJECT_DISABLE_REASON*);
+
+    #if defined( XSE_RENDERER_DEBUG )
+	u32 g_uiObjChecked = 0;
+	u32 g_uiObjDisabled = 0;
+	u32 g_uiNodesChecked = 0;
+	u32 g_uiAllNodes = 0;
+	u32 g_uiNodesDisabled = 0;
+	u32 g_uiRangeCullNodeDisabled = 0;
+	u32 g_uiSphereCullNodeDisabled = 0;
+	u32 g_uiAABBCullNodeDisabled = 0;
+	u32 g_uiSphereCullObjDisabled;
+	u32 g_uiAABBCullObjDisabled;
+#endif
 
 	class COctreeListener : public IOctreeListener
 	{
@@ -28,9 +43,9 @@ namespace XSE
 					void		OnAddNode(const COctree* pNode)
 					{
 						#if defined( XSE_RENDERER_DEBUG )
+                        ++g_uiAllNodes;
 							//For debug purpose
-							XST::CAABB AABB = pNode->CalcAABB();
-						
+							XST::CAABB AABB = pNode->CalcAABB();						
 							SLineBoxOptions Options;
 							Options.vecSize = AABB.CalcSize();
 							Options.vecPos = AABB.CalcCenter();
@@ -38,10 +53,15 @@ namespace XSE
 							xst_stringstream ssName;
 							ssName << m_pSystem->m_strSceneNodeName << "/" << AABB.CalcCenter();
 							IInputLayout* pIL = m_pSystem->m_pInputLayout;
-
-							//MeshPtr pMesh = m_pSystem->m_pSceneMgr->GetModelManager()->GetMeshManager()->CreateMesh( ssName.str(), pIL, BasicShapes::LINE_BOX, &Options );
-							//pMesh->SetVisible( true );
-							//m_pSystem->m_pOctModel->AddMesh( pMesh, true );
+#if (XSE_DRAW_OCTREE)
+                            auto& pRes = m_pSystem->m_pSceneMgr->GetModelManager()->GetMeshManager()->GetResource( ssName.str() );
+                            if(pRes.IsNull()) 
+                            {
+                                MeshPtr pMesh = m_pSystem->m_pSceneMgr->GetModelManager()->GetMeshManager()->CreateMesh(ssName.str(), pIL, BasicShapes::LINE_BOX, &Options);
+                                pMesh->SetVisible(true);
+                                m_pSystem->m_pOctModel->AddMesh(pMesh, true);
+                            }
+#endif
 						#endif //XSE_RENDER_DEBUG
 					}
 
@@ -60,8 +80,8 @@ namespace XSE
 		m_pInputLayout = m_pSceneMgr->GetRenderSystem()->GetInputLayout( ILE::POSITION | ILE::COLOR );
 		m_strSceneNodeName = m_pSceneMgr->GetName() + "/xse_octree_model";
 		m_pOctModel = m_pSceneMgr->GetModelManager()->CreateModel( m_strSceneNodeName, m_pSceneMgr->GetName() );
-		m_pOctModel->SetMaterial( m_pSceneMgr->GetModelManager()->GetMeshManager()->GetMaterialManager()->GetMaterial( CMaterialManager::DEFAULT_MAT_COLOR, DEFAULT_GROUP ) );
-		m_pOctModel->SetVisible( false );
+		//m_pOctModel->SetMaterial( m_pSceneMgr->GetModelManager()->GetMeshManager()->GetMaterialManager()->GetMaterial( CMaterialManager::DEFAULT_MAT_COLOR, DEFAULT_GROUP ) );
+		m_pOctModel->SetVisible( XSE_DRAW_OCTREE );
 	}
 
 	COctreeScenePartitionSystem::~COctreeScenePartitionSystem()
@@ -97,18 +117,7 @@ namespace XSE
 		m_bProcessSkipped = true;
 	}
 
-#if defined( XSE_RENDERER_DEBUG )
-	u32 g_uiObjChecked = 0;
-	u32 g_uiObjDisabled = 0;
-	u32 g_uiNodesChecked = 0;
-	u32 g_uiAllNodes = 0;
-	u32 g_uiNodesDisabled = 0;
-	u32 g_uiRangeCullNodeDisabled = 0;
-	u32 g_uiSphereCullNodeDisabled = 0;
-	u32 g_uiAABBCullNodeDisabled = 0;
-	u32 g_uiSphereCullObjDisabled;
-	u32 g_uiAABBCullObjDisabled;
-#endif
+
 	void	COctreeScenePartitionSystem::Update()
 	{
 		if( m_bProcessSkipped || m_bProcessingStopped )

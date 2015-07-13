@@ -117,7 +117,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	this->m_pViewCam->SetAngleY( 0.580f );
 	this->m_pViewCam->SetPosition( 32, 100, 24 );
 	//this->m_pViewCam->SetPosition( 0, 0, 0 );
-	this->m_pViewCam->SetSpeed( 2000, 1.1f, 1.1f );
+	this->m_pViewCam->SetSpeed( 1000, 1.1f, 1.1f );
 	this->m_pViewCam->SetFar( 1000 );
 
 	// DEBUG CAMERA
@@ -147,10 +147,10 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 	u32 uiCount = 11;
 	Options.PageCount = XSE::CPoint( 1, 1 );
 	Options.vHeightmaps.push_back( "heightmap04.jpg" );
-	//Options.PageVertexCount = XSE::CPoint( 32 * 32 + 1 );
-	//Options.TileVertexCount = XSE::CPoint( 32 * 1 + 1 );
-	Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
-	Options.TileVertexCount = XSE::CPoint( 16 + 1 );
+	Options.PageVertexCount = XSE::CPoint( 32 * 32 + 1 );
+	Options.TileVertexCount = XSE::CPoint( 32 * 1 + 1 );
+	//Options.PageVertexCount = XSE::CPoint( 32 * 6 + 1 );
+	//Options.TileVertexCount = XSE::CPoint( 16 + 1 );
 	//Options.PageVertexCount = XSE::CPoint( 32 + 1 );
 	//Options.TileVertexCount = XSE::CPoint( 32 + 1 );
 	Options.uiLODCount = 4;
