@@ -174,6 +174,50 @@ namespace XSE
 		return XST_OK;
 	}
 
+	i32 CalcImpostorVertexPositions(const xst_vector<Vec3>& vPositions, const xst_vector<Vec3>& vNormals, 
+		xst_vector<CMipMapTerrainTile::SInfo>* pvTileOut, const CPoint& TileCount, const CPoint& TileVertexCount,
+		CVertexData* pDataOut)
+	{
+		CPoint VertexPos;
+		Vec3 vecTileMin(XST_MAX_F32), vecTileMax(XST_MIN_F32);
+		ul32 ulCurrVertex = 0;
+		Vec3 vecNormal;
+		CPoint VertexRange;
+		ul32 ulVertexId;
+		Vec3 vecPos;
+		auto& VData = *pDataOut;
+
+		for (u32 uTileY = 0; uTileY < TileCount.y; ++uTileY)
+		{
+			for (u32 uTileX = 0; uTileX < TileCount.y; ++uTileX)
+			{
+				VertexPos.y = uTileY * (TileVertexCount.y - 1);
+				vecTileMin = XST_MAX_F32;
+				vecTileMax = XST_MIN_F32;
+				VertexRange.x = ulCurrVertex;
+				for (u32 uVertexY = 0; uVertexY < TileVertexCount.y; ++uVertexY)
+				{
+					VertexPos.x = uTileX * (TileVertexCount.x - 1);
+
+					for (u32 uVertexX = 0; uVertexX < TileVertexCount.x; ++uVertexX)
+					{
+						ulVertexId = XST_ARRAY_2D_TO_1D( VertexPos.x, VertexPos.y, TileVertexCount.x );
+						vecPos = vPositions[ ulVertexId ];
+						vecNormal = vNormals[ ulVertexId ];
+						vecTileMin.Min( vecPos );
+						vecTileMax.Max( vecPos );
+
+						VData.SetPosition( ulCurrVertex, vecPos );
+
+						VertexPos.x++;
+						ulCurrVertex++;
+					}
+					VertexPos.y++;
+				}
+			}
+		}
+	}
+
 	void CMipMapTerrainPage::CalcVertexPositions()
 	{
 		cu32 uImgWidth	= m_Info.pImg->GetWidth();

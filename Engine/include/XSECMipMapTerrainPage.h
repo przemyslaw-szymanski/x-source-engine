@@ -47,7 +47,13 @@ namespace XSE
             bool bEachTileHasOwnTexCoords = false;
 		};
 
+		struct SImpostor
+		{
+			VertexBufferPtr pVB;
+		};
+
 		typedef xst_vector< CMipMapTerrainTile >	TileVec;
+		typedef xst_vector< CMipMapTerrainTile::SInfo >		ImpostorTileVec;
 		//typedef xst_vector< SVertexData >			VertexDataVec;
 		typedef XST::TCDynamicArray< SVertexData >	VertexDataArray;
 		//xst_vector< SVertexData, XST::STL::TCAlignedAllocator< SVertexData, 16 > > v;
@@ -95,10 +101,10 @@ namespace XSE
 
 	protected:
 
+		SInfo					m_Info;
 		CMipMapPagingTerrain*	m_pTerrain = xst_null;
 		CBoundingVolume			m_BoundingVolume;
-        u8 m_padding[ 12 ];
-		SInfo					m_Info;
+		ImpostorTileVec			m_vImpTiles;
 		//MeshPtr					m_pMesh; // Not drawable
 		xst_vector<Vec3>		m_vVertices;
 		xst_vector<Vec3>		m_vNormals;

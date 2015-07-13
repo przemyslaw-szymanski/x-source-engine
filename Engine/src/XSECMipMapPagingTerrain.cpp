@@ -401,7 +401,7 @@ namespace XSE
 				//Info.pIB = GetIndexBuffer( 0, 0 ).pIndexBuffer.GetPtr();
 				Info.pImpImg = m_vpImages[1].GetPtr(); // TEMP
                 Info.bEachTileHasOwnTexCoords = m_Options.bEachTileHasOwnTexCoords;
-				
+				pPage->m_vImpTiles.resize(2*2);
 				XST_RET_FAIL( pPage->Init( Info ) );
 
 				vecPos.x += vecPageSize.x;
