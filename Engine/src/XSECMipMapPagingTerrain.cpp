@@ -58,7 +58,7 @@ namespace XSE
 		// And then copy that data to the rest
 		ul32 ulVertexId = 0;
 
-		for( u32 i = 0; i < 1; ++i )
+		/*for( u32 i = 0; i < 1; ++i )
 		{
 			pVB = apVBs[ i ];
 			if( XST_FAILED( pVB->Lock() ) )
@@ -81,14 +81,14 @@ namespace XSE
 
 			if( XST_FAILED( pVB->Unlock() ) )
 				return XST_FAIL;
-		}
+		}*/
 
 		for( u32 i = 1; i < uVBCount; ++i )
 		{
 			pVB = apVBs[ i ];
-			XST_RET_FAIL( pVB->Lock() );
+			/*XST_RET_FAIL( pVB->Lock() );
 			XST_RET_FAIL( pVB->GetVertexData( ).SetData( apVBs[ 0 ]->GetVertexData() ) );
-			XST_RET_FAIL( pVB->Unlock() );
+			XST_RET_FAIL( pVB->Unlock() );*/
 		}
 
 		return XST_OK;
@@ -367,7 +367,7 @@ namespace XSE
 		const CPoint ImpVertCount = CalcImpostorVertexCount( m_Options.PageVertexCount, m_Options.uiLODCount );
 		IVertexBuffer* *const pTmpVBs = &m_vpImpostorVertexBuffers[ 0 ];
 		XST_RET_FAIL( CreateImpostorVertexBufferData( &pTmpVBs, m_vpImpostorVertexBuffers.size(), ImpVertCount, vecPageSize, m_pInputLayout ) );
-		XST_RET_FAIL( SetImpostorVertexDataHeights( &(pTmpVBs[0]), ImpVertCount, m_Options.vecHeightRange, m_vpImages[1].GetPtr() ) );
+		//XST_RET_FAIL( SetImpostorVertexDataHeights( &(pTmpVBs[0]), ImpVertCount, m_Options.vecHeightRange, m_vpImages[1].GetPtr() ) );
 
 		for(u32 y = 0; y < m_Options.PageCount.y; ++y)
 		{

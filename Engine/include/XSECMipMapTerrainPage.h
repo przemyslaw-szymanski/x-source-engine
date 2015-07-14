@@ -53,7 +53,7 @@ namespace XSE
 		};
 
 		typedef xst_vector< CMipMapTerrainTile >	TileVec;
-		typedef xst_vector< CMipMapTerrainTile::SInfo >		ImpostorTileVec;
+		typedef xst_vector< CMipMapTerrainTile >	ImpostorTileVec;
 		//typedef xst_vector< SVertexData >			VertexDataVec;
 		typedef XST::TCDynamicArray< SVertexData >	VertexDataArray;
 		//xst_vector< SVertexData, XST::STL::TCAlignedAllocator< SVertexData, 16 > > v;

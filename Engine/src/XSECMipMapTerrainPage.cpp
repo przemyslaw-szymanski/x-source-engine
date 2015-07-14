@@ -174,9 +174,17 @@ namespace XSE
 		return XST_OK;
 	}
 
+    CPoint CalcImpostorVertexCount2(const CPoint& PageVertexCount, u32 uLODCount)
+	{
+		CPoint vc;
+		vc.x = (PageVertexCount.x >> uLODCount) + 1;
+		vc.y = (PageVertexCount.y >> uLODCount) + 1;
+		return vc;
+	}
+
 	i32 CalcImpostorVertexPositions(const xst_vector<Vec3>& vPositions, const xst_vector<Vec3>& vNormals, 
-		xst_vector<CMipMapTerrainTile::SInfo>* pvTileOut, const CPoint& TileCount, const CPoint& TileVertexCount,
-		CVertexData* pDataOut)
+		xst_vector<CMipMapTerrainTile>* pvTileOut, const CPoint& TileCount, const CPoint& TileVertexCount,
+		const Vec3& vecPagePosition, const Vec3& vecPageSize, CVertexData* pDataOut)
 	{
 		CPoint VertexPos;
 		Vec3 vecTileMin(XST_MAX_F32), vecTileMax(XST_MIN_F32);
@@ -186,6 +194,12 @@ namespace XSE
 		ul32 ulVertexId;
 		Vec3 vecPos;
 		auto& VData = *pDataOut;
+        auto& aTiles = *pvTileOut;
+        ul32 ulTileVertexCount = TileVertexCount.x * TileVertexCount.y;
+        u32 uCurrTileId = 0;
+        const Vec2 vecTileSize( vecPageSize.x / TileCount.x, vecPageSize.y / TileCount.y );
+		const Vec2 vecTileHalfSize( vecTileSize * 0.5f );
+		Vec2 vecStep( vecTileSize.x / (TileVertexCount.x-1), vecTileSize.y / (TileVertexCount.y-1) );
 
 		for (u32 uTileY = 0; uTileY < TileCount.y; ++uTileY)
 		{
@@ -214,8 +228,32 @@ namespace XSE
 					}
 					VertexPos.y++;
 				}
+
+                u32 uTileId = XST_ARRAY_2D_TO_1D( uTileX, uTileY, TileCount.x );
+				xst_assert2( uTileId < TileCount.x * TileCount.y );
+				auto& Tile = aTiles[ uTileId ];
+                auto& TileInfo = Tile.GetInfo();
+				TileInfo.ulStartVertex = uCurrTileId * ulTileVertexCount;
+				TileInfo.ulVertexBufferOffset = TileInfo.ulStartVertex;
+				TileInfo.TilePart = CPoint( uTileX, uTileY );
+				TileInfo.VertexRange.y = ulCurrVertex - 1;
+				vecTileMax.x = vecTileMin.x + vecTileSize.x;
+				vecTileMax.z = vecTileMin.z + vecTileSize.y;
+				CBoundingVolume Vol;
+				Vol.BuildFromMinMax( vecTileMin, vecTileMax );
+				//sprintf( t, "[(%.2f,%.2f, %.2f)-(%.2f,%.2f, %.2f)]", vecTileMin.x, vecTileMin.y, vecTileMin.z, vecTileMax.x, vecTileMax.y, vecTileMax.z ); XST::CDebug::PrintDebugLN( t );
+				Tile.SetBoundingVolume( Vol );
+				Tile.SetPosition( Vol.GetAABB( ).CalcCenter() );
+#if (XSE_TERRAIN_NORMAL_DEBUG)
+				//xst_sprintf( t, sizeof(t), "terr_p%d_t%dx%d", m_Info.uPageId, TileInfo.TilePart.x, TileInfo.TilePart.y );
+				//Tile._SetDbgName( t );
+#endif
+				uCurrTileId++;
 			}
+
+            vecPos.z = vecPagePosition.y + uTileY * ( (TileVertexCount.y-1) * vecStep.y );
 		}
+        return XST_OK;
 	}
 
 	void CMipMapTerrainPage::CalcVertexPositions()
@@ -238,9 +276,9 @@ namespace XSE
 		Vec3 vecTilePos = m_Info.vecPagePosition;
 		Vec3 vecTilePosEnd = vecTilePos;
 		TileInfo.ulStartVertex = 0;
-		const Vec2 vecTILEize( m_Info.vecPageSize.x / m_Info.TileCount.x, m_Info.vecPageSize.y / m_Info.TileCount.y );
-		const Vec2 vecTileHalfSize( vecTILEize * 0.5f );
-		Vec2 vecStep( vecTILEize.x / (m_Info.TileVertexCount.x-1), vecTILEize.y / (m_Info.TileVertexCount.y-1) );
+		const Vec2 vecTileSize( m_Info.vecPageSize.x / m_Info.TileCount.x, m_Info.vecPageSize.y / m_Info.TileCount.y );
+		const Vec2 vecTileHalfSize( vecTileSize * 0.5f );
+		Vec2 vecStep( vecTileSize.x / (m_Info.TileVertexCount.x-1), vecTileSize.y / (m_Info.TileVertexCount.y-1) );
 		const IInputLayout* pIL = m_Info.pInputLayout;
 		u32 uCurrTileId = 0;
 		Vec4 vecCol(1,1,1,1);
@@ -364,8 +402,8 @@ namespace XSE
 				TileInfo.pVB = m_Info.pVB;
 				pTile->Init( TileInfo );
 				pTile->SetPosition( vecTilePos + Vec3(vecTileHalfSize.x, 0, vecTileHalfSize.y) ); // calculate center: right_top_corner + half_size
-				vecTileMax.x = vecTileMin.x + vecTILEize.x;
-				vecTileMax.z = vecTileMin.z + vecTILEize.y;
+				vecTileMax.x = vecTileMin.x + vecTileSize.x;
+				vecTileMax.z = vecTileMin.z + vecTileSize.y;
 				CBoundingVolume Vol;
 				Vol.BuildFromMinMax( vecTileMin, vecTileMax );
 				//sprintf( t, "[(%.2f,%.2f, %.2f)-(%.2f,%.2f, %.2f)]", vecTileMin.x, vecTileMin.y, vecTileMin.z, vecTileMax.x, vecTileMax.y, vecTileMax.z ); XST::CDebug::PrintDebugLN( t );
@@ -388,11 +426,23 @@ namespace XSE
 
 		if( m_Info.pIB )
 			CalcVertexNormals( VData, m_Info.pIB );
-
+       
 #if (XSE_TERRAIN_NORMAL_DEBUG)
 		pVB->Unlock();
 		pIB->Unlock();
 #endif
+
+        if( m_Info.pImpVB->Lock() == XST_OK ) 
+        {
+            auto& ImpVData = m_Info.pImpVB->GetVertexData();
+            const CPoint ImpPageVertexCount = CalcImpostorVertexCount2(m_Info.VertexCount, 4);
+            const CPoint ImpTileCount(2,2);
+            const CPoint ImpTileVertexCount( ImpPageVertexCount.x / ImpTileCount.x + 1, 
+                                             ImpPageVertexCount.y / ImpTileCount.y + 1 );
+            CalcImpostorVertexPositions(vPositions, vNormals, &m_vImpTiles, ImpTileCount, ImpTileVertexCount,
+                                        m_Info.vecPagePosition, m_Info.vecPageSize, &ImpVData);
+            m_Info.pImpVB->Unlock();
+        }
 	}
 
 	void CMipMapTerrainPage::CalcVertexNormals()
@@ -461,9 +511,9 @@ namespace XSE
 		Vec3 vecTilePos = m_Info.vecPagePosition;
 		Vec3 vecTilePosEnd = vecTilePos;
 		TileInfo.ulStartVertex = 0;
-		const Vec2 vecTILEize( m_Info.vecPageSize.x / m_Info.TileCount.x, m_Info.vecPageSize.y / m_Info.TileCount.y );
-		const Vec2 vecTileHalfSize( vecTILEize * 0.5f );
-		Vec2 vecStep( vecTILEize.x / (m_Info.TileVertexCount.x-1), vecTILEize.y / (m_Info.TileVertexCount.y-1) );
+		const Vec2 vecTileSize( m_Info.vecPageSize.x / m_Info.TileCount.x, m_Info.vecPageSize.y / m_Info.TileCount.y );
+		const Vec2 vecTileHalfSize( vecTileSize * 0.5f );
+		Vec2 vecStep( vecTileSize.x / (m_Info.TileVertexCount.x-1), vecTileSize.y / (m_Info.TileVertexCount.y-1) );
 		const IInputLayout* pIL = m_Info.pInputLayout;
 		u32 uCurrTileId = 0;
 		Vec4 vecCol(1,1,1,1);

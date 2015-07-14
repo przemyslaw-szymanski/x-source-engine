@@ -92,6 +92,10 @@ namespace XSE
 			xst_fi 
 			MIPMAP_TERRAIN_STITCH_TYPE		GetStitchType() const { return m_eStitchType; }
 
+            xst_fi SInfo&                   GetInfo() { return m_Info; }
+
+            xst_fi const SInfo&             GetInfo() const { return m_Info; }
+
 		protected:
 
 			void							_OnObjectDisable(cu32& uDisableReason);
