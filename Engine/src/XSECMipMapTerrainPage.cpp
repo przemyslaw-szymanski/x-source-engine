@@ -203,7 +203,7 @@ namespace XSE
 
 		for (u32 uTileY = 0; uTileY < TileCount.y; ++uTileY)
 		{
-			for (u32 uTileX = 0; uTileX < TileCount.y; ++uTileX)
+			for (u32 uTileX = 0; uTileX < TileCount.x; ++uTileX)
 			{
 				VertexPos.y = uTileY * (TileVertexCount.y - 1);
 				vecTileMin = XST_MAX_F32;
@@ -222,7 +222,7 @@ namespace XSE
 						vecTileMax.Max( vecPos );
 
 						VData.SetPosition( ulCurrVertex, vecPos );
-
+						//XST::CDebug::PrintDebugLN(XST::ToStr() << ulCurrVertex);
 						VertexPos.x++;
 						ulCurrVertex++;
 					}
@@ -432,18 +432,19 @@ namespace XSE
 		pIB->Unlock();
 #endif
         
+		auto& ImpVData = m_Info.pImpVB->GetVertexData();
+		CPoint ImpPageVertexCount = CPoint(3, 3);//CalcImpostorVertexCount2(m_Info.VertexCount, 4);
+		const CPoint ImpTileCount(2, 2);
+		const CPoint ImpTileVertexCount(ImpPageVertexCount.x / ImpTileCount.x + 1,
+			ImpPageVertexCount.y / ImpTileCount.y + 1);
+		ImpPageVertexCount = CPoint((ImpTileVertexCount.x-0) * (ImpTileCount.x) +0, (ImpTileVertexCount.y-0) * (ImpTileCount.y) +0);
+		ul32 ulImpVertexCount = ImpPageVertexCount.x * ImpPageVertexCount.y;
+		pVB->SetInputLayout(m_Info.pInputLayout);
+		pVB->SetTopologyType(TopologyTypes::TRIANGLE_LIST);
+		pVB->SetUsage(BufferUsages::DEFAULT);
+		pVB->SetVertexCount(ulImpVertexCount);
         if( m_Info.pImpVB->Lock() == XST_OK ) 
         {
-            auto& ImpVData = m_Info.pImpVB->GetVertexData();
-            CPoint ImpPageVertexCount = CalcImpostorVertexCount2(m_Info.VertexCount, 4);
-            const CPoint ImpTileCount(2,2);
-            const CPoint ImpTileVertexCount( ImpPageVertexCount.x / ImpTileCount.x + 1, 
-                                             ImpPageVertexCount.y / ImpTileCount.y + 1 );
-            ImpPageVertexCount = CPoint(ImpTileVertexCount.x * ImpTileCount.x, ImpTileVertexCount.y * ImpTileCount.y);
-            pVB->SetInputLayout( m_Info.pInputLayout );
-			pVB->SetTopologyType( TopologyTypes::TRIANGLE_LIST );
-			pVB->SetUsage( BufferUsages::DEFAULT );
-			pVB->SetVertexCount( ulVertexCount );
             CalcImpostorVertexPositions(vPositions, vNormals, &m_vImpTiles, ImpTileCount, ImpTileVertexCount,
                                         m_Info.vecPagePosition, m_Info.vecPageSize, &ImpVData);
             m_Info.pImpVB->Unlock();
