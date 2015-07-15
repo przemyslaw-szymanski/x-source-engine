@@ -431,14 +431,19 @@ namespace XSE
 		pVB->Unlock();
 		pIB->Unlock();
 #endif
-
+        
         if( m_Info.pImpVB->Lock() == XST_OK ) 
         {
             auto& ImpVData = m_Info.pImpVB->GetVertexData();
-            const CPoint ImpPageVertexCount = CalcImpostorVertexCount2(m_Info.VertexCount, 4);
+            CPoint ImpPageVertexCount = CalcImpostorVertexCount2(m_Info.VertexCount, 4);
             const CPoint ImpTileCount(2,2);
             const CPoint ImpTileVertexCount( ImpPageVertexCount.x / ImpTileCount.x + 1, 
                                              ImpPageVertexCount.y / ImpTileCount.y + 1 );
+            ImpPageVertexCount = CPoint(ImpTileVertexCount.x * ImpTileCount.x, ImpTileVertexCount.y * ImpTileCount.y);
+            pVB->SetInputLayout( m_Info.pInputLayout );
+			pVB->SetTopologyType( TopologyTypes::TRIANGLE_LIST );
+			pVB->SetUsage( BufferUsages::DEFAULT );
+			pVB->SetVertexCount( ulVertexCount );
             CalcImpostorVertexPositions(vPositions, vNormals, &m_vImpTiles, ImpTileCount, ImpTileVertexCount,
                                         m_Info.vecPagePosition, m_Info.vecPageSize, &ImpVData);
             m_Info.pImpVB->Unlock();
