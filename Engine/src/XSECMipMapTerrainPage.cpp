@@ -433,16 +433,16 @@ namespace XSE
 #endif
         
 		auto& ImpVData = m_Info.pImpVB->GetVertexData();
-		CPoint ImpPageVertexCount = CPoint(3, 3);//CalcImpostorVertexCount2(m_Info.VertexCount, 4);
+		CPoint ImpPageVertexCount = /*CPoint(3, 3);//*/CalcImpostorVertexCount2(m_Info.VertexCount, 4);
 		const CPoint ImpTileCount(2, 2);
 		const CPoint ImpTileVertexCount(ImpPageVertexCount.x / ImpTileCount.x + 1,
 			ImpPageVertexCount.y / ImpTileCount.y + 1);
 		ImpPageVertexCount = CPoint((ImpTileVertexCount.x-0) * (ImpTileCount.x) +0, (ImpTileVertexCount.y-0) * (ImpTileCount.y) +0);
 		ul32 ulImpVertexCount = ImpPageVertexCount.x * ImpPageVertexCount.y;
-		pVB->SetInputLayout(m_Info.pInputLayout);
-		pVB->SetTopologyType(TopologyTypes::TRIANGLE_LIST);
-		pVB->SetUsage(BufferUsages::DEFAULT);
-		pVB->SetVertexCount(ulImpVertexCount);
+		m_Info.pImpVB->SetInputLayout(m_Info.pInputLayout);
+		m_Info.pImpVB->SetTopologyType(TopologyTypes::TRIANGLE_LIST);
+		m_Info.pImpVB->SetUsage(BufferUsages::DEFAULT);
+		m_Info.pImpVB->SetVertexCount(ulImpVertexCount);
         if( m_Info.pImpVB->Lock() == XST_OK ) 
         {
             CalcImpostorVertexPositions(vPositions, vNormals, &m_vImpTiles, ImpTileCount, ImpTileVertexCount,
