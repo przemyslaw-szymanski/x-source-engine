@@ -646,24 +646,24 @@ namespace XSE
                     pRS->DrawIndexed( pIB->GetIndexCount(), 0, TileInfo.ulStartVertex );
                 }
             }*/
-            //for( u32 t = 0; t < g_vVisibleTile.size(); ++t )
-            //{
-            //    auto* Tile = g_vVisibleTile[ t ];
-            //    // TODO: probably cache miss here. Use array of pVB,ulStartVertex structures
-            //    const auto& TileInfo = Tile->m_Info;
-            //    //pIB = GetIndexBuffer( /*Tile->m_uiLOD*/0, Tile->m_eStitchType /*XSE::MipMapTerrainStitchTypes::DOWN*/ ).pIndexBuffer.GetPtr();
-            //    pIB = GetIndexBuffer( Tile->m_uiLOD, Tile->m_eStitchType ).pIndexBuffer.GetPtr();
-            //    pRS->SetVertexBufferWithCheck( TileInfo.pVB );
-            //    pRS->SetIndexBufferWithCheck( pIB );
-            //    pRS->DrawIndexed( pIB->GetIndexCount(), 0, TileInfo.ulStartVertex );
-            //}
-            for (auto& Tile : m_vPages[0].m_vImpTiles) {
-                const auto& Info = Tile.m_Info;
-                //pIB = GetIndexBuffer( m_Options.uiMaxLODCount, XSE::MipMapTerrainStitchTypes::NONE ).pIndexBuffer.GetPtr();
-                pRS->SetVertexBufferWithCheck( m_vPages[0].m_Info.pImpVB );
-                pRS->SetIndexBufferWithCheck( m_pImpostorIB.GetPtr() );
-                pRS->DrawIndexed( m_pImpostorIB->GetIndexCount(), 0, Info.ulStartVertex );
+            for( u32 t = 0; t < g_vVisibleTile.size(); ++t )
+            {
+                auto* Tile = g_vVisibleTile[ t ];
+                // TODO: probably cache miss here. Use array of pVB,ulStartVertex structures
+                const auto& TileInfo = Tile->m_Info;
+                //pIB = GetIndexBuffer( /*Tile->m_uiLOD*/0, Tile->m_eStitchType /*XSE::MipMapTerrainStitchTypes::DOWN*/ ).pIndexBuffer.GetPtr();
+                pIB = GetIndexBuffer( Tile->m_uiLOD, Tile->m_eStitchType ).pIndexBuffer.GetPtr();
+                pRS->SetVertexBufferWithCheck( TileInfo.pVB );
+                pRS->SetIndexBufferWithCheck( pIB );
+                pRS->DrawIndexed( pIB->GetIndexCount(), 0, TileInfo.ulStartVertex );
             }
+            //for (auto& Tile : m_vPages[0].m_vImpTiles) {
+            //    const auto& Info = Tile.m_Info;
+            //    //pIB = GetIndexBuffer( m_Options.uiMaxLODCount, XSE::MipMapTerrainStitchTypes::NONE ).pIndexBuffer.GetPtr();
+            //    pRS->SetVertexBufferWithCheck( m_vPages[0].m_Info.pImpVB );
+            //    pRS->SetIndexBufferWithCheck( m_pImpostorIB.GetPtr() );
+            //    pRS->DrawIndexed( m_pImpostorIB->GetIndexCount(), 0, Info.ulStartVertex );
+            //}
         }
     }
 
@@ -878,12 +878,14 @@ namespace XSE
     {
         XSTSimpleProfiler();
         IBVec::iterator Itr;
+		u32 i = 0;
         for( auto& Data : m_vIndexBuffers )
         {
             if( XST_FAILED( Data.pIndexBuffer->Lock() ) )
             {
                 return XST_FAIL;
             }
+			++i;
         }
         XST_RET_FAIL( m_pImpostorIB->Lock() );
         return XST_OK;
@@ -1051,7 +1053,8 @@ namespace XSE
             }
         }
         // Calc index buffer for impostor
-        _CalcIBStitchNoneCCW( m_Options.uiLODCount, m_vIndexBuffers[ m_Options.uiLODCount + MipMapTerrainStitchTypes::NONE ].pIndexBuffer );
+		auto uId = GetIndexBuffersID( m_Options.uiLODCount );
+        _CalcIBStitchNoneCCW( m_Options.uiLODCount, m_vIndexBuffers[ uId + MipMapTerrainStitchTypes::NONE ].pIndexBuffer );
         //XST_RET_FAIL( CalcImpostorIndexBufferData( m_pImpostorIB.GetPtr(), m_Options.PageVertexCount, m_Options.uiLODCount ) );
         return XST_OK;
     }

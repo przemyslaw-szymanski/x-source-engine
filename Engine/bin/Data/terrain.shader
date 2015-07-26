@@ -44,10 +44,8 @@ float4 ps(VS_OUT IN) : SV_TARGET
 	//f3N = normalize( tc.rgb );
 	float3 f3L = normalize( f3LightPos - f3VertexPos );
 	float fDL = max( dot( f3N, f3L ), 0.0 );
+	float4 t = float4(f3N, 1);
 	float4 c = tc;
-	//c.rgba = fDL * c;
-	float zw = IN.fDepth;
-	float d = saturate(zw - 0.9) * 10;
-	c.rgb = float3( zw, zw, zw );
+	c.rgba = fDL * c;
 	return c;
 }
