@@ -878,14 +878,14 @@ namespace XSE
     {
         XSTSimpleProfiler();
         IBVec::iterator Itr;
-		u32 i = 0;
+        u32 i = 0;
         for( auto& Data : m_vIndexBuffers )
         {
             if( XST_FAILED( Data.pIndexBuffer->Lock() ) )
             {
                 return XST_FAIL;
             }
-			++i;
+            ++i;
         }
         XST_RET_FAIL( m_pImpostorIB->Lock() );
         return XST_OK;
@@ -1053,7 +1053,7 @@ namespace XSE
             }
         }
         // Calc index buffer for impostor
-		auto uId = GetIndexBuffersID( m_Options.uiLODCount );
+        auto uId = GetIndexBuffersID( m_Options.uiLODCount );
         _CalcIBStitchNoneCCW( m_Options.uiLODCount, m_vIndexBuffers[ uId + MipMapTerrainStitchTypes::NONE ].pIndexBuffer );
         //XST_RET_FAIL( CalcImpostorIndexBufferData( m_pImpostorIB.GetPtr(), m_Options.PageVertexCount, m_Options.uiLODCount ) );
         return XST_OK;
