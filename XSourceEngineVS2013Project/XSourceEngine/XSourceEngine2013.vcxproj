@@ -65,6 +65,7 @@
     <ClInclude Include="..\..\Engine\include\XSECTerrainSystem.h" />
     <ClInclude Include="..\..\Engine\include\XSECTexture.h" />
     <ClInclude Include="..\..\Engine\include\XSECTextureManager.h" />
+    <ClInclude Include="..\..\Engine\include\XSECTileBuffer.h" />
     <ClInclude Include="..\..\Engine\include\XSECVertex.h" />
     <ClInclude Include="..\..\Engine\include\XSECVertexData.h" />
     <ClInclude Include="..\..\Engine\include\XSEICGShaderSystem.h" />
@@ -392,6 +393,7 @@
     <ClCompile Include="..\..\Engine\src\XSECTerrainSystem.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECTexture.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECTextureManager.cpp" />
+    <ClCompile Include="..\..\Engine\src\XSECTileBuffer.cpp" />
     <ClCompile Include="..\..\Engine\src\XSECVertexData.cpp" />
     <ClCompile Include="..\..\Engine\src\XSEDefaultShaders.cpp" />
     <ClCompile Include="..\..\Engine\src\XSEIPass.cpp" />

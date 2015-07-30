@@ -942,6 +942,9 @@
     <ClInclude Include="..\..\Engine\src\D3D11\XSED3D11FuncTypedefs.h">
       <Filter>src\Impl\D3D11</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Engine\include\XSECTileBuffer.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Engine\dllmain.cpp">
@@ -1591,6 +1594,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Engine\src\D3D11\XSED3D11FuncDef.cpp">
       <Filter>src\Impl\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Engine\src\XSECTileBuffer.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

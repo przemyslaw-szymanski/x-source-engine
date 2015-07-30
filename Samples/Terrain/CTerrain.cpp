@@ -93,54 +93,8 @@ xst_fi CToString ToString() { return CToString(); }
 XSE::CLight* pLight;
 
 
-void task1() {
-    int tab[10] = { 0, 6, 1, 2, 3, 2, 2, 6, 6, 0 };
-    typedef std::unordered_map<int, int> umap;
-    umap mm;
-
-    for (int i = 0; i < sizeof(tab) / sizeof(int); ++i) {
-        mm[tab[i]]++;
-    }
-    std::pair<int, int> max(std::numeric_limits<int>::min(), std::numeric_limits<int>::min());
-    for (auto& pair : mm) {
-        if (max.second < pair.second) {
-            max = pair;
-        }
-    }
-    std::cout << max.first << " " << max.second;
-}
-
-void task2() {
-    int tab[] = { 1,1, 2,2,2, 4,4, 3,3,3 };
-    int *ptr = tab;
-    typedef std::unordered_map<int, int> umap;
-    umap mm;
-    unsigned count = sizeof(tab) / sizeof(int);
-    std::sort(tab, tab + count);
-    unsigned pairNum = 0;
-    int currNum = tab[0];
-    int diff = 0;
-
-    for (int i = 0; i < count; ++i) {
-        if (currNum != tab[i]) {
-            currNum = tab[i];
-            pairNum += (diff * (diff-1)) / 2;
-            diff = 0;
-        }
-        diff++;
-    }
-    pairNum += (diff * (diff-1)) / 2;
-    std::cout << pairNum << std::endl;
-
-    std::transform(tab, tab + count, tab, [](int el) {
-        return el + 1;
-    });
-   
-}
-
 i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 {
-    task2();
     m_pWnd = pWnd;
     m_pEngine = pEngine;
 
