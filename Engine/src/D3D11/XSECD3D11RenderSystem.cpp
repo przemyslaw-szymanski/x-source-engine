@@ -2184,11 +2184,29 @@ namespace XSE
                     m_pDevice->CheckMultisampleQualityLevels( XSE_D3D11_DEFAULT_FORMAT, i, &uiQuality );
                 }
             }
+            
+            
 
             //Features
             //Get render system features
-            xst_zero( &pCaps->Features, sizeof( RSFeatures ) );
+            xst_zero( &pCaps->Features, sizeof( SRSFeatures ) );
             //Shader model
+            // From https://msdn.microsoft.com/en-us/library/windows/desktop/ff476876(v=vs.85).aspx
+            // https://msdn.microsoft.com/en-us/library/windows/desktop/ff819065(v=vs.85).aspx#resource_limits_for_feature_level_11_hardware
+            // Direct3D feature levels
+            auto& Limits = pCaps->Features.Limits;
+            Limits.ulMaxVideoMemory = AdapterDesc.DedicatedVideoMemory;
+            Limits.ulMaxSystemMemory = AdapterDesc.DedicatedSystemMemory;
+
+            // Size in MB
+            const ul64 ulMaxMem128 = 128 * 1024 * 1024; // 128 MB to bytes
+            const ul64 ulMaxMem2048 = 2048 * 1024 * 1024;
+            ul64 ulMaxMemoryBufferSize = std::min<ul64>( std::max<ul64>( ulMaxMem128, 0.25f * Limits.ulMaxVideoMemory ), ulMaxMem2048 );
+            // Convert to bytes
+            Limits.ulMaxResourceSize = ulMaxMemoryBufferSize;
+            Limits.ulMaxVertexBufferSize = std::max<ul64>( ulMaxMem128, 0.25f * Limits.ulMaxVideoMemory );
+            Limits.ulMaxIndexBufferSize = Limits.ulMaxVertexBufferSize;
+
             switch( this->m_eFeatureLevel )
             {
                 case D3D_FEATURE_LEVEL_9_1:
@@ -2199,14 +2217,22 @@ namespace XSE
                     pCaps->Features.bOcclusionQueries = false;
                     pCaps->Features.bInstancing = false;
                     pCaps->Features.bNonPowerOfTwoDimTextures = true;
-                    pCaps->Features.ulMaxTextureDimmension = 2048;
-                    pCaps->Features.ulMaxCubemapDimmension = 512;
-                    pCaps->Features.ulMaxVolumeExtent = 256;
-                    pCaps->Features.ulMaxTextureRepeat = 128;
-                    pCaps->Features.ulMaxAnisotropy = 2;
-                    pCaps->Features.ulMaxPrimitiveCount = 65535;
-                    pCaps->Features.ulMaxInputSlots = 16;
-                    pCaps->Features.ulMaxRenderTargets = 1;
+                    Limits.ulMaxAnisotropy = D3D_FL9_1_DEFAULT_MAX_ANISOTROPY;
+                    Limits.ulMaxConstantBufferElementCount = 0;
+                    Limits.ulMaxDrawVertexCount = D3D11_REQ_DRAW_VERTEX_COUNT_2_TO_EXP;
+                    Limits.ulMaxMRTs = D3D_FL9_1_SIMULTANEOUS_RENDER_TARGET_COUNT ;
+                    Limits.ulMaxMultisampleCount = 0;
+                    Limits.ulMaxResourceCount = 0;
+                    Limits.ulMaxTexture1DArrayDimmension = D3D_FL9_1_REQ_TEXTURE1D_U_DIMENSION;
+                    Limits.ulMaxTexture1DDimmension = D3D_FL9_1_REQ_TEXTURE1D_U_DIMENSION;
+                    Limits.ulMaxTexture2DArrayDimmension = D3D_FL9_1_REQ_TEXTURE2D_U_OR_V_DIMENSION ;
+                    Limits.ulMaxTexture2DDimmension = D3D_FL9_1_REQ_TEXTURE2D_U_OR_V_DIMENSION;
+                    Limits.ulMaxTexture3DDimmension = D3D_FL9_1_REQ_TEXTURE3D_U_V_OR_W_DIMENSION ;
+                    Limits.ulMaxTextureCubeDimmension = D3D_FL9_1_REQ_TEXTURECUBE_DIMENSION ;
+                    Limits.ulMaxTextureRepeat = D3D_FL9_1_MAX_TEXTURE_REPEAT;
+                    Limits.ulMaxMipLevels = D3D11_REQ_MIP_LEVELS;
+                    Limits.ulMaxPrimitiveCount = D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT;
+                    Limits.ulMaxTextureUnits = 4;
 
                     //Available shader models
                     pCaps->abShaderModels[ ShaderModels::SM_2_0 ] = true;
@@ -2225,14 +2251,22 @@ namespace XSE
                     pCaps->Features.bOcclusionQueries = true;
                     pCaps->Features.bInstancing = false;
                     pCaps->Features.bNonPowerOfTwoDimTextures = true;
-                    pCaps->Features.ulMaxTextureDimmension = 2048;
-                    pCaps->Features.ulMaxCubemapDimmension = 512;
-                    pCaps->Features.ulMaxVolumeExtent = 256;
-                    pCaps->Features.ulMaxTextureRepeat = 2048;
-                    pCaps->Features.ulMaxAnisotropy = 16;
-                    pCaps->Features.ulMaxPrimitiveCount = 1048575;
-                    pCaps->Features.ulMaxInputSlots = 16;
-                    pCaps->Features.ulMaxRenderTargets = 1;
+                    Limits.ulMaxAnisotropy = D3D_FL9_1_DEFAULT_MAX_ANISOTROPY;
+                    Limits.ulMaxConstantBufferElementCount = 0;
+                    Limits.ulMaxDrawVertexCount = D3D11_REQ_DRAW_VERTEX_COUNT_2_TO_EXP;
+                    Limits.ulMaxMRTs = D3D_FL9_1_SIMULTANEOUS_RENDER_TARGET_COUNT;
+                    Limits.ulMaxMultisampleCount = 0;
+                    Limits.ulMaxResourceCount = 0;
+                    Limits.ulMaxTexture1DArrayDimmension = D3D_FL9_1_REQ_TEXTURE1D_U_DIMENSION;
+                    Limits.ulMaxTexture1DDimmension = D3D_FL9_1_REQ_TEXTURE1D_U_DIMENSION;
+                    Limits.ulMaxTexture2DArrayDimmension = D3D_FL9_1_REQ_TEXTURE2D_U_OR_V_DIMENSION ;
+                    Limits.ulMaxTexture2DDimmension = D3D_FL9_1_REQ_TEXTURE2D_U_OR_V_DIMENSION;
+                    Limits.ulMaxTexture3DDimmension = D3D_FL9_1_REQ_TEXTURE3D_U_V_OR_W_DIMENSION ;
+                    Limits.ulMaxTextureCubeDimmension = D3D_FL9_1_REQ_TEXTURECUBE_DIMENSION ;
+                    Limits.ulMaxTextureRepeat = D3D_FL9_2_MAX_TEXTURE_REPEAT;
+                    Limits.ulMaxMipLevels = D3D11_REQ_MIP_LEVELS;
+                    Limits.ulMaxPrimitiveCount = D3D_FL9_2_IA_PRIMITIVE_MAX_COUNT;
+                    Limits.ulMaxTextureUnits = 4;
 
                     //Available shader models
                     pCaps->abShaderModels[ ShaderModels::SM_2_0 ] = true;
@@ -2251,14 +2285,23 @@ namespace XSE
                     pCaps->Features.bOcclusionQueries = true;
                     pCaps->Features.bInstancing = true;
                     pCaps->Features.bNonPowerOfTwoDimTextures = true;
-                    pCaps->Features.ulMaxTextureDimmension = 4096;
-                    pCaps->Features.ulMaxCubemapDimmension = 4096;
-                    pCaps->Features.ulMaxVolumeExtent = 256;
-                    pCaps->Features.ulMaxTextureRepeat = 8192;
-                    pCaps->Features.ulMaxAnisotropy = 16;
-                    pCaps->Features.ulMaxPrimitiveCount = 1048575;
-                    pCaps->Features.ulMaxInputSlots = 16;
-                    pCaps->Features.ulMaxRenderTargets = 4;
+                    Limits.ulMaxAnisotropy = 16;
+                    Limits.ulMaxConstantBufferElementCount = 0;
+                    Limits.ulMaxDrawVertexCount = D3D11_REQ_DRAW_VERTEX_COUNT_2_TO_EXP;
+                    Limits.ulMaxMRTs = D3D_FL9_3_SIMULTANEOUS_RENDER_TARGET_COUNT ;
+                    Limits.ulMaxMultisampleCount = 4;
+                    Limits.ulMaxResourceCount = 0;
+                    Limits.ulMaxTexture1DArrayDimmension = 4096;
+                    Limits.ulMaxTexture1DDimmension = 4096;
+                    Limits.ulMaxTexture2DArrayDimmension = 4096;
+                    Limits.ulMaxTexture2DDimmension = 4096;
+                    Limits.ulMaxTexture3DDimmension = 4096;
+                    Limits.ulMaxTextureCubeDimmension = 4096;
+                    Limits.ulMaxTextureRepeat = D3D_FL9_3_MAX_TEXTURE_REPEAT ;
+                    Limits.ulMaxMipLevels = D3D11_REQ_MIP_LEVELS;
+                    Limits.ulMaxPrimitiveCount = 1048575;
+                    Limits.ulMaxVertexIndex = 1048575;
+                    Limits.ulMaxTextureUnits = 8;
 
                     //Available shader models
                     pCaps->abShaderModels[ ShaderModels::SM_2_0 ] = true;
@@ -2279,14 +2322,23 @@ namespace XSE
                     pCaps->Features.bOcclusionQueries = true;
                     pCaps->Features.bInstancing = true;
                     pCaps->Features.bNonPowerOfTwoDimTextures = true;
-                    pCaps->Features.ulMaxTextureDimmension = 8192;
-                    pCaps->Features.ulMaxCubemapDimmension = 8192;
-                    pCaps->Features.ulMaxVolumeExtent = 2048;
-                    pCaps->Features.ulMaxTextureRepeat = 8192;
-                    pCaps->Features.ulMaxAnisotropy = 16;
-                    pCaps->Features.ulMaxPrimitiveCount = 4294967296UL;
-                    pCaps->Features.ulMaxInputSlots = 16;
-                    pCaps->Features.ulMaxRenderTargets = 8;
+                    Limits.ulMaxAnisotropy = 0;
+                    Limits.ulMaxConstantBufferElementCount = D3D10_REQ_CONSTANT_BUFFER_ELEMENT_COUNT;
+                    Limits.ulMaxDrawVertexCount = D3D10_REQ_DRAW_VERTEX_COUNT_2_TO_EXP;
+                    Limits.ulMaxMRTs = 8;
+                    Limits.ulMaxMultisampleCount = D3D10_MAX_MULTISAMPLE_SAMPLE_COUNT;
+                    Limits.ulMaxResourceCount = 0;
+                    Limits.ulMaxTexture1DArrayDimmension = 8192;
+                    Limits.ulMaxTexture1DDimmension = 8192;
+                    Limits.ulMaxTexture2DArrayDimmension = 8192;
+                    Limits.ulMaxTexture2DDimmension = 8192;
+                    Limits.ulMaxTexture3DDimmension = 8192;
+                    Limits.ulMaxTextureCubeDimmension = 8192;
+                    Limits.ulMaxTextureRepeat = 8192;
+                    Limits.ulMaxMipLevels = D3D10_REQ_MIP_LEVELS;
+                    Limits.ulMaxPrimitiveCount = XST_MAX_U32 - 1;
+                    Limits.ulMaxVertexIndex = XST_MAX_U32 - 1;
+                    Limits.ulMaxTextureUnits = 32;
 
                     //Available shader models
                     pCaps->abShaderModels[ ShaderModels::SM_2_0 ] = true;
@@ -2311,14 +2363,24 @@ namespace XSE
                     pCaps->Features.bOcclusionQueries = true;
                     pCaps->Features.bInstancing = true;
                     pCaps->Features.bNonPowerOfTwoDimTextures = true;
-                    pCaps->Features.ulMaxTextureDimmension = 8192;
-                    pCaps->Features.ulMaxCubemapDimmension = 8192;
-                    pCaps->Features.ulMaxVolumeExtent = 2048;
-                    pCaps->Features.ulMaxTextureRepeat = 8192;
-                    pCaps->Features.ulMaxAnisotropy = 16;
-                    pCaps->Features.ulMaxPrimitiveCount = 4294967296UL;
-                    pCaps->Features.ulMaxInputSlots = 32;
-                    pCaps->Features.ulMaxRenderTargets = 8;
+                    Limits.ulMaxAnisotropy = 16;
+                    Limits.ulMaxConstantBufferElementCount = D3D10_REQ_CONSTANT_BUFFER_ELEMENT_COUNT;
+                    Limits.ulMaxDrawVertexCount = D3D10_REQ_DRAW_VERTEX_COUNT_2_TO_EXP;
+                    Limits.ulMaxMRTs = 8;
+                    Limits.ulMaxMultisampleCount = D3D10_MAX_MULTISAMPLE_SAMPLE_COUNT;
+                    Limits.ulMaxResourceCount = 0;
+                    Limits.ulMaxTexture1DArrayDimmension = 8192;
+                    Limits.ulMaxTexture1DDimmension = 8192;
+                    Limits.ulMaxTexture2DArrayDimmension = 8192;
+                    Limits.ulMaxTexture2DDimmension = 8192;
+                    Limits.ulMaxTexture3DDimmension = 8192;
+                    Limits.ulMaxTextureCubeDimmension = 8192;
+                    Limits.ulMaxTextureRepeat = 8192;
+                    Limits.ulMaxMipLevels = D3D10_REQ_MIP_LEVELS;
+                    Limits.ulMaxPrimitiveCount = XST_MAX_U32 - 1;
+                    Limits.ulMaxVertexIndex = XST_MAX_U32 - 1;
+                    Limits.ulMaxTextureUnits = 32;
+
 
                     pCaps->abShaderModels[ ShaderModels::SM_2_0 ] = true;
                     pCaps->abShaderModels[ ShaderModels::SM_4_0 ] = true;
@@ -2344,14 +2406,23 @@ namespace XSE
                     pCaps->Features.bOcclusionQueries = true;
                     pCaps->Features.bInstancing = true;
                     pCaps->Features.bNonPowerOfTwoDimTextures = true;
-                    pCaps->Features.ulMaxTextureDimmension = 16384;
-                    pCaps->Features.ulMaxCubemapDimmension = 16384;
-                    pCaps->Features.ulMaxVolumeExtent = 2048;
-                    pCaps->Features.ulMaxTextureRepeat = 16384;
-                    pCaps->Features.ulMaxAnisotropy = 16;
-                    pCaps->Features.ulMaxPrimitiveCount = 4294967296UL;
-                    pCaps->Features.ulMaxInputSlots = 32;
-                    pCaps->Features.ulMaxRenderTargets = 8;
+                    Limits.ulMaxAnisotropy = D3D11_REQ_MAXANISOTROPY;
+                    Limits.ulMaxConstantBufferElementCount = D3D11_REQ_CONSTANT_BUFFER_ELEMENT_COUNT;
+                    Limits.ulMaxDrawVertexCount = D3D11_REQ_DRAW_VERTEX_COUNT_2_TO_EXP;
+                    Limits.ulMaxMRTs = 8;
+                    Limits.ulMaxMultisampleCount = D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT;
+                    Limits.ulMaxResourceCount = 0;
+                    Limits.ulMaxTexture1DArrayDimmension = 16384;
+                    Limits.ulMaxTexture1DDimmension = 16384;
+                    Limits.ulMaxTexture2DArrayDimmension = 16384;
+                    Limits.ulMaxTexture2DDimmension = 16384;
+                    Limits.ulMaxTexture3DDimmension = 16384;
+                    Limits.ulMaxTextureCubeDimmension = 16384;
+                    Limits.ulMaxTextureRepeat = 16384;
+                    Limits.ulMaxMipLevels = D3D11_REQ_MIP_LEVELS;
+                    Limits.ulMaxPrimitiveCount = XST_MAX_U32 - 1;
+                    Limits.ulMaxVertexIndex = XST_MAX_U32 - 1;
+                    Limits.ulMaxTextureUnits = 32;
 
                     pCaps->abShaderModels[ ShaderModels::SM_2_0 ] = true;
                     pCaps->abShaderModels[ ShaderModels::SM_4_0 ] = true;

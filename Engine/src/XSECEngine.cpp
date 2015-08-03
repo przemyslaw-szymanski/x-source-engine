@@ -296,7 +296,7 @@ namespace XSE
 		*///m_pRenderSystem->BuildInputLayout( ILE:: | ILE:: );
 
 		//Get features
-		m_Features.RSFeatures = m_pRenderSystem->GetFeatures();
+		m_Features.SRSFeatures = m_pRenderSystem->GetFeatures();
 
 
 		//Init managers

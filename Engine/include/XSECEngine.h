@@ -32,7 +32,7 @@ namespace XSE
 		u32		uiCpuSpeed;
 		u32		uiMemorySize;
 
-		RSFeatures	RSFeatures;
+		SRSFeatures	SRSFeatures;
 
 	};
 
