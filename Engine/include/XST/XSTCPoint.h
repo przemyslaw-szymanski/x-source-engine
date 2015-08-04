@@ -5,220 +5,291 @@ namespace XST
 {
     namespace Math
     {
-        class CPoint
+        template<typename _T_>
+        class XST_API TCPoint
         {
             public:
 
-                i32 x, y;
+                union
+                {
+                    struct
+                    {
+                        _T_ x, y;
+                    };
+                    _T_ a[ 2 ];
+                };
 
-                static const CPoint ZERO;
-                static const CPoint	X;
-                static const CPoint Y;
-                static const CPoint NEGATIVE_X;
-                static const CPoint NEGATIVE_Y;
+                static const TCPoint    ZERO;
+                static const TCPoint    X;
+                static const TCPoint    Y;
+                static const TCPoint    NEGATIVE_X;
+                static const TCPoint    NEGATIVE_Y;
 
             public:
 
-                xst_fi CPoint() {}
-                xst_fi CPoint(const CPoint& Point) : x( Point.x ), y( Point.y ) {}
-                xst_fi CPoint(const i32& _fValue) : x(_fValue), y(_fValue) {}
-                xst_fi CPoint(const i32& _fX, const i32& _fY) : x(_fX), y(_fY) {}
-                xst_fi CPoint(const i32 _afValues[2]) : x( _afValues[ 0 ] ), y( _afValues[ 1 ] ) {}
+                xst_fi TCPoint() {}
+                xst_fi TCPoint(const TCPoint& Point) : x( Point.x ), y( Point.y ) {}
+                xst_fi explicit TCPoint(const _T_& tValue) : x(tValue), y(tValue) {}
+                xst_fi TCPoint(const _T_& tX, const _T_& tY) : x(tX), y(tY) {}
+                xst_fi explicit TCPoint(const _T_ aValues[2]) : x( aValues[ 0 ] ), y( aValues[ 1 ] ) {}
+                template<typename _A_>
+                xst_fi TCPoint(const _A_& tX, const _A_& tY) : x( tX ), y( tY ) {}
+                template<typename _A_>
+                xst_fi explicit TCPoint(const _A_& tValue) : x( tValue ), y( tValue ) {}
 
-                ~CPoint() {}
+                ~TCPoint() {}
 
-                xst_fi const bool operator==(const CPoint& Right) const 
+                xst_fi const bool operator==(const TCPoint& Right) const 
                 {
                     return x == Right.x && y == Right.y;
                 }
 
-                xst_fi const bool operator>(const CPoint& Right) const 
+                xst_fi const bool operator>(const TCPoint& Right) const 
                 {
                     return x > Right.x && y > Right.y;
                 }
 
-                xst_fi const  bool operator>=(const CPoint& Right) const 
+                xst_fi const  bool operator>=(const TCPoint& Right) const 
                 {
                     return x >= Right.x && y >= Right.y;
                 }
 
-                xst_fi const bool operator<(const CPoint& Right) const 
+                xst_fi const bool operator<(const TCPoint& Right) const 
                 {
                     return x < Right.x && y < Right.y;
                 }
 
-                xst_fi const bool operator<=(const CPoint& Right) const 
+                xst_fi const bool operator<=(const TCPoint& Right) const 
                 {
                     return x <= Right.x && y <= Right.y;
                 }
 
-                xst_fi const bool operator!=(const CPoint& Right) const 
+                xst_fi const bool operator!=(const TCPoint& Right) const 
                 {
                     return x != Right.x && y != Right.y;
                 }
 
-                xst_fi CPoint operator+(const CPoint& Right) const 
+                xst_fi const bool operator==(const _T_& tValue) const 
                 {
-                    return CPoint( x + Right.x, y + Right.y );
+                    return x == tValue && y == tValue;
                 }
 
-                xst_fi void operator+=(const CPoint& Right) 
+                xst_fi const bool operator>(const _T_& tValue) const 
+                {
+                    return x > tValue && y > tValue;
+                }
+
+                xst_fi const  bool operator>=(const _T_& tValue) const 
+                {
+                    return x >= tValue && y >= tValue;
+                }
+
+                xst_fi const bool operator<(const _T_& tValue) const 
+                {
+                    return x < tValue && y < tValue;
+                }
+
+                xst_fi const bool operator<=(const _T_& tValue) const 
+                {
+                    return x <= tValue && y <= tValue;
+                }
+
+                xst_fi const bool operator!=(const _T_& tValue) const 
+                {
+                    return x != tValue && y != tValue;
+                }
+
+                xst_fi TCPoint operator-() const 
+                {
+                    return TCPoint( -x, -y );
+                }
+
+                xst_fi TCPoint operator+(const TCPoint& Right) const 
+                {
+                    return TCPoint( x + Right.x, y + Right.y );
+                }
+
+                xst_fi void operator+=(const TCPoint& Right) 
                 {
                     x += Right.x; y += Right.y;;
                 }
 
-                xst_fi CPoint operator-(const CPoint& Right) const 
+                xst_fi TCPoint operator-(const TCPoint& Right) const 
                 {
-                    return CPoint( x - Right.x, y - Right.y);
+                    return TCPoint( x - Right.x, y - Right.y);
                 }
 
-                xst_fi CPoint operator-() const 
-                {
-                    return CPoint( -x, -y );
-                }
-
-                xst_fi void operator-=(const CPoint& Right)
+                xst_fi void operator-=(const TCPoint& Right)
                 {
                     x -= Right.x; y -= Right.y;
                 }
 
-                xst_fi CPoint operator*(const CPoint& Right) const 
+                xst_fi TCPoint operator*(const TCPoint& Right) const 
                 {
-                    return CPoint( x * Right.x, y * Right.y );
+                    return TCPoint( x * Right.x, y * Right.y );
                 }
 
-                xst_fi void operator*=(const CPoint& Right) 
+                xst_fi void operator*=(const TCPoint& Right) 
                 {
                     x *= Right.x; y *= Right.y;
                 }
 
-                xst_fi CPoint operator/(const CPoint& Right) const 
+                xst_fi TCPoint operator/(const TCPoint& Right) const 
                 {
-                    return CPoint( x / Right.x, y / Right.y );
+                    return TCPoint( x / Right.x, y / Right.y );
                 }
 
-                xst_fi void operator/=(const CPoint& Right) 
+                xst_fi void operator/=(const TCPoint& Right) 
                 {
                     x /= Right.x; y /= Right.y;
                 }
 
-                xst_fi const bool Eq(const CPoint& Right) const 
+                xst_fi TCPoint operator+(const _T_& tValue) const 
+                {
+                    return TCPoint( x + Right.x, y + Right.y );
+                }
+
+                xst_fi void operator+=(const _T_& tValue) 
+                {
+                    x += tValue; y += tValue;
+                }
+
+                xst_fi TCPoint operator-(const _T_& tValue) const 
+                {
+                    return TCPoint( x - tValue, y - tValue);
+                }
+
+                xst_fi void operator-=(const _T_& tValue)
+                {
+                    x -= tValue; y -= tValue;
+                }
+
+                xst_fi TCPoint operator*(const _T_& tValue) const 
+                {
+                    return TCPoint( x * tValue, y * tValue );
+                }
+
+                xst_fi void operator*=(const _T_& tValue) 
+                {
+                    x *= tValue; y *= tValue;
+                }
+
+                xst_fi TCPoint operator/(const _T_& tValue) const 
+                {
+                    return TCPoint( x / tValue, y / tValue );
+                }
+
+                xst_fi void operator/=(const _T_& tValue) 
+                {
+                    x /= tValue; y /= tValue;
+                }
+
+                xst_fi const bool Eq(const TCPoint& Right) const 
                 {
                     return x == Right.x && y == Right.y;
                 }
 
-                xst_fi const bool Gt(const CPoint& Right) const 
+                xst_fi const bool Gt(const TCPoint& Right) const 
                 {
                     return x > Right.x && y > Right.y;
                 }
 
-                xst_fi bool Ge(const CPoint& Right)
+                xst_fi bool Ge(const TCPoint& Right)
                 {
                     return x >= Right.x && y >= Right.y;
                 }
 
-                xst_fi const bool Lt(const CPoint& Right) const
+                xst_fi const bool Lt(const TCPoint& Right) const
                 {
                     return x < Right.x && y < Right.y;
                 }
 
-                xst_fi const bool Le(const CPoint& Right) const
+                xst_fi const bool Le(const TCPoint& Right) const
                 {
                     return x <= Right.x && y <= Right.y;
                 }
 
-                xst_fi const bool Ne(const CPoint& Right) const
+                xst_fi const bool Ne(const TCPoint& Right) const
                 {
                     return x != Right.x && y != Right.y;
                 }
 
-                xst_fi const CPoint& operator=(const CPoint& Right)
+                xst_fi const TCPoint& operator=(const TCPoint& Right)
                 {
                     x = Right.x; y = Right.y;
                     return (*this);
                 }
 
-                xst_fi const CPoint& Set(const CPoint& Right)
+                xst_fi const TCPoint& Set(const TCPoint& Right)
                 {
                     x = Right.x; y = Right.y;
                     return (*this);
                 }
 
-                xst_fi const CPoint& Set(const i32& _fX, const i32& _fY)
+                xst_fi const TCPoint& Set(const _T_& tX, const _T_& tY)
                 {
-                    x = _fX; y = _fY;
+                    x = tX; y = tY;
                     return (*this);
                 }
 
-                xst_fi const i32* ToArray() const
+                xst_fi TCPoint Add(const TCPoint& Right) const
                 {
-                    static i32 afArray[] = { x, y };
-                    return afArray;
+                    return TCPoint( x + Right.x, y + Right.y );
                 }
 
-                xst_fi const u32 GetArraySize() const
-                {
-                    return 2;
-                }
-
-                xst_fi CPoint Add(const CPoint& Right) const
-                {
-                    return CPoint( x + Right.x, y + Right.y );
-                }
-
-                xst_fi void AddEq(const CPoint& Right)
+                xst_fi void AddEq(const TCPoint& Right)
                 {
                     x += Right.x; y += Right.y;
                 }
 
-                xst_fi CPoint Sub(const CPoint& Right) const
+                xst_fi TCPoint Sub(const TCPoint& Right) const
                 {
-                    return CPoint( x - Right.x, y - Right.y);
+                    return TCPoint( x - Right.x, y - Right.y);
                 }
 
-                xst_fi void SubEq(const CPoint& Right)
+                xst_fi void SubEq(const TCPoint& Right)
                 {
                     x -= Right.x; y -= Right.y;
                 }
 
-                xst_fi CPoint Mul(const CPoint& Right) const
+                xst_fi TCPoint Mul(const TCPoint& Right) const
                 {
-                    return CPoint( x * Right.x, y * Right.y );
+                    return TCPoint( x * Right.x, y * Right.y );
                 }
 
-                xst_fi void  MulEq(const CPoint& Right)
+                xst_fi void  MulEq(const TCPoint& Right)
                 {
                     x *= Right.x; y *= Right.y;
                 }
 
-                xst_fi CPoint Div(const CPoint& Right) const
+                xst_fi TCPoint Div(const TCPoint& Right) const
                 {
-                    return CPoint( x / Right.x, y / Right.y );
+                    return TCPoint( x / Right.x, y / Right.y );
                 }
 
-                xst_fi void DivEq(const CPoint& Right)
+                xst_fi void DivEq(const TCPoint& Right)
                 {
                     x /= Right.x; y /= Right.y;
                 }
 
-                xst_fi void AddEq(const i32& iValue)
+                xst_fi void AddEq(const _T_& tValue)
                 {
-                    x += iValue; y += iValue;
+                    x += iValue; y += tValue;
                 }
 
-                xst_fi void SubEq(const i32& iValue)
+                xst_fi void SubEq(const _T_& tValue)
                 {
-                    x -= iValue; y -= iValue;
+                    x -= tValue; y -= tValue;
                 }
 
-                xst_fi void MulEq(const i32& iValue)
+                xst_fi void MulEq(const _T_& tValue)
                 {
-                    x *= iValue; y *= iValue;
+                    x *= tValue; y *= tValue;
                 }
 
-                xst_fi void DivEq(const i32& iValue)
+                xst_fi void DivEq(const _T_& tValue)
                 {
-                    x /= iValue; y /= iValue;
+                    x /= tValue; y /= tValue;
                 }
 
                 xst_fi f32 Length() const
@@ -226,38 +297,38 @@ namespace XST
                     return Math::Sqrt( (f32)(x * x + y * y) );
                 }
 
-                xst_fi i32 SquaredLength() const
+                xst_fi _T_ SquaredLength() const
                 {
                     return x * x + y * y ;
                 }
 
-                xst_fi f32 Distance(const CPoint& Right) const
+                xst_fi f32 Distance(const TCPoint& Right) const
                 {
                     return ( *this - Right ).Length();
                 }
 
-                xst_fi i32 SquareDistance(const CPoint& Right) const
+                xst_fi _T_ SquareDistance(const TCPoint& Right) const
                 {
                     return ( *this - Right ).SquaredLength();
                 }
 
-                xst_fi CPoint MidPoint(const CPoint& VecRight) const
+                xst_fi TCPoint MidPoint(const TCPoint& VecRight) const
                 {
-                    return CPoint(	(i32)( ( x + VecRight.x ) * 0.5f ), 
-                                    (i32)( ( y + VecRight.y ) * 0.5f ) );
+                    return TCPoint(	(_T_)( ( x + VecRight.x ) * 0.5f ), 
+                                    (_T_)( ( y + VecRight.y ) * 0.5f ) );
                 }
 
-                xst_fi i32 ElementAdd() const
+                xst_fi _T_ ElementAdd() const
                 {
                     return x + y;
                 }
 
-                xst_fi i32 ElementMul() const
+                xst_fi _T_ ElementMul() const
                 {
                     return x * y;
                 }
 
-                xst_fi i32 ElementSub() const
+                xst_fi _T_ ElementSub() const
                 {
                     return x - y;
                 }
@@ -267,6 +338,37 @@ namespace XST
                     return (f32)x / y;
                 }
         };
+
+        typedef TCPoint< i32 >  CPoint;
+        typedef TCPoint< i32 >  PointI32;
+        typedef PointI32        Point;
+        typedef TCPoint< i16 >  PointI16;
+        typedef TCPoint< f32 >  PointF32;
+        typedef TCPoint< u32 >  PointU32;
+        typedef TCPoint< u16 >  PointU16;
+        typedef TCPoint< l32 >  PointL32;
+        typedef TCPoint< ul32 > PointUL32;
+        typedef TCPoint< i64 >  PointI64;
+        typedef TCPoint< u64 >  PointU64;
+        typedef TCPoint< f64 >  PointF64;
+
+        XST_API class Point;
+        XST_API class PointI16;
+        XST_API class PointI32;
+        XST_API class PointU16;
+        XST_API class PointU32;
+        XST_API class PointF32;
+        XST_API class PointF64;
+        XST_API class PointL32;
+        XST_API class PointUL32;
+        XST_API class PointI64;
+        XST_API class PointU64;
+
+        /*template<typename _T_> const TCPoint< _T_ > TCPoint< _T_ >::ZERO( 0, 0 );
+        template<typename _T_> const TCPoint< _T_ > TCPoint< _T_ >::X( 1, 0 );
+        template<typename _T_> const TCPoint< _T_ > TCPoint< _T_ >::Y( 0, 1 );
+        template<typename _T_> const TCPoint< _T_ > TCPoint< _T_ >::NEGATIVE_X( -1, 0 );
+        template<typename _T_> const TCPoint< _T_ > TCPoint< _T_ >::NEGATIVE_Y( 0, -1 );*/
 
     }//math
 }//xst

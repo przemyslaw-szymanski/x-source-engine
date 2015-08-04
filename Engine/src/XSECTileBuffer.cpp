@@ -49,9 +49,10 @@ namespace XSE
         if( m_vPositions.size() < m_Info.TmpVertexCount.ElementMul() )
         {
             m_vPositions.resize( m_Info.TmpVertexCount.ElementMul(), Vec3::ZERO );
-            if( Info.pIL->IsNormal() )
+            cul32 ulSize = m_vPositions.size();
+            if( Info.pIL->IsNormal() && m_vNormals.size() < ulSize )
             {
-                m_vNormals.resize( m_vPositions.size() );
+                m_vNormals.resize( ulSize );
             }
             
             u32 uTexCoordCount = 0;
@@ -89,45 +90,159 @@ namespace XSE
             }
 
             m_vTexCoords.resize( uTexCoordCount );
-            if( Info.pIL->IsTexCoord0() )
+            if( Info.pIL->IsTexCoord0() && m_vTexCoords[ 0 ].size() < ulSize )
             {
-                m_vTexCoords[ 0 ].resize( m_vPositions.size() );
+                m_vTexCoords[ 0 ].resize( ulSize );
             }
-            if( Info.pIL->IsTexCoord1() )
+            if( Info.pIL->IsTexCoord1() && m_vTexCoords[ 1 ].size() < ulSize )
             {
-                m_vTexCoords[ 1 ].resize( m_vPositions.size() );
+                m_vTexCoords[ 1 ].resize( ulSize );
             }
-            if( Info.pIL->IsTexCoord2() )
+            if( Info.pIL->IsTexCoord2() && m_vTexCoords[ 2 ].size() < ulSize )
             {
-                m_vTexCoords[ 2 ].resize( m_vPositions.size() );
+                m_vTexCoords[ 2 ].resize( ulSize );
             }
-            if( Info.pIL->IsTexCoord3() )
+            if( Info.pIL->IsTexCoord3() && m_vTexCoords[ 3 ].size() < ulSize )
             {
-                m_vTexCoords[ 3 ].resize( m_vPositions.size() );
+                m_vTexCoords[ 3 ].resize( ulSize );
             }
-            if( Info.pIL->IsTexCoord4() )
+            if( Info.pIL->IsTexCoord4() && m_vTexCoords[ 4 ].size() < ulSize )
             {
-                m_vTexCoords[ 4 ].resize( m_vPositions.size() );
+                m_vTexCoords[ 4 ].resize( ulSize );
             }
-            if( Info.pIL->IsTexCoord5() )
+            if( Info.pIL->IsTexCoord5() && m_vTexCoords[ 5 ].size() < ulSize )
             {
-                m_vTexCoords[ 5 ].resize( m_vPositions.size() );
+                m_vTexCoords[ 5 ].resize( ulSize );
             }
-            if( Info.pIL->IsTexCoord6() )
+            if( Info.pIL->IsTexCoord6() && m_vTexCoords[ 6 ].size() < ulSize )
             {
-                m_vTexCoords[ 6 ].resize( m_vPositions.size() );
+                m_vTexCoords[ 6 ].resize( ulSize );
             }
-            if( Info.pIL->IsTexCoord7() )
+            if( Info.pIL->IsTexCoord7() && m_vTexCoords[ 7 ].size() < ulSize )
             {
-                m_vTexCoords[ 7 ].resize( m_vPositions.size() );
+                m_vTexCoords[ 7 ].resize( ulSize );
             }
         }
 
         return XST_OK;
     }
 
+    i32 CTileBuffer::CalcPositions(const Vec3& vecDirection)
+    {
+        cul32 ulVertexCount = m_Info.TmpVertexCount.ElementMul();
+        cul32 ulSize = m_vPositions.size();
+        if( ulSize < ulVertexCount )
+        {
+            XST_LOG_ERR("Temporary position buffer is too small");
+            xst_assert2(m_vPositions.size() >= ulVertexCount);
+            return XST_FAIL;
+        }
+        else if( ulSize == ulVertexCount )
+        {
+            return XST_OK; // ok as this buffer is set already
+        }
+
+        const CPoint& VertexCount = m_Info.TmpVertexCount;
+        const Vec2 vecDistance( m_Info.vecSize.x / VertexCount.x, m_Info.vecSize.y / VertexCount.y );
+        Vec3 vecCurrPos = Vec3::ZERO;
+
+        for( ul32 y = 0; y < VertexCount.y; ++y )
+        {
+            vecCurrPos.y = y * vecDistance.y;
+            for( ul32 x = 0; x < VertexCount.x; ++x )
+            {
+                vecCurrPos = x * vecDistance.x;
+                // Cache miss here, it is not possible to prefetch elements of this array
+                // because it is 'random' access
+                m_vPositions[ XST_ARRAY_2D_TO_1D( x, y, VertexCount.x ) ] = vecCurrPos;
+            }
+        }
+        return XST_OK;
+    }
+
+    i32 CTileBuffer::CreateTiles()
+    {
+        cul32 ulSize = m_vTiles.size();
+        cul32 uTileCount = m_Info.TileCount.ElementMul();
+        if( ulSize == uTileCount )
+        {
+            return XST_OK;
+        }
+
+        m_vTiles.resize( uTileCount );
+
+        return XST_OK;
+    }
+
+    i32 CTileBuffer::CreateVertexBuffers()
+    {
+        xst_assert2( m_pRS );
+        XST_RET_FAIL(CalcPositions(Vec3::Z));
+        const auto& TileCount = m_Info.TileCount;
+        const auto& VertexCount = m_Info.VertexCount;
+        cu32 uTileRowVertexCount = m_Info.uiTileRowVertexCount;
+        
+        // Create vertex buffers
+        u16 bDoubleBuffered = m_Info.eUsage == BufferUsage::DYNAMIC_DOUBLEBUFFER ? 1 : 0;
+        cu64 uVertexCount = m_Info.VertexCount.ElementMul() * ( 2 * bDoubleBuffered );
+        cul32 ulVertexBufferCount = uVertexCount / m_pRS->GetLimits().ulMaxVertexBufferSize;
+        if( ulVertexBufferCount > 2 )
+        {
+            XST_LOG_ERR("Vertex buffer too large");
+            return XST_FAIL;
+        }
+        
+        cu16 uFrontBufferId = 0;
+        cu16 uBackBufferId = ulVertexBufferCount > 1 ? 1 : 0;
+        cu64 uFrontBufferOffset = 0;
+        cu64 uBackBufferOffset = uVertexCount * !uBackBufferId; // uVertexCount if one buffer or 0 if a new one
+
+        m_vpVBs.resize( ulVertexBufferCount );
+
+        for( auto& pVB : m_vpVBs )
+        {
+            pVB = m_pRS->CreateVertexBuffer();
+            if( pVB.IsNull() )
+            {
+                return XST_FAIL;
+            }
+        }
+
+        IVertexBuffer* pFrontVB = m_vpVBs[ uFrontBufferId ].GetPtr();
+        IVertexBuffer* pBackVB = m_vpVBs[ uBackBufferId ].GetPtr();
+
+        CPoint VertexPosInBuffer = CPoint::ZERO;
+        ul32 uCurrVertexPosInBuffer;
+
+        for( i32 iTileY = 0; iTileY < TileCount.y; ++iTileY )
+        {
+            for( i32 iTileX = 0; iTileX < TileCount.x; ++iTileX )
+            {
+                for( u32 uVertexY = 0; uVertexY < uTileRowVertexCount; ++uVertexY )
+                {
+                    VertexPosInBuffer.y = iTileY * uTileRowVertexCount - 1;
+                    for( u32 uVertexX = 0; uVertexX < uTileRowVertexCount; ++uVertexX )
+                    {
+                        VertexPosInBuffer.x = iTileX * uTileRowVertexCount - 1; // -1 because last vertex is shared between tiles
+                        uCurrVertexPosInBuffer = XST_ARRAY_2D_TO_1D( VertexPosInBuffer.x, VertexPosInBuffer.y, VertexCount.x );
+                        const auto& vecPos = m_vPositions[ uCurrVertexPosInBuffer ];
+                    }
+                }
+            }
+        }
+
+        return XST_OK;
+    }
+
+    i32 CTileBuffer::CreateIndexBuffers()
+    {
+        return XST_OK;
+    }
+
     i32 CTileBuffer::Create()
     {
+        XST_RET_FAIL( CreateVertexBuffers() );
+        XST_RET_FAIL( CreateIndexBuffers() );
 
         return XST_FAIL;
     }

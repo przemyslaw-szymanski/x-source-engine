@@ -2199,12 +2199,12 @@ namespace XSE
             Limits.ulMaxSystemMemory = AdapterDesc.DedicatedSystemMemory;
 
             // Size in MB
-            const ul64 ulMaxMem128 = 128 * 1024 * 1024; // 128 MB to bytes
-            const ul64 ulMaxMem2048 = 2048 * 1024 * 1024;
-            ul64 ulMaxMemoryBufferSize = std::min<ul64>( std::max<ul64>( ulMaxMem128, 0.25f * Limits.ulMaxVideoMemory ), ulMaxMem2048 );
+            cu64 ulMaxMem128 = 128UL * 1024UL * 1024UL; // 128 MB to bytes
+            cu64 ulMaxMem2048 = 2048UL * 1024UL * 1024UL;
+            u64 ulMaxMemoryBufferSize = std::min<u64>( std::max<u64>( ulMaxMem128, 0.25f * Limits.ulMaxVideoMemory ), ulMaxMem2048 );
             // Convert to bytes
             Limits.ulMaxResourceSize = ulMaxMemoryBufferSize;
-            Limits.ulMaxVertexBufferSize = std::max<ul64>( ulMaxMem128, 0.25f * Limits.ulMaxVideoMemory );
+            Limits.ulMaxVertexBufferSize = std::max<u64>( ulMaxMem128, (u64)(0.25f * Limits.ulMaxVideoMemory) );
             Limits.ulMaxIndexBufferSize = Limits.ulMaxVertexBufferSize;
 
             switch( this->m_eFeatureLevel )

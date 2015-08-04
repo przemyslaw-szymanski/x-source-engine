@@ -1,5 +1,6 @@
 #define XST_ENABLE_PROFILER 1
 #include "CTerrain.h"
+#include <XSECTileBuffer.h>
 #include <QtCore\qdebug.h>
 #include <unordered_map>
 
@@ -97,6 +98,16 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 {
     m_pWnd = pWnd;
     m_pEngine = pEngine;
+
+    XSE::CTileBuffer buffer;
+    XSE::CTileBuffer::SBufferInfo Info;
+    Info.eUsage = XSE::CTileBuffer::BufferUsage::DYNAMIC_DOUBLEBUFFER;
+    Info.pIL = pEngine->GetRenderSystem()->GetInputLayout( XSE::ILE::POSITION );
+    Info.TileCount = XSE::CPoint( 2, 2 );
+    Info.uiTileRowVertexCount = 2;
+    
+    buffer.Init( Info, pEngine->GetRenderSystem() );
+    buffer.Create();
 
     XST::CTimer Timer;
     Timer.StartQPerf();

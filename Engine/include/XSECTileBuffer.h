@@ -8,12 +8,13 @@
 
 namespace XSE  
 {
-    class CTileBuffer
+    class XST_API CTileBuffer
     {
         public:
 
             struct STile
             {
+                CBoundingVolume Volume;
                 u32 uiStartOffset;
                 u32 uiEndOffset;
                 u16 usId;
@@ -63,9 +64,12 @@ namespace XSE
 
             i32 Create();
 
-            i32 CalcPositions();
+            i32 CalcPositions(const Vec3& vecDirection);
             i32 CalcNormals();
             i32 CalcTexCoords(u32 uiId);
+            i32 CreateTiles();
+            i32 CreateVertexBuffers();
+            i32 CreateIndexBuffers();
 
             // Calc vertex count for a vertex buffer
             CPoint CalcBufferVertexCount(u32 uiRowVertexCount, const CPoint& Size) const;
