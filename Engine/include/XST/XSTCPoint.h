@@ -6,7 +6,7 @@ namespace XST
     namespace Math
     {
         template<typename _T_>
-        class XST_API TCPoint
+        class XST_API TCPoint final
         {
             public:
 
@@ -15,6 +15,10 @@ namespace XST
                     struct
                     {
                         _T_ x, y;
+                    };
+                    struct
+                    {
+                        _T_ width, height;
                     };
                     _T_ a[ 2 ];
                 };
@@ -29,11 +33,13 @@ namespace XST
 
                 xst_fi TCPoint() {}
                 xst_fi TCPoint(const TCPoint& Point) : x( Point.x ), y( Point.y ) {}
+                template<typename _A_>
+                xst_fi TCPoint( const _A_& tX, const _A_& tY ) : x( ( _T_ )tX ), y( ( _T_ )tY ) {}
+                template<typename _A_>
+                xst_fi explicit TCPoint(const TCPoint<_A_>& Point) : TCPoint( Point.x, Point.y ) {}
                 xst_fi explicit TCPoint(const _T_& tValue) : x(tValue), y(tValue) {}
                 xst_fi TCPoint(const _T_& tX, const _T_& tY) : x(tX), y(tY) {}
                 xst_fi explicit TCPoint(const _T_ aValues[2]) : x( aValues[ 0 ] ), y( aValues[ 1 ] ) {}
-                template<typename _A_>
-                xst_fi TCPoint(const _A_& tX, const _A_& tY) : x( tX ), y( tY ) {}
                 template<typename _A_>
                 xst_fi explicit TCPoint(const _A_& tValue) : x( tValue ), y( tValue ) {}
 
@@ -146,7 +152,7 @@ namespace XST
 
                 xst_fi TCPoint operator+(const _T_& tValue) const 
                 {
-                    return TCPoint( x + Right.x, y + Right.y );
+                    return TCPoint( x + tValue, y + tValue );
                 }
 
                 xst_fi void operator+=(const _T_& tValue) 
@@ -274,7 +280,7 @@ namespace XST
 
                 xst_fi void AddEq(const _T_& tValue)
                 {
-                    x += iValue; y += tValue;
+                    x += tValue; y += tValue;
                 }
 
                 xst_fi void SubEq(const _T_& tValue)
@@ -351,24 +357,11 @@ namespace XST
         typedef TCPoint< i64 >  PointI64;
         typedef TCPoint< u64 >  PointU64;
         typedef TCPoint< f64 >  PointF64;
+        typedef PointI32        ISize;
+        typedef PointU32        USize;
 
-        XST_API class Point;
-        XST_API class PointI16;
-        XST_API class PointI32;
-        XST_API class PointU16;
-        XST_API class PointU32;
-        XST_API class PointF32;
-        XST_API class PointF64;
-        XST_API class PointL32;
-        XST_API class PointUL32;
-        XST_API class PointI64;
-        XST_API class PointU64;
+        
 
-        /*template<typename _T_> const TCPoint< _T_ > TCPoint< _T_ >::ZERO( 0, 0 );
-        template<typename _T_> const TCPoint< _T_ > TCPoint< _T_ >::X( 1, 0 );
-        template<typename _T_> const TCPoint< _T_ > TCPoint< _T_ >::Y( 0, 1 );
-        template<typename _T_> const TCPoint< _T_ > TCPoint< _T_ >::NEGATIVE_X( -1, 0 );
-        template<typename _T_> const TCPoint< _T_ > TCPoint< _T_ >::NEGATIVE_Y( 0, -1 );*/
 
     }//math
 }//xst

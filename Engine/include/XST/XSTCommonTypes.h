@@ -98,28 +98,32 @@ namespace XST
         
 
         #if defined (XST_VISUAL_STUDIO)
+        #   define XST_EXPORT __declspec(dllexport)
+        #   define XST_IMPORT __declspec(dllimport)
         #	if defined(XST_NODLL) || defined (XST_NO_DLL)
         #		define XST_API
         #		define XST_TEMPLATE_API	
         #	else//IF NOT DEFINED _XS_NO_DLL
         #		if defined(XST_DLL_EXPORT) || defined (XST_DLLEXPORT)
-        #			define XST_API	__declspec(dllexport)
+        #			define XST_API	XST_EXPORT
         #			define XST_TEMPLATE_API 
         #		else//IF NOT DEFINTD XS_DLL_EXPORT
-        #			define XST_API	__declspec(dllimport)
+        #			define XST_API	XST_IMPORT
         #			define XST_TEMPLATE_API extern 
         #		endif//CORE_DLL_EXPORT
         #	endif//_XS_NO_DLL
         #elif defined XST_GCC
+        #   define XST_EXPORT __attribute__((dllexport))
+        #   define XST_IMPORT __attribute__((dllimport))
         #	if defined(XST_NODLL)
         #		define XST_API
         #		define XST_TEMPLATE_API template class XST_API
         #	else//IF NOT DEFINED _XS_NO_DLL
         #		if defined(XST_DLL_EXPORT)
-        #			define XST_API	__attribute__((dllexport))
+        #			define XST_API	XST_EXPORT
         #			define XST_TEMPLATE_API 
         #		else//IF NOT DEFINTD XS_DLL_EXPORT
-        #			define XST_API	__attribute__((dllimport))
+        #			define XST_API	XST_IMPORT
         #			define XST_TEMPLATE_API extern
         #		endif//CORE_DLL_EXPORT
         #	endif//_XS_NO_DLL

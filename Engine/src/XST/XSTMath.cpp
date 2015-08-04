@@ -63,6 +63,17 @@ namespace XST
         XST_SPEC_POINT_STATICS( u64 );
         XST_SPEC_POINT_STATICS( i64 );
         XST_SPEC_POINT_STATICS( f64 );
+
+        XST_TEMPLATE_CLASS TCPoint< i16 >;
+        XST_TEMPLATE_CLASS TCPoint< i32 >;
+        XST_TEMPLATE_CLASS TCPoint< l32 >;
+        XST_TEMPLATE_CLASS TCPoint< i64 >;
+        XST_TEMPLATE_CLASS TCPoint< f32 >;
+        XST_TEMPLATE_CLASS TCPoint< u16 >;
+        XST_TEMPLATE_CLASS TCPoint< u32 >;
+        XST_TEMPLATE_CLASS TCPoint< ul32 >;
+        XST_TEMPLATE_CLASS TCPoint< u64 >;
+        XST_TEMPLATE_CLASS TCPoint< f64 >;
         
 
         const CMatrix4 CMatrix4::IDENTITY = CMatrix4(	1, 0, 0, 0,
