@@ -193,6 +193,7 @@ namespace XSE
             DEFAULT = 0,
             DYNAMIC,
             STATIC,
+            DYNAMIC_DOUBLEBUFFER,
             _ENUM_COUNT
         };
     };

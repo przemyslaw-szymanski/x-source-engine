@@ -44,14 +44,15 @@ namespace XSE
 	{
 	}
 
-	i32 CVertexData::Create(ul32 ulVertexCount, const IInputLayout* pIL)
+	i32 CVertexData::Create(ul32 ulVertexCount, const IInputLayout* pIL, bool bDoubleBuffer)
 	{
 		xst_assert( pIL, "(CVertexData::Create)" );
 
 		m_pInputLayout = pIL;
 		m_ulVertexSize = pIL->GetVertexSize();
-		m_ulVertexCount = ulVertexCount;
-		m_ulBufferSize = m_ulVertexSize * ulVertexCount;
+		m_ulVertexCount = ulVertexCount; // per one buffer only
+        m_bIsDoubleBuffer = bDoubleBuffer;
+		m_ulBufferSize = (m_ulVertexSize * ulVertexCount) * (m_bIsDoubleBuffer + 1); // whole size for both buffers
 		//Set default value for each element. If 0xffffffff is set that attribute is not used
 		memset( m_auiAttributeMap, 0xffffffff, sizeof( u32 ) * (u32)InputLayoutElements::_ENUM_COUNT );
 
@@ -135,75 +136,140 @@ namespace XSE
 		return XST_OK;
 	}
 
-	ul32 CVertexData::_CalcOffset(cul32& ulVertexId, const IInputLayout* pIL, cul32& ulAttributeId) const 
+	ul32 CVertexData::_CalcOffset(BufferTypes::TYPE eBuffer, cul32& ulVertexId, const IInputLayout* pIL, cul32& ulAttributeId) const 
 	{
 		xst_assert( m_auiAttributeMap[ ulAttributeId ] != 0xffffffff, "(CVertexData::_CalcOffset) This attribute is not available for this vertex data. Check the input layout" );
 		xst_assert( m_ulBufferSize != 0, "(CVertexData::_CalcOffset) Vertex size is not set. Create method not called" );
 
-		return ( ulVertexId * m_ulVertexSize ) + pIL->GetElementOffset( m_auiAttributeMap[ ulAttributeId ] );
+		return eBuffer * (( ulVertexId * m_ulVertexSize ) + pIL->GetElementOffset( m_auiAttributeMap[ ulAttributeId ] ));
 	}
 
 	i32	CVertexData::GetAttribute(cul32& ulVertexId, cul32& ulAttributeId, Vec2* pVec)
 	{
 
-		cul32 ulOffset = _CalcOffset( ulVertexId, m_pInputLayout, ulAttributeId );
+		cul32 ulOffset = _CalcOffset( BufferTypes::FRONT, ulVertexId, m_pInputLayout, ulAttributeId );
 		return m_Data.Read< Vec2 >( pVec, ulOffset );
 	}
 
 	i32	CVertexData::GetAttribute(cul32& ulVertexId, cul32& ulAttributeId, Vec3* pVec)
 	{
 
-		cul32 ulOffset = _CalcOffset( ulVertexId, m_pInputLayout, ulAttributeId );
+		cul32 ulOffset = _CalcOffset( BufferTypes::FRONT, ulVertexId, m_pInputLayout, ulAttributeId );
 		return m_Data.Read< Vec3 >( pVec, ulOffset );
 	}
 
 	i32	CVertexData::GetAttribute(cul32& ulVertexId, cul32& ulAttributeId, Vec4* pVec)
 	{
 
-		cul32 ulOffset = _CalcOffset( ulVertexId, m_pInputLayout, ulAttributeId );
+		cul32 ulOffset = _CalcOffset( BufferTypes::FRONT, ulVertexId, m_pInputLayout, ulAttributeId );
 		return m_Data.Read< Vec4 >( pVec, ulOffset );
 	}
 
 	i32	CVertexData::SetAttribute(cul32& ulVertexId, cul32& ulAttributeId, const Vec2& Vec)
 	{	
-		cul32 ulOffset = _CalcOffset( ulVertexId, m_pInputLayout, ulAttributeId );
+		cul32 ulOffset = _CalcOffset( BufferTypes::FRONT, ulVertexId, m_pInputLayout, ulAttributeId );
 		return m_Data.Write< Vec2 >( Vec, ulOffset );
 	}
 
 	i32	CVertexData::SetAttribute(cul32& ulVertexId, cul32& ulAttributeId, const Vec3& Vec)
 	{
 
-		cul32 ulOffset = _CalcOffset( ulVertexId, m_pInputLayout, ulAttributeId );
+		cul32 ulOffset = _CalcOffset( BufferTypes::FRONT, ulVertexId, m_pInputLayout, ulAttributeId );
 		return m_Data.Write< Vec3 >( Vec, ulOffset );
 	}
 
 	i32	CVertexData::SetAttribute(cul32& ulVertexId, cul32& ulAttributeId, const Vec4& Vec)
 	{
 
-		cul32 ulOffset = _CalcOffset( ulVertexId, m_pInputLayout, ulAttributeId );
+		cul32 ulOffset = _CalcOffset( BufferTypes::FRONT, ulVertexId, m_pInputLayout, ulAttributeId );
 		return m_Data.Write< Vec4 >( Vec, ulOffset );
 	}
 
 	i32	CVertexData::SetAttribute(cul32& ulVertexId, cul32& ulAttributeId, cf32& fX, cf32& fY)
 	{
-		cul32 ulOffset = _CalcOffset( ulVertexId, m_pInputLayout, ulAttributeId );
+		cul32 ulOffset = _CalcOffset( BufferTypes::FRONT, ulVertexId, m_pInputLayout, ulAttributeId );
 		f32 faData[ 2 ] = { fX, fY };
 		return m_Data.WriteArray< f32 >( faData, sizeof( f32 ) * 2, ulOffset );
 	}
 
 	i32	CVertexData::SetAttribute(cul32& ulVertexId, cul32& ulAttributeId, cf32& fX, cf32& fY, cf32& fZ)
 	{
-		cul32 ulOffset = _CalcOffset( ulVertexId, m_pInputLayout, ulAttributeId );
+		cul32 ulOffset = _CalcOffset( BufferTypes::FRONT, ulVertexId, m_pInputLayout, ulAttributeId );
 		f32 faData[ 3 ] = { fX, fY, fZ };
 		return m_Data.WriteArray< f32 >( faData, sizeof( f32 ) * 3, ulOffset );
 	}
 
 	i32	CVertexData::SetAttribute(cul32& ulVertexId, cul32& ulAttributeId, cf32& fX, cf32& fY, cf32& fZ, cf32& fW)
 	{
-		cul32 ulOffset = _CalcOffset( ulVertexId, m_pInputLayout, ulAttributeId );
+		cul32 ulOffset = _CalcOffset( BufferTypes::FRONT, ulVertexId, m_pInputLayout, ulAttributeId );
 		f32 faData[ 4 ] = { fX, fY, fZ, fW };
 		return m_Data.WriteArray< f32 >( faData, sizeof( f32 ) * 4, ulOffset );
 	}
+
+    // Double buffer
+
+    i32	CVertexData::GetAttribute(BufferTypes::TYPE eBuffer, cul32& ulVertexId, cul32& ulAttributeId, Vec2* pVec)
+	{
+
+		cul32 ulOffset = _CalcOffset( eBuffer, ulVertexId, m_pInputLayout, ulAttributeId );
+		return m_Data.Read< Vec2 >( pVec, ulOffset );
+	}
+
+	i32	CVertexData::GetAttribute(BufferTypes::TYPE eBuffer, cul32& ulVertexId, cul32& ulAttributeId, Vec3* pVec)
+	{
+
+		cul32 ulOffset = _CalcOffset( eBuffer, ulVertexId, m_pInputLayout, ulAttributeId );
+		return m_Data.Read< Vec3 >( pVec, ulOffset );
+	}
+
+	i32	CVertexData::GetAttribute(BufferTypes::TYPE eBuffer, cul32& ulVertexId, cul32& ulAttributeId, Vec4* pVec)
+	{
+
+		cul32 ulOffset = _CalcOffset( eBuffer, ulVertexId, m_pInputLayout, ulAttributeId );
+		return m_Data.Read< Vec4 >( pVec, ulOffset );
+	}
+
+	i32	CVertexData::SetAttribute(BufferTypes::TYPE eBuffer, cul32& ulVertexId, cul32& ulAttributeId, const Vec2& Vec)
+	{	
+		cul32 ulOffset = _CalcOffset( eBuffer, ulVertexId, m_pInputLayout, ulAttributeId );
+		return m_Data.Write< Vec2 >( Vec, ulOffset );
+	}
+
+	i32	CVertexData::SetAttribute(BufferTypes::TYPE eBuffer, cul32& ulVertexId, cul32& ulAttributeId, const Vec3& Vec)
+	{
+
+		cul32 ulOffset = _CalcOffset( eBuffer, ulVertexId, m_pInputLayout, ulAttributeId );
+		return m_Data.Write< Vec3 >( Vec, ulOffset );
+	}
+
+	i32	CVertexData::SetAttribute(BufferTypes::TYPE eBuffer, cul32& ulVertexId, cul32& ulAttributeId, const Vec4& Vec)
+	{
+
+		cul32 ulOffset = _CalcOffset( eBuffer, ulVertexId, m_pInputLayout, ulAttributeId );
+		return m_Data.Write< Vec4 >( Vec, ulOffset );
+	}
+
+	i32	CVertexData::SetAttribute(BufferTypes::TYPE eBuffer, cul32& ulVertexId, cul32& ulAttributeId, cf32& fX, cf32& fY)
+	{
+		cul32 ulOffset = _CalcOffset( eBuffer, ulVertexId, m_pInputLayout, ulAttributeId );
+		f32 faData[ 2 ] = { fX, fY };
+		return m_Data.WriteArray< f32 >( faData, sizeof( f32 ) * 2, ulOffset );
+	}
+
+	i32	CVertexData::SetAttribute(BufferTypes::TYPE eBuffer, cul32& ulVertexId, cul32& ulAttributeId, cf32& fX, cf32& fY, cf32& fZ)
+	{
+		cul32 ulOffset = _CalcOffset( eBuffer, ulVertexId, m_pInputLayout, ulAttributeId );
+		f32 faData[ 3 ] = { fX, fY, fZ };
+		return m_Data.WriteArray< f32 >( faData, sizeof( f32 ) * 3, ulOffset );
+	}
+
+	i32	CVertexData::SetAttribute(BufferTypes::TYPE eBuffer, cul32& ulVertexId, cul32& ulAttributeId, cf32& fX, cf32& fY, cf32& fZ, cf32& fW)
+	{
+		cul32 ulOffset = _CalcOffset( eBuffer, ulVertexId, m_pInputLayout, ulAttributeId );
+		f32 faData[ 4 ] = { fX, fY, fZ, fW };
+		return m_Data.WriteArray< f32 >( faData, sizeof( f32 ) * 4, ulOffset );
+	}
+
 
 	void GetAvailableAttributes(u32* auiAttributeMap, cu32& uiMapSize, const IInputLayout* pIL)
 	{

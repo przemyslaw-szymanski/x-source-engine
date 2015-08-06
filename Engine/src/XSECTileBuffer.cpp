@@ -23,8 +23,7 @@ namespace XSE
 
     CPoint CTileBuffer::CalcBufferVertexCount(u32 uiRowVertexCount, const CPoint& Size) const
     {
-        ul32 uiTileVertexCount = uiRowVertexCount * uiRowVertexCount;
-        return Size * uiTileVertexCount;
+        return Size * uiRowVertexCount; // width * vertex count, height * vertex count
     }
 
     i32 CTileBuffer::Init(const SBufferInfo& Info, IRenderSystem* pRS)
@@ -179,13 +178,13 @@ namespace XSE
         xst_assert2( m_pRS );
         XST_RET_FAIL(CalcPositions(Vec3::Z));
         const auto& TileCount = m_Info.TileCount;
-        const auto& VertexCount = m_Info.VertexCount;
+        const auto& TmpVertexCount = m_Info.TmpVertexCount;
         cu32 uTileRowVertexCount = m_Info.uiTileRowVertexCount;
         
         // Create vertex buffers
-        u16 bDoubleBuffered = m_Info.eUsage == BufferUsage::DYNAMIC_DOUBLEBUFFER ? 1 : 0;
-        cu64 uVertexCount = m_Info.VertexCount.ElementMul() * ( 2 * bDoubleBuffered );
-        cul32 ulVertexBufferCount = uVertexCount / m_pRS->GetLimits().ulMaxVertexBufferSize;
+        u16 bDoubleBuffered = m_Info.eUsage == BufferUsages::DYNAMIC_DOUBLEBUFFER ? 1 : 0;
+        cul32 uVertexCount = m_Info.VertexCount.ElementMul();
+        cul32 ulVertexBufferCount = std::ceilf( (f32)uVertexCount / m_pRS->GetLimits().ulMaxVertexBufferSize );
         if( ulVertexBufferCount > 2 )
         {
             XST_LOG_ERR("Vertex buffer too large");
@@ -202,7 +201,15 @@ namespace XSE
         for( auto& pVB : m_vpVBs )
         {
             pVB = m_pRS->CreateVertexBuffer();
-            if( pVB.IsNull() )
+            if( pVB.IsValid )
+            {
+                pVB->SetInputLayout( m_Info.pIL );
+                pVB->SetTopologyType( XSE::TopologyTypes::TRIANGLE_LIST );
+                pVB->SetUsage( m_Info.eUsage );
+                pVB->SetVertexCount( uVertexCount );
+                XST_RET_FAIL( pVB->Lock() );
+            }
+            else
             {
                 return XST_FAIL;
             }
@@ -210,6 +217,8 @@ namespace XSE
 
         IVertexBuffer* pFrontVB = m_vpVBs[ uFrontBufferId ].GetPtr();
         IVertexBuffer* pBackVB = m_vpVBs[ uBackBufferId ].GetPtr();
+        auto& FrontVData = pFrontVB->GetVertexData();
+        auto& BackVData = pBackVB->GetVertexData();
 
         CPoint VertexPosInBuffer = CPoint::ZERO;
         ul32 uCurrVertexPosInBuffer;
@@ -220,15 +229,24 @@ namespace XSE
             {
                 for( u32 uVertexY = 0; uVertexY < uTileRowVertexCount; ++uVertexY )
                 {
-                    VertexPosInBuffer.y = iTileY * uTileRowVertexCount - 1;
+                    VertexPosInBuffer.y = iTileY * (uTileRowVertexCount - 1) + uVertexY;
                     for( u32 uVertexX = 0; uVertexX < uTileRowVertexCount; ++uVertexX )
                     {
-                        VertexPosInBuffer.x = iTileX * uTileRowVertexCount - 1; // -1 because last vertex is shared between tiles
-                        uCurrVertexPosInBuffer = XST_ARRAY_2D_TO_1D( VertexPosInBuffer.x, VertexPosInBuffer.y, VertexCount.x );
+                        VertexPosInBuffer.x = iTileX * (uTileRowVertexCount - 1) + uVertexX; // -1 because last vertex is shared between tiles
+                        uCurrVertexPosInBuffer = XST_ARRAY_2D_TO_1D( VertexPosInBuffer.x, VertexPosInBuffer.y, TmpVertexCount.width );
                         const auto& vecPos = m_vPositions[ uCurrVertexPosInBuffer ];
+                        // Set both to front and back buffer
+
+                        /*char buff[ 20 ]; xst_sprintf( buff, 20, "%d, %d", VertexPosInBuffer.x, VertexPosInBuffer.y );
+                        XST::CDebug::PrintDebugLN(buff);*/
                     }
                 }
             }
+        }
+
+        for( auto& pVB : m_vpVBs )
+        {
+            XST_RET_FAIL( pVB->Unlock() );
         }
 
         return XST_OK;

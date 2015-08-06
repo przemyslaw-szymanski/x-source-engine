@@ -29,13 +29,6 @@ namespace XSE
                 Vec2    vecVertexDistance;
             };
 
-            enum class BufferUsage
-            {
-                STATIC,
-                DYNAMIC,
-                DYNAMIC_DOUBLEBUFFER
-            };
-
             struct SBufferInfo
             {
                 Vec3    vecPosition             = Vec3::ZERO;
@@ -45,7 +38,7 @@ namespace XSE
                 CPoint  TmpVertexCount          = CPoint::ZERO;
                 const IInputLayout* pIL         = xst_null;
                 u32     uiTileRowVertexCount    = 0;
-                BufferUsage eUsage              = BufferUsage::STATIC;
+                BUFFER_USAGE eUsage             = BufferUsages::STATIC;
                 u8      uLODCount               = 0;
             };
 
