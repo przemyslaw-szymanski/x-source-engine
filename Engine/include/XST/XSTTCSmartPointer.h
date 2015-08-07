@@ -229,7 +229,7 @@ namespace XST
         public:
 
         TCMovePointer() = delete;
-        TCMovePointer(_T_* pPtr) : m_pPtr( pPtr )
+        xst_fi TCMovePointer(_T_* pPtr) : m_pPtr( pPtr )
         {}
 
         xst_fi _T_* GetPtr() const
@@ -258,6 +258,11 @@ namespace XST
                 _BaseSetPtr( Right.m_pPtr );
             }
 
+            xst_fi TCObjectSmartPointer(TCObjectSmartPointer&& Right) : TCObjectSmartPointer( Right.m_pPtr )
+            {
+                Right.m_pPtr = xst_null;
+            }
+
             template<class _U_>
             xst_fi TCObjectSmartPointer(const TCObjectSmartPointer< _U_ >& Right) 
             {
@@ -271,8 +276,29 @@ namespace XST
             }
 
             template< class _U_ >
-            xst_fi TCObjectSmartPointer(const TCMovePointer< _U_ >& Ptr) : TCObjectSmartPointer( static_cast< _T_* >( Ptr.GetPtr() ) )
+            xst_fi TCObjectSmartPointer(const TCMovePointer< _U_ >& Ptr) : 
+                TCObjectSmartPointer( static_cast< _T_* >( Ptr.GetPtr() ) )
             {}
+
+            xst_fi explicit TCObjectSmartPointer(const TCMovePointer& Right) : m_pPtr( Right.m_pPtr )
+            {}
+
+            xst_fi explicit TCObjectSmartPointer(TCMovePointer&& Right) : m_pPtr( Right.m_pPtr )
+            {
+                Right.m_pPtr = xst_null;
+            }
+
+            template< class _U_ >
+            xst_fi explicit TCObjectSmartPointer(const TCMovePointer< _U_ >& Right) : 
+                m_pPtr( static_cast< _T_* >( Right.m_pPtr ) )
+            {}
+
+            template< class _U_ >
+            xst_fi explicit TCObjectSmartPointer(TCMovePointer< _U_ >&& Right) : 
+                m_pPtr( static_cast< _T_* >( Right.m_pPtr ) )
+            {
+                Right.m_pPtr = xst_null;
+            }
 
             virtual	xst_fi  ~TCObjectSmartPointer()
             {
@@ -290,24 +316,58 @@ namespace XST
                 return *this;
             }
 
-            template<class _U_>
-            xst_fi TCObjectSmartPointer&   operator=(const TCObjectSmartPointer< _U_ >& Right)
+            xst_fi TCObjectSmartPointer&   operator=(TCObjectSmartPointer&& Right)
             {
-                _SetPtr( static_cast< _T_* >( Right.GetPtr() ) );
+                m_pPtr = Right.m_pPtr;
+                Right.m_pPtr = xst_null;
                 return *this;
             }
 
             template<class _U_>
-            xst_fi TCObjectSmartPointer&   operator=(const TCWeakPointer< _U_ >& Right)
+            xst_fi TCObjectSmartPointer&   operator=(TCObjectSmartPointer< _U_ >&& Right)
             {
-                _SetPtr( static_cast< _T_* >( Right.GetPtr() ) );
+                m_pPtr = static_cast< _T_* >( Right.m_pPtr );
+                Right.m_pPtr = xst_null;
                 return *this;
             }
 
             template<class _U_>
-            xst_fi TCObjectSmartPointer&   operator=(const TCMovePointer< _U_ >& Right)
+            xst_fi TCObjectSmartPointer&   operator=(TCWeakPointer< _U_ >&& Right)
             {
-                m_pPtr = static_cast< _T_* >( Right.GetPtr() );
+                m_pPtr = static_cast< _T_* >( Right.m_pPtr );
+                Right.m_pPtr = xst_null;
+                return *this;
+            }
+
+            template<class _U_>
+            xst_fi TCObjectSmartPointer&   operator=(TCMovePointer< _U_ >&& Right)
+            {
+                m_pPtr = static_cast< _T_* >( Right.m_pPtr );
+                Right.m_pPtr = xst_null;
+                return *this;
+            }
+
+            template<class _U_>
+            xst_fi TCObjectSmartPointer&   operator=(TCObjectSmartPointer< _U_ >&& Right)
+            {
+                m_pPtr = static_cast< _T_* >( Right.m_pPtr );
+                Right.m_pPtr = xst_null;
+                return *this;
+            }
+
+            template<class _U_>
+            xst_fi TCObjectSmartPointer&   operator=(TCWeakPointer< _U_ >&& Right)
+            {
+                m_pPtr = static_cast< _T_* >( Right.m_pPtr );
+                Right.m_pPtr = xst_null;
+                return *this;
+            }
+
+            template<class _U_>
+            xst_fi TCObjectSmartPointer&   operator=(TCMovePointer< _U_ >&& Right)
+            {
+                m_pPtr = static_cast< _T_* >( Right.m_pPtr );
+                Right.m_pPtr = xst_null;
                 return *this;
             }
 

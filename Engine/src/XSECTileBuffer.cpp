@@ -209,7 +209,7 @@ namespace XSE
 
         for( auto& pVB : m_vpVBs )
         {
-            pVB = m_pRS->CreateVertexBuffer();
+            pVB = XST::TCMovePointer< IVertexBuffer >( m_pRS->CreateVertexBuffer() );
             if( pVB.IsValid() )
             {
                 pVB->SetInputLayout( m_Info.pIL );
