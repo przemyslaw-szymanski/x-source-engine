@@ -32,8 +32,9 @@ namespace XSE
 
         i32 CVertexBuffer::Lock()
         {
-            cul32 ulVertexCount = m_ulVertexCount * m_eUsage == BufferUsages::DYNAMIC_DOUBLEBUFFER ? 2 : 1;
-            if( XST_FAILED( m_VertexData.Create( ulVertexCount, m_pInputLayout ) ) )
+            bool bDoubleBuffer = m_eUsage == BufferUsages::DYNAMIC_DOUBLEBUFFER;
+            cul32 ulVertexCount = m_ulVertexCount * ((bDoubleBuffer == true)? 2 : 1);
+            if( XST_FAILED( m_VertexData.Create( ulVertexCount, m_pInputLayout, bDoubleBuffer ) ) )
             {
                 XST_LOG_ERR( "Failed to create vertex buffer. Memory error." );
                 return XST_FAIL;
@@ -124,7 +125,7 @@ namespace XSE
             m_D3DBufferDesc.ByteWidth = ulBuffSize;
             m_D3DBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
             m_D3DBufferDesc.CPUAccessFlags = 0;
-            if( m_eUsage == BufferUsages::DYNAMIC )
+            if( m_eD3DBufferUsage == D3D11_USAGE_DYNAMIC )
             {
                 m_D3DBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
             }

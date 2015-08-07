@@ -10,7 +10,17 @@ namespace XSE
 
     CTileBuffer::~CTileBuffer()
     {
+        Destroy();
+    }
 
+    void CTileBuffer::Destroy()
+    {
+        m_vpVBs.clear();
+        m_vpIBs.clear();
+        m_vTiles.clear();
+        m_vPositions.clear();
+        m_vNormals.clear();
+        m_vTexCoords.clear();
     }
 
     CPoint CTileBuffer::CalcVertexCount(u32 uiRowVertexCount, const CPoint& Size) const
@@ -176,6 +186,7 @@ namespace XSE
     i32 CTileBuffer::CreateVertexBuffers()
     {
         xst_assert2( m_pRS );
+        xst_assert2( !m_vTiles.empty() );
         XST_RET_FAIL(CalcPositions(Vec3::Z));
         const auto& TileCount = m_Info.TileCount;
         const auto& TmpVertexCount = m_Info.TmpVertexCount;
@@ -191,17 +202,15 @@ namespace XSE
             return XST_FAIL;
         }
         
-        cu16 uFrontBufferId = 0;
-        cu16 uBackBufferId = ulVertexBufferCount > 1 ? 1 : 0;
-        cu64 uFrontBufferOffset = 0;
-        cu64 uBackBufferOffset = uVertexCount * !uBackBufferId; // uVertexCount if one buffer or 0 if a new one
+        auto eFrontBuffer = CVertexData::BufferTypes::FRONT;
+        auto eBackBuffer = ulVertexBufferCount > 1 ? CVertexData::BufferTypes::BACK : CVertexData::BufferTypes::FRONT;
 
         m_vpVBs.resize( ulVertexBufferCount );
 
         for( auto& pVB : m_vpVBs )
         {
             pVB = m_pRS->CreateVertexBuffer();
-            if( pVB.IsValid )
+            if( pVB.IsValid() )
             {
                 pVB->SetInputLayout( m_Info.pIL );
                 pVB->SetTopologyType( XSE::TopologyTypes::TRIANGLE_LIST );
@@ -215,13 +224,14 @@ namespace XSE
             }
         }
 
-        IVertexBuffer* pFrontVB = m_vpVBs[ uFrontBufferId ].GetPtr();
-        IVertexBuffer* pBackVB = m_vpVBs[ uBackBufferId ].GetPtr();
-        auto& FrontVData = pFrontVB->GetVertexData();
-        auto& BackVData = pBackVB->GetVertexData();
+        IVertexBuffer* pVB = m_vpVBs[ 0 ].GetPtr();
+        auto& VData = pVB->GetVertexData();
 
         CPoint VertexPosInBuffer = CPoint::ZERO;
         ul32 uCurrVertexPosInBuffer;
+        ul32 uCurrVertexInVB = 0;
+        ul32 uCurrTileId = 0;
+        ul32 uStartVertex = 0;
 
         for( i32 iTileY = 0; iTileY < TileCount.y; ++iTileY )
         {
@@ -236,11 +246,22 @@ namespace XSE
                         uCurrVertexPosInBuffer = XST_ARRAY_2D_TO_1D( VertexPosInBuffer.x, VertexPosInBuffer.y, TmpVertexCount.width );
                         const auto& vecPos = m_vPositions[ uCurrVertexPosInBuffer ];
                         // Set both to front and back buffer
+                        VData.SetPosition( eFrontBuffer, uCurrVertexInVB, vecPos );
+                        VData.SetPosition( eBackBuffer, uCurrVertexInVB, vecPos );
+
 
                         /*char buff[ 20 ]; xst_sprintf( buff, 20, "%d, %d", VertexPosInBuffer.x, VertexPosInBuffer.y );
                         XST::CDebug::PrintDebugLN(buff);*/
+
+                        uCurrVertexInVB++;
                     }
                 }
+
+                // Set the tile
+                auto& CurrTile = m_vTiles[ uCurrTileId ];
+                CurrTile.uiStartVertex = uStartVertex;
+                uCurrTileId++;
+                uStartVertex = uCurrVertexInVB;
             }
         }
 
@@ -259,6 +280,7 @@ namespace XSE
 
     i32 CTileBuffer::Create()
     {
+        XST_RET_FAIL( CreateTiles() );
         XST_RET_FAIL( CreateVertexBuffers() );
         XST_RET_FAIL( CreateIndexBuffers() );
 

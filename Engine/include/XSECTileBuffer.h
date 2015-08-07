@@ -15,8 +15,7 @@ namespace XSE
             struct STile
             {
                 CBoundingVolume Volume;
-                u32 uiStartOffset;
-                u32 uiEndOffset;
+                u32 uiStartVertex;
                 u16 usId;
                 u16 usFrontBufferId : 8;
                 u16 usBackBufferId : 8;
@@ -56,6 +55,7 @@ namespace XSE
             i32 Init(const SBufferInfo& Info, IRenderSystem* pRS);
 
             i32 Create();
+            void Destroy();
 
             i32 CalcPositions(const Vec3& vecDirection);
             i32 CalcNormals();

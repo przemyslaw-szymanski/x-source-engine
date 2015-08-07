@@ -101,13 +101,14 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 
     XSE::CTileBuffer buffer;
     XSE::CTileBuffer::SBufferInfo Info;
-    Info.eUsage = XSE::CTileBuffer::BufferUsage::DYNAMIC_DOUBLEBUFFER;
+    Info.eUsage = XSE::BufferUsages::DYNAMIC_DOUBLEBUFFER;
     Info.pIL = pEngine->GetRenderSystem()->GetInputLayout( XSE::ILE::POSITION );
     Info.TileCount = XSE::CPoint( 2, 2 );
     Info.uiTileRowVertexCount = 2;
     
     buffer.Init( Info, pEngine->GetRenderSystem() );
     buffer.Create();
+    buffer.Destroy();
 
     XST::CTimer Timer;
     Timer.StartQPerf();
@@ -147,7 +148,7 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
     this->m_pDbgCam->SetSpeed(10000, 100, 100);
 #endif
     /////////////////////////////////////////
-
+    return XST_OK;
     XSE::CSceneManager::CameraIterator Itr = m_pSceneMgr->GetCameraIterator();
     while( Itr.HasMoreElements() )
     {
@@ -218,6 +219,8 @@ i32 CTerrain::Init(XSE::CEngine* pEngine, XSE::IRenderWindow* pWnd)
 
 void CTerrain::OnUpdate()
 {
+    if( !m_pRenderWindow )
+        return;
     XSE::IKeyboard* pKeyboard = m_pRenderWindow->GetKeyboard( );
     if( pKeyboard->IsKeyPressed( XSE::KeyCodes::CAPITAL_Z ) )
     {
